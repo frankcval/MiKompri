@@ -20,7 +20,7 @@ namespace MiKompri.ShoppingList.Application.Commands.AddItemToList
             var list = await _repo.GetByIdAsync(request.ListId)
                ?? throw new KeyNotFoundException("Lista no econtrada");
 
-            list.AddItem(new ListItem(request.ProductId, request.Name, request.Price, request.Quantity));
+            list.AddItem(new ListItem(request.ProductId, request.Name, request.Price.GetValueOrDefault(), request.Quantity));
             await _repo.UpdateAsync(list);
             await _unitOfWork.SaveChangesAsync();
 

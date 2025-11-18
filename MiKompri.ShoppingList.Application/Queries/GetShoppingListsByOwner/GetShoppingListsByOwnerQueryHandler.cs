@@ -36,8 +36,7 @@ namespace MiKompri.ShoppingList.Application.Queries.GetShoppingListsByOwner
                 }).ToList()
             });
 
-
-
+           
 
         }
     }

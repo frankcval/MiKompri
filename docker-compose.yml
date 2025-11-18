@@ -1,0 +1,26 @@
+services:
+  mikomprishoppinglistapi:
+    image: mikompri.shoppinglist.api
+    build:
+      context: .
+      dockerfile: MiKompri.ShoppingList.Api/Dockerfile
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: mikompri_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: MiKompri_ShoppingList
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  
+version: '3.9'

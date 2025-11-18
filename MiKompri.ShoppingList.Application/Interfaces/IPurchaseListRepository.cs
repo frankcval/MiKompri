@@ -8,6 +8,7 @@ namespace MiKompri.ShoppingList.Application.Interfaces
         Task<PurchaseList?> GetByIdAsync(Guid id);
         Task<IEnumerable<PurchaseList>> GetByOwnerAsync(Guid ownerId);
         Task<IEnumerable<PurchaseList>> GetByGroupAsync(Guid groupId);
+        Task<IEnumerable<PurchaseList>> GetAllAsync();
         Task UpdateAsync(PurchaseList list);
 
         Task DeleteAsync(Guid id);

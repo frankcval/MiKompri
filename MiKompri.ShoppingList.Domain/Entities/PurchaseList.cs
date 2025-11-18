@@ -36,6 +36,18 @@ namespace MiKompri.ShoppingList.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        public void ChangeGroup(Guid? newGroupId)
+        {
+            GroupId = newGroupId;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void UpdateDescription(string? newDescription)
+        {
+            Description = newDescription;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         //calcular elementos comprados
         private double CompletionPercentage
         {

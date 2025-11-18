@@ -37,6 +37,14 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
                 .Where(x => x.OwnerId == ownerId)
                 .ToListAsync();
         }
+
+        //retornar todas las listas
+        public async Task<IEnumerable<PurchaseList>> GetAllAsync()
+        {
+            return await _context.PurchaseList
+                .Include(x => x.Items)
+                .ToListAsync();
+        }
         public async Task AddAsync(PurchaseList list)
         {
             await _context.PurchaseList.AddAsync(list);

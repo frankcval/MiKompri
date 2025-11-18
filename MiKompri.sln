@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Api", "MiKompri.ShoppingList.Api.csproj", "{ADC0F9E1-2218-4BBB-A54C-AC16CDADFD12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Api", "MiKompri.ShoppingList.Api\MiKompri.ShoppingList.Api.csproj", "{ADC0F9E1-2218-4BBB-A54C-AC16CDADFD12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Domain", "..\MiKompri.ShoppingList.Domain\MiKompri.ShoppingList.Domain.csproj", "{E11499E3-615D-4E63-9EED-5E20DF308971}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Domain", "MiKompri.ShoppingList.Domain\MiKompri.ShoppingList.Domain.csproj", "{E11499E3-615D-4E63-9EED-5E20DF308971}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Infrastructure", "..\MiKompri.ShoppingList.Infrastructure\MiKompri.ShoppingList.Infrastructure.csproj", "{BCB3DA4B-BCF1-47E8-8091-E027D0930D8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Infrastructure", "MiKompri.ShoppingList.Infrastructure\MiKompri.ShoppingList.Infrastructure.csproj", "{BCB3DA4B-BCF1-47E8-8091-E027D0930D8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Application", "..\MiKompri.ShoppingList.Application\MiKompri.ShoppingList.Application.csproj", "{5F96BB33-F466-422D-8104-B060A48DFF3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Application", "MiKompri.ShoppingList.Application\MiKompri.ShoppingList.Application.csproj", "{5F96BB33-F466-422D-8104-B060A48DFF3F}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5F96BB33-F466-422D-8104-B060A48DFF3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F96BB33-F466-422D-8104-B060A48DFF3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F96BB33-F466-422D-8104-B060A48DFF3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
