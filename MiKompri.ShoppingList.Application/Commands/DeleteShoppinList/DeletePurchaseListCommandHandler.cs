@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MiKompri.ShoppingList.Application.Commands.DeleteShoppinList
 {
-    internal class DeletePurchaseListCommandHandler : IRequestHandler<DeletePurchaseListCommand>
+    public class DeletePurchaseListCommandHandler : IRequestHandler<DeletePurchaseListCommand>
     {
 
         private readonly IPurchaseListRepository _repository;

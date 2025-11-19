@@ -33,10 +33,5 @@ namespace MiKompri.ShoppingList.Application.Commands.UpdateShoppingList
             await _unitOfWork.SaveChangesAsync();
 
         }
-
-        /**
-          await _repo.AddAsync(list);
-            await _unitOfWork.SaveChangesAsync();
-         */
     }
 }
