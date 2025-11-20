@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Domai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Application.Tests", "test\MiKompri.ShoppingList.Application.Tests\MiKompri.ShoppingList.Application.Tests.csproj", "{9918BB2B-32B9-458B-AABD-DB0156A4DBC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ShoppingList.Api.Tests", "test\MiKompri.ShoppingList.Api.Tests\MiKompri.ShoppingList.Api.Tests.csproj", "{26DFFE9B-7CA3-4965-8866-98838E8335D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{9918BB2B-32B9-458B-AABD-DB0156A4DBC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9918BB2B-32B9-458B-AABD-DB0156A4DBC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9918BB2B-32B9-458B-AABD-DB0156A4DBC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26DFFE9B-7CA3-4965-8866-98838E8335D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26DFFE9B-7CA3-4965-8866-98838E8335D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26DFFE9B-7CA3-4965-8866-98838E8335D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26DFFE9B-7CA3-4965-8866-98838E8335D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
