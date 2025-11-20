@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using MiKompri.ShoppingList.Application.Behavior;
 using System.Reflection;
 
 namespace MiKompri.ShoppingList.Application
@@ -8,13 +10,19 @@ namespace MiKompri.ShoppingList.Application
     {
         public static IServiceCollection AddAplicaction(this IServiceCollection services)
         {
-            /*
-                services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        return services;
-             */
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            var assembly = Assembly.GetExecutingAssembly();
+
+            // MediatR
+            services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssembly(assembly));
+
+            // FluentValidation: registra todos los validators de este assembly
+            services.AddValidatorsFromAssembly(assembly);
+
+            // Pipeline de validación
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
             return services;
         }
     }

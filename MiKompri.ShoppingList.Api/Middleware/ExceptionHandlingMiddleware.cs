@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace MiKompri.ShoppingList.Api.Middleware
 {
@@ -25,22 +27,58 @@ namespace MiKompri.ShoppingList.Api.Middleware
 
                 context.Response.ContentType = "application/json";
 
-                var (statusCode, message) = ex switch
+                object body;
+                HttpStatusCode statusCode;
+
+                switch (ex)
                 {
-                    KeyNotFoundException => (HttpStatusCode.NotFound, ex.Message),
-                    InvalidOperationException => (HttpStatusCode.BadRequest, ex.Message),
-                    _ => (HttpStatusCode.InternalServerError, "Error interno del servidor")
-                };
+                    case FluentValidation.ValidationException ve:
+                        statusCode = HttpStatusCode.BadRequest;
+
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = "La petición no es válida",
+                            errors = ve.Errors.Select(e => new
+                            {
+                                field = e.PropertyName,
+                                message = e.ErrorMessage
+                            })
+                        };
+                        break;
+
+                    case KeyNotFoundException:
+                        statusCode = HttpStatusCode.NotFound;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = ex.Message
+                        };
+                        break;
+
+                    case InvalidOperationException:
+                        statusCode = HttpStatusCode.BadRequest;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = ex.Message
+                        };
+                        break;
+
+                    default:
+                        statusCode = HttpStatusCode.InternalServerError;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = "Error interno del servidor"
+                        };
+                        break;
+                }
 
                 context.Response.StatusCode = (int)statusCode;
 
-                var response = new
-                {
-                    status = context.Response.StatusCode,
-                    error = message
-                };
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                var json = JsonSerializer.Serialize(body);
+                await context.Response.WriteAsync(json);
             }
         }
     }
