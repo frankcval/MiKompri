@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MiKompri.ShoppingList.Application.Interfaces;
 using MiKompri.ShoppingList.Domain.Entities;
+using System.Threading;
 
 namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 {
@@ -99,6 +100,32 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 
             _context.PurchaseList.Remove(list);
             // Ojo: NO llamamos a SaveChanges aquí, eso es responsabilidad del UnitOfWork
+            // _context.PurchaseList.Update(list);
+
+
+        }
+
+        public async Task AddItemAsync(Guid listId, ListItem item, CancellationToken cancellationToken)
+        {
+       
+            // 1. Obtener la lista de compras (TRACKED)
+            var list = await _context.PurchaseList
+                .Include(p => p.Items)
+                .FirstOrDefaultAsync(x => x.Id == listId, cancellationToken);
+
+            if (list is null)
+                throw new KeyNotFoundException("Lista no encontrada.");
+
+            // 2. Lógica de dominio (incluye SetPurchaseList + validaciones)
+            list.AddItem(item);   // aquí dentro: item.SetPurchaseList(this);
+            // El SaveChangesAsync lo hará el UnitOfWork / DbContext fuera de aquí.
+        }
+
+        public async Task<ListItem?> GetItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken)
+        {
+            return await _context.ListItems
+        .Where(i => i.PurchaseListId == listId && i.Id == itemId)
+        .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

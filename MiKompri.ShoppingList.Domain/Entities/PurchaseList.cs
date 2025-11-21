@@ -63,6 +63,18 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public void AddItem(ListItem item)
         {
+            //  _items.Add(item);
+            // Regla de negocio: no repetir producto en la misma lista
+            if (_items.Any(i => i.ProductId == item.ProductId))
+            {
+                throw new InvalidOperationException(
+                    $"El producto {item.ProductId} ya existe en esta lista de compra."
+                );
+            }
+
+            // Aquí “adoptas” al hijo
+            item.SetPurchaseList(this);
+
             _items.Add(item);
             UpdatedAt = DateTime.UtcNow;
         }

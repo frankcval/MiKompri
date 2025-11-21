@@ -32,17 +32,17 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                 name: "list_items",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ProductId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     IsPurchased = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    PurchaseListId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                    PurchaseListId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_list_items", x => x.ProductId);
+                    table.PrimaryKey("PK_list_items", x => x.Id);
                     table.ForeignKey(
                         name: "FK_list_items_purchase_lists_PurchaseListId",
                         column: x => x.PurchaseListId,
@@ -52,9 +52,10 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_list_items_PurchaseListId",
+                name: "IX_list_items_PurchaseListId_ProductId",
                 table: "list_items",
-                column: "PurchaseListId");
+                columns: new[] { "PurchaseListId", "ProductId" },
+                unique: true);
         }
 
         /// <inheritdoc />

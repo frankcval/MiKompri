@@ -4,7 +4,7 @@ using MiKompri.ShoppingList.Domain.Entities;
 
 namespace MiKompri.ShoppingList.Application.Commands.AddItemToList
 {
-    public class AddItemCommandHandler : IRequestHandler<AddItemCommand>
+    public class AddItemCommandHandler : IRequestHandler<AddItemCommand, Guid>
     {
         IPurchaseListRepository _repo;
         IUnitOfWork _unitOfWork;
@@ -15,14 +15,20 @@ namespace MiKompri.ShoppingList.Application.Commands.AddItemToList
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(AddItemCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(AddItemCommand request, CancellationToken cancellationToken)
         {
-            var list = await _repo.GetByIdAsync(request.ListId)
-               ?? throw new KeyNotFoundException("Lista no econtrada");
 
-            list.AddItem(new ListItem(request.ProductId, request.Name, request.Price.GetValueOrDefault(), request.Quantity));
-            await _repo.UpdateAsync(list);
-            await _unitOfWork.SaveChangesAsync();
+            var item = new ListItem(
+            request.ProductId,
+            request.Name,
+            request.Price ?? 0,
+            request.Quantity
+        );
+            await _repo.AddItemAsync(request.ListId, item, cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return item.Id;   // este es el Guid que devuelves en el Created
 
         }
     }

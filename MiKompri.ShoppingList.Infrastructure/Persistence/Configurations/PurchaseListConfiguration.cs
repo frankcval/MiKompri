@@ -18,8 +18,9 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations
             builder.Property(p => p.CreatedAt)
                 .IsRequired();
             builder.HasMany(p => p.Items)
-                .WithOne()
-                .OnDelete(DeleteBehavior.Cascade);
+              .WithOne(i => i.PurchaseList)
+              .HasForeignKey(i => i.PurchaseListId)
+              .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

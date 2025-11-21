@@ -174,5 +174,6 @@ namespace MiKompri.ShoppingList.Domain.Tests
             // Se espera 50.00 (redondeado a 2 decimales según implementación)
             Assert.Equal(50.00, list.Progress.Percentage, 2);
         }
+
     }
-}
+    }

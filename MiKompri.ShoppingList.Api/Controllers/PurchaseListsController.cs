@@ -10,6 +10,7 @@ using MiKompri.ShoppingList.Application.Commands.UpdateItemShoppingList;
 using MiKompri.ShoppingList.Application.Commands.UpdateShoppingList;
 using MiKompri.ShoppingList.Application.DTOs;
 using MiKompri.ShoppingList.Application.Queries.GetAllShoppingLists;
+using MiKompri.ShoppingList.Application.Queries.GetItemListById;
 using MiKompri.ShoppingList.Application.Queries.GetShoppingListById;
 
 namespace MiKompri.ShoppingList.Api.Controllers
@@ -90,8 +91,10 @@ namespace MiKompri.ShoppingList.Api.Controllers
                 request.Price,
                 request.Quantity
             );
-            await _mediator.Send(command, cancellationToken);
-            return NoContent();
+            var id =  await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetItemById), new { listId = listId, itemId = id }, id);  //se debe retornar el id del item creado, para ello debe corresponder con la llamada al metod getitemlist, son dos parametros
+
+
         }
 
         //Actualizar item de lista de compra
@@ -130,6 +133,17 @@ namespace MiKompri.ShoppingList.Api.Controllers
             await _mediator.Send(command, cancellationToken);
             return NoContent();
         }
-     
+
+
+        //obtener el item de la lista de compras
+        [HttpGet("{listId:guid}/items/{itemId:guid}")]
+        public async Task<IActionResult> GetItemById(Guid listId, Guid itemId, CancellationToken cancellationToken)
+        {
+            //Implementar este método usando MediatR para enviar una consulta que obtenga el ítem por su ID.
+            var command = new GetItemListByIdQuery(listId, itemId);
+            var item =  await _mediator.Send(command, cancellationToken);
+            //retornar el item obtenido
+            return Ok(item);
+        }
     }
 }

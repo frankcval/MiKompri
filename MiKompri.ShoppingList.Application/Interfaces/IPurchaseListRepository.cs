@@ -14,9 +14,10 @@ namespace MiKompri.ShoppingList.Application.Interfaces
         Task DeleteAsync(Guid id);
 
         // Conveniencia: operar ítems respetando el agregado internamente
+        public Task AddItemAsync(Guid listId, ListItem item, CancellationToken cancellationToken);
         public Task UpdateItemAsync(Guid listId, Guid itemId, string? name, decimal? price, int? quantity);
         public Task DeleteItemAsync(Guid listId, Guid itemId);
         //Task UpdateItemAsync(Guid listId, Guid itemId, string name, decimal price);  //por principios SOLID es mejor hacer un repo especializado, un atajo
-
+        public Task<ListItem?> GetItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken);
     }
 }

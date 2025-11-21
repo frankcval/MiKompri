@@ -24,11 +24,8 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
 
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ListItem", b =>
                 {
-                    b.Property<Guid>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsPurchased")
@@ -44,15 +41,19 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("PurchaseListId")
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PurchaseListId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.HasKey("ProductId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("PurchaseListId");
+                    b.HasIndex("PurchaseListId", "ProductId")
+                        .IsUnique();
 
                     b.ToTable("list_items", (string)null);
                 });
@@ -90,10 +91,13 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
 
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ListItem", b =>
                 {
-                    b.HasOne("MiKompri.ShoppingList.Domain.Entities.PurchaseList", null)
+                    b.HasOne("MiKompri.ShoppingList.Domain.Entities.PurchaseList", "PurchaseList")
                         .WithMany("Items")
                         .HasForeignKey("PurchaseListId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PurchaseList");
                 });
 
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.PurchaseList", b =>

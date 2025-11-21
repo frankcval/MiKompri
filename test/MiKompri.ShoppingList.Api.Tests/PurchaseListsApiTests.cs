@@ -220,11 +220,13 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             // Act: Agregar items a la lista creada
             var addItemRequest1 = new AddItemRequest
             {
+                ProductId = Guid.NewGuid(),
                 ProductName = "Leche",
                 Quantity = 2
             };
             var addItemRequest2 = new AddItemRequest
             {
+                ProductId = Guid.NewGuid(),
                 ProductName = "Pan",
                 Quantity = 1
             };

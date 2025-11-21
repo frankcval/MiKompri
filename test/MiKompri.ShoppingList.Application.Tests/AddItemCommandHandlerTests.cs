@@ -43,57 +43,74 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.AddItemToList
             decimal price = 2.5m;
             int quantity = 3;
 
-            var purchaseList = new PurchaseList("Lista prueba", Guid.NewGuid());
-            // Ensure SaveChangesAsync returns a completed result
-            uowMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+            // fake resultado de SaveChangesAsync
+            uowMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                   .ReturnsAsync(1);
 
-            // Capture the PurchaseList passed to UpdateAsync
-            PurchaseList? capturedList = null;
-            repoMock.Setup(r => r.GetByIdAsync(listId)).ReturnsAsync(purchaseList);
-            repoMock.Setup(r => r.UpdateAsync(It.IsAny<PurchaseList>()))
-                    .Callback<PurchaseList>(pl => capturedList = pl)
-                    .Returns(Task.CompletedTask);
+            // capturar el ListItem que pasa el handler
+            ListItem? capturedItem = null;
+
+            repoMock
+                .Setup(r => r.AddItemAsync(
+                    listId,
+                    It.IsAny<ListItem>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<Guid, ListItem, CancellationToken>((id, item, ct) =>
+                {
+                    capturedItem = item;
+                })
+                .Returns(Task.CompletedTask);
 
             var handler = new AddItemCommandHandler(repoMock.Object, uowMock.Object);
-            var command = new AddItemCommand(listId, productId, name, price, quantity); ;
+            var command = new AddItemCommand(listId, productId, name, price, quantity);
 
             // Act
-            await handler.Handle(command, CancellationToken.None);
+            var resultId = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            repoMock.Verify(r => r.GetByIdAsync(listId), Times.Once);
-            repoMock.Verify(r => r.UpdateAsync(It.IsAny<PurchaseList>()), Times.Once);
-            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            repoMock.Verify(r => r.AddItemAsync(
+                                listId,
+                                It.IsAny<ListItem>(),
+                                It.IsAny<CancellationToken>()),
+                            Times.Once);
 
-            Assert.NotNull(capturedList);
+            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),
+                           Times.Once);
 
-            // Verificar que el item fue añadido al agregado
-            var added = capturedList!.Items?.FirstOrDefault(i => i.ProductId == productId);
-            Assert.NotNull(added);
-            Assert.Equal(name, added!.Name);
-            Assert.Equal(price, added.Price);
-            Assert.Equal(quantity, added.Quantity);
+            Assert.NotNull(capturedItem);
+            Assert.Equal(productId, capturedItem!.ProductId);
+            Assert.Equal(name, capturedItem.Name);
+            Assert.Equal(price, capturedItem.Price);
+            Assert.Equal(quantity, capturedItem.Quantity);
+
+            // el id devuelto por el handler debe ser el del item
+            Assert.Equal(capturedItem.Id, resultId);
         }
 
+        //Implementar el caso cuando la lista no existe
         [Fact]
-        public async Task Handle_ShouldThrowKeyNotFoundException_WhenListNotFound()
+        public async Task Handle_ShouldThrowKeyNotFoundException_WhenListDoesNotExist()
         {
             // Arrange
             var repoMock = new Mock<IPurchaseListRepository>();
             var uowMock = new Mock<IUnitOfWork>();
-
             var listId = Guid.NewGuid();
-            repoMock.Setup(r => r.GetByIdAsync(listId)).ReturnsAsync((PurchaseList?)null);
-
+            var productId = Guid.NewGuid();
+            var name = "Manzanas";
+            decimal price = 2.5m;
+            int quantity = 3;
+            // Configurar el mock para que devuelva null
+            repoMock
+                .Setup(r => r.AddItemAsync(
+                    listId,
+                    It.IsAny<ListItem>(),
+                    It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new KeyNotFoundException("Lista no existe"));
             var handler = new AddItemCommandHandler(repoMock.Object, uowMock.Object);
-            var command = new AddItemCommand(listId, Guid.NewGuid(), "Pera", 1.0m, 1); 
-
+            var command = new AddItemCommand(listId, productId, name, price, quantity);
             // Act & Assert
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => handler.Handle(command, CancellationToken.None));
-
-            repoMock.Verify(r => r.GetByIdAsync(listId), Times.Once);
-            repoMock.Verify(r => r.UpdateAsync(It.IsAny<PurchaseList>()), Times.Never);
-            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+                handler.Handle(command, CancellationToken.None));
         }
     }
-}
+    }
