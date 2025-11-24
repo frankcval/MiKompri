@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 using MiKompri.ShoppingList.Api;
 using MiKompri.ShoppingList.Api.Controllers;
-using MiKompri.ShoppingList.Api.IntegrationTests;
+
 using MiKompri.ShoppingList.Api.Models;
 using MiKompri.ShoppingList.Application.DTOs;
 using Moq;
