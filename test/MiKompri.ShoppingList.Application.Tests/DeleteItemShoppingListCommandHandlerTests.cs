@@ -53,7 +53,12 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.DeleteItemShoppingLis
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            var handler = new DeleteItemShoppingListCommandHandler(repoMock.Object);
+            var uowMock = new Mock<IUnitOfWork>();
+            uowMock
+                .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var handler = new DeleteItemShoppingListCommandHandler(repoMock.Object, uowMock.Object);
 
             // Asumir constructor con (Guid listId, Guid itemId)
             var command = new DeleteItemShoppingListCommand(listId, itemId);
@@ -64,6 +69,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.DeleteItemShoppingLis
             // Assert
             Assert.True(result);
             repoMock.Verify(r => r.DeleteItemAsync(listId, itemId), Times.Once);
+            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -78,7 +84,12 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.DeleteItemShoppingLis
                 .Setup(r => r.DeleteItemAsync(listId, itemId))
                 .ThrowsAsync(new InvalidOperationException("Repo failure"));
 
-            var handler = new DeleteItemShoppingListCommandHandler(repoMock.Object);
+            var uowMock = new Mock<IUnitOfWork>();
+            uowMock
+                .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var handler = new DeleteItemShoppingListCommandHandler(repoMock.Object, uowMock.Object);
             var command = new DeleteItemShoppingListCommand(listId, itemId);
 
             // Act & Assert

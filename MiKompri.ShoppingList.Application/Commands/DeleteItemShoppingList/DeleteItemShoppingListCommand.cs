@@ -2,7 +2,7 @@
 
 namespace MiKompri.ShoppingList.Application.Commands.DeleteItemShoppingList
 {
-    public record class DeleteItemShoppingListCommand(Guid ListId, Guid ItemId) : IRequest<bool>
+    public record class DeleteItemShoppingListCommand(Guid ListId, Guid ProductId) : IRequest<bool>
     {
     }
 }

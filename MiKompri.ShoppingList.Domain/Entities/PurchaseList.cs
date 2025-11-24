@@ -79,9 +79,9 @@ namespace MiKompri.ShoppingList.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void UpdateItem(Guid itemId, string? newProductName, decimal? newPrice, int? newQuantity)
+        public void UpdateItem(Guid productId, string? newProductName, decimal? newPrice, int? newQuantity)
         {
-            var item = _items.FirstOrDefault(i => i.ProductId == itemId)
+            var item = _items.FirstOrDefault(i => i.ProductId == productId)
                  ?? throw new InvalidOperationException("El item no existe en la lista");
 
             if (!string.IsNullOrWhiteSpace(newProductName))
@@ -98,9 +98,9 @@ namespace MiKompri.ShoppingList.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void DeleteItem(Guid itemId)
+        public void DeleteItem(Guid productId)
         {
-            var item = _items.FirstOrDefault(i => i.ProductId == itemId)
+            var item = _items.FirstOrDefault(i => i.ProductId == productId)
                  ?? throw new InvalidOperationException("El item no existe en la lista");
 
             _items.Remove(item);

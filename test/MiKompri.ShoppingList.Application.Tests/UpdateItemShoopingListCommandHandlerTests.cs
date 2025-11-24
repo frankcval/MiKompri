@@ -32,7 +32,12 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.UpdateItemShoppingLis
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-            var handler = new UpdateItemShoopingListCommandHandler(repoMock.Object);
+            var uowMock = new Mock<IUnitOfWork>();
+            uowMock
+                .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
+            var handler = new UpdateItemShoopingListCommandHandler(repoMock.Object, uowMock.Object);
 
             var listId = Guid.NewGuid();
             var prodId = Guid.NewGuid();
@@ -46,6 +51,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.UpdateItemShoppingLis
             // Assert
             Assert.True(result);
             repoMock.Verify(r => r.UpdateItemAsync(listId, prodId, "Manzanas", 1.5m, 3), Times.Once);
+            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

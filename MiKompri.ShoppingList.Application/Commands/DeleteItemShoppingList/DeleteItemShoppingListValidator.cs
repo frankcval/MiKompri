@@ -10,9 +10,9 @@ namespace MiKompri.ShoppingList.Application.Commands.DeleteItemShoppingList
                   .NotNull()
                   .WithMessage("el identificador de la lista no debe estar vacio");
 
-            RuleFor(x => x.ItemId).NotNull()
+            RuleFor(x => x.ProductId).NotNull()
                 .NotEmpty()
-                .WithMessage("el identificador del item de la lista no debe estar vacio");
+                .WithMessage("el identificador del producto de la lista no debe estar vacio");
         }
     }
 }

@@ -121,10 +121,10 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
             // El SaveChangesAsync lo hará el UnitOfWork / DbContext fuera de aquí.
         }
 
-        public async Task<ListItem?> GetItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken)
+        public async Task<ListItem?> GetItemAsync(Guid listId, Guid productId, CancellationToken cancellationToken)
         {
             return await _context.ListItems
-        .Where(i => i.PurchaseListId == listId && i.Id == itemId)
+        .Where(i => i.PurchaseListId == listId && i.ProductId == productId)
         .FirstOrDefaultAsync(cancellationToken);
         }
     }

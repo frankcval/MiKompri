@@ -6,6 +6,11 @@ namespace MiKompri.ShoppingList.Application.Commands.AddItemToList
     {
         public AddItemCommandValidator()
         {
+            //Regla para ProductId
+            RuleFor(x => x.ProductId)
+                 .NotEmpty().WithMessage("ProductId es obligatorio")
+                 .Must(id => id != Guid.Empty).WithMessage("ProductId no puede ser Guid.Empty");
+
             RuleFor(x => x.Name).NotEmpty()
                 .WithMessage("EL nombre es obligatorio")
             .MaximumLength(200);
