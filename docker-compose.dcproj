@@ -10,6 +10,7 @@
     <DockerServiceName>mikompri.shoppinglist.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".github\workflows\ci-mikompri-shoppinglist.yml" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
