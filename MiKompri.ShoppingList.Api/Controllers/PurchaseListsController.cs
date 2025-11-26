@@ -11,7 +11,9 @@ using MiKompri.ShoppingList.Application.Commands.UpdateShoppingList;
 using MiKompri.ShoppingList.Application.DTOs;
 using MiKompri.ShoppingList.Application.Queries.GetAllShoppingLists;
 using MiKompri.ShoppingList.Application.Queries.GetItemListById;
+using MiKompri.ShoppingList.Application.Queries.GetShoppingListByGroupId;
 using MiKompri.ShoppingList.Application.Queries.GetShoppingListById;
+using MiKompri.ShoppingList.Application.Queries.GetShoppingListsByOwner;
 
 namespace MiKompri.ShoppingList.Api.Controllers
 {
@@ -43,10 +45,25 @@ namespace MiKompri.ShoppingList.Api.Controllers
 
         //GET obtener lista de compras
         [HttpGet]
-        public async Task<ActionResult<List<PurchaseListDTO>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<PurchaseListDTO>>> GetAll(
+                [FromQuery] Guid? ownerId,
+                [FromQuery] Guid? groupId, 
+                CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllShoppingListsQuery(), cancellationToken);
-            return Ok(result);
+
+            if (ownerId.HasValue)
+            {
+                var result = await _mediator.Send(new GetShoppingListsByOwnerQuery(ownerId.Value), cancellationToken);
+                return Ok(result);
+            }
+
+            if (groupId.HasValue)
+            {
+                var result = await _mediator.Send(new GetShoppingListByGroupIdQuery(groupId.Value), cancellationToken);
+                return Ok(result);
+            }
+            var all = await _mediator.Send(new GetAllShoppingListsQuery(), cancellationToken);
+            return Ok(all);
         }
 
         // GET api/v1/purchaselists/{id}
@@ -147,3 +164,4 @@ namespace MiKompri.ShoppingList.Api.Controllers
         }
     }
 }
+
