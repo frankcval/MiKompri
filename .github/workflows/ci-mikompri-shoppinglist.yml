@@ -63,11 +63,22 @@ jobs:
         run: dotnet build MiKompri.sln --configuration Release --no-restore
 
       - name: Run tests with coverage
-        run: dotnet test MiKompri.sln --configuration Release --no-build \
-              /p:CollectCoverage=true \
-              /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput=./TestResults/coverage.opencover.xml \
-              --logger "trx;LogFileName=test-results.trx"
+        run: |
+          dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release --no-build \
+                /p:CollectCoverage=true \
+                /p:CoverletOutputFormat=opencover \
+                /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+          dotnet test test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj --configuration Release --no-build \
+                /p:CollectCoverage=true \
+                /p:CoverletOutputFormat=opencover \
+                /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+          dotnet test test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj --configuration Release --no-build \
+                /p:CollectCoverage=true \
+                /p:CoverletOutputFormat=opencover \
+                /p:CoverletOutput=./TestResults/coverage.opencover.xml
+         
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
       - name: SonarCloud - End analysis
@@ -77,13 +88,13 @@ jobs:
           dotnet-sonarscanner end \
             /d:sonar.token="${SONAR_TOKEN}"
 
-      # --- Artefacto TRX (igual que antes) ---
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: '**/TestResults/*.trx'
+      # # --- Artefacto TRX (igual que antes) ---
+      # - name: Upload test results
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-results
+      #     path: '**/TestResults/*.trx'
 
   integration-test:
     runs-on: ubuntu-latest
