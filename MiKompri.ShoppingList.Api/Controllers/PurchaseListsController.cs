@@ -126,6 +126,7 @@ namespace MiKompri.ShoppingList.Api.Controllers
                 request.Quantity
             );
             await _mediator.Send(command, cancellationToken);
+
             return NoContent();
         }
 
