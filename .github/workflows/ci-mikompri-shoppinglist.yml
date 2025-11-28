@@ -49,3 +49,34 @@ jobs:
         with:
           name: test-results
           path: '**/TestResults/*.trx'
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: build-and-test   
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker Compose up (API + Postgres)
+        run: docker compose -f docker-compose.yml up -d --build
+
+      - name: Wait for API health
+        run: |
+          echo "Waiting for API to become healthy..."
+          for i in {1..15}; do
+            if curl -fsS http://localhost:8080/health > /dev/null; then
+              echo "API is healthy"
+              exit 0
+            fi
+            echo "Attempt $i/15: API not ready yet, waiting 5s..."
+            sleep 5
+          done
+          echo "API did not become healthy in time "
+          docker compose -f docker-compose.yml logs
+          exit 1
+
+      - name: Docker Compose down
+        if: always()
+        run: docker compose -f docker-compose.yml down
+

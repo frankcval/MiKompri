@@ -32,6 +32,8 @@ builder.Services.AddAplicaction();
 // Capa de infraestructura (DbContext, repos, UnitOfWork)
 //builder.Services.AddIn
 builder.Services.AddInfrastructure(builder.Configuration);
+// REGISTRO DE HEALTH CHECKS (ANTES DE Build)
+builder.Services.AddMiKompriHealthChecks(builder.Configuration);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -61,5 +63,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapMiKompriHealthChecks();
 
 app.Run();
