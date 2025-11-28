@@ -67,7 +67,7 @@ jobs:
               /p:CollectCoverage=true \
               /p:CoverletOutputFormat=opencover \
               /p:CoverletOutput=./TestResults/coverage.opencover.xml \
-              --logger "trx;LogFileName=test-results.trx"
+         
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
       - name: SonarCloud - End analysis
@@ -77,13 +77,13 @@ jobs:
           dotnet-sonarscanner end \
             /d:sonar.token="${SONAR_TOKEN}"
 
-      # --- Artefacto TRX (igual que antes) ---
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: '**/TestResults/*.trx'
+      # # --- Artefacto TRX (igual que antes) ---
+      # - name: Upload test results
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-results
+      #     path: '**/TestResults/*.trx'
 
   integration-test:
     runs-on: ubuntu-latest
