@@ -63,10 +63,21 @@ jobs:
         run: dotnet build MiKompri.sln --configuration Release --no-restore
 
       - name: Run tests with coverage
-        run: dotnet test MiKompri.sln --configuration Release --no-build \
-              /p:CollectCoverage=true \
-              /p:CoverletOutputFormat=opencover \
-              /p:CoverletOutput=./TestResults/coverage.opencover.xml \
+        run: |
+          dotnet test MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release --no-build \
+                /p:CollectCoverage=true \
+                /p:CoverletOutputFormat=opencover \
+                /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+          dotnet test MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj --configuration Release --no-build \
+                /p:CollectCoverage=true \
+                /p:CoverletOutputFormat=opencover \
+                /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+          dotnet test MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj --configuration Release --no-build \
+                /p:CollectCoverage=true \
+                /p:CoverletOutputFormat=opencover \
+                /p:CoverletOutput=./TestResults/coverage.opencover.xml
          
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
