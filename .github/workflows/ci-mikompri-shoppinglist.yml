@@ -68,16 +68,19 @@ jobs:
                 /p:CollectCoverage=true \
                 /p:CoverletOutputFormat=opencover \
                 /p:CoverletOutput=./TestResults/coverage.opencover.xml
+                /p:ExcludeByFile="**/Migrations/*;**/Program.cs;**/obj/*;**/bin/*"
 
           dotnet test test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj --configuration Release --no-build \
                 /p:CollectCoverage=true \
                 /p:CoverletOutputFormat=opencover \
                 /p:CoverletOutput=./TestResults/coverage.opencover.xml
+                /p:ExcludeByFile="**/Migrations/*;**/Program.cs;**/obj/*;**/bin/*"
 
           dotnet test test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj --configuration Release --no-build \
                 /p:CollectCoverage=true \
                 /p:CoverletOutputFormat=opencover \
                 /p:CoverletOutput=./TestResults/coverage.opencover.xml
+                /p:ExcludeByFile="**/Migrations/*;**/Program.cs;**/obj/*;**/bin/*"
          
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
