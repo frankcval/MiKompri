@@ -20,8 +20,14 @@ namespace MiKompri.ShoppingList.Application
             // FluentValidation: registra todos los validators de este assembly
             services.AddValidatorsFromAssembly(assembly);
 
+            // Registro del pipeline behavior de logging
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
             // Pipeline de validación
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
+
 
             return services;
         }

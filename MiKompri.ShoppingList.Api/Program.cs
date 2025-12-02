@@ -54,6 +54,10 @@ if (app.Environment.IsDevelopment())
 // ----------------------
 //  Middleware global de excepciones
 // ----------------------
+
+// Logging de requests
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.UseGlobalExceptionHandling();
 app.UseCors(CorsPolicy);
 

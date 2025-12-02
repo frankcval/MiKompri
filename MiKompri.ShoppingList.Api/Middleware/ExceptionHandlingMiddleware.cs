@@ -23,7 +23,15 @@ namespace MiKompri.ShoppingList.Api.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error no controlado");
+                // Recuperamos el CorrelationId que puso el RequestLoggingMiddleware
+                var correlationId = context.Items["CorrelationId"]?.ToString()
+                                    ?? context.TraceIdentifier;
+
+                // Logueamos la excepción UNA sola vez aquí
+                _logger.LogError(
+                    ex,
+                    "Unhandled exception. CorrelationId: {CorrelationId}",
+                    correlationId);
 
                 context.Response.ContentType = "application/json";
 
@@ -42,7 +50,8 @@ namespace MiKompri.ShoppingList.Api.Middleware
                             errors = ve.Errors.Select(e => new
                             {
                                 field = e.PropertyName,
-                                message = e.ErrorMessage
+                                message = e.ErrorMessage,
+                                traceId = correlationId   // <- muy útil para buscar en logs
                             })
                         };
                         break;
@@ -52,7 +61,9 @@ namespace MiKompri.ShoppingList.Api.Middleware
                         body = new
                         {
                             status = (int)statusCode,
-                            error = ex.Message
+                            error = ex.Message,
+                            traceId = correlationId  
+
                         };
                         break;
 
@@ -61,7 +72,8 @@ namespace MiKompri.ShoppingList.Api.Middleware
                         body = new
                         {
                             status = (int)statusCode,
-                            error = ex.Message
+                            error = ex.Message,
+                            traceId = correlationId  
                         };
                         break;
 
@@ -70,7 +82,8 @@ namespace MiKompri.ShoppingList.Api.Middleware
                         body = new
                         {
                             status = (int)statusCode,
-                            error = "Error interno del servidor"
+                            error = "Error interno del servidor",
+                            traceId = correlationId  
                         };
                         break;
                 }
