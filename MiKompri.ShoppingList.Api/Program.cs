@@ -1,12 +1,26 @@
-using FluentValidation;
 using MiKompri.ShoppingList.Api.Middleware;
 using MiKompri.ShoppingList.Application;
 using MiKompri.ShoppingList.Infrastructure;
-using System.Reflection;
+using Serilog;
+
+
+Log.Logger = new LoggerConfiguration()
+        .WriteTo.Console()         // Bootstrap logger (por si falla el host)
+        .CreateBootstrapLogger();
+
+Log.Information("Iniciando MiKompri.ShoppingList.Api");
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+//  Sustituimos el proveedor de logging por Serilog leyendo de appsettings
+builder.Host.UseSerilog((context, services, loggerConfig) =>
+{
+    loggerConfig
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+    // No hace falta añadir WriteTo aquí porque ya está en appsettings.json
+});
 // ----------------------
 //  CORS  reglas, por ahora abiertas
 // ----------------------
@@ -39,10 +53,6 @@ builder.Services.AddMiKompriHealthChecks(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,9 +64,13 @@ if (app.Environment.IsDevelopment())
 // ----------------------
 //  Middleware global de excepciones
 // ----------------------
-app.UseGlobalExceptionHandling();
-app.UseCors(CorsPolicy);
 
+// Logging de requests (usa ILogger - ahora va a Serilog)
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseGlobalExceptionHandling();
+
+app.UseCors(CorsPolicy);
 
 app.UseHttpsRedirection();
 
@@ -66,4 +80,7 @@ app.MapControllers();
 
 app.MapMiKompriHealthChecks();
 
+// Ejecuta la app; al terminar continúa y cerramos Serilog
 app.Run();
+
+Log.CloseAndFlush();
