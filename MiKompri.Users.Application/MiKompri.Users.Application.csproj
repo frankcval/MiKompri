@@ -7,8 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MiKompri.ShoppingList.Application\MiKompri.ShoppingList.Application.csproj" />
     <ProjectReference Include="..\MiKompri.Users.Domain\MiKompri.Users.Domain.csproj" />
     <ProjectReference Include="..\MiKompri.Users.Infrastructure\MiKompri.Users.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
   </ItemGroup>
 
 </Project>
