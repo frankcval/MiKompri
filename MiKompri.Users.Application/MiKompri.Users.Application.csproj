@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MiKompri.Users.Domain\MiKompri.Users.Domain.csproj" />
+    <ProjectReference Include="..\MiKompri.Users.Infrastructure\MiKompri.Users.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
