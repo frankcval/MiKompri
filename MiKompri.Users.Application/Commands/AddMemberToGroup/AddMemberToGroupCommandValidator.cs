@@ -25,3 +25,4 @@ namespace MiKompri.Users.Application.Commands.AddMemberToGroup
             //     .Equal(GroupRole.Member).WithMessage("Solo se permiten miembros estándar desde este comando.");
         }
     }
+}
