@@ -20,8 +20,6 @@ namespace MiKompri.Users.Application.Commands.AddMemberToGroup
             RuleFor(x => x.Role)
                 .IsInEnum().WithMessage("El rol especificado no es válido.");
 
-            // Regla opcional: normalmente no tiene sentido crear otro Owner desde aquí
-            // RuleFor(x => x.Role)
-            //     .Equal(GroupRole.Member).WithMessage("Solo se permiten miembros estándar desde este comando.");
-        }
+              }
     }
+}
