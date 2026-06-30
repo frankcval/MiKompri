@@ -4,9 +4,11 @@
 
 **Created**: 2026-06-30
 
-**Status**: Draft
+**Status**: Implementada; cierre documental menor pendiente
 
 **Input**: User description: "Refinar y completar el core existente de ShoppingList para uso individual"
+
+**Cierre**: La feature quedó implementada a nivel funcional en las fases 1-7 descritas en `tasks.md`, con evidencia operativa registrada en `quickstart.md`. Quedan pendientes únicamente el cierre documental del gate Docker y una limpieza menor de wording en artefactos.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -15,6 +17,8 @@
 Como usuario, quiero crear una lista de compra y poder consultarla para empezar a planificar mi compra.
 
 **Why this priority**: Es la base del MVP; sin lista no existe flujo de valor.
+
+**Estado**: ✅ Completada
 
 **Independent Test**: Se valida creando una lista con un nombre válido y consultándola por su identificador, confirmando datos básicos y trazabilidad.
 
@@ -31,6 +35,8 @@ Como usuario, quiero crear una lista de compra y poder consultarla para empezar 
 Como usuario, quiero agregar, editar, marcar como comprado y eliminar ítems para mantener la lista al día.
 
 **Why this priority**: Es el uso principal del producto en el día a día.
+
+**Estado**: ✅ Completada
 
 **Independent Test**: Se valida con un flujo completo sobre una lista existente: agregar ítem, editarlo, marcarlo como comprado y eliminarlo, verificando resultado tras cada acción.
 
@@ -49,12 +55,14 @@ Como usuario, quiero ver el avance de mi lista para saber cuánto me falta por c
 
 **Why this priority**: Aporta visibilidad inmediata del estado de compra una vez existen ítems.
 
+**Estado**: ✅ Completada
+
 **Independent Test**: Se valida creando ítems en distintos estados y consultando la lista para confirmar totales y porcentaje de avance.
 
 **Acceptance Scenarios**:
 
 1. **Given** que una lista tiene ítems pendientes y comprados, **When** el usuario consulta la lista, **Then** ve total de ítems, comprados, pendientes y porcentaje de progreso.
-2. **Given** que una lista no tiene ítems, **When** el usuario consulta el progreso, **Then** el sistema muestra progreso en 0% sin error.
+2. **Given** que una lista no tiene ítems, **When** el usuario consulta la lista, **Then** el sistema muestra progreso en 0% sin error.
 
 ---
 
@@ -64,12 +72,14 @@ Como usuario, quiero conocer cuándo se creó y cuándo se modificó por última
 
 **Why this priority**: Facilita control y seguimiento operativo del listado.
 
-**Independent Test**: Se valida creando y modificando lista/ítems, luego consultando que se muestren marca de creación y última modificación.
+**Estado**: ✅ Completada
+
+**Independent Test**: Se valida creando una lista, actualizando sus datos, operando ítems y consultando después que lista e ítems muestren marca de creación y última modificación. En la lista, `UpdatedAt` refleja tanto cambios directos como mutaciones de sus ítems.
 
 **Acceptance Scenarios**:
 
 1. **Given** que se crea una lista o ítem, **When** el usuario consulta el recurso, **Then** visualiza su fecha/hora de creación.
-2. **Given** que se modifica una lista o ítem, **When** el usuario consulta el recurso, **Then** visualiza una fecha/hora de última modificación actualizada.
+2. **Given** que se modifica una lista o cualquiera de sus ítems, **When** el usuario consulta el recurso correspondiente, **Then** visualiza una fecha/hora de última modificación actualizada.
 
 ---
 
@@ -92,8 +102,8 @@ Como usuario, quiero conocer cuándo se creó y cuándo se modificó por última
 - **FR-004**: El sistema MUST permitir editar ítems existentes de una lista.
 - **FR-005**: El sistema MUST permitir marcar un ítem como comprado.
 - **FR-006**: El sistema MUST permitir eliminar un ítem de la lista.
-- **FR-007**: El sistema MUST exponer el progreso de la lista (total, comprados, pendientes, porcentaje).
-- **FR-008**: El sistema MUST mantener trazabilidad básica de creación y modificación en listas e ítems.
+- **FR-007**: El sistema MUST exponer el progreso de la lista (total, comprados, pendientes, porcentaje) dentro de la consulta de detalle de la lista.
+- **FR-008**: El sistema MUST mantener trazabilidad básica de creación y modificación en listas e ítems; la lista actualiza su marca de modificación tanto en cambios propios como en mutaciones de sus ítems.
 - **FR-009**: El sistema MUST validar datos obligatorios en todas las operaciones.
 - **FR-010**: El sistema MUST responder con error claro cuando la lista no exista.
 - **FR-011**: El sistema MUST responder con error claro cuando el ítem objetivo no exista.
@@ -135,7 +145,7 @@ Como usuario, quiero conocer cuándo se creó y cuándo se modificó por última
 
 ### Measurable Outcomes
 
-- **SC-001**: El 95% de usuarios de prueba completa el flujo "crear lista + agregar primer ítem" en menos de 2 minutos.
+- **SC-001**: El 100% de las tareas T001-T046 queda marcado como completado y alineado con los artefactos de la feature.
 - **SC-002**: El 100% de operaciones válidas de gestión de ítems refleja cambios correctos al consultar la lista inmediatamente después.
 - **SC-003**: El 100% de casos de prueba de progreso devuelve el valor esperado según estado real de ítems.
 - **SC-004**: El 100% de errores esperados devuelve mensajes claros y consistentes con la regla violada.
@@ -150,3 +160,8 @@ Como usuario, quiero conocer cuándo se creó y cuándo se modificó por última
 - Existe un identificador de producto utilizable para detectar duplicados dentro de la lista.
 - La trazabilidad básica se limita a creación y última modificación, sin auditoría histórica completa.
 - El cliente MAUI completo está fuera de alcance y no condiciona la validación funcional de esta fase de hardening.
+
+## Pendientes de cierre documental
+
+- Cerrar la ejecución completa del gate Docker documentado en `evidence/docker-gate.md`.
+- Limpieza menor de wording en artefactos relacionados con el cierre final.

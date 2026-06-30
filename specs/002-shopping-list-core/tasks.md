@@ -8,6 +8,8 @@
 
 **Organización**: Las tareas se agrupan por historia de usuario para permitir implementación, validación y entrega incremental.
 
+**Estado**: Implementación cerrada. Todas las tareas T001-T046 quedaron completadas y la evidencia operativa final está registrada en `quickstart.md`. Queda pendiente únicamente cierre documental menor.
+
 ## Fase 1: Preparación (Infraestructura Compartida)
 
 **Propósito**: Alinear alcance, contratos y cobertura inicial de la fase de hardening.
@@ -89,9 +91,9 @@
 
 ## Fase 5: User Story 3 - Consultar progreso de la lista (Prioridad: P2)
 
-**Objetivo**: Exponer progreso consistente (total, comprados, pendientes, porcentaje).
+**Objetivo**: Exponer progreso consistente (total, comprados, pendientes, porcentaje) dentro de la consulta de detalle de la lista.
 
-**Prueba Independiente**: Consultar lista vacía y lista con ítems mixtos, verificando cálculos.
+**Prueba Independiente**: Consultar lista vacía y lista con ítems mixtos, verificando cálculos en la respuesta de detalle.
 
 ### Pruebas (primero)
 
@@ -175,14 +177,14 @@
 
 ---
 
-## Estrategia de implementación
+## Estrategia de implementación ejecutada
 
 ### MVP primero (US1 + US2)
 
-1. Completar Fase 1 y 2.
-2. Completar US1.
-3. Completar US2.
-4. Validar flujo principal de valor (crear lista y gestionar ítems).
+1. Se completaron Fase 1 y 2.
+2. Se completó US1.
+3. Se completó US2.
+4. Se validó el flujo principal de valor (crear lista y gestionar ítems).
 
 ### Entrega incremental
 
@@ -200,3 +202,6 @@
 - Tareas `[P]` están diseñadas para no pisar el mismo archivo.
 - Cada tarea referencia ruta concreta de archivo.
 - La planificación respeta el alcance excluido en FR-013 (sin login, invitaciones, colaboración multiusuario, MAUI completo, pagos y estadísticas avanzadas).
+- El cierre funcional de la feature quedó completado con las fases 1-7 y la validación final documentada en `quickstart.md`.
+- US1, US2, US3 y US4 quedaron completadas.
+- Los únicos pendientes abiertos tras T001-T046 son documentales: evidencia del gate Docker y limpieza menor de wording.

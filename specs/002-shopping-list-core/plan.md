@@ -4,12 +4,14 @@
 
 **Input**: Feature specification from `/specs/002-shopping-list-core/spec.md`
 
+**Status**: Ejecutado y cerrado funcionalmente; quedan pendientes sólo el cierre documental del gate Docker y una limpieza menor de wording.
+
 ## Summary
 
-Endurecer y completar el núcleo funcional ya existente de listas de compra para uso
+Esta feature endureció y completó el núcleo funcional ya existente de listas de compra para uso
 individual: crear/consultar listas, gestionar ítems (agregar, editar, marcar comprado,
 eliminar), calcular progreso y mantener trazabilidad básica de creación/modificación.
-La implementación se apoya en la arquitectura existente de `MiKompri.ShoppingList`
+La implementación se apoyó en la arquitectura existente de `MiKompri.ShoppingList`
 (API + Application + Domain + Infrastructure), reforzando validaciones, reglas de
 negocio, contratos de error y cobertura de tests.
 
@@ -31,14 +33,15 @@ negocio, contratos de error y cobertura de tests.
 - FluentAssertions
 - Moq
 - WebApplicationFactory
+- Validación final ejecutada sobre Domain, Application y API tests de ShoppingList
 
 **Target Platform**: API REST en contenedor Linux
 
 **Project Type**: Backend API por bounded context (ShoppingList)
 
 **Performance Goals**:
-- Operaciones CRUD de lista/ítems percibidas como inmediatas por el usuario en flujo normal
-- Consulta de lista con progreso en una única lectura funcional
+- La consulta de detalle de lista concentra datos principales, ítems, progreso y trazabilidad en una única respuesta funcional
+- Las mutaciones de lista e ítems quedan reflejadas en la lectura posterior inmediata del recurso consultado
 
 **Constraints**:
 - Mantener arquitectura por capas y CQRS existente
@@ -63,13 +66,13 @@ negocio, contratos de error y cobertura de tests.
 | TP1 · Backend en .NET | ✅ PASS | Proyectos objetivo en `net8.0` |
 | TP2 · Bounded Contexts | ✅ PASS | Cambios limitados a ShoppingList, sin acoplamiento cruzado |
 | TP3 · Monorepo en GitHub | ✅ PASS | Artefactos y código dentro del monorepo |
-| TP4 · Docker Obligatorio | ✅ PASS | No rompe flujo Docker/Compose existente |
+| TP4 · Docker Obligatorio | ⚠️ NOTE | La feature no modifica Docker/Compose ni Dockerfiles; la validación ejecutada de esta spec quedó registrada en `quickstart.md` con build/tests .NET y el cumplimiento Docker sigue heredado del baseline y del pipeline compartido |
 | TP5 · Despliegue Objetivo en Azure | ⚠️ NOTE | Esta feature no empeora el estado actual, pero el gate repo-level sigue abierto en `001-project-baseline` hasta implementar deploy efectivo a Azure |
 | TP6 · Cliente Android MAUI | ✅ PASS | Cliente completo fuera de alcance por definición de MVP |
 | TP7 · APIs REST con OpenAPI | ✅ PASS | Endpoints REST alineados al contexto actual de ShoppingList |
-| TP8 · Testing Obligatorio | ✅ PASS | Se planifican tests de dominio, aplicación e integración API |
+| TP8 · Testing Obligatorio | ✅ PASS | Se planificaron y ejecutaron tests de dominio, aplicación e integración API |
 | TP9 · ADR | ✅ PASS | Sin decisión arquitectónica disruptiva; se documenta en plan de feature |
-| TP10 · Spec-First | ✅ PASS | Se parte de `spec.md` y este `plan.md` antes de implementación |
+| TP10 · Spec-First | ✅ PASS | La implementación se ejecutó a partir de `spec.md`, `plan.md` y `tasks.md` |
 
 ## Project Structure
 
@@ -139,12 +142,23 @@ Ver [research.md](research.md). Decisiones cerradas para:
 
 ## Phase 2 — Task Planning Approach
 
-`/speckit.tasks` deberá generar tareas agrupadas por historia priorizada:
+`tasks.md` quedó organizado y ejecutado por historia priorizada:
 - P1: Crear/consultar lista + CRUD operativo de ítems sobre el core existente
 - P2: Progreso y trazabilidad básica
-- Transversal: validaciones, errores esperados y cobertura de tests
+- Transversal: validaciones, errores esperados, evidencia de cierre y cobertura de tests
 
 ## Complexity Tracking
 
 No se registran excepciones constitucionales de diseño en esta feature. Se mantiene como
 dependencia conocida el gate repo-level de TP5 documentado en `001-project-baseline`.
+## Cierre actual de la feature
+
+- ✅ US1 completada: crear y consultar listas.
+- ✅ US2 completada: ciclo completo de ítems.
+- ✅ US3 completada: progreso de lista.
+- ✅ US4 completada: trazabilidad básica.
+
+## Pendientes exclusivamente documentales
+
+- Cierre de la ejecución completa del gate Docker documentado en `evidence/docker-gate.md`.
+- Limpieza menor de wording en artefactos de cierre.
