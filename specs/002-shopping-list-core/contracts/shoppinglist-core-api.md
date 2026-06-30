@@ -1,15 +1,15 @@
-# Contract: Shopping List Core API (MVP 1)
+# Contract: Shopping List Core API (Hardening)
 
 **Spec**: [../spec.md](../spec.md) | **Plan**: [../plan.md](../plan.md)
 
-> Contrato funcional de alto nivel para guiar implementación y pruebas del MVP 1.
+> Contrato funcional de alto nivel para guiar implementación y pruebas de esta fase de hardening.
 
 ## Recursos
 
 - `ShoppingList`
 - `ShoppingListItem`
 
-## Operaciones del MVP
+## Operaciones de la fase
 
 ### 1. Crear lista
 - **Resultado esperado**: lista creada con identificador y trazabilidad de creación.

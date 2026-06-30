@@ -1,4 +1,4 @@
-# Data Model: MVP 1 - Shopping List Core
+# Data Model: Shopping List Core Hardening
 
 **Spec**: [spec.md](spec.md) | **Plan**: [plan.md](plan.md)
 **Fecha**: 2026-06-30

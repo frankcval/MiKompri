@@ -1,4 +1,4 @@
-# Tareas: MVP 1 - Shopping List Core
+# Tareas: Shopping List Core Hardening
 
 **Entrada**: Documentos de diseño en `/specs/002-shopping-list-core/`
 
@@ -10,7 +10,7 @@
 
 ## Fase 1: Preparación (Infraestructura Compartida)
 
-**Propósito**: Alinear alcance, contratos y cobertura inicial del MVP.
+**Propósito**: Alinear alcance, contratos y cobertura inicial de la fase de hardening.
 
 - [ ] T001 Validar alineación de `spec.md`, `plan.md`, `research.md`, `data-model.md` y `contracts/shoppinglist-core-api.md` en `specs/002-shopping-list-core/`
 - [ ] T002 Crear sección de seguimiento de ejecución del MVP en `specs/002-shopping-list-core/quickstart.md`
@@ -24,11 +24,11 @@
 
 **⚠️ CRÍTICO**: No iniciar historias de usuario hasta cerrar esta fase.
 
-- [ ] T004 Revisar y ajustar validaciones base en `MiKompri.ShoppingList.Application/Behavior/ValidationBehavior.cs`
-- [ ] T005 [P] Revisar mapeo de errores de negocio y validación en `MiKompri.ShoppingList.Api/Middleware/ExceptionHandlingMiddleware.cs`
-- [ ] T006 [P] Confirmar que `PurchaseListRepository` carga agregado completo para mutaciones en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/PurchaseListRepository.cs`
-- [ ] T007 Revisar consistencia de persistencia con `IUnitOfWork` en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/UnitOfWork.cs`
-- [ ] T008 [P] Añadir/actualizar pruebas base de middleware y errores en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
+- [x] T004 Revisar y ajustar validaciones base en `MiKompri.ShoppingList.Application/Behavior/ValidationBehavior.cs`
+- [x] T005 [P] Revisar mapeo de errores de negocio y validación en `MiKompri.ShoppingList.Api/Middleware/ExceptionHandlingMiddleware.cs`
+- [x] T006 [P] Confirmar que `PurchaseListRepository` carga agregado completo para mutaciones en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/PurchaseListRepository.cs`
+- [x] T007 Revisar consistencia de persistencia con `IUnitOfWork` en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/UnitOfWork.cs`
+- [x] T008 [P] Añadir/actualizar pruebas base de middleware y errores en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
 
 **Punto de control**: Reglas transversales de validación/errores/persistencia listas para historias US1-US4.
 
@@ -42,17 +42,17 @@
 
 ### Pruebas (primero)
 
-- [ ] T009 [P] [US1] Añadir caso de dominio para nombre inválido en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
-- [ ] T010 [P] [US1] Añadir casos de aplicación para crear lista válida/ inválida en `test/MiKompri.ShoppingList.Application.Tests/CreateShoppingListCommandHandlerTests.cs`
-- [ ] T011 [P] [US1] Añadir caso de integración API crear + consultar lista en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
+- [x] T009 [P] [US1] Añadir caso de dominio para nombre inválido en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
+- [x] T010 [P] [US1] Añadir casos de aplicación para crear lista válida/ inválida en `test/MiKompri.ShoppingList.Application.Tests/CreateShoppingListCommandHandlerTests.cs`
+- [x] T011 [P] [US1] Añadir caso de integración API crear + consultar lista en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
 
 ### Implementación
 
-- [ ] T012 [US1] Ajustar reglas de creación de lista en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
-- [ ] T013 [US1] Ajustar validación de comando en `MiKompri.ShoppingList.Application/Commands/CreateShoppingList/CreateShoppingListValidator.cs`
-- [ ] T014 [US1] Ajustar handler de creación en `MiKompri.ShoppingList.Application/Commands/CreateShoppingList/CreateShoppingListCommandHandler.cs`
-- [ ] T015 [US1] Ajustar query de detalle de lista en `MiKompri.ShoppingList.Application/Queries/GetShoppingListById/GetShoppingListByIdHandler.cs`
-- [ ] T016 [US1] Ajustar endpoint de creación/consulta en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [x] T012 [US1] Ajustar reglas de creación de lista en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
+- [x] T013 [US1] Ajustar validación de comando en `MiKompri.ShoppingList.Application/Commands/CreateShoppingList/CreateShoppingListValidator.cs`
+- [x] T014 [US1] Ajustar handler de creación en `MiKompri.ShoppingList.Application/Commands/CreateShoppingList/CreateShoppingListCommandHandler.cs`
+- [x] T015 [US1] Ajustar query de detalle de lista en `MiKompri.ShoppingList.Application/Queries/GetShoppingListById/GetShoppingListByIdHandler.cs`
+- [x] T016 [US1] Ajustar endpoint de creación/consulta en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
 
 **Punto de control**: US1 funcional y validable sin depender de US2-US4.
 
@@ -66,22 +66,22 @@
 
 ### Pruebas (primero)
 
-- [ ] T017 [P] [US2] Añadir casos de dominio de ítems (duplicado, editar, eliminar, comprado) en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
-- [ ] T018 [P] [US2] Añadir casos de aplicación para `AddItemCommand` en `test/MiKompri.ShoppingList.Application.Tests/AddItemCommandHandlerTests.cs`
-- [ ] T019 [P] [US2] Añadir casos de aplicación para `UpdateItemShoopingListCommand` en `test/MiKompri.ShoppingList.Application.Tests/UpdateItemShoopingListCommandHandlerTests.cs`
-- [ ] T020 [P] [US2] Añadir casos de aplicación para `MarkItemAsPurchasedCommand` en `test/MiKompri.ShoppingList.Application.Tests/MarkItemAsPurchasedCommandHandlerTests.cs`
-- [ ] T021 [P] [US2] Añadir casos de aplicación para `DeleteItemShoppingListCommand` en `test/MiKompri.ShoppingList.Application.Tests/DeleteItemShoppingListCommandHandlerTests.cs`
-- [ ] T022 [P] [US2] Añadir integración API de ciclo de vida de ítem en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
+- [x] T017 [P] [US2] Añadir casos de dominio de ítems (duplicado, editar, eliminar, comprado) en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
+- [x] T018 [P] [US2] Añadir casos de aplicación para `AddItemCommand` en `test/MiKompri.ShoppingList.Application.Tests/AddItemCommandHandlerTests.cs`
+- [x] T019 [P] [US2] Añadir casos de aplicación para `UpdateItemShoopingListCommand` en `test/MiKompri.ShoppingList.Application.Tests/UpdateItemShoopingListCommandHandlerTests.cs`
+- [x] T020 [P] [US2] Añadir casos de aplicación para `MarkItemAsPurchasedCommand` en `test/MiKompri.ShoppingList.Application.Tests/MarkItemAsPurchasedCommandHandlerTests.cs`
+- [x] T021 [P] [US2] Añadir casos de aplicación para `DeleteItemShoppingListCommand` en `test/MiKompri.ShoppingList.Application.Tests/DeleteItemShoppingListCommandHandlerTests.cs`
+- [x] T022 [P] [US2] Añadir integración API de ciclo de vida de ítem en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
 
 ### Implementación
 
-- [ ] T023 [US2] Ajustar reglas de ítems y duplicidad por producto en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
-- [ ] T024 [US2] Ajustar entidad de ítem para datos editables y estado en `MiKompri.ShoppingList.Domain/Entities/ListItem.cs`
-- [ ] T025 [US2] Ajustar validación/handler de alta de ítem en `MiKompri.ShoppingList.Application/Commands/AddItemToList/AddItemCommandValidator.cs` y `AddItemCommandHandler.cs`
-- [ ] T026 [US2] Ajustar validación/handler de edición en `MiKompri.ShoppingList.Application/Commands/UpdateItemShoppingList/UpdateShoppingListValidator.cs` y `UpdateItemShoopingListCommandHandler.cs`
-- [ ] T027 [US2] Ajustar validación/handler de marcado comprado en `MiKompri.ShoppingList.Application/Commands/MarkItemAsPurchased/MarkItemAsPurchasedValidator.cs` y `MarkItemAsPurchasedCommandHandler.cs`
-- [ ] T028 [US2] Ajustar validación/handler de eliminación en `MiKompri.ShoppingList.Application/Commands/DeleteItemShoppingList/DeleteItemShoppingListValidator.cs` y `DeleteItemShoppingListCommandHandler.cs`
-- [ ] T029 [US2] Ajustar endpoints de ítems en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [x] T023 [US2] Ajustar reglas de ítems y duplicidad por producto en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
+- [x] T024 [US2] Ajustar entidad de ítem para datos editables y estado en `MiKompri.ShoppingList.Domain/Entities/ListItem.cs`
+- [x] T025 [US2] Ajustar validación/handler de alta de ítem en `MiKompri.ShoppingList.Application/Commands/AddItemToList/AddItemCommandValidator.cs` y `AddItemCommandHandler.cs`
+- [x] T026 [US2] Ajustar validación/handler de edición en `MiKompri.ShoppingList.Application/Commands/UpdateItemShoppingList/UpdateShoppingListValidator.cs` y `UpdateItemShoopingListCommandHandler.cs`
+- [x] T027 [US2] Ajustar validación/handler de marcado comprado en `MiKompri.ShoppingList.Application/Commands/MarkItemAsPurchased/MarkItemAsPurchasedValidator.cs` y `MarkItemAsPurchasedCommandHandler.cs`
+- [x] T028 [US2] Ajustar validación/handler de eliminación en `MiKompri.ShoppingList.Application/Commands/DeleteItemShoppingList/DeleteItemShoppingListValidator.cs` y `DeleteItemShoppingListCommandHandler.cs`
+- [x] T029 [US2] Ajustar endpoints de ítems en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
 
 **Punto de control**: US2 funcional y verificable con errores esperados de lista/ítem no encontrado y duplicados.
 
@@ -95,15 +95,15 @@
 
 ### Pruebas (primero)
 
-- [ ] T030 [P] [US3] Añadir/ajustar pruebas de cálculo de progreso en `test/MiKompri.ShoppingList.Domain.Tests/ListProgressTests.cs`
-- [ ] T031 [P] [US3] Añadir prueba de aplicación para detalle con progreso en `test/MiKompri.ShoppingList.Application.Tests/GetShoppingListsByOwnerQueryHandlerTests.cs`
-- [ ] T032 [P] [US3] Añadir integración API de progreso (lista vacía y con datos) en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
+- [x] T030 [P] [US3] Añadir/ajustar pruebas de cálculo de progreso en `test/MiKompri.ShoppingList.Domain.Tests/ListProgressTests.cs`
+- [x] T031 [P] [US3] Añadir prueba de aplicación para detalle con progreso en `test/MiKompri.ShoppingList.Application.Tests/GetShoppingListsByOwnerQueryHandlerTests.cs`
+- [x] T032 [P] [US3] Añadir integración API de progreso (lista vacía y con datos) en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
 
 ### Implementación
 
-- [ ] T033 [US3] Ajustar reglas de progreso en `MiKompri.ShoppingList.Domain/ValueObjects/ListProgress.cs`
-- [ ] T034 [US3] Ajustar mapeo de progreso en DTOs en `MiKompri.ShoppingList.Application/DTOs/PurchaseListDTO.cs`
-- [ ] T035 [US3] Ajustar queries de lectura para incluir progreso consistente en `MiKompri.ShoppingList.Application/Queries/GetShoppingListById/GetShoppingListByIdHandler.cs`
+- [x] T033 [US3] Ajustar reglas de progreso en `MiKompri.ShoppingList.Domain/ValueObjects/ListProgress.cs`
+- [x] T034 [US3] Ajustar mapeo de progreso en DTOs en `MiKompri.ShoppingList.Application/DTOs/PurchaseListDTO.cs`
+- [x] T035 [US3] Ajustar queries de lectura para incluir progreso consistente en `MiKompri.ShoppingList.Application/Queries/GetShoppingListById/GetShoppingListByIdHandler.cs`
 
 **Punto de control**: US3 entrega progreso correcto e independiente de trazabilidad avanzada.
 

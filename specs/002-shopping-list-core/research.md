@@ -1,9 +1,9 @@
-# Research: MVP 1 - Shopping List Core
+# Research: Shopping List Core Hardening
 
 **Spec**: [spec.md](spec.md) | **Plan**: [plan.md](plan.md)
 **Fecha**: 2026-06-30
 
-## Decisión 1 — Alcance funcional del MVP 1
+## Decisión 1 — Alcance funcional de la fase de hardening
 
 **Decision**: Incluir solo operaciones core de lista de compra individual: crear/consultar lista, agregar/editar/marcar/eliminar ítems, progreso y trazabilidad básica.
 
@@ -13,12 +13,12 @@
 
 | Alternativa | Por qué descartada |
 |-------------|-------------------|
-| Incluir login/usuarios en MVP 1 | Aumenta alcance y rompe enfoque en núcleo |
+| Incluir login/usuarios en esta fase | Aumenta alcance y rompe enfoque en núcleo |
 | Incluir colaboración multiusuario | Requiere reglas de permisos y trazabilidad avanzada no prioritaria |
 
 ## Decisión 2 — Trazabilidad básica sin autenticación real
 
-**Decision**: Mantener trazabilidad temporal mínima (creación y última modificación) en listas e ítems dentro de este MVP.
+**Decision**: Mantener trazabilidad temporal mínima (creación y última modificación) en listas e ítems dentro de esta fase.
 
 **Rationale**: Cumple necesidad operativa actual y mantiene coherencia con el alcance sin registro/login.
 
@@ -26,7 +26,7 @@
 
 | Alternativa | Por qué descartada |
 |-------------|-------------------|
-| Auditoría histórica completa | Sobredimensionado para MVP 1 |
+| Auditoría histórica completa | Sobredimensionado para esta fase |
 | Sin trazabilidad | Incumple requisito funcional FR-008 |
 
 ## Decisión 3 — Duplicados e idempotencia

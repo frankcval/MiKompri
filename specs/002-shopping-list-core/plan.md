@@ -1,4 +1,4 @@
-# Implementation Plan: MVP 1 - Shopping List Core
+# Implementation Plan: Shopping List Core Hardening
 
 **Branch**: `002-shopping-list-core` | **Date**: 2026-06-30 | **Spec**: [spec.md](spec.md)
 
@@ -6,7 +6,12 @@
 
 ## Summary
 
-Implementar el núcleo funcional de listas de compra para uso individual: crear/consultar listas, gestionar ítems (agregar, editar, marcar comprado, eliminar), calcular progreso y mantener trazabilidad básica de creación/modificación. La implementación se apoya en la arquitectura existente de `MiKompri.ShoppingList` (API + Application + Domain + Infrastructure), reforzando validaciones, reglas de negocio y cobertura de tests.
+Endurecer y completar el núcleo funcional ya existente de listas de compra para uso
+individual: crear/consultar listas, gestionar ítems (agregar, editar, marcar comprado,
+eliminar), calcular progreso y mantener trazabilidad básica de creación/modificación.
+La implementación se apoya en la arquitectura existente de `MiKompri.ShoppingList`
+(API + Application + Domain + Infrastructure), reforzando validaciones, reglas de
+negocio, contratos de error y cobertura de tests.
 
 ## Technical Context
 
@@ -37,11 +42,11 @@ Implementar el núcleo funcional de listas de compra para uso individual: crear/
 
 **Constraints**:
 - Mantener arquitectura por capas y CQRS existente
-- Sin login, invitaciones ni colaboración multiusuario en este MVP
+- Sin login, invitaciones ni colaboración multiusuario en esta fase
 - Sin introducir nuevos bounded contexts ni dependencias transversales
 
 **Scale/Scope**:
-- MVP para gestión individual de listas
+- Fase de hardening para gestión individual de listas
 - Alcance acotado a `MiKompri.ShoppingList.*` y sus tests
 
 ## Constitution Check
@@ -50,16 +55,16 @@ Implementar el núcleo funcional de listas de compra para uso individual: crear/
 
 | Principio | Estado | Evidencia |
 |-----------|--------|-----------|
-| PP1 · Valor de Usuario Primero | ✅ PASS | El MVP entrega flujo usable end-to-end de lista de compra |
-| PP2 · Autonomía de MVP | ✅ PASS | El alcance es independiente y desplegable sin funcionalidades futuras |
-| PP3 · Listas de Compra como Núcleo | ✅ PASS | La feature implementa exactamente el núcleo del producto |
+| PP1 · Valor de Usuario Primero | ✅ PASS | La feature mejora un flujo usable existente y corrige huecos del core de valor |
+| PP2 · Autonomía de MVP | ✅ PASS | El alcance es independiente y desplegable sin depender de Users/Auth |
+| PP3 · Listas de Compra como Núcleo | ✅ PASS | La feature fortalece exactamente el núcleo del producto |
 | PP4 · Transparencia Colaborativa | ✅ PASS | Se incluye trazabilidad básica de creación/modificación; colaboración multiusuario queda fuera de alcance |
 | PP5 · Móvil Primero | ✅ PASS | Contratos REST simples y consumibles por cliente móvil |
 | TP1 · Backend en .NET | ✅ PASS | Proyectos objetivo en `net8.0` |
 | TP2 · Bounded Contexts | ✅ PASS | Cambios limitados a ShoppingList, sin acoplamiento cruzado |
 | TP3 · Monorepo en GitHub | ✅ PASS | Artefactos y código dentro del monorepo |
 | TP4 · Docker Obligatorio | ✅ PASS | No rompe flujo Docker/Compose existente |
-| TP5 · Despliegue Objetivo en Azure | ✅ PASS | Sin cambios que bloqueen despliegue en Azure |
+| TP5 · Despliegue Objetivo en Azure | ⚠️ NOTE | Esta feature no empeora el estado actual, pero el gate repo-level sigue abierto en `001-project-baseline` hasta implementar deploy efectivo a Azure |
 | TP6 · Cliente Android MAUI | ✅ PASS | Cliente completo fuera de alcance por definición de MVP |
 | TP7 · APIs REST con OpenAPI | ✅ PASS | Endpoints REST alineados al contexto actual de ShoppingList |
 | TP8 · Testing Obligatorio | ✅ PASS | Se planifican tests de dominio, aplicación e integración API |
@@ -79,7 +84,7 @@ specs/002-shopping-list-core/
 ├── quickstart.md
 ├── contracts/
 │   └── shoppinglist-core-api.md
-└── tasks.md            # Lo crea /speckit.tasks
+└── tasks.md
 ```
 
 ### Source Code (repository root)
@@ -120,7 +125,7 @@ test/
 ## Phase 0 — Research
 
 Ver [research.md](research.md). Decisiones cerradas para:
-1. Alcance funcional exacto del MVP 1.
+1. Alcance funcional exacto de la fase de hardening del core.
 2. Estrategia de trazabilidad básica sin auth real.
 3. Manejo de duplicados y operaciones idempotentes.
 4. Estrategia de validación y errores esperados.
@@ -135,10 +140,11 @@ Ver [research.md](research.md). Decisiones cerradas para:
 ## Phase 2 — Task Planning Approach
 
 `/speckit.tasks` deberá generar tareas agrupadas por historia priorizada:
-- P1: Crear/consultar lista + CRUD operativo de ítems
+- P1: Crear/consultar lista + CRUD operativo de ítems sobre el core existente
 - P2: Progreso y trazabilidad básica
 - Transversal: validaciones, errores esperados y cobertura de tests
 
 ## Complexity Tracking
 
-No se registran excepciones constitucionales ni complejidad adicional a justificar en esta feature.
+No se registran excepciones constitucionales de diseño en esta feature. Se mantiene como
+dependencia conocida el gate repo-level de TP5 documentado en `001-project-baseline`.

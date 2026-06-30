@@ -335,7 +335,8 @@ Ver [contracts/adr-template.md](contracts/adr-template.md) y [ADR-003](../../doc
 
 **Branch por spec**: `feature/{NNN}-{feature-name}` en el repositorio.
 
-**Próxima spec recomendada**: `002-user-authentication` (MVP-1)
+**Próxima spec recomendada**: completar primero `002-shopping-list-core` como hardening del
+bounded context `ShoppingList`; después abrir `003-user-authentication` para identidad y JWT
 ```
 /speckit.specify Implementar autenticación OAuth/OIDC. Los usuarios se autentican con
 un IdP externo. La API valida JWT tokens. Al primer acceso se crea automáticamente el

@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-30
 
-**Status**: Aprobada con gate abierto (TP5)
+**Status**: Aprobada con gate abierto (TP5) y baseline vigente
 
 ---
 
@@ -29,7 +29,10 @@ y cantidad, actualizar los detalles de un producto, marcar productos como compra
 eliminar productos o la lista completa. Puede consultar el progreso de compra de la lista
 (porcentaje de ítems comprados).
 
-**Estado actual**: ✅ Completamente implementado y en producción (GHCR).
+**Estado actual**: ✅ Implementado y desplegable como slice funcional.  
+**Trabajo activo relacionado**: `002-shopping-list-core` NO redefine este núcleo como un MVP
+nuevo; lo trata como una fase de endurecimiento, alineación funcional y cierre de huecos
+de consistencia sobre la capacidad ya existente.
 
 **Why this priority**: Es el núcleo irrenunciable del producto (PP3). Sin esta capacidad,
 MiKompri no tiene propuesta de valor.
@@ -202,8 +205,9 @@ Application de Users esté implementada.
   patrón para futuras specs de features.
 - **SC-005**: Las deudas técnicas documentadas (DT-001 a DT-008) tienen un issue de seguimiento
   creado en GitHub o están referenciadas en el backlog.
-- **SC-006**: El equipo puede identificar el siguiente MVP a implementar (MVP-1: Autenticación
-  de usuarios) con criterios de aceptación claros.
+- **SC-006**: El equipo puede identificar la siguiente feature activa a ejecutar:
+  `002-shopping-list-core` como hardening/completado del core individual de ShoppingList,
+  dejando autenticación de usuarios y evolución de `Users` como trabajo posterior.
 
 ---
 
@@ -324,7 +328,9 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso recomendado**: Crear spec para MVP-1 (Autenticación e Identidad):
+**Próximo paso recomendado**: Ejecutar `002-shopping-list-core` como fase de hardening del
+core individual de ShoppingList. Después de cerrar esa feature, crear la spec de
+autenticación e identidad:
 ```
 /speckit.specify Implementar autenticación OAuth/OIDC para la API de ShoppingList y
 el bounded context Users. Los usuarios se registran automáticamente al primer acceso.

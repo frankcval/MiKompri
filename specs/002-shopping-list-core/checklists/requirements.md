@@ -1,4 +1,4 @@
-# Specification Quality Checklist: MVP 1 - Shopping List Core
+# Specification Quality Checklist: Shopping List Core Hardening
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-06-30

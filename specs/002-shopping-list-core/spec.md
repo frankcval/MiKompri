@@ -1,4 +1,4 @@
-# Feature Specification: MVP 1 - Shopping List Core
+# Feature Specification: Shopping List Core Hardening
 
 **Feature Branch**: `[002-shopping-list-core]`
 
@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Crear la especificación del MVP 1: Shopping List Core"
+**Input**: User description: "Refinar y completar el core existente de ShoppingList para uso individual"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -98,7 +98,7 @@ Como usuario, quiero conocer cuándo se creó y cuándo se modificó por última
 - **FR-010**: El sistema MUST responder con error claro cuando la lista no exista.
 - **FR-011**: El sistema MUST responder con error claro cuando el ítem objetivo no exista.
 - **FR-012**: El sistema MUST impedir ítems duplicados del mismo producto dentro de una misma lista.
-- **FR-013**: El sistema MUST mantener fuera de alcance del MVP 1: registro de usuarios, login, invitaciones, compartir listas, notificaciones, cliente MAUI completo, pagos y estadísticas avanzadas.
+- **FR-013**: El sistema MUST mantener fuera de alcance de esta feature: registro de usuarios, login, invitaciones, compartir listas, notificaciones, cliente MAUI completo, pagos y estadísticas avanzadas.
 
 ### Reglas de negocio
 
@@ -143,8 +143,10 @@ Como usuario, quiero conocer cuándo se creó y cuándo se modificó por última
 
 ## Assumptions
 
-- El MVP 1 se ejecuta en modo de uso individual (sin colaboración multiusuario).
-- La identificación de usuario para trazabilidad básica se obtiene de contexto existente, sin registro/login en este MVP.
+- Esta feature se ejecuta sobre el modo de uso individual ya existente (sin colaboración multiusuario).
+- La trazabilidad básica de esta fase se limita a `CreatedAt` y `UpdatedAt`; la identidad
+  del actor (`CreatedBy`/`UpdatedBy`) queda diferida al trabajo posterior de autenticación
+  y evolución del bounded context `Users`.
 - Existe un identificador de producto utilizable para detectar duplicados dentro de la lista.
 - La trazabilidad básica se limita a creación y última modificación, sin auditoría histórica completa.
-- El cliente MAUI completo está fuera de alcance y no condiciona la validación funcional de este MVP.
+- El cliente MAUI completo está fuera de alcance y no condiciona la validación funcional de esta fase de hardening.
