@@ -30,15 +30,7 @@ namespace MiKompri.ShoppingList.Application.Queries.GetItemListById
             var item = await _repo.GetItemAsync(request.IdList, request.IdItem, cancellationToken)
                 ?? throw new KeyNotFoundException("Item no encontrado en la lista"); //optimizado
 
-            return new ListItemDto()
-            {
-                Id = item.Id,
-                IsPurchased = item.IsPurchased,
-                ProducId = item.ProductId,
-                ProductName = item.Name,
-                ProductPrice = item.Price,
-                Quantity = item.Quantity
-            };
+            return item.ToDto();
 
         }
     }

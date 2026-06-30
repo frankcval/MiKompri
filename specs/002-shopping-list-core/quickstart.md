@@ -17,6 +17,8 @@ de hardening.
 | T002 | ✅ Completada | Este archivo incorpora el seguimiento operativo de la fase, los criterios de salida y la evidencia mínima a registrar. |
 | T003 | ✅ Completada | Se añade una matriz FR/RB/ERR/CD con trazabilidad hacia historias, tareas y validación esperada. |
 | T030-T035 | ✅ Completadas | `ListProgress` ahora expone total/comprados/pendientes/porcentaje; `PurchaseListDTO` y los queries de lectura mapean progreso consistente; los tests de dominio, aplicación y API cubren lista vacía y lista con ítems mixtos. |
+| T036-T042 | ✅ Completadas | La trazabilidad básica ya se expone tanto en lista como en ítems: `ListItem` incorpora `CreatedAt`/`UpdatedAt`, `PurchaseList` propaga `UpdatedAt` en mutaciones y la API devuelve timestamps consistentes en consultas de lista e ítem. |
+| T043-T046 | ✅ Completadas | Se confirmó el mapeo de `ERR-001..ERR-005` entre spec y contrato API; se ejecutaron los tres proyectos de test de ShoppingList y el build Release de la solución sin errores. |
 
 ## Alineación de artefactos
 
@@ -119,7 +121,37 @@ dotnet test test\MiKompri.ShoppingList.Api.Tests\MiKompri.ShoppingList.Api.Tests
 - Notas de validación manual del flujo create → get → add → update → purchase → delete
 - Notas de validación negativa para ERR-001..ERR-005
 
-## 7) Criterio de salida de la fase
+## 7) Validación final ejecutada
+
+### Mapeo ERR-001..ERR-005
+
+- `ERR-001`: nombre de lista inválido documentado en `spec.md` y en el contrato como error esperado de "Crear lista".
+- `ERR-002`: lista inexistente documentada en `spec.md` y en el contrato para "Consultar lista", "Agregar ítem", "Editar ítem", "Marcar ítem como comprado" y "Eliminar ítem".
+- `ERR-003`: ítem inexistente documentado en `spec.md` y en el contrato para edición, marcado y eliminación.
+- `ERR-004`: duplicidad de ítem por producto documentada en `spec.md` y en el contrato para "Agregar ítem".
+- `ERR-005`: datos inválidos de alta/edición documentados en `spec.md` y en el contrato para "Agregar ítem" y "Editar ítem".
+
+### Ejecución de pruebas ShoppingList
+
+```text
+dotnet test test\MiKompri.ShoppingList.Domain.Tests\MiKompri.ShoppingList.Domain.Tests.csproj --configuration Release
+-> 20/20 tests correctos
+
+dotnet test test\MiKompri.ShoppingList.Application.Tests\MiKompri.ShoppingList.Application.Tests.csproj --configuration Release
+-> 14/14 tests correctos
+
+dotnet test test\MiKompri.ShoppingList.Api.Tests\MiKompri.ShoppingList.Api.Tests.csproj --configuration Release
+-> 30/30 tests correctos
+```
+
+### Build final de solución
+
+```text
+dotnet build MiKompri.sln --configuration Release --no-restore
+-> Compilación correcta (0 advertencias, 0 errores)
+```
+
+## 8) Criterio de salida de la fase
 
 - Flujos P1 y P2 trazados y verificables.
 - Reglas de negocio y errores esperados mapeados a pruebas.

@@ -18,15 +18,22 @@ namespace MiKompri.ShoppingList.Application.DTOs
                 CompletionPercentage = list.Progress.Percentage,
                 CreatedAt = list.CreatedAt,
                 UpdatedAt = list.UpdatedAt,
-                Items = list.Items.Select(i => new ListItemDto
-                {
-                    Id = i.Id,
-                    IsPurchased = i.IsPurchased,
-                    ProducId = i.ProductId,
-                    ProductName = i.Name,
-                    ProductPrice = i.Price,
-                    Quantity = i.Quantity
-                }).ToList()
+                Items = list.Items.Select(i => i.ToDto()).ToList()
+            };
+        }
+
+        public static ListItemDto ToDto(this ListItem item)
+        {
+            return new ListItemDto
+            {
+                Id = item.Id,
+                IsPurchased = item.IsPurchased,
+                ProducId = item.ProductId,
+                ProductName = item.Name,
+                ProductPrice = item.Price,
+                Quantity = item.Quantity,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt
             };
         }
     }

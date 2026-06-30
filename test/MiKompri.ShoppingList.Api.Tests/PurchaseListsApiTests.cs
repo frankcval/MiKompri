@@ -242,6 +242,8 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             };
             var postResponse = await _client.PostAsJsonAsync("/api/v1/purchaselists", createRequest);
             var createdId = await postResponse.Content.ReadFromJsonAsync<Guid>();
+            var initialGetResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdId}");
+            var initialDto = await initialGetResponse.Content.ReadFromJsonAsync<PurchaseListDTO>();
             // Act: Actualizar la lista creada
             var updateRequest = new UpdatePurchaseListRequest
             {
@@ -259,6 +261,8 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             dto.Should().NotBeNull();
             dto!.Name.Should().Be("Lista Actualizada");
             dto.GroupId.Should().Be(updateRequest.GroupId);
+            dto.UpdatedAt.Should().NotBeNull();
+            dto.UpdatedAt.Should().BeAfter(initialDto!.CreatedAt);
         }
 
         [Fact]
@@ -731,6 +735,18 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             itemDto.ProductPrice.Should().Be(1.75m);
             itemDto.Quantity.Should().Be(4);
             itemDto.IsPurchased.Should().BeTrue();
+            itemDto.CreatedAt.Should().BeOnOrBefore(DateTime.UtcNow);
+            itemDto.UpdatedAt.Should().NotBeNull();
+            itemDto.UpdatedAt.Should().BeAfter(itemDto.CreatedAt);
+
+            var getListResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}");
+            getListResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var listDto = await getListResponse.Content.ReadFromJsonAsync<PurchaseListDTO>();
+            listDto.Should().NotBeNull();
+            listDto!.UpdatedAt.Should().NotBeNull();
+            listDto.Items.Should().ContainSingle();
+            listDto.Items[0].CreatedAt.Should().Be(itemDto.CreatedAt);
+            listDto.Items[0].UpdatedAt.Should().Be(itemDto.UpdatedAt);
 
             // Act 4: Delete
             var deleteItemResponse = await _client.DeleteAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");

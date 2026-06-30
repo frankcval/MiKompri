@@ -42,18 +42,34 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public void Rename(string newName)
         {
-            Name = NormalizeName(newName);
+            var normalizedName = NormalizeName(newName);
+            if (Name == normalizedName)
+            {
+                return;
+            }
+
+            Name = normalizedName;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void ChangeGroup(Guid? newGroupId)
         {
+            if (GroupId == newGroupId)
+            {
+                return;
+            }
+
             GroupId = newGroupId;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void UpdateDescription(string? newDescription)
         {
+            if (Description == newDescription)
+            {
+                return;
+            }
+
             Description = newDescription;
             UpdatedAt = DateTime.UtcNow;
         }
@@ -105,7 +121,10 @@ namespace MiKompri.ShoppingList.Domain.Entities
                 item.updateQuantity(newQuantity.Value);
             }
 
-            UpdatedAt = DateTime.UtcNow;
+            if (item.UpdatedAt.HasValue)
+            {
+                UpdatedAt = item.UpdatedAt.Value;
+            }
         }
 
         public void DeleteItem(Guid productId)
@@ -123,7 +142,10 @@ namespace MiKompri.ShoppingList.Domain.Entities
         {
             var item = _items.FirstOrDefault(i => i.ProductId == productId)
                         ?? throw new InvalidOperationException("El item no existe en la lista");
-            item.MarkAsPurchased();
+            if (item.MarkAsPurchased())
+            {
+                UpdatedAt = item.UpdatedAt;
+            }
         }
 
 

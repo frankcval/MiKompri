@@ -23,7 +23,7 @@ namespace MiKompri.ShoppingList.Application.Commands.UpdateShoppingList
         {
             var list = await _repo.GetByIdAsync(request.ListId) 
                 ?? throw new KeyNotFoundException("Lista no existe");
-            if (request.Name.Length > 0) 
+            if (!string.IsNullOrWhiteSpace(request.Name)) 
                 list.Rename(request.Name);
             
             if (request.GroupId is not null)

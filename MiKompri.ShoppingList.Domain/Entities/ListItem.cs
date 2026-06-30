@@ -14,6 +14,8 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public Guid PurchaseListId { get; private set; }         // FK a PurchaseList
         public PurchaseList PurchaseList { get; private set; } = null!;
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; private set; }
 
         public ListItem()
         {
@@ -64,20 +66,51 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public void updateName(string name)
         {
-            Name = NormalizeName(name);
+            var normalizedName = NormalizeName(name);
+            if (Name == normalizedName)
+            {
+                return;
+            }
+
+            Name = normalizedName;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void updatePrice(decimal price)
         {
-            Price = NormalizePrice(price);
+            var normalizedPrice = NormalizePrice(price);
+            if (Price == normalizedPrice)
+            {
+                return;
+            }
+
+            Price = normalizedPrice;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void updateQuantity(int quantity)
         {
-            Quantity = NormalizeQuantity(quantity);
+            var normalizedQuantity = NormalizeQuantity(quantity);
+            if (Quantity == normalizedQuantity)
+            {
+                return;
+            }
+
+            Quantity = normalizedQuantity;
+            UpdatedAt = DateTime.UtcNow;
         }
 
 
-        public void MarkAsPurchased() => IsPurchased = true;
+        public bool MarkAsPurchased()
+        {
+            if (IsPurchased)
+            {
+                return false;
+            }
+
+            IsPurchased = true;
+            UpdatedAt = DateTime.UtcNow;
+            return true;
+        }
     }
 }

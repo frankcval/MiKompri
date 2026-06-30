@@ -12,9 +12,9 @@
 
 **Propósito**: Alinear alcance, contratos y cobertura inicial de la fase de hardening.
 
-- [ ] T001 Validar alineación de `spec.md`, `plan.md`, `research.md`, `data-model.md` y `contracts/shoppinglist-core-api.md` en `specs/002-shopping-list-core/`
-- [ ] T002 Crear sección de seguimiento de ejecución del MVP en `specs/002-shopping-list-core/quickstart.md`
-- [ ] T003 [P] Definir matriz de cobertura FR/RB/ERR/CD en `specs/002-shopping-list-core/quickstart.md`
+- [x] T001 Validar alineación de `spec.md`, `plan.md`, `research.md`, `data-model.md` y `contracts/shoppinglist-core-api.md` en `specs/002-shopping-list-core/`
+- [x] T002 Crear sección de seguimiento de ejecución del MVP en `specs/002-shopping-list-core/quickstart.md`
+- [x] T003 [P] Definir matriz de cobertura FR/RB/ERR/CD en `specs/002-shopping-list-core/quickstart.md`
 
 ---
 
@@ -117,16 +117,16 @@
 
 ### Pruebas (primero)
 
-- [ ] T036 [P] [US4] Añadir casos de dominio de actualización de timestamps en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
-- [ ] T037 [P] [US4] Añadir casos de aplicación para trazabilidad en `test/MiKompri.ShoppingList.Application.Tests/UpdateShoppingListCommandHandlerTests.cs`
-- [ ] T038 [P] [US4] Añadir integración API para trazabilidad en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
+- [x] T036 [P] [US4] Añadir casos de dominio de actualización de timestamps en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
+- [x] T037 [P] [US4] Añadir casos de aplicación para trazabilidad en `test/MiKompri.ShoppingList.Application.Tests/UpdateShoppingListCommandHandlerTests.cs`
+- [x] T038 [P] [US4] Añadir integración API para trazabilidad en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs`
 
 ### Implementación
 
-- [ ] T039 [US4] Ajustar campos de trazabilidad y mutaciones en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
-- [ ] T040 [US4] Ajustar trazabilidad de ítem en `MiKompri.ShoppingList.Domain/Entities/ListItem.cs`
-- [ ] T041 [US4] Ajustar mapeo de trazabilidad en DTOs en `MiKompri.ShoppingList.Application/DTOs/ListItemDto.cs` y `PurchaseListDTO.cs`
-- [ ] T042 [US4] Ajustar respuesta de consulta para exponer trazabilidad en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [x] T039 [US4] Ajustar campos de trazabilidad y mutaciones en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
+- [x] T040 [US4] Ajustar trazabilidad de ítem en `MiKompri.ShoppingList.Domain/Entities/ListItem.cs`
+- [x] T041 [US4] Ajustar mapeo de trazabilidad en DTOs en `MiKompri.ShoppingList.Application/DTOs/ListItemDto.cs` y `PurchaseListDTO.cs`
+- [x] T042 [US4] Ajustar respuesta de consulta para exponer trazabilidad en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
 
 **Punto de control**: US4 funcional y verificable de forma independiente.
 
@@ -136,10 +136,10 @@
 
 **Propósito**: Cerrar cumplimiento de errores esperados, criterios de done y validación final.
 
-- [ ] T043 [P] Verificar mapeo completo ERR-001..ERR-005 en `specs/002-shopping-list-core/spec.md` y `specs/002-shopping-list-core/contracts/shoppinglist-core-api.md`
-- [ ] T044 [P] Actualizar pasos de validación final en `specs/002-shopping-list-core/quickstart.md`
-- [ ] T045 Ejecutar pruebas del bounded context ShoppingList y registrar salida en `specs/002-shopping-list-core/quickstart.md`
-- [ ] T046 Ejecutar build de solución y registrar resultado de cierre del MVP en `specs/002-shopping-list-core/quickstart.md`
+- [x] T043 [P] Verificar mapeo completo ERR-001..ERR-005 en `specs/002-shopping-list-core/spec.md` y `specs/002-shopping-list-core/contracts/shoppinglist-core-api.md`
+- [x] T044 [P] Actualizar pasos de validación final en `specs/002-shopping-list-core/quickstart.md`
+- [x] T045 Ejecutar pruebas del bounded context ShoppingList y registrar salida en `specs/002-shopping-list-core/quickstart.md`
+- [x] T046 Ejecutar build de solución y registrar resultado de cierre del MVP en `specs/002-shopping-list-core/quickstart.md`
 
 ---
 

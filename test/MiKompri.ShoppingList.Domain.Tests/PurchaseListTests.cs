@@ -81,6 +81,8 @@ namespace MiKompri.ShoppingList.Domain.Tests
             Assert.Single(list.Items);
             Assert.Contains(list.Items, i => i.ProductId == item.ProductId);
             Assert.NotNull(list.UpdatedAt);
+            Assert.Equal(item.CreatedAt, list.Items.First().CreatedAt);
+            Assert.Null(list.Items.First().UpdatedAt);
         }
 
         [Fact]
@@ -119,6 +121,8 @@ namespace MiKompri.ShoppingList.Domain.Tests
             Assert.Equal(1.00m, updated.Price);
             Assert.Equal(3, updated.Quantity);
             Assert.NotNull(list.UpdatedAt);
+            Assert.NotNull(updated.UpdatedAt);
+            Assert.Equal(updated.UpdatedAt, list.UpdatedAt);
         }
 
         [Fact]
@@ -167,6 +171,8 @@ namespace MiKompri.ShoppingList.Domain.Tests
 
             var updated = list.Items.First(i => i.ProductId == item.ProductId);
             Assert.True(updated.IsPurchased);
+            Assert.NotNull(updated.UpdatedAt);
+            Assert.Equal(updated.UpdatedAt, list.UpdatedAt);
         }
 
         [Fact]
@@ -182,6 +188,7 @@ namespace MiKompri.ShoppingList.Domain.Tests
 
             var updated = list.Items.First(i => i.ProductId == item.ProductId);
             Assert.True(updated.IsPurchased);
+            Assert.NotNull(updated.UpdatedAt);
         }
 
         [Fact]
