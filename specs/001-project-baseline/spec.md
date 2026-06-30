@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-30
 
-**Status**: Draft
+**Status**: Aprobada con gate abierto (TP5)
 
 ---
 
@@ -196,8 +196,8 @@ Application de Users esté implementada.
   existen bajo `specs/001-project-baseline/` antes de continuar con cualquier nueva feature.
 - **SC-002**: El equipo puede crear una nueva spec de feature en menos de 10 minutos usando
   los comandos de Spec Kit (`/speckit.specify`, `/speckit.plan`, `/speckit.tasks`).
-- **SC-003**: Todos los tests existentes de ShoppingList pasan con el pipeline de CI en verde
-  en la rama `main` en todo momento.
+- **SC-003**: Todos los tests existentes de ShoppingList pasan en cada ejecución del pipeline CI
+  para `push` y `pull_request`, y la rama `main` mantiene estado verde en el último build exitoso.
 - **SC-004**: El directorio `specs/` existe y contiene al menos esta spec, estableciendo el
   patrón para futuras specs de features.
 - **SC-005**: Las deudas técnicas documentadas (DT-001 a DT-008) tienen un issue de seguimiento
@@ -232,7 +232,7 @@ Application de Users esté implementada.
 |----------------|--------------|------------------------------------------------------------|
 | Domain         | ✅ Completo   | PurchaseList, ListItem, ListProgress implementados y con tests |
 | Application    | ✅ Completo   | 7 Commands, 5 Queries, validadores, pipeline behaviors     |
-| Infrastructure | ✅ Completo   | EF Core + PostgreSQL, migraciones, Unit of Work            |
+| Infrastructure | ⚠️ Parcial    | EF Core + PostgreSQL operativos, Unit of Work implementado; migraciones explícitas pendientes (ADR-002) |
 | API            | ✅ Completo   | REST `/api/v1/PurchaseLists`, Swagger, health check        |
 | Tests          | ✅ Completo   | Domain, Application y API con cobertura automatizada en CI |
 | CI/CD          | ✅ Activo     | CI: build+test+SonarCloud. CD: push imagen a GHCR          |

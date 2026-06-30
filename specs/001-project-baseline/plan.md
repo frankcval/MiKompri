@@ -67,27 +67,27 @@ Sin planificación de escala horizontal hasta validar tracción de producto.
 | PP1 · Valor de Usuario Primero | ✅ PASS | ShoppingList API operacional. MVP-0 entregado |
 | PP2 · Autonomía de MVP | ✅ PASS | Cada MVP tiene alcance y criterio de done en spec.md |
 | PP3 · Listas de Compra como Núcleo | ✅ PASS | ShoppingList es el primer bounded context desplegado |
-| PP4 · Transparencia Colaborativa | ⚠️ WARN | `AddedBy` ausente en `ListItem` (DT-004). No bloquea el plan; bloquea MVP-2 |
+| PP4 · Transparencia Colaborativa | ⚠️ WARN | `AddedBy` ausente en `ListItem` (DT-004). Bloquea cualquier funcionalidad colaborativa (MVP-2) hasta su implementación |
 | PP5 · Móvil Primero | ⚠️ NOTE | MAUI planificado para MVP-3. APIs REST ya son consumibles desde móvil |
 | TP1 · Backend en .NET | ✅ PASS | Todos los proyectos usan `net8.0` |
 | TP2 · Bounded Contexts | ✅ PASS | Sin referencias de dominio entre ShoppingList y Users |
 | TP3 · Monorepo en GitHub | ✅ PASS | `frankcval/MiKompri`, todo en un repositorio |
-| TP4 · Docker Obligatorio | ✅ PASS | Dockerfile y Docker Compose presentes; CI ejecuta tests |
-| TP5 · Despliegue en Azure | ⚠️ WARN | CD actual solo publica a GHCR. Resuelto en ADR-001 |
+| TP4 · Docker Obligatorio | ✅ PASS | Dockerfile y Docker Compose presentes; CI incluye build y tests |
+| TP5 · Despliegue en Azure | ❌ ERROR | CD actual solo publica a GHCR. ADR-001 define destino, pero falta implementación efectiva de deploy a Azure |
 | TP6 · MAUI Android | ⚠️ NOTE | MVP-3. Sin violación activa; no hay proyecto MAUI aún |
 | TP7 · OpenAPI/Swagger | ✅ PASS | Swagger disponible en Development para ShoppingList API |
 | TP8 · Testing Obligatorio | ✅ PASS | Tres niveles de test en CI con cobertura Coverlet |
 | TP9 · ADR | ⚠️ WARN | Primer ADR creado en este plan (ADR-001, 002, 003). Retroactivo |
 | TP10 · Spec-First | ✅ PASS | Este es el primer ciclo spec completo del proyecto |
 
-**Veredicto**: ✅ Sin gates de ERROR. Tres WARNs activos, todos gestionados en este plan.
+**Veredicto**: ⚠️ 1 gate de ERROR activo (TP5) y 2 WARNs relevantes (PP4, TP9).
 
 ### Evaluación Post-Diseño
 
 Los artefactos generados (research.md, data-model.md, contracts/, quickstart.md)
-no introducen nuevas violaciones. Los WARNs se resuelven mediante:
-- **PP4 / DT-004**: Registrado en tasks.md; obligatorio antes de MVP-2.
-- **TP5**: ADR-001 define Azure Container Apps. Implementación en el CD de MVP-1.
+no introducen nuevas violaciones. Estado de hallazgos:
+- **PP4 / DT-004**: Registrado en tasks.md; bloquea colaboración hasta implementar `AddedBy`.
+- **TP5**: ADR-001 define Azure Container Apps, pero el deploy efectivo a Azure sigue pendiente (gate abierto hasta MVP-1).
 - **TP9**: ADR-001, ADR-002 y ADR-003 creados en `docs/adr/`.
 
 ---
@@ -234,9 +234,10 @@ Trigger: push/PR a main, develop, feature/*, hotfix/*
 Steps:
   1. dotnet restore
   2. dotnet build --configuration Release
-  3. dotnet test (Domain + Application + Api.Tests) con cobertura Coverlet
-  4. SonarCloud analysis (begin → build → end)
-  [Futuro] 5. Validate OpenAPI schema
+  3. docker build (validación de imagen)
+  4. dotnet test (Domain + Application + Api.Tests) con cobertura Coverlet
+  5. SonarCloud analysis (begin → build → end)
+  [Futuro] 6. Validate OpenAPI schema
 ```
 
 **Pipeline CD** (`cd-mikompri-{bc}.yml`) — por bounded context:
@@ -361,8 +362,7 @@ desde el token de autenticación.
 
 ## Complexity Tracking
 
-No hay violaciones de constitución que requieran justificación formal. Los WARNs
-registrados en Constitution Check están gestionados en este plan:
-- **PP4**: DT-004 registrado, obligatorio antes de MVP-2.
-- **TP5**: ADR-001 define la plataforma Azure; implementación en CD de MVP-1.
-- **TP9**: ADR-001, ADR-002 y ADR-003 creados en `docs/adr/`.
+Hay 1 gate constitucional abierto y 2 WARNs gestionados en este plan:
+- **TP5 (ERROR)**: ADR-001 define la plataforma Azure, pero falta completar el deploy efectivo en CD.
+- **PP4 (WARN)**: DT-004 (`AddedBy`) registrado y bloqueante para colaboración (MVP-2).
+- **TP9 (WARN)**: ADR-001, ADR-002 y ADR-003 creados en `docs/adr/`.
