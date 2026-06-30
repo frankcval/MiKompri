@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 using MiKompri.ShoppingList.Api;
 using MiKompri.ShoppingList.Api.Controllers;
 
 using MiKompri.ShoppingList.Api.Models;
 using MiKompri.ShoppingList.Application.DTOs;
+using MiKompri.ShoppingList.Infrastructure.Persistence;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -109,10 +112,19 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
         public PurchaseListsApiTests(CustomWebApplicationFactory<Program> factory)
         {
             _factory = factory;
+            ResetDatabase(factory);
             _client = factory.CreateClient(new WebApplicationFactoryClientOptions
             {
                 AllowAutoRedirect = false
             });
+        }
+
+        private static void ResetDatabase(CustomWebApplicationFactory<Program> factory)
+        {
+            using var scope = factory.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ShoppingListDbContext>();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
         }
 
         [Fact] //Crear Lista y Obtener Lista - ok
@@ -148,12 +160,21 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             dto!.Id.Should().Be(createdId);
             dto.Name.Should().Be("Compra semana");
             dto.OwnerId.Should().Be(ownerId);
+            dto.GroupId.Should().BeNull();
+            dto.TotalItems.Should().Be(0);
+            dto.PurchasedItems.Should().Be(0);
+            dto.PendingItems.Should().Be(0);
+            dto.CompletionPercentage.Should().Be(0);
+            dto.Items.Should().BeEmpty();
+            dto.CreatedAt.Should().BeOnOrBefore(DateTime.UtcNow);
+            dto.UpdatedAt.Should().BeNull();
         }
 
         [Fact] //Crear Lista: Error en la validacion del request
         public async Task Create_InvalidRequest_Should_Return_BadRequest()
         {
             // Arrange
+            const string correlationId = "phase2-create-invalid";
             var invalidRequest = new CreatePurchaseListRequest
             {
                 Name = "", // Nombre inválido
@@ -161,9 +182,17 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
                 GroupId = null
             };
             // Act
+            _client.DefaultRequestHeaders.Remove("X-Correlation-ID");
+            _client.DefaultRequestHeaders.Add("X-Correlation-ID", correlationId);
             var response = await _client.PostAsJsonAsync("/api/v1/purchaselists", invalidRequest);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            body.RootElement.GetProperty("status").GetInt32().Should().Be((int)HttpStatusCode.BadRequest);
+            body.RootElement.GetProperty("error").GetString().Should().Be("La petición no es válida");
+            body.RootElement.GetProperty("traceId").GetString().Should().Be(correlationId);
+            body.RootElement.GetProperty("errors").EnumerateArray().Should().NotBeEmpty();
         }
 
 
@@ -171,11 +200,18 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
         public async Task GetById_NonExistentId_Should_Return_NotFound()
         {
             // Arrange
+            const string correlationId = "phase2-list-not-found";
             var nonExistentId = Guid.NewGuid();
             // Act
+            _client.DefaultRequestHeaders.Remove("X-Correlation-ID");
+            _client.DefaultRequestHeaders.Add("X-Correlation-ID", correlationId);
             var response = await _client.GetAsync($"/api/v1/purchaselists/{nonExistentId}");
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            body.RootElement.GetProperty("status").GetInt32().Should().Be((int)HttpStatusCode.NotFound);
+            body.RootElement.GetProperty("traceId").GetString().Should().Be(correlationId);
         }
 
         //Obtener lista cuando no hay listas creadas
@@ -223,6 +259,62 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             dto.Should().NotBeNull();
             dto!.Name.Should().Be("Lista Actualizada");
             dto.GroupId.Should().Be(updateRequest.GroupId);
+        }
+
+        [Fact]
+        public async Task GetById_Should_Return_Progress_For_Empty_And_Populated_List()
+        {
+            // Arrange: create list and verify empty progress
+            var createRequest = new CreatePurchaseListRequest
+            {
+                Name = "Lista progreso",
+                OwnerId = Guid.NewGuid(),
+                GroupId = null
+            };
+            var postListResponse = await _client.PostAsJsonAsync("/api/v1/purchaselists", createRequest);
+            var createdListId = await postListResponse.Content.ReadFromJsonAsync<Guid>();
+
+            // Act 1
+            var emptyGetResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}");
+            emptyGetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var emptyDto = await emptyGetResponse.Content.ReadFromJsonAsync<PurchaseListDTO>();
+
+            // Assert 1
+            emptyDto.Should().NotBeNull();
+            emptyDto!.TotalItems.Should().Be(0);
+            emptyDto.PurchasedItems.Should().Be(0);
+            emptyDto.PendingItems.Should().Be(0);
+            emptyDto.CompletionPercentage.Should().Be(0);
+
+            // Arrange 2: add items and mark one as purchased
+            var firstProductId = Guid.NewGuid();
+            var secondProductId = Guid.NewGuid();
+            await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", new AddItemRequest
+            {
+                ProductId = firstProductId,
+                ProductName = "Manzanas",
+                Quantity = 2
+            });
+            await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", new AddItemRequest
+            {
+                ProductId = secondProductId,
+                ProductName = "Peras",
+                Quantity = 1
+            });
+            var markResponse = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{firstProductId}/mark-as-purchased", null);
+            markResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            // Act 2
+            var populatedGetResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}");
+            populatedGetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var populatedDto = await populatedGetResponse.Content.ReadFromJsonAsync<PurchaseListDTO>();
+
+            // Assert 2
+            populatedDto.Should().NotBeNull();
+            populatedDto!.TotalItems.Should().Be(2);
+            populatedDto.PurchasedItems.Should().Be(1);
+            populatedDto.PendingItems.Should().Be(1);
+            populatedDto.CompletionPercentage.Should().Be(50);
         }
 
         //Actualizar lista de compra no existente
@@ -432,6 +524,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
         public async Task Add_Item_Duplicate_ProductId_Should_Return_BadRequest()
         {
             // Arrange: Crear lista de compra
+            const string correlationId = "phase2-duplicate-item";
             var ownerId = Guid.NewGuid();
             var createListRequest = new CreatePurchaseListRequest
             {
@@ -458,10 +551,15 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
                 ProductName = "Café Premium",
                 Quantity = 2
             };
+            _client.DefaultRequestHeaders.Remove("X-Correlation-ID");
+            _client.DefaultRequestHeaders.Add("X-Correlation-ID", correlationId);
             var duplicatePostItemResponse = await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", duplicateAddItemRequest);
             // Assert
             duplicatePostItemResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
+            using var body = JsonDocument.Parse(await duplicatePostItemResponse.Content.ReadAsStringAsync());
+            body.RootElement.GetProperty("status").GetInt32().Should().Be((int)HttpStatusCode.BadRequest);
+            body.RootElement.GetProperty("error").GetString().Should().NotBeNullOrWhiteSpace();
+            body.RootElement.GetProperty("traceId").GetString().Should().NotBeNullOrWhiteSpace();
         }
 
         //Obtener Item de lista de compra por Id no existente
@@ -577,6 +675,70 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             itemDto.ProductPrice.Should().Be(2.5m);
             itemDto.Quantity.Should().Be(10);
 
+        }
+
+        [Fact]
+        public async Task Item_Lifecycle_Should_Work_Correctly()
+        {
+            // Arrange
+            var createListRequest = new CreatePurchaseListRequest
+            {
+                Name = "Lista ciclo item",
+                OwnerId = Guid.NewGuid(),
+                GroupId = null
+            };
+            var postListResponse = await _client.PostAsJsonAsync("/api/v1/purchaselists", createListRequest);
+            var createdListId = await postListResponse.Content.ReadFromJsonAsync<Guid>();
+            var productId = Guid.NewGuid();
+
+            var addItemRequest = new AddItemRequest
+            {
+                ProductId = productId,
+                ProductName = "Tomates",
+                Price = 1.25m,
+                Quantity = 2
+            };
+
+            // Act 1: Add
+            var postItemResponse = await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", addItemRequest);
+
+            // Assert add
+            postItemResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+            var createdItemId = await postItemResponse.Content.ReadFromJsonAsync<Guid>();
+            createdItemId.Should().NotBe(Guid.Empty);
+
+            // Act 2: Update
+            var updateItemRequest = new UpdateItemRequest
+            {
+                ProductName = "Tomates Cherry",
+                Price = 1.75m,
+                Quantity = 4
+            };
+            var putItemResponse = await _client.PutAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}", updateItemRequest);
+            putItemResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            // Act 3: Mark purchased
+            var markResponse = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}/mark-as-purchased", null);
+            markResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            // Assert current state
+            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            getItemResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var itemDto = await getItemResponse.Content.ReadFromJsonAsync<ListItemDto>();
+            itemDto.Should().NotBeNull();
+            itemDto!.Id.Should().Be(createdItemId);
+            itemDto.ProductName.Should().Be("Tomates Cherry");
+            itemDto.ProductPrice.Should().Be(1.75m);
+            itemDto.Quantity.Should().Be(4);
+            itemDto.IsPurchased.Should().BeTrue();
+
+            // Act 4: Delete
+            var deleteItemResponse = await _client.DeleteAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            deleteItemResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            // Assert deleted
+            var getDeletedItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            getDeletedItemResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         //Actualizar item de lista de compra con request invalido
@@ -729,7 +891,33 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
+        [Fact]
+        public async Task Mark_Purchased_NonExistent_Item_Should_Return_BadRequest_With_TraceId()
+        {
+            // Arrange
+            const string correlationId = "phase2-mark-missing-item";
+            var createListRequest = new CreatePurchaseListRequest
+            {
+                Name = "Lista para marcar item inexistente",
+                OwnerId = Guid.NewGuid(),
+                GroupId = null
+            };
+            var postListResponse = await _client.PostAsJsonAsync("/api/v1/purchaselists", createListRequest);
+            var createdListId = await postListResponse.Content.ReadFromJsonAsync<Guid>();
+
+            _client.DefaultRequestHeaders.Remove("X-Correlation-ID");
+            _client.DefaultRequestHeaders.Add("X-Correlation-ID", correlationId);
+
+            // Act
+            var response = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{Guid.NewGuid()}/mark-as-purchased", null);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            body.RootElement.GetProperty("status").GetInt32().Should().Be((int)HttpStatusCode.BadRequest);
+            body.RootElement.GetProperty("error").GetString().Should().Be("El item no existe en la lista");
+            body.RootElement.GetProperty("traceId").GetString().Should().Be(correlationId);
+        }
+
     }
 }
-
-

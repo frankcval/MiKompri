@@ -1,10 +1,10 @@
-// Plan (pseudocódigo detallado):
+// Plan (pseudocï¿½digo detallado):
 // 1. Preparar mocks:
 //    - Mock<IPurchaseListRepository>
 //      * Capturar el PurchaseList pasado a AddAsync para poder inspeccionarlo.
 //      * Configurar AddAsync para retornar Task.CompletedTask.
 //    - Mock<IUnitOfWork>
-//      * Configurar SaveChangesAsync para retornar 1 (simular éxito).
+//      * Configurar SaveChangesAsync para retornar 1 (simular ï¿½xito).
 // 2. Crear instancia del handler `CreateShoppingListCommandHandler` con los mocks.
 // 3. Construir el comando `CreateShoppingListCommand` con name, ownerId y groupId.
 // 4. Llamar a handler.Handle(command, CancellationToken.None) y obtener el resultado (Guid).
@@ -13,7 +13,7 @@
 //    - Sus propiedades Name, OwnerId y GroupId coinciden con las esperadas.
 //    - El Guid devuelto por el handler coincide con `captured.Id`.
 //    - Verificar que AddAsync y SaveChangesAsync fueron llamados exactamente una vez.
-// 6. Probar comportamiento esperado en caso nominal (éxito).
+// 6. Probar comportamiento esperado en caso nominal (ï¿½xito).
 //
 // Nota: Este test usa xUnit y Moq. Ajustar referencias de NuGet en el proyecto de tests:
 // - xunit
@@ -55,7 +55,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.CreateShoppingList
             var ownerId = Guid.NewGuid();
             Guid? groupId = Guid.NewGuid();
 
-            // Intentamos usar el ctor habitual; si la clase de comando difiere, adaptar aquí.
+            // Intentamos usar el ctor habitual; si la clase de comando difiere, adaptar aquï¿½.
             var command = new CreateShoppingListCommand(name, ownerId, groupId);
 
             // Act
@@ -70,6 +70,25 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.CreateShoppingList
 
             repoMock.Verify(r => r.AddAsync(It.IsAny<PurchaseList>()), Times.Once);
             uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_Should_Throw_When_Name_Is_Invalid()
+        {
+            // Arrange
+            var repoMock = new Mock<IPurchaseListRepository>();
+            var uowMock = new Mock<IUnitOfWork>();
+
+            var handler = new CreateShoppingListCommandHandler(repoMock.Object, uowMock.Object);
+            var command = new CreateShoppingListCommand("   ", Guid.NewGuid(), null);
+
+            // Act
+            var act = () => handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(act);
+            repoMock.Verify(r => r.AddAsync(It.IsAny<PurchaseList>()), Times.Never);
+            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }

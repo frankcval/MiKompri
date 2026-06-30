@@ -19,7 +19,7 @@ namespace MiKompri.ShoppingList.Application.Commands.CreateShoppingList
         {
             var list = new PurchaseList(request.Name, request.OwnerId, request.GroupId);
             await _repo.AddAsync(list);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return list.Id;
         }
     }

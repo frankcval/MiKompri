@@ -23,22 +23,24 @@ namespace MiKompri.ShoppingList.Application.Behavior
             RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
-            // Si no hay validators para este tipo, sigue normal
-            if (!_validators.Any())
+            var validators = _validators as IValidator<TRequest>[] ?? _validators.ToArray();
+
+            if (validators.Length == 0)
                 return await next();
 
             var context = new ValidationContext<TRequest>(request);
 
             var failures = (await Task.WhenAll(
-                    _validators.Select(v => v.ValidateAsync(context, cancellationToken))))
+                    validators.Select(v => v.ValidateAsync(context, cancellationToken))))
                 .SelectMany(r => r.Errors)
-                .Where(f => f != null)
+                .Where(f => f is not null)
+                .GroupBy(f => new { f.PropertyName, f.ErrorMessage })
+                .Select(g => g.First())
                 .ToList();
 
             if (failures.Count != 0)
                 throw new ValidationException(failures);
 
-            // Si todo OK, continúa con el handler
             return await next();
         }
     }

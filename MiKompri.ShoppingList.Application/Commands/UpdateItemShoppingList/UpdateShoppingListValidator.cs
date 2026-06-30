@@ -15,7 +15,7 @@ namespace MiKompri.ShoppingList.Application.Commands.UpdateItemShoppingList
                 .WithMessage("el identificador del item de la lista no debe estar vacio");
 
 
-            When(x => string.IsNullOrWhiteSpace(x.ProductName),
+            When(x => !string.IsNullOrWhiteSpace(x.ProductName),
                 () => RuleFor(n => n.ProductName)
                 .MaximumLength(100)
                 .WithMessage("El nombre no puede superar los 100 caracteres")

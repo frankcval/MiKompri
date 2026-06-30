@@ -24,15 +24,25 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public PurchaseList(string name, Guid ownerId, Guid? groupId = null)
         {
-            Name = name;
-            OwnerId = ownerId;
+            Name = NormalizeName(name);
+            OwnerId = ownerId != Guid.Empty
+                ? ownerId
+                : throw new InvalidOperationException("El propietario de la lista es obligatorio.");
             GroupId = groupId;
+        }
+
+        private static string NormalizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidOperationException("El nombre de la lista es obligatorio.");
+
+            return name.Trim();
         }
 
 
         public void Rename(string newName)
         {
-            Name = newName;
+            Name = NormalizeName(newName);
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -112,7 +122,7 @@ namespace MiKompri.ShoppingList.Domain.Entities
         public void MarkItemAsPurchased(Guid productId)
         {
             var item = _items.FirstOrDefault(i => i.ProductId == productId)
-                        ?? throw new ArgumentNullException("Producto no encontrado");
+                        ?? throw new InvalidOperationException("El item no existe en la lista");
             item.MarkAsPurchased();
         }
 

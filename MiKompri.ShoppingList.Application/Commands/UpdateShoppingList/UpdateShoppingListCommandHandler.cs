@@ -30,7 +30,7 @@ namespace MiKompri.ShoppingList.Application.Commands.UpdateShoppingList
                 list.ChangeGroup(request.GroupId);
 
             await _repo.UpdateAsync(list);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         }
     }

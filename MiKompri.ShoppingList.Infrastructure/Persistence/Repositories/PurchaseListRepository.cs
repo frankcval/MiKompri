@@ -8,6 +8,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
     public class PurchaseListRepository : IPurchaseListRepository
     {
         private readonly ShoppingListDbContext _context;
+        private IQueryable<PurchaseList> PurchaseListsWithItems => _context.PurchaseList.Include(p => p.Items);
 
         public PurchaseListRepository(ShoppingListDbContext context)
         {
@@ -17,24 +18,20 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<PurchaseList>> GetByGroupAsync(Guid groupId)
         {
-
-            return await _context.PurchaseList
-                .Include(x => x.Items)  //Importante, ya que si no se coloca las entidades relacionadas se devuelven en NUll
+            return await PurchaseListsWithItems
                 .Where(x => x.GroupId == groupId)
                 .ToListAsync();
         }
 
         public async Task<PurchaseList?> GetByIdAsync(Guid id)
         {
-            return await _context.PurchaseList
-            .Include(p => p.Items)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            return await PurchaseListsWithItems
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<PurchaseList>> GetByOwnerAsync(Guid ownerId)
         {
-            return await _context.PurchaseList
-                .Include(x => x.Items)
+            return await PurchaseListsWithItems
                 .Where(x => x.OwnerId == ownerId)
                 .ToListAsync();
         }
@@ -42,8 +39,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
         //retornar todas las listas
         public async Task<IEnumerable<PurchaseList>> GetAllAsync()
         {
-            return await _context.PurchaseList
-                .Include(x => x.Items)
+            return await PurchaseListsWithItems
                 .ToListAsync();
         }
         public async Task AddAsync(PurchaseList list)
@@ -58,9 +54,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 
         public async Task UpdateItemAsync(Guid listId, Guid itemId, string? name, decimal? price, int? quantity)
         {
-
-            var list = await _context.PurchaseList
-                .Include(p => p.Items)
+            var list = await PurchaseListsWithItems
                 .FirstOrDefaultAsync(x => x.Id == listId);
 
             if (list is null)
@@ -78,8 +72,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 
         public async Task DeleteItemAsync(Guid listId, Guid itemId)
         {
-            var list = await _context.PurchaseList
-                 .Include(p => p.Items)
+            var list = await PurchaseListsWithItems
                  .FirstOrDefaultAsync(x => x.Id == listId);
             if (list is null)
                 throw new KeyNotFoundException("Lista no encontrada.");
@@ -91,9 +84,8 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var list = await _context.PurchaseList
-         .Include(x => x.Items)
-         .FirstOrDefaultAsync(x => x.Id == id);
+            var list = await PurchaseListsWithItems
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (list is null)
                 throw new KeyNotFoundException("La lista no existe.");
@@ -107,10 +99,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
 
         public async Task AddItemAsync(Guid listId, ListItem item, CancellationToken cancellationToken)
         {
-       
-            // 1. Obtener la lista de compras (TRACKED)
-            var list = await _context.PurchaseList
-                .Include(p => p.Items)
+            var list = await PurchaseListsWithItems
                 .FirstOrDefaultAsync(x => x.Id == listId, cancellationToken);
 
             if (list is null)

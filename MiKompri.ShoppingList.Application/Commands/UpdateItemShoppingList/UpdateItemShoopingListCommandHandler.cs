@@ -16,7 +16,7 @@ namespace MiKompri.ShoppingList.Application.Commands.UpdateItemShoppingList
 
         public async Task<bool> Handle(UpdateItemShoopingListCommand request, CancellationToken cancellationToken)
         {
-            await _repoOperational.UpdateItemAsync(request.listId, request.ProdId, request.ProductName, request.Price.Value, request.Quantity.Value);
+            await _repoOperational.UpdateItemAsync(request.listId, request.ProdId, request.ProductName, request.Price, request.Quantity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return true;
         }
