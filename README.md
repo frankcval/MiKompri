@@ -3,7 +3,7 @@
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CD - MiKompri ShoppingList API](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml)
 
-**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura de microservicios con Clean Architecture y Domain-Driven Design (DDD).
+**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD).
 
 ## 📋 Tabla de Contenidos
 
@@ -215,8 +215,7 @@ GET    /health                            # Health check
 
 #### Estado Actual
 
-🚧 **En Desarrollo** - Rama actual: `30-feature/users/infra-efcore`
-
+🚧 **En Desarrollo** . La infraestructura base de Users existe, pero quedan pendientes migraciones, controllers, queries, validadores, tests e integración OAuth/OIDC.
 - ✅ Modelo de dominio completo
 - ✅ Capa de aplicación con comandos:
   - CreateGroup
