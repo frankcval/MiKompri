@@ -617,7 +617,7 @@ Este proyecto está bajo la licencia MIT. Ver archivo `LICENSE` para más detall
 
 ## 👥 Autores
 
-- **Frank Cárdenas Valencia** - [@frankcval](https://github.com/frankcval)
+- **Frank Cruz** - [@frankcval](https://github.com/frankcval)
 
 ## 📞 Contacto
 
