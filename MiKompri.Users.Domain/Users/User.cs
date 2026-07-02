@@ -41,7 +41,7 @@ namespace MiKompri.Users.Domain.Users
         public void UpdateProfile(string displayName, string? email)
         {
             if (string.IsNullOrWhiteSpace(displayName))
-                throw new ArgumentException("El nombre no puede estar vacío.", nameof(displayName));
+                throw new InvalidOperationException("El nombre no puede estar vacío.");
 
             DisplayName = displayName;
             Email = email;
