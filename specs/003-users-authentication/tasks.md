@@ -66,12 +66,12 @@
 
 **Propósito**: Declarar las secciones de appsettings necesarias para JwtBearer antes de tocar Program.cs.
 
-- [ ] T016 Modificar `MiKompri.Users.Api/appsettings.json`: añadir secciones:
+- [X] T016 Modificar `MiKompri.Users.Api/appsettings.json`: añadir secciones:
   ```json
   "Authentication": { "Authority": "", "Audience": "mikompri-users", "IdentityProvider": "entra" },
   "ConnectionStrings": { "UsersPostgreSQL": "" }
   ```
-- [ ] T017 [P] Modificar `MiKompri.Users.Api/appsettings.Development.json`: añadir `ConnectionStrings.UsersPostgreSQL` con valor `Host=localhost;Port=5432;Database=MiKompri_Users;Username=postgres;Password=12345`; añadir `Authentication.Authority` con la URL real del IdP de desarrollo (p.ej. tenant de Azure Entra ID de dev o IdentityServer local) — **no dejar vacío ni usar placeholder**: Program.cs valida en arranque que `Authority` no esté vacía (T032) [S2]; añadir `Authentication.Audience = "mikompri-users"` y `Authentication.IdentityProvider = "entra"`
+- [X] T017 [P] Modificar `MiKompri.Users.Api/appsettings.Development.json`: añadir `ConnectionStrings.UsersPostgreSQL` con valor `Host=localhost;Port=5432;Database=MiKompri_Users;Username=postgres;Password=12345`; añadir `Authentication.Authority` con la URL real del IdP de desarrollo (p.ej. tenant de Azure Entra ID de dev o IdentityServer local) — **no dejar vacío ni usar placeholder**: Program.cs valida en arranque que `Authority` no esté vacía (T032) [S2]; añadir `Authentication.Audience = "mikompri-users"` y `Authentication.IdentityProvider = "entra"`
 
 ---
 
