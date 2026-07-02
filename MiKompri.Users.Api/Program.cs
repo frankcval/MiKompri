@@ -1,4 +1,5 @@
 using MiKompri.Users.Application;
+using MiKompri.Users.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 // Application layer (MediatR + validators)
 builder.Services.AddUsersApplication();
 
+// Infrastructure layer (EF Core + repositories)
+builder.Services.AddUsersInfrastructure(builder.Configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
