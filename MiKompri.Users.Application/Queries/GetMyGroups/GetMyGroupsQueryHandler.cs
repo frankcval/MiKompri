@@ -2,16 +2,11 @@
 using MiKompri.Users.Application.Abstractions;
 using MiKompri.Users.Application.Dtos;
 using MiKompri.Users.Domain.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MiKompri.Users.Application.Queries.GetMyGroups
 {
     public class GetMyGroupsQueryHandler
-    : IRequestHandler<GetMyGroupsQuery, IReadOnlyCollection<GroupDto>>
+        : IRequestHandler<GetMyGroupsQuery, IReadOnlyCollection<GroupDto>>
     {
         private readonly ICurrentUserService _currentUser;
         private readonly IGroupRepository _groupRepository;
@@ -36,7 +31,6 @@ namespace MiKompri.Users.Application.Queries.GetMyGroups
 
             var userId = _currentUser.UserId;
 
-            // 1) Obtener todos los grupos donde participa el usuario
             var groups = await _groupRepository.GetByUserIdAsync(userId, cancellationToken);
 
             var result = new List<GroupDto>();
@@ -45,7 +39,6 @@ namespace MiKompri.Users.Application.Queries.GetMyGroups
             {
                 var membersDto = new List<GroupMemberDto>();
 
-                // Group.Memberships viene del dominio
                 foreach (var membership in group.Memberships)
                 {
                     var memberUser = await _userRepository
@@ -59,7 +52,8 @@ namespace MiKompri.Users.Application.Queries.GetMyGroups
                         UserId = memberUser.Id,
                         DisplayName = memberUser.DisplayName,
                         Email = memberUser.Email,
-                        Role = membership.Role.ToString()
+                        Role = membership.Role.ToString(),
+                        JoinedAt = membership.JoinedAt
                     });
                 }
 
@@ -68,6 +62,7 @@ namespace MiKompri.Users.Application.Queries.GetMyGroups
                     Id = group.Id,
                     Name = group.Name,
                     OwnerId = group.OwnerId,
+                    MyRole = group.GetMemberRole(userId)?.ToString() ?? string.Empty,
                     Members = membersDto
                 });
             }
