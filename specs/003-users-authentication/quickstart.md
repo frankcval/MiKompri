@@ -105,14 +105,19 @@ Invoke-RestMethod -Uri "$BASE/users/me" -Headers $HEADERS -Method PUT `
 
 ---
 
-### Escenario 3 — Refresco de claims desde IdP (FR-016)
+### Escenario 3 — Sincronización de claims desde IdP (FR-016)
 
 ```powershell
-# Usar token con claim name diferente al actual en BD
-Invoke-RestMethod -Uri "$BASE/users/me/refresh" -Headers $HEADERS -Method POST
+# Primera llamada (si el perfil no existía aún) → 201 Created
+Invoke-RestMethod -Uri "$BASE/users/me/sync" -Headers $HEADERS -Method POST
+
+# Segunda llamada con mismo token (perfil ya existe) → 200 OK
+Invoke-RestMethod -Uri "$BASE/users/me/sync" -Headers $HEADERS -Method POST
 ```
 
-**Resultado esperado `200 OK`**: perfil con `displayName` y/o `email` actualizados desde claims del nuevo token.
+**Resultado esperado primera llamada `201 Created`**: perfil con `displayName` y/o `email` tomados de los claims del token.
+
+**Resultado esperado segunda llamada `200 OK`**: perfil con los mismos datos (idempotente en claims sin cambios).
 
 ---
 
@@ -194,6 +199,35 @@ Invoke-RestMethod -Uri "$BASE/groups/$groupId/members/$ownerId" `
 Invoke-RestMethod -Uri "$BASE/groups/$groupId/members" -Headers $HEADERS_OWNER -Method POST `
   -Body "{`"userId`":`"$userBId`",`"role`":`"Member`"}" -ContentType "application/json"
 # StatusCode: 400 — "El usuario ya pertenece al grupo."
+```
+
+---
+
+### Escenario 8 — Listar grupos del usuario autenticado (FR-017)
+
+```powershell
+# GET /groups — sólo grupos del caller
+$myGroups = Invoke-RestMethod -Uri "$BASE/groups" -Headers $HEADERS_OWNER -Method GET
+$myGroups   # array con los grupos donde el caller es miembro
+```
+
+**Resultado esperado `200 OK`**:
+```json
+[
+  {
+    "id": "<uuid>",
+    "name": "Familia García",
+    "myRole": "Owner",
+    "memberCount": 2,
+    "createdAt": "<timestamp>"
+  }
+]
+```
+
+```powershell
+# Un usuario sin membresía en ningún grupo devuelve array vacío, no 404
+$myGroups = Invoke-RestMethod -Uri "$BASE/groups" -Headers $HEADERS_NEW_USER -Method GET
+# [] (array vacío)
 ```
 
 ---

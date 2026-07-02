@@ -37,7 +37,7 @@ Como usuario autenticado, quiero que MiKompri me reconozca como usuario local pa
 1. **Given** que un usuario válido se autentica por primera vez, **When** realiza cualquier solicitud autenticada a un endpoint protegido, **Then** el sistema auto-provisiona un perfil local usando los claims del token antes de procesar la solicitud, sin requerir una llamada explícita previa.
 2. **Given** que un usuario ya tiene perfil local, **When** realiza una nueva solicitud autenticada, **Then** el sistema procesa la solicitud normalmente sin alterar ni duplicar el perfil existente.
 3. **Given** que un usuario ha actualizado sus datos en el proveedor de identidad, **When** llama al endpoint explícito de refresco de perfil con su token actualizado, **Then** el sistema actualiza el nombre visible y el email del perfil local con los claims del nuevo token y devuelve el perfil actualizado.
-4. **Given** que una solicitud llega sin token de autenticación válido, **When** el sistema intenta procesarla, **Then** la solicitud es rechazada con un error de acceso no autorizado.
+4. **Given** que una solicitud llega sin token de autenticación válido o el token no contiene el claim `sub`, **When** el sistema intenta procesarla, **Then** la solicitud es rechazada con **HTTP 401 Unauthorized**.
 
 ---
 
@@ -53,7 +53,7 @@ Como usuario autenticado, quiero consultar mi perfil para que la aplicación pue
 
 1. **Given** que el usuario autenticado tiene perfil local, **When** consulta su propio perfil, **Then** recibe nombre visible, email y marcas de creación y última modificación.
 2. **Given** que el usuario autenticado accede a su perfil por primera vez (sin perfil local previo), **When** realiza la solicitud con token válido, **Then** el sistema auto-provisiona el perfil y devuelve los datos del perfil recién creado.
-3. **Given** que la solicitud no incluye autenticación válida, **When** se intenta consultar el perfil, **Then** la solicitud es rechazada con error de acceso no autorizado.
+3. **Given** que la solicitud no incluye autenticación válida, **When** se intenta consultar el perfil, **Then** la solicitud es rechazada con **HTTP 401 Unauthorized**.
 
 ---
 
@@ -69,7 +69,7 @@ Como usuario autenticado, quiero actualizar mi nombre visible para que mi perfil
 
 1. **Given** que el usuario autenticado tiene perfil local, **When** envía una solicitud de actualización con un nombre visible válido, **Then** el sistema actualiza el nombre y devuelve el perfil actualizado con la nueva marca de modificación.
 2. **Given** que el usuario autenticado envía un nombre visible vacío o solo con espacios, **When** intenta actualizar su perfil, **Then** el sistema rechaza la solicitud con un error de validación claro.
-3. **Given** que la solicitud no incluye autenticación válida, **When** se intenta actualizar el perfil, **Then** la solicitud es rechazada con error de acceso no autorizado.
+3. **Given** que la solicitud no incluye autenticación válida, **When** se intenta actualizar el perfil, **Then** la solicitud es rechazada con **HTTP 401 Unauthorized**.
 
 ---
 
@@ -79,14 +79,15 @@ Como usuario autenticado, quiero crear un grupo para poder compartir listas de c
 
 **Why this priority**: La creación de grupos es el punto de entrada a la colaboración. Sin grupos no hay pertenencia ni roles, que son la base de autorización de esta feature. El `GroupId` generado al crear cada grupo actuará como referencia cruzada canónica con el futuro bounded context de ShoppingList colaborativo.
 
-**Independent Test**: Se valida enviando una solicitud de creación de grupo con nombre válido. El sistema crea el grupo y automáticamente registra al creador como miembro con rol Owner. Al consultar los miembros del grupo recién creado, aparece únicamente el creador.
+**Independent Test**: Se valida enviando una solicitud de creación de grupo con nombre válido. El sistema crea el grupo y automáticamente registra al creador como miembro con rol Owner. Al consultar los miembros del grupo recién creado, aparece únicamente el creador. Al consultar la lista de grupos del usuario autenticado, el grupo recién creado aparece en la respuesta con el rol Owner.
 
 **Acceptance Scenarios**:
 
 1. **Given** que un usuario autenticado con perfil local envía una solicitud de creación de grupo con nombre válido, **When** el sistema procesa la solicitud, **Then** se crea el grupo y se registra automáticamente al creador como miembro con rol Owner.
 2. **Given** que el grupo ha sido creado, **When** se consultan sus miembros, **Then** el creador aparece en la lista con rol Owner.
 3. **Given** que un usuario envía una solicitud de creación de grupo con nombre vacío, **When** el sistema lo procesa, **Then** la solicitud es rechazada con un error de validación claro.
-4. **Given** que la solicitud no incluye autenticación válida, **When** se intenta crear un grupo, **Then** la solicitud es rechazada con error de acceso no autorizado.
+4. **Given** que la solicitud no incluye autenticación válida, **When** se intenta crear un grupo, **Then** la solicitud es rechazada con **HTTP 401 Unauthorized**.
+5. **Given** que el usuario autenticado pertenece a uno o más grupos, **When** consulta la lista de sus grupos, **Then** recibe únicamente los grupos donde tiene membresía activa, con el `GroupId`, nombre y su rol en cada grupo. No se incluyen grupos de otros usuarios.
 
 ---
 
@@ -107,7 +108,7 @@ Como propietario o administrador de un grupo, quiero agregar y eliminar miembros
 5. **Given** que un usuario con rol Owner en un grupo elimina a un miembro existente (cualquier rol), **When** el sistema procesa la solicitud, **Then** el miembro es retirado y ya no aparece en la lista de miembros.
 6. **Given** que un usuario con rol Admin en un grupo elimina a un miembro con rol Member, **When** el sistema procesa la solicitud, **Then** el miembro es retirado y ya no aparece en la lista de miembros.
 7. **Given** que un usuario con rol Admin en un grupo intenta eliminar a un miembro con rol Admin u Owner, **When** el sistema procesa la solicitud, **Then** la operación es rechazada con error de autorización.
-8. **Given** que un usuario con rol Member en un grupo intenta agregar o eliminar miembros, **When** el sistema procesa la solicitud, **Then** la operación es rechazada con error de acceso no autorizado.
+8. **Given** que un usuario con rol Member en un grupo intenta agregar o eliminar miembros, **When** el sistema procesa la solicitud, **Then** la operación es rechazada con **HTTP 403 Forbidden** (usuario autenticado sin permiso de gestión de miembros).
 9. **Given** que se intenta agregar como miembro a un identificador que no existe como perfil local, **When** el sistema procesa la solicitud, **Then** devuelve un error claro indicando que el usuario no existe.
 
 ---
@@ -123,7 +124,7 @@ Como miembro de un grupo, quiero consultar la lista de miembros del grupo para s
 **Acceptance Scenarios**:
 
 1. **Given** que el usuario autenticado es miembro de un grupo, **When** consulta la lista de miembros, **Then** recibe la lista de todos los miembros con sus nombres visibles y roles.
-2. **Given** que el usuario autenticado no es miembro del grupo cuya lista consulta, **When** realiza la solicitud, **Then** la solicitud es rechazada con un error de acceso no autorizado.
+2. **Given** que el usuario autenticado no es miembro del grupo cuya lista consulta, **When** realiza la solicitud, **Then** la solicitud es rechazada con **HTTP 403 Forbidden** (usuario autenticado sin membresía en el grupo).
 
 ---
 
@@ -144,9 +145,9 @@ Como miembro de un grupo, quiero consultar la lista de miembros del grupo para s
 ### Functional Requirements
 
 - **FR-001**: El sistema DEBE rechazar todas las solicitudes a endpoints protegidos que no incluyan un token de autenticación válido emitido por el proveedor de identidad configurado.
-- **FR-002**: El sistema DEBE auto-aprovisionar el perfil local del usuario autenticado en el primer request a cualquier endpoint protegido: si no existe un perfil local vinculado al claim `sub` del token, el sistema lo crea automáticamente. El claim `sub` es el único requisito obligatorio; los claims `name` y `email` se mapean al perfil si están presentes en el token, y se dejan vacíos si no lo están. Las solicitudes siguientes del mismo usuario no vuelven a crear ni actualizar el perfil automáticamente.
+- **FR-002**: El sistema DEBE auto-aprovisionar el perfil local del usuario autenticado en el primer request a cualquier endpoint protegido: si no existe un perfil local vinculado al claim `sub` del token, el sistema lo crea automáticamente. El claim `sub` es el único requisito obligatorio; si el token no lo contiene, la solicitud DEBE ser rechazada con **HTTP 401 Unauthorized** con un mensaje genérico que indique autenticación inválida, sin exponer detalles internos de la validación del token. Los claims `name` y `email` se mapean al perfil si están presentes en el token; si están ausentes, el nombre visible y el email quedan como cadena vacía. **Regla de negocio — DisplayName vacío**: durante el auto-provisioning el nombre visible puede quedar vacío si el proveedor de identidad no incluye el claim `name`; esta es la única situación en que el nombre visible puede estar vacío en el sistema. Las solicitudes siguientes del mismo usuario no vuelven a crear ni actualizar el perfil automáticamente.
 - **FR-003**: El sistema DEBE permitir a un usuario autenticado consultar su propio perfil local, incluyendo nombre visible, email y timestamps de trazabilidad.
-- **FR-004**: El sistema DEBE permitir a un usuario autenticado actualizar su nombre visible en el perfil local. El nombre visible no puede estar vacío ni contener solo espacios.
+- **FR-004**: El sistema DEBE permitir a un usuario autenticado actualizar su nombre visible en el perfil local. En la actualización manual el nombre visible no puede estar vacío ni contener solo espacios. Esta restricción aplica únicamente a la operación de actualización explícita (PUT); durante el auto-provisioning (FR-002) el nombre visible puede quedar vacío si el proveedor de identidad no incluye el claim `name`.
 - **FR-005**: El sistema DEBE permitir a un usuario autenticado con perfil local crear un grupo con un nombre no vacío.
 - **FR-006**: Al crear un grupo, el sistema DEBE registrar automáticamente al creador como miembro del grupo con rol Owner en la misma operación atómica.
 - **FR-007**: El sistema DEBE permitir a un usuario con rol Owner agregar nuevos miembros especificando rol Admin o Member. Un usuario con rol Admin solo puede agregar miembros con rol Member; la asignación del rol Admin es exclusiva del Owner. Los intentos de un Admin de asignar rol Admin deben ser rechazados con error de autorización.
@@ -158,7 +159,49 @@ Como miembro de un grupo, quiero consultar la lista de miembros del grupo para s
 - **FR-013**: El sistema DEBE devolver errores de validación con mensajes claros que identifiquen el campo y la razón del error.
 - **FR-014**: Las respuestas de la API DEBEN seguir el mismo estilo de respuesta, estructura de errores y convenciones de trazabilidad ya establecidas en el bounded context ShoppingList.
 - **FR-015**: El bounded context Users DEBEN incluir tests automatizados de dominio, de aplicación y de integración de API para los escenarios críticos de éxito y de error descritos en esta especificación.
-- **FR-016**: El sistema DEBE exponer un endpoint explícito de refresco de perfil que actualice los datos del perfil local (nombre visible, email) con los claims del token en uso, permitiendo al usuario sincronizar manualmente cuando sus datos hayan cambiado en el proveedor de identidad.
+- **FR-016**: El sistema DEBE exponer un endpoint explícito de sincronización de perfil (`POST /api/v1/users/me/sync`) que actualice los datos del perfil local (nombre visible, email) con los claims del token en uso, permitiendo al usuario sincronizar manualmente cuando sus datos hayan cambiado en el proveedor de identidad. Si el perfil no existe aún al invocar este endpoint, el comportamiento es idéntico al auto-provisioning (FR-002): el perfil se crea y se devuelve **HTTP 201 Created**; si ya existía y fue actualizado, se devuelve **HTTP 200 OK**.
+- **FR-017**: El sistema DEBE permitir a un usuario autenticado consultar la lista de grupos a los que pertenece (`GET /api/v1/groups`). La respuesta incluye únicamente los grupos donde el usuario tiene membresía activa, con el identificador del grupo (`GroupId`), nombre legible y el rol del usuario en cada grupo. No se exponen grupos de otros usuarios ni grupos donde el usuario no sea miembro activo.
+
+### HTTP Status Codes
+
+Los siguientes códigos HTTP de respuesta aplican a las operaciones principales de la API:
+
+| Endpoint | Método | Código exitoso | Condición |
+|---|---|---|---|
+| `/api/v1/users/me` | `GET` | `200 OK` | Perfil consultado (o auto-provisionado) correctamente |
+| `/api/v1/users/me` | `PUT` | `200 OK` | Nombre visible actualizado correctamente |
+| `/api/v1/users/me/sync` | `POST` | `201 Created` | Perfil creado por primera vez durante la sincronización |
+| `/api/v1/users/me/sync` | `POST` | `200 OK` | Perfil ya existía y fue actualizado con los claims del token |
+| `/api/v1/groups` | `GET` | `200 OK` | Lista de grupos del usuario devuelta correctamente |
+| `/api/v1/groups` | `POST` | `201 Created` | Grupo creado correctamente |
+| `/api/v1/groups/{groupId}/members` | `GET` | `200 OK` | Lista de miembros devuelta correctamente |
+| `/api/v1/groups/{groupId}/members` | `POST` | `201 Created` | Miembro agregado correctamente |
+| `/api/v1/groups/{groupId}/members/{userId}` | `DELETE` | `204 No Content` | Miembro eliminado correctamente |
+
+### HTTP Error Codes: 401 Unauthorized vs 403 Forbidden
+
+La API diferencia explícitamente entre autenticación fallida y autorización insuficiente:
+
+**HTTP 401 Unauthorized** — la solicitud no puede ser identificada:
+- Solicitud sin header `Authorization`.
+- Token con firma inválida, emisor no reconocido o audiencia incorrecta (ver SR-001 a SR-003).
+- Token con claim `exp` vencido (ver SR-004).
+- Token técnicamente válido que no contiene el claim `sub` (FR-002).
+
+**HTTP 403 Forbidden** — el usuario está autenticado pero no tiene permisos suficientes:
+- Un Member intentando agregar o eliminar miembros de un grupo.
+- Un Admin intentando asignar rol Admin a un nuevo miembro.
+- Un Admin intentando eliminar a un miembro con rol Admin u Owner.
+- Un usuario autenticado accediendo a un grupo donde no es miembro.
+
+### Security Requirements
+
+- **SR-001**: La API DEBE validar la firma del token JWT Bearer usando la clave pública del proveedor OIDC configurado. Tokens con firma inválida DEBEN ser rechazados con HTTP 401 Unauthorized.
+- **SR-002**: La API DEBE validar que el claim `issuer` del token coincide con el proveedor OIDC configurado. Tokens de emisores no reconocidos DEBEN ser rechazados con HTTP 401 Unauthorized.
+- **SR-003**: La API DEBE validar que el claim `audience` del token incluye el identificador de audiencia configurado para la API de Users. Tokens con audiencia incorrecta DEBEN ser rechazados con HTTP 401 Unauthorized.
+- **SR-004**: La API DEBE rechazar tokens cuyo claim `exp` haya vencido, devolviendo HTTP 401 Unauthorized.
+- **SR-005**: Los mensajes de error de autenticación y autorización NO DEBEN revelar detalles internos de la validación del token ni información estructural del sistema. Solo se expone un mensaje genérico orientado al caller.
+- **SR-006**: La API NO DEBE permitir enumerar grupos o usuarios a los que el caller no tiene acceso. Un grupo inexistente y un grupo existente donde el caller no es miembro activo DEBEN devolver el mismo código de error (HTTP 403 Forbidden) para evitar exposición de información por enumeración.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -197,3 +240,30 @@ Como miembro de un grupo, quiero consultar la lista de miembros del grupo para s
 - Los grupos no son eliminables en esta iteración. La operación de eliminación de grupo queda explícitamente fuera de alcance hasta que el vínculo entre grupos y listas de compra esté definido, para evitar decisiones de diseño prematuras sobre el destino de los recursos vinculados.
 - El bounded context Users ya existe parcialmente en la solución como proyecto scaffolded; esta feature formaliza su dominio, aplicación e infraestructura siguiendo el patrón de ShoppingList como referencia.
 - No se implementará API Gateway ni se realizará despliegue productivo en Azure como parte de esta iteración.
+
+---
+
+## Out of Scope
+
+Las siguientes funcionalidades quedan **explícitamente fuera del alcance** de esta feature. Su implementación se difiere a iteraciones o features posteriores.
+
+### Identidad y autenticación
+
+- La API **no emite** access tokens propios. Toda la autenticación es delegada íntegramente al proveedor OIDC externo configurado.
+- La API **no emite** refresh tokens.
+- La API **no implementa** inicio de sesión con usuario y contraseña.
+- La API **no actúa** como Identity Provider (no implementa flujos OIDC, OAuth2 Authorization Code ni PKCE).
+- La API **no implementa** recuperación de contraseña ni restablecimiento de credenciales.
+- La API **no implementa** registro de usuario propio; los usuarios se aprovisionan automáticamente al autenticarse por primera vez con el proveedor externo.
+
+### Gestión de grupos
+
+- **No se implementa eliminación de grupos** en esta iteración. No existirá ningún endpoint `DELETE /api/v1/groups/{groupId}`.
+- **No se implementa cambio de rol de miembro existente**. No existirá ningún endpoint `PATCH /api/v1/groups/{groupId}/members/{userId}`. El rol se asigna al agregar al miembro y no puede modificarse en esta iteración.
+- **No se implementan invitaciones por email** ni flujos de incorporación por enlace.
+
+### Integración y despliegue
+
+- **El bounded context ShoppingList no se modifica** en esta iteración. La integración entre grupos y listas de compra se realizará en una feature posterior.
+- **No se implementa frontend, aplicación móvil ni cliente** como parte de esta feature.
+- **No se implementa API Gateway** ni despliegue productivo en Azure en esta iteración.

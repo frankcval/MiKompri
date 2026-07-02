@@ -90,11 +90,10 @@ MiKompri.Users.Application/
 │   ├── AddMemberToGroup/                  ← MODIFICAR: handler — actualizar lógica Admin
 │   ├── CreateGroup/                       (existente — sin cambios)
 │   ├── RemoveMemberFromGroup/             ← CREAR: command + handler + validator
-│   ├── SyncProfile/                       ← CREAR: command + handler
-│   ├── RefreshProfile/                    ← CREAR: command + handler
+│   ├── SyncProfile/                       ← CREAR: command + handler (middleware + POST /me/sync; devuelve bool creado)
 │   └── UpdateProfile/                     ← CREAR: command + handler + validator
 ├── Queries/
-│   ├── GetMyGroups/                       (existente — sin cambios)
+│   ├── GetMyGroups/                       ← CREAR: query + handler (FR-017: lista grupos del caller)
 │   ├── GetMyProfile/                      ← CREAR: query + handler
 │   └── GetGroupMembers/                   ← CREAR: query + handler
 └── Dtos/
@@ -198,11 +197,11 @@ docker-compose.override.yml              ← MODIFICAR: añadir env vars Users +
 
 | Artefacto | Tipo | Validator | Descripción |
 |-----------|------|-----------|-------------|
-| `SyncProfileCommand` | Command | — | Middleware → crea User si no existe; no-op si ya existe. Devuelve `Guid` interno. |
-| `RefreshProfileCommand` | Command | — | `POST /users/me/refresh` → llama `user.SyncClaims()` y guarda. |
+| `SyncProfileCommand` | Command | — | Middleware AND `POST /me/sync`. Crea el perfil si no existe (devuelve `created = true`) o actualiza claims si ya existía (`created = false`). El controller usa `created` para retornar `201 Created` o `200 OK` según corresponda. |
 | `UpdateProfileCommand` | Command | ✅ DisplayName required, max 100 | `PUT /users/me` → llama `user.UpdateProfile()`. |
 | `RemoveMemberFromGroupCommand` | Command | ✅ GroupId, TargetUserId required | Verifica rol caller; llama `group.RemoveMember(target, callerRole)`. |
 | `GetMyProfileQuery` | Query | — | Devuelve `UserProfileDto`. |
+| `GetMyGroupsQuery` | Query | — | FR-017: devuelve los grupos donde el caller tiene membresía activa (`IReadOnlyCollection<GroupDto>` con `MyRole`). |
 | `GetGroupMembersQuery` | Query | — | Verifica que caller es miembro; devuelve `IReadOnlyCollection<GroupMemberDto>`. |
 
 ### 2.2 Actualizar AddMemberToGroupCommandHandler
@@ -348,14 +347,14 @@ public bool IsAuthenticated =>
 |-------|------|---------|----------|
 | GET | `/me` | `GetMyProfileQuery` | `200 UserProfileDto` |
 | PUT | `/me` | `UpdateProfileCommand` | `200 UserProfileDto` |
-| POST | `/me/refresh` | `RefreshProfileCommand` | `200 UserProfileDto` |
+| POST | `/me/sync` | `SyncProfileCommand` | `201 UserProfileDto` si crea; `200 UserProfileDto` si actualiza |
 
 ### 4.5 GroupsController — `[Route("api/v1/groups")] [Authorize]`
 
 | Verbo | Ruta | MediatR | Response |
 |-------|------|---------|----------|
 | POST | `/` | `CreateGroupCommand` | `201` + `Location` header |
-| GET | `/` | `GetMyGroupsQuery` | `200 GroupDto[]` |
+| GET | `/` | `GetMyGroupsQuery` | `200 GroupDto[]` — FR-017: solo grupos del caller |
 | GET | `/{groupId}/members` | `GetGroupMembersQuery` | `200 GroupMemberDto[]` |
 | POST | `/{groupId}/members` | `AddMemberToGroupCommand` | `201 GroupMemberDto` |
 | DELETE | `/{groupId}/members/{userId}` | `RemoveMemberFromGroupCommand` | `204` |
@@ -439,7 +438,7 @@ dotnet new xunit -n MiKompri.Users.Api.Tests         -o test/MiKompri.Users.Api.
 | Clase | Escenarios |
 |-------|-----------|
 | `GroupTests` | Crear → Owner auto-creado en membresías; AddMember duplicado → throws; RemoveMember Owner → throws; Admin elimina Member → ok; Admin elimina Admin → throws; Admin elimina Owner → throws |
-| `UserTests` | Constructor sin name → `DisplayName` vacío permitido; `UpdateProfile` vacío → throws; `SyncClaims` solo actualiza si hay cambios; `SyncClaims` actualiza `UpdatedAt` |
+| `UserTests` | Constructor sin name → `DisplayName` vacío permitido (CHK016-provisioning); `UpdateProfile` vacío → throws (CHK016-actualización); `SyncClaims` solo actualiza si hay cambios; `SyncClaims` actualiza `UpdatedAt` |
 
 ### 6.3 Tests de Aplicación (obligatorios)
 
@@ -447,13 +446,13 @@ Mocks para `IUserRepository`, `IGroupRepository`, `ICurrentUserService`.
 
 | Clase | Escenarios |
 |-------|-----------|
-| `SyncProfileCommandHandlerTests` | No existe → crea + devuelve Id; ya existe → devuelve Id existente |
+| `SyncProfileCommandHandlerTests` | No existe → crea + devuelve `created=true` (middleware); ya existe + claims distintos → `SyncClaims` + devuelve `created=false` (POST /me/sync); ya existe + claims iguales → no-op + devuelve `created=false` |
 | `GetMyProfileQueryHandlerTests` | Existe → devuelve DTO; no existe → `KeyNotFoundException` |
 | `UpdateProfileCommandHandlerTests` | Válido → guarda; vacío → `ValidationException` |
-| `RefreshProfileCommandHandlerTests` | Claims distintos → `SyncClaims` + guarda |
 | `CreateGroupCommandHandlerTests` | No auth → throws; válido → devuelve `GroupId` |
 | `AddMemberToGroupCommandHandlerTests` | Owner+Admin → ok; Owner+Member → ok; Admin+Member → ok; Admin+Admin → throws; Member → throws; duplicado → throws |
 | `RemoveMemberFromGroupCommandHandlerTests` | Owner elimina cualquiera → ok; Admin elimina Member → ok; Admin elimina Admin → throws; Admin elimina Owner → throws; último Owner → throws; no miembro → `KeyNotFoundException` |
+| `GetMyGroupsQueryHandlerTests` | Caller con grupos → devuelve lista con MyRole; caller sin grupos → devuelve colección vacía (no throws) |
 | `GetGroupMembersQueryHandlerTests` | Caller miembro → devuelve lista; caller no miembro → throws |
 
 ### 6.4 Tests de Integración API (obligatorios)
@@ -462,8 +461,8 @@ Mocks para `IUserRepository`, `IGroupRepository`, `ICurrentUserService`.
 
 | Clase | Escenarios mínimos |
 |-------|--------------------|
-| `ProfileApiTests` | `GET /me` sin auth → 401; con auth → 200 + auto-provisioning; `PUT /me` válido → 200; vacío → 400 |
-| `GroupsApiTests` | `POST /groups` → 201; `GET /{id}/members` como miembro → 200; Owner agrega Member → 201; Admin agrega Admin → 403; Admin elimina Admin → 403; duplicado → 400 |
+| `ProfileApiTests` | `GET /me` sin auth → 401; con auth → 200 + auto-provisioning; `PUT /me` válido → 200; vacío → 400; `POST /me/sync` primera vez → 201; segunda vez mismo token → 200 |
+| `GroupsApiTests` | `POST /groups` → 201; `GET /` caller con grupos → 200 (FR-017); `GET /` caller sin grupos → 200 array vacío; `GET /{id}/members` como miembro → 200; `GET /{id}/members` caller no miembro → 403; Owner agrega Member → 201; Admin agrega Admin → 403; Admin elimina Admin → 403; duplicado → 400 |
 
 ---
 

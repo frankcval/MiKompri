@@ -42,8 +42,8 @@
 | `AddMemberToGroupCommandHandler.cs` | Existente | Solo verifica `IsOwner`; falta lógica Admin-puede-agregar-Member |
 | `GetMyGroupsQuery/Handler` | Existente | Funcional |
 | `GroupDto.cs` / `GroupMemberDto.cs` | Existente | Falta `UserProfileDto`; `GroupMemberDto` necesita revisión para `Admin` |
-| `SyncProfileCommand` | **Faltante** | Para auto-provisioning en primer request |
-| `RefreshProfileCommand` | **Faltante** | Para endpoint explícito de refresco |
+| `SyncProfileCommand` | **Faltante** | Para auto-provisioning en primer request (middleware) Y endpoint explícito `POST /me/sync` — un único command con retorno `created: bool` |
+| `GetMyGroupsQuery` | **Faltante** | Para FR-017: `GET /api/v1/groups` — lista grupos del caller (el handler existente en scaffolding necesita crearse formalmente) |
 | `GetMyProfileQuery` | **Faltante** | Para `GET /api/v1/users/me` |
 | `UpdateProfileCommand` | **Faltante** | Para `PUT /api/v1/users/me` |
 | `RemoveMemberFromGroupCommand` | **Faltante** | Para `DELETE /api/v1/groups/{id}/members/{userId}` |

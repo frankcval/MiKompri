@@ -11,7 +11,9 @@
 - Todos los timestamps en ISO 8601 UTC: `"2026-07-12T10:30:00Z"`
 - Respuestas de error: estructura compartida con ShoppingList (middleware existente)
 - `GroupRole` como string: `"Owner"` | `"Admin"` | `"Member"`
-- Errores de validación → `400`; No autenticado → `401`; Sin permiso → `403` (mapeado desde `InvalidOperationException`); No encontrado → `404`
+- Errores de validación → `400`; No autenticado / token inválido / `sub` ausente → `401`; Autenticado sin permisos → `403`; No encontrado → `404`
+- **SR-006**: Para `GET /groups/{id}/members`, `POST /groups/{id}/members` y `DELETE /groups/{id}/members/{uid}`, grupo inexistente y caller sin membresía devuelven **el mismo `403`** para evitar enumeración de grupos
+- Endpoint de sincronización de perfil: `POST /api/v1/users/me/sync` (devuelve `201` si crea perfil, `200` si actualiza)
 
 ### Forma de error estándar
 
@@ -92,19 +94,21 @@ Actualiza el nombre visible del usuario autenticado. El usuario controla su nomb
 
 ---
 
-### `POST /api/v1/users/me/refresh` 🔒
+### `POST /api/v1/users/me/sync` 🔒
 
-Refresca el perfil local con los claims actuales del token JWT. El usuario usa este endpoint cuando ha actualizado sus datos en el proveedor de identidad.
+Sincroniza el perfil local con los claims actuales del token JWT. El usuario usa este endpoint cuando ha actualizado sus datos en el proveedor de identidad.
 
 **Request body**: vacío (`{}` o sin body)
 
-**Respuesta `200 OK`** — perfil actualizado (misma forma que `GET /users/me`)
+**Respuesta `201 Created`** — perfil creado por primera vez durante la sincronización (misma forma que `GET /users/me`)
+
+**Respuesta `200 OK`** — perfil ya existía y fue actualizado con los claims del token (misma forma que `GET /users/me`)
 
 **Errores**
 
 | Código | Cuándo |
 |--------|--------|
-| `401` | Sin autenticación |
+| `401` | Sin token, token inválido, token sin claim `sub` |
 
 ---
 
@@ -197,9 +201,8 @@ Devuelve la lista de miembros del grupo. Requiere que el caller sea miembro del 
 
 | Código | Cuándo |
 |--------|--------|
-| `401` | Sin autenticación |
-| `403` | Caller no es miembro del grupo |
-| `404` | Grupo no encontrado |
+| `401` | Sin token, token inválido, token sin claim `sub` |
+| `403` | Grupo no encontrado **o** caller no es miembro activo del grupo (SR-006: ambos casos devuelven 403 para evitar enumeración) |
 
 ---
 
@@ -242,10 +245,9 @@ Agrega un nuevo miembro al grupo.
 
 | Código | Cuándo |
 |--------|--------|
-| `400` | `userId` o `role` inválidos; usuario ya miembro |
-| `401` | Sin autenticación |
-| `403` | Caller es Member; o Admin intentando asignar rol Admin |
-| `404` | Grupo o usuario no encontrado |
+| `400` | `userId` o `role` inválidos; usuario ya miembro; `userId` no existe como perfil local |
+| `401` | Sin token, token inválido, token sin claim `sub` |
+| `403` | Grupo no encontrado **o** caller no es miembro; caller es Member; Admin intentando asignar rol Admin (SR-006: grupo no encontrado y sin permisos devuelven 403) |
 
 ---
 
@@ -265,9 +267,9 @@ Elimina a un miembro del grupo.
 
 | Código | Cuándo |
 |--------|--------|
-| `401` | Sin autenticación |
-| `403` | Caller sin permiso (Member; Admin intentando eliminar Admin u Owner) |
-| `404` | Grupo o miembro no encontrado |
+| `401` | Sin token, token inválido, token sin claim `sub` |
+| `403` | Grupo no encontrado **o** caller no es miembro activo (SR-006); caller es Member; Admin intentando eliminar Admin u Owner |
+| `404` | El `userId` indicado no es miembro del grupo (solo cuando el caller ya tiene acceso verificado al grupo) |
 | `400` | Intento de eliminar al único Owner del grupo |
 
 ---
