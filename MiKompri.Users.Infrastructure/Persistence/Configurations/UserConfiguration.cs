@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MiKompri.Users.Domain.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MiKompri.Users.Infrastructure.Persistence.Configurations
 {
@@ -32,13 +27,19 @@ namespace MiKompri.Users.Infrastructure.Persistence.Configurations
                 .HasMaxLength(200)
                 .IsRequired();
 
+            builder.Property(u => u.CreatedAt)
+                .IsRequired();
+
+            builder.Property(u => u.UpdatedAt)
+                .IsRequired();
+
             // Índice único para (IdentityProvider, ExternalUserId)
             builder.HasIndex(u => new { u.IdentityProvider, u.ExternalUserId })
                 .IsUnique();
 
             // Relación con memberships (un usuario tiene muchas memberships)
             builder.HasMany<GroupMembership>()
-                .WithOne() // navegación simple desde GroupMembership
+                .WithOne()
                 .HasForeignKey(m => m.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

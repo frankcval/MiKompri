@@ -53,10 +53,10 @@
 **Propósito**: Alinear configuraciones EF con el modelo actualizado; exponer la consulta de grupos por usuario para FR-017.
 **Nota**: La migración se ejecuta en Phase 7 una vez que `Program.cs` tenga connection string válida.
 
-- [ ] T012 Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/UserConfiguration.cs`: añadir en `Configure()` las llamadas `.Property(u => u.CreatedAt).IsRequired()` y `.Property(u => u.UpdatedAt).IsRequired()`
-- [ ] T013 [P] Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/GroupConfiguration.cs`: añadir columnas `CreatedAt` y `UpdatedAt` como requeridas en `Configure()`
-- [ ] T014 [P] Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/GroupMembershipConfiguration.cs`: añadir columnas `JoinedAt`, `CreatedAt` y `UpdatedAt` como requeridas en `Configure()`
-- [ ] T015 [P] [US4] Añadir método `Task<IReadOnlyCollection<Group>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)` a `MiKompri.Users.Application/Abstractions/IGroupRepository.cs`; implementar en `MiKompri.Users.Infrastructure/Persistence/Repositories/GroupRepository.cs` con `_context.Groups.Include(g => g.Memberships).Where(g => g.Memberships.Any(m => m.UserId == userId)).ToListAsync(ct)` [FR-017]
+- [X] T012 Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/UserConfiguration.cs`: añadir en `Configure()` las llamadas `.Property(u => u.CreatedAt).IsRequired()` y `.Property(u => u.UpdatedAt).IsRequired()`
+- [X] T013 [P] Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/GroupConfiguration.cs`: añadir columnas `CreatedAt` y `UpdatedAt` como requeridas en `Configure()`
+- [X] T014 [P] Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/GroupMembershipConfiguration.cs`: añadir columnas `JoinedAt`, `CreatedAt` y `UpdatedAt` como requeridas en `Configure()`
+- [X] T015 [P] [US4] Añadir método `Task<IReadOnlyCollection<Group>> GetByUserIdAsync(Guid userId, CancellationToken ct = default)` a `MiKompri.Users.Application/Abstractions/IGroupRepository.cs`; implementar en `MiKompri.Users.Infrastructure/Persistence/Repositories/GroupRepository.cs` con `_context.Groups.Include(g => g.Memberships).Where(g => g.Memberships.Any(m => m.UserId == userId)).ToListAsync(ct)` [FR-017]
 
 **Checkpoint**: `dotnet build MiKompri.Users.Infrastructure` con 0 errores.
 
