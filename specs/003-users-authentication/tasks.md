@@ -20,12 +20,12 @@
 **Propósito**: Eliminar scaffold innecesario, crear proyectos de test, añadir dependencias de autenticación.
 **⚠ Gate TP8**: Proyectos de test creados en esta fase antes de codificar lógica.
 
-- [ ] T001 Eliminar `MiKompri.Users.Api/Controllers/WeatherForecastController.cs` y `MiKompri.Users.Api/WeatherForecast.cs` del proyecto (quitar del `.csproj` si están incluidos explícitamente)
-- [ ] T002 Crear proyecto xUnit `MiKompri.Users.Domain.Tests` en `test/MiKompri.Users.Domain.Tests/` con `dotnet new xunit`, añadir a `MiKompri.sln` y agregar ProjectReference a `MiKompri.Users.Domain`
-- [ ] T003 [P] Crear proyecto xUnit `MiKompri.Users.Application.Tests` en `test/MiKompri.Users.Application.Tests/`, añadir a `MiKompri.sln`, agregar ProjectReferences a `MiKompri.Users.Application` y `MiKompri.Users.Domain`
-- [ ] T004 [P] Crear proyecto xUnit `MiKompri.Users.Api.Tests` en `test/MiKompri.Users.Api.Tests/`, añadir a `MiKompri.sln`, agregar ProjectReference a `MiKompri.Users.Api` y paquete `Microsoft.AspNetCore.Mvc.Testing` 8.x
-- [ ] T005 Añadir paquete `Microsoft.AspNetCore.Authentication.JwtBearer` 8.x a `MiKompri.Users.Api/MiKompri.Users.Api.csproj`
-- [ ] T006 [P] Añadir paquetes `FluentAssertions` 6.x, `NSubstitute` 5.x y `coverlet.collector` a los tres proyectos de test (`*.Domain.Tests`, `*.Application.Tests`, `*.Api.Tests`)
+- [X] T001 Eliminar `MiKompri.Users.Api/Controllers/WeatherForecastController.cs` y `MiKompri.Users.Api/WeatherForecast.cs` del proyecto (quitar del `.csproj` si están incluidos explícitamente)
+- [X] T002 Crear proyecto xUnit `MiKompri.Users.Domain.Tests` en `test/MiKompri.Users.Domain.Tests/` con `dotnet new xunit`, añadir a `MiKompri.sln` y agregar ProjectReference a `MiKompri.Users.Domain`
+- [X] T003 [P] Crear proyecto xUnit `MiKompri.Users.Application.Tests` en `test/MiKompri.Users.Application.Tests/`, añadir a `MiKompri.sln`, agregar ProjectReferences a `MiKompri.Users.Application` y `MiKompri.Users.Domain`
+- [X] T004 [P] Crear proyecto xUnit `MiKompri.Users.Api.Tests` en `test/MiKompri.Users.Api.Tests/`, añadir a `MiKompri.sln`, agregar ProjectReference a `MiKompri.Users.Api` y paquete `Microsoft.AspNetCore.Mvc.Testing` 8.x
+- [X] T005 Añadir paquete `Microsoft.AspNetCore.Authentication.JwtBearer` 8.x a `MiKompri.Users.Api/MiKompri.Users.Api.csproj`
+- [X] T006 [P] Añadir paquetes `FluentAssertions` 6.x, `NSubstitute` 5.x y `coverlet.collector` a los tres proyectos de test (`*.Domain.Tests`, `*.Application.Tests`, `*.Api.Tests`)
 
 **Checkpoint**: Solución compila con 0 errores tras `dotnet restore MiKompri.sln`.
 
