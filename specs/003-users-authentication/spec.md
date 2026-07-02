@@ -145,7 +145,7 @@ Como miembro de un grupo, quiero consultar la lista de miembros del grupo para s
 ### Functional Requirements
 
 - **FR-001**: El sistema DEBE rechazar todas las solicitudes a endpoints protegidos que no incluyan un token de autenticación válido emitido por el proveedor de identidad configurado.
-- **FR-002**: El sistema DEBE auto-aprovisionar el perfil local del usuario autenticado en el primer request a cualquier endpoint protegido: si no existe un perfil local vinculado al claim `sub` del token, el sistema lo crea automáticamente. El claim `sub` es el único requisito obligatorio; si el token no lo contiene, la solicitud DEBE ser rechazada con **HTTP 401 Unauthorized** con un mensaje genérico que indique autenticación inválida, sin exponer detalles internos de la validación del token. Los claims `name` y `email` se mapean al perfil si están presentes en el token; si están ausentes, el nombre visible y el email quedan como cadena vacía. **Regla de negocio — DisplayName vacío**: durante el auto-provisioning el nombre visible puede quedar vacío si el proveedor de identidad no incluye el claim `name`; esta es la única situación en que el nombre visible puede estar vacío en el sistema. Las solicitudes siguientes del mismo usuario no vuelven a crear ni actualizar el perfil automáticamente.
+- **FR-002**: El sistema DEBE auto-aprovisionar el perfil local del usuario autenticado en el primer request a cualquier endpoint protegido: si no existe un perfil local vinculado al claim `sub` del token, el sistema lo crea automáticamente. El claim `sub` es el único requisito obligatorio; si el token no lo contiene, la solicitud DEBE ser rechazada con **HTTP 401 Unauthorized** con un mensaje genérico que indique autenticación inválida, sin exponer detalles internos de la validación del token. El claim `name` se mapea al campo `DisplayName` si está presente; si está ausente, `DisplayName` queda como cadena vacía. El claim `email` se mapea al campo `Email` si está presente; si está ausente, `Email` queda como **`null`** (no como cadena vacía). **Regla de negocio — DisplayName vacío**: durante el auto-provisioning el nombre visible puede quedar vacío si el proveedor de identidad no incluye el claim `name`; esta es la única situación en que el nombre visible puede estar vacío en el sistema. Las solicitudes siguientes del mismo usuario no vuelven a crear ni actualizar el perfil automáticamente.
 - **FR-003**: El sistema DEBE permitir a un usuario autenticado consultar su propio perfil local, incluyendo nombre visible, email y timestamps de trazabilidad.
 - **FR-004**: El sistema DEBE permitir a un usuario autenticado actualizar su nombre visible en el perfil local. En la actualización manual el nombre visible no puede estar vacío ni contener solo espacios. Esta restricción aplica únicamente a la operación de actualización explícita (PUT); durante el auto-provisioning (FR-002) el nombre visible puede quedar vacío si el proveedor de identidad no incluye el claim `name`.
 - **FR-005**: El sistema DEBE permitir a un usuario autenticado con perfil local crear un grupo con un nombre no vacío.
@@ -188,11 +188,19 @@ La API diferencia explícitamente entre autenticación fallida y autorización i
 - Token con claim `exp` vencido (ver SR-004).
 - Token técnicamente válido que no contiene el claim `sub` (FR-002).
 
-**HTTP 403 Forbidden** — el usuario está autenticado pero no tiene permisos suficientes:
+**HTTP 403 Forbidden** — el usuario está autenticado pero no tiene permisos suficientes (la API lanza `ForbiddenOperationException`, mapeada a 403 por `ExceptionHandlingMiddleware`):
 - Un Member intentando agregar o eliminar miembros de un grupo.
 - Un Admin intentando asignar rol Admin a un nuevo miembro.
 - Un Admin intentando eliminar a un miembro con rol Admin u Owner.
-- Un usuario autenticado accediendo a un grupo donde no es miembro.
+- Un usuario autenticado accediendo a un grupo donde no es miembro (SR-006).
+
+**HTTP 400 Bad Request** — invariante de negocio violada (la API lanza `InvalidOperationException`, mapeada a 400):
+- Intento de eliminar al último Owner del grupo.
+- Intento de agregar a un usuario que ya es miembro.
+- `DisplayName` vacío en actualización manual de perfil.
+- `name` de grupo vacío al crear grupo.
+
+> **Separación de excepciones — C2**: usar `ForbiddenOperationException` (403) para violaciones de la matriz de roles Owner/Admin/Member; usar `InvalidOperationException` (400) para invariantes de negocio; usar `KeyNotFoundException` (404) solo cuando el recurso no existe y el caller ya tiene acceso verificado al contexto.
 
 ### Security Requirements
 
@@ -201,7 +209,7 @@ La API diferencia explícitamente entre autenticación fallida y autorización i
 - **SR-003**: La API DEBE validar que el claim `audience` del token incluye el identificador de audiencia configurado para la API de Users. Tokens con audiencia incorrecta DEBEN ser rechazados con HTTP 401 Unauthorized.
 - **SR-004**: La API DEBE rechazar tokens cuyo claim `exp` haya vencido, devolviendo HTTP 401 Unauthorized.
 - **SR-005**: Los mensajes de error de autenticación y autorización NO DEBEN revelar detalles internos de la validación del token ni información estructural del sistema. Solo se expone un mensaje genérico orientado al caller.
-- **SR-006**: La API NO DEBE permitir enumerar grupos o usuarios a los que el caller no tiene acceso. Un grupo inexistente y un grupo existente donde el caller no es miembro activo DEBEN devolver el mismo código de error (HTTP 403 Forbidden) para evitar exposición de información por enumeración.
+- **SR-006**: La API NO DEBE permitir enumerar grupos o usuarios a los que el caller no tiene acceso. Un grupo inexistente y un grupo existente donde el caller no es miembro activo DEBEN devolver el mismo código de error (**HTTP 403 Forbidden**) para evitar exposición de información por enumeración. **Implementación**: los handlers de `GetGroupMembersQuery`, `AddMemberToGroupCommand` y `RemoveMemberFromGroupCommand` DEBEN lanzar `ForbiddenOperationException` (no `KeyNotFoundException`) cuando el grupo no existe, de forma que el middleware mapee ambos casos al mismo 403.
 
 ### Key Entities *(include if feature involves data)*
 

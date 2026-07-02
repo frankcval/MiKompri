@@ -11,8 +11,10 @@
 - Todos los timestamps en ISO 8601 UTC: `"2026-07-12T10:30:00Z"`
 - Respuestas de error: estructura compartida con ShoppingList (middleware existente)
 - `GroupRole` como string: `"Owner"` | `"Admin"` | `"Member"`
-- Errores de validación → `400`; No autenticado / token inválido / `sub` ausente → `401`; Autenticado sin permisos → `403`; No encontrado → `404`
+- Errores de validación → `400`; No autenticado / token inválido / `sub` ausente → `401`; Autenticado sin permisos (violaciones de matriz de roles) → `403`; No encontrado (cuando el caller ya tiene acceso verificado) → `404`
+- **C2 — Excepción de dominio**: `ForbiddenOperationException` (dominio) → `403`; `InvalidOperationException` (dominio) → `400`; `KeyNotFoundException` → `404`
 - **SR-006**: Para `GET /groups/{id}/members`, `POST /groups/{id}/members` y `DELETE /groups/{id}/members/{uid}`, grupo inexistente y caller sin membresía devuelven **el mismo `403`** para evitar enumeración de grupos
+- **C4 — Campo `email`**: `null` cuando el claim `email` no está presente en el token (nunca cadena vacía); los clientes DEBEN tratar `null` como ausencia de email
 - Endpoint de sincronización de perfil: `POST /api/v1/users/me/sync` (devuelve `201` si crea perfil, `200` si actualiza)
 
 ### Forma de error estándar

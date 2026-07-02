@@ -27,6 +27,29 @@ UpdatedAt = DateTime.UtcNow;
 
 ---
 
+### ForbiddenOperationException *(excepción de dominio — CREAR)*
+
+```csharp
+// MiKompri.Users.Domain/Abstractions/ForbiddenOperationException.cs  — CREAR
+/// <summary>
+/// Excepción de dominio para operaciones donde el caller está autenticado
+/// pero no tiene permisos suficientes según la matriz Owner/Admin/Member.
+/// El ExceptionHandlingMiddleware de Users.Api la mapea a HTTP 403 Forbidden.
+/// NO usarla para reglas de negocio (usar InvalidOperationException para esas → 400).
+/// </summary>
+public sealed class ForbiddenOperationException : Exception
+{
+    public ForbiddenOperationException(string message) : base(message) { }
+}
+```
+
+> **Separación de responsabilidades — C2**:
+> - `InvalidOperationException` → HTTP **400** (reglas de negocio: último Owner eliminado, miembro duplicado, nombre vacío).
+> - `ForbiddenOperationException` → HTTP **403** (violaciones de privilegio de rol: quién puede hacer qué a quién según la matriz Owner/Admin/Member).
+> - `KeyNotFoundException` → HTTP **404** (recurso no encontrado cuando el caller ya tiene acceso verificado).
+
+---
+
 ### GroupRole (enum)
 
 ```csharp
@@ -144,26 +167,31 @@ public class Group : Entity
 		return membership;
 	}
 
-	// FR-009: eliminar miembro — con reglas de privilegio de rol
-	// requestingRole: rol del caller; targetUserId: miembro a eliminar
+	// FR-009 / FR-010: eliminar miembro con reglas de privilegio de rol + protección de último Owner
+	// Invariantes de dominio (InvalidOperationException → 400):
+	//   · No se puede eliminar al último Owner del grupo (FR-010)
+	// Violaciones de autorización (ForbiddenOperationException → 403):
+	//   · Admin no puede eliminar a Admin ni a Owner (FR-009)
+	// Nota: el handler verifica que el CALLER tiene permiso ANTES de llegar aquí.
 	public void RemoveMember(Guid targetUserId, GroupRole requestingRole)
 	{
 		var target = _memberships.FirstOrDefault(m => m.UserId == targetUserId)
 			?? throw new KeyNotFoundException("El usuario no es miembro del grupo.");
 
-		// Nadie puede eliminar al Owner
-		if (target.Role == GroupRole.Owner)
-			throw new InvalidOperationException("No se puede eliminar al propietario del grupo.");
+		// FR-010: no se puede eliminar al último Owner (400 — invariante de negocio)
+		// Un Owner puede eliminar a otro Owner si hay más de uno.
+		if (target.Role == GroupRole.Owner && HasSingleOwner())
+			throw new InvalidOperationException("No se puede eliminar al último propietario del grupo. El grupo debe tener al menos un Owner.");
 
-		// Admin no puede eliminar a otro Admin (Q2)
-		if (requestingRole == GroupRole.Admin && target.Role == GroupRole.Admin)
-			throw new InvalidOperationException("Un Admin no puede eliminar a otro Admin.");
+		// FR-009 — C2: Admin no puede eliminar a Admin ni a Owner (403 — violación de autorización de rol)
+		if (requestingRole == GroupRole.Admin && target.Role != GroupRole.Member)
+			throw new ForbiddenOperationException("Un Admin solo puede eliminar miembros con rol Member.");
 
 		_memberships.Remove(target);
 		UpdatedAt = DateTime.UtcNow;
 	}
 
-	// FR-010: protección de último Owner (llamar antes de RemoveMember si el target es Owner)
+	// FR-010: protección de último Owner — invocado dentro de RemoveMember; también útil en tests de dominio
 	public bool HasSingleOwner() =>
 		_memberships.Count(m => m.Role == GroupRole.Owner) == 1;
 
@@ -214,6 +242,10 @@ public class GroupMembership : Entity
 	}
 }
 ```
+
+> **⚠ Sc1 — Out of Scope en iteración 003**: `ChangeRole()` está definido como preparación para una feature futura pero **no debe ser invocado por ningún handler de esta feature**. El cambio de rol de un miembro existente queda explícitamente fuera de alcance (spec.md §Out of Scope: "No se implementa cambio de rol de miembro existente"). Si la implementación invoca `ChangeRole()`, se trata como scope creep y debe rechazarse en revisión de PR.
+
+> **A1 — Constitution PP4 (trazabilidad colaborativa)**: `OwnerId` en `Group` identifica al creador/propietario del grupo; `UserId` en `GroupMembership` identifica al miembro. Estos campos satisfacen el principio PP4 de trazabilidad sin requerir columnas adicionales `CreatedBy`/`UpdatedBy` — el vínculo usuario→acción está implícito en la estructura de pertenencia y membresía de esta feature.
 
 ---
 
