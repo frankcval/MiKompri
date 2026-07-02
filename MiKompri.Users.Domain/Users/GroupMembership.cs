@@ -1,9 +1,4 @@
 ﻿using MiKompri.Users.Domain.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MiKompri.Users.Domain.Users
 {
@@ -12,6 +7,7 @@ namespace MiKompri.Users.Domain.Users
         public Guid GroupId { get; private set; }
         public Guid UserId { get; private set; }
         public GroupRole Role { get; private set; }
+        public DateTime JoinedAt { get; private set; }
 
         private GroupMembership() { } // para EF
 
@@ -21,6 +17,9 @@ namespace MiKompri.Users.Domain.Users
             GroupId = groupId;
             UserId = userId;
             Role = role;
+            JoinedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public static GroupMembership Create(Guid groupId, Guid userId, GroupRole role)
@@ -28,8 +27,8 @@ namespace MiKompri.Users.Domain.Users
 
         public void ChangeRole(GroupRole newRole)
         {
-            // podrías meter reglas (no permitir bajar de Owner a Member si no hay otro Owner, etc.)
             Role = newRole;
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }

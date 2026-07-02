@@ -1,9 +1,4 @@
 ﻿using MiKompri.Users.Domain.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MiKompri.Users.Domain.Users
 {
@@ -27,6 +22,8 @@ namespace MiKompri.Users.Domain.Users
             Id = Guid.NewGuid();
             Name = name;
             OwnerId = ownerId;
+            CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
 
             // El owner también es miembro con rol Owner, se inserta automáticamente
             var ownerMembership = GroupMembership.Create(Id, ownerId, GroupRole.Owner);
@@ -39,7 +36,14 @@ namespace MiKompri.Users.Domain.Users
                 throw new ArgumentException("El nombre del grupo no puede estar vacío.", nameof(newName));
 
             Name = newName;
+            UpdatedAt = DateTime.UtcNow;
         }
+
+        /// <summary>
+        /// Devuelve el rol del miembro, o <c>null</c> si el usuario no pertenece al grupo.
+        /// </summary>
+        public GroupRole? GetMemberRole(Guid userId)
+            => _memberships.FirstOrDefault(m => m.UserId == userId)?.Role;
 
         public GroupMembership AddMember(Guid userId, GroupRole role)
         {
@@ -48,20 +52,39 @@ namespace MiKompri.Users.Domain.Users
 
             var membership = GroupMembership.Create(Id, userId, role);
             _memberships.Add(membership);
+            UpdatedAt = DateTime.UtcNow;
 
             return membership;
         }
 
-        public void RemoveMember(Guid userId)
+        /// <summary>
+        /// Elimina la membresía de <paramref name="targetUserId"/> según la matriz de privilegios.
+        /// Orden de reglas (C1 → C2 → eliminación):
+        /// <list type="number">
+        ///   <item>Target no existe → <see cref="KeyNotFoundException"/> (400 vía middleware)</item>
+        ///   <item>Último Owner → <see cref="InvalidOperationException"/> (400, FR-010)</item>
+        ///   <item>Admin intenta eliminar no-Member → <see cref="ForbiddenOperationException"/> (403, FR-009)</item>
+        /// </list>
+        /// </summary>
+        public void RemoveMember(Guid targetUserId, GroupRole requestingRole)
         {
-            var membership = _memberships.FirstOrDefault(m => m.UserId == userId);
-            if (membership is null)
+            // (a) El target debe ser miembro
+            var target = _memberships.FirstOrDefault(m => m.UserId == targetUserId);
+            if (target is null)
                 throw new KeyNotFoundException("El usuario no es miembro del grupo.");
 
-            if (membership.Role == GroupRole.Owner)
-                throw new InvalidOperationException("No se puede eliminar al dueño del grupo.");
+            // (b) Protección del último Owner [C1, FR-010]
+            if (target.Role == GroupRole.Owner && HasSingleOwner())
+                throw new InvalidOperationException(
+                    "No se puede eliminar al último propietario del grupo.");
 
-            _memberships.Remove(membership);
+            // (c) Un Admin solo puede eliminar Members [C2, FR-009]
+            if (requestingRole == GroupRole.Admin && target.Role != GroupRole.Member)
+                throw new ForbiddenOperationException(
+                    "Un Admin solo puede eliminar miembros con rol Member.");
+
+            _memberships.Remove(target);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void ChangeMemberRole(Guid userId, GroupRole newRole)
@@ -71,8 +94,14 @@ namespace MiKompri.Users.Domain.Users
                 throw new KeyNotFoundException("El usuario no es miembro del grupo.");
 
             membership.ChangeRole(newRole);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public bool IsOwner(Guid userId) => OwnerId == userId;
+
+        // --- helpers privados ---
+
+        private bool HasSingleOwner()
+            => _memberships.Count(m => m.Role == GroupRole.Owner) == 1;
     }
 }
