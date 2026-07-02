@@ -17,26 +17,8 @@ namespace MiKompri.ShoppingList.Application.Queries.GetShoppingListsByOwner
                 ?? throw new KeyNotFoundException("No hay lista de compra para este owner");
 
 
-            return list.Select(lst => new PurchaseListDTO
-            {
-                Id = lst.Id,
-                OwnerId = lst.OwnerId,
-                CompletionPercentage = lst.Progress.Percentage,
-                Name = lst.Name,
-                GroupId = lst.GroupId,
-                Items = lst.Items.Select(item => new ListItemDto
-                {
-                    Id = item.Id,
-                    IsPurchased = item.IsPurchased,
-                    ProducId = item.ProductId,
-                    ProductName = item.Name,
-                    ProductPrice = item.Price,
-                    Quantity = item.Quantity
+            return list.Select(lst => lst.ToDto());
 
-                }).ToList()
-            });
-
-           
 
         }
     }

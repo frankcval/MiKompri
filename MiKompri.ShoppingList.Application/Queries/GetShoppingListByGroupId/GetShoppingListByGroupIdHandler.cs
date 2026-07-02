@@ -13,26 +13,10 @@ namespace MiKompri.ShoppingList.Application.Queries.GetShoppingListByGroupId
         }
         public async Task<IEnumerable<PurchaseListDTO>> Handle(GetShoppingListByGroupIdQuery request, CancellationToken cancellationToken)
         {
-            var list = await _repo.GetByOwnerAsync(request.GroupId)
+            var list = await _repo.GetByGroupAsync(request.GroupId)
                 ?? throw new KeyNotFoundException("Lista no existe");
 
-            return list.Select(x => new PurchaseListDTO
-            {
-                Id = x.Id,
-                Name = x.Name,
-                GroupId = x.GroupId,
-                OwnerId = x.OwnerId,
-                CompletionPercentage = x.Progress.Percentage,
-                Items = x.Items.Select(i => new ListItemDto
-                {
-                    Id = i.Id,
-                    IsPurchased = i.IsPurchased,
-                    ProducId = i.ProductId,
-                    ProductName = i.Name,
-                    ProductPrice = i.Price,
-                    Quantity = i.Quantity
-                }).ToList()
-            });
+            return list.Select(x => x.ToDto());
 
         }
     }

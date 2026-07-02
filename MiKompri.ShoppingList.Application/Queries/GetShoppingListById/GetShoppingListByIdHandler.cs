@@ -19,23 +19,7 @@ namespace MiKompri.ShoppingList.Application.Queries.GetShoppingListById
             var list = await _repo.GetByIdAsync(request.Id)
                 ?? throw new KeyNotFoundException("Lista no encontrada");
 
-            return new PurchaseListDTO
-            {
-                Id = list.Id,
-                Name = list.Name,
-                GroupId = list.GroupId,
-                CompletionPercentage = list.Progress.Percentage,
-                OwnerId = list.OwnerId,
-                Items = list.Items.Select(i => new ListItemDto
-                {
-                    Id = i.Id,
-                    IsPurchased = i.IsPurchased,
-                    ProducId = i.ProductId,
-                    ProductName = i.Name,
-                    ProductPrice = i.Price,
-                    Quantity = i.Quantity
-                }).ToList()
-            };
+            return list.ToDto();
         }
     }
 }

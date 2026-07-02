@@ -12,10 +12,30 @@
   <ItemGroup>
     <None Include=".github\workflows\cd-mikompri-shoppinglist.yml" />
     <None Include=".github\workflows\ci-mikompri-shoppinglist.yml" />
+    <None Include=".specify\feature.json" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="docs\adr\ADR-001-azure-deployment.md" />
+    <None Include="docs\adr\ADR-002-migrations-strategy.md" />
+    <None Include="docs\adr\ADR-003-adr-format.md" />
+    <None Include="README.md" />
+    <None Include="specs\001-project-baseline\checklists\requirements.md" />
+    <None Include="specs\001-project-baseline\contracts\adr-template.md" />
+    <None Include="specs\001-project-baseline\contracts\rest-conventions.md" />
+    <None Include="specs\001-project-baseline\data-model.md" />
+    <None Include="specs\001-project-baseline\quickstart.md" />
+    <None Include="specs\001-project-baseline\research.md" />
+    <None Include="specs\001-project-baseline\spec.md" />
+    <None Include="specs\001-project-baseline\tasks.md" />
+    <None Include="specs\002-shopping-list-core\checklists\requirements.md" />
+    <None Include="specs\002-shopping-list-core\contracts\shoppinglist-core-api.md" />
+    <None Include="specs\002-shopping-list-core\data-model.md" />
+    <None Include="specs\002-shopping-list-core\plan.md" />
+    <None Include="specs\002-shopping-list-core\quickstart.md" />
+    <None Include="specs\002-shopping-list-core\research.md" />
+    <None Include="specs\002-shopping-list-core\tasks.md" />
   </ItemGroup>
 </Project>

@@ -20,7 +20,7 @@ namespace MiKompri.ShoppingList.Application.Commands.MarkItemAsPurchased
 
             list.MarkItemAsPurchased(request.ItemId);
             await _repo.UpdateAsync(list);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

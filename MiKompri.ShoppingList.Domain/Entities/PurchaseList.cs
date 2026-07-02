@@ -24,26 +24,52 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public PurchaseList(string name, Guid ownerId, Guid? groupId = null)
         {
-            Name = name;
-            OwnerId = ownerId;
+            Name = NormalizeName(name);
+            OwnerId = ownerId != Guid.Empty
+                ? ownerId
+                : throw new InvalidOperationException("El propietario de la lista es obligatorio.");
             GroupId = groupId;
+        }
+
+        private static string NormalizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidOperationException("El nombre de la lista es obligatorio.");
+
+            return name.Trim();
         }
 
 
         public void Rename(string newName)
         {
-            Name = newName;
+            var normalizedName = NormalizeName(newName);
+            if (Name == normalizedName)
+            {
+                return;
+            }
+
+            Name = normalizedName;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void ChangeGroup(Guid? newGroupId)
         {
+            if (GroupId == newGroupId)
+            {
+                return;
+            }
+
             GroupId = newGroupId;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void UpdateDescription(string? newDescription)
         {
+            if (Description == newDescription)
+            {
+                return;
+            }
+
             Description = newDescription;
             UpdatedAt = DateTime.UtcNow;
         }
@@ -95,7 +121,10 @@ namespace MiKompri.ShoppingList.Domain.Entities
                 item.updateQuantity(newQuantity.Value);
             }
 
-            UpdatedAt = DateTime.UtcNow;
+            if (item.UpdatedAt.HasValue)
+            {
+                UpdatedAt = item.UpdatedAt.Value;
+            }
         }
 
         public void DeleteItem(Guid productId)
@@ -112,8 +141,11 @@ namespace MiKompri.ShoppingList.Domain.Entities
         public void MarkItemAsPurchased(Guid productId)
         {
             var item = _items.FirstOrDefault(i => i.ProductId == productId)
-                        ?? throw new ArgumentNullException("Producto no encontrado");
-            item.MarkAsPurchased();
+                        ?? throw new InvalidOperationException("El item no existe en la lista");
+            if (item.MarkAsPurchased())
+            {
+                UpdatedAt = item.UpdatedAt;
+            }
         }
 
 

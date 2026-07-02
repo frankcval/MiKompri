@@ -47,11 +47,11 @@ namespace MiKompri.ShoppingList.Api.Middleware
                         {
                             status = (int)statusCode,
                             error = "La petición no es válida",
+                            traceId = correlationId,
                             errors = ve.Errors.Select(e => new
                             {
                                 field = e.PropertyName,
-                                message = e.ErrorMessage,
-                                traceId = correlationId   // <- muy útil para buscar en logs
+                                message = e.ErrorMessage
                             })
                         };
                         break;

@@ -21,26 +21,8 @@ namespace MiKompri.ShoppingList.Application.Queries.GetAllShoppingLists
         public async Task<IEnumerable<PurchaseListDTO>> Handle(GetAllShoppingListsQuery request, CancellationToken cancellationToken)
         {
             var lists = await _repo.GetAllAsync() ?? Enumerable.Empty<PurchaseList>(); ;
-              //  ?? Task.FromResult<IEnumerable<Domain.Entities.PurchaseList>>(new List<Domain.Entities.PurchaseList>());    
-                
-                return lists.Select(pl => new PurchaseListDTO
-                    {
-                        Id = pl.Id,
-                        Name = pl.Name,
-                        OwnerId = pl.OwnerId,
-                        GroupId = pl.GroupId,
-                        CompletionPercentage = pl.Progress.Percentage,
-                        Items = pl.Items.Select(li => new ListItemDto
-                        {
-                            Id = li.Id,
-                            ProductName = li.Name,
-                            IsPurchased = li.IsPurchased,
-                            Quantity = li.Quantity,
-                            ProducId = li.ProductId,
-                            ProductPrice = li.Price
 
-                        }).ToList()
-                    });
+            return lists.Select(pl => pl.ToDto());
         }
     }
 }

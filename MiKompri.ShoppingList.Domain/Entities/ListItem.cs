@@ -14,6 +14,8 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public Guid PurchaseListId { get; private set; }         // FK a PurchaseList
         public PurchaseList PurchaseList { get; private set; } = null!;
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; private set; }
 
         public ListItem()
         {
@@ -23,11 +25,37 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public ListItem(Guid productId, string name, decimal price, int quantity)
         {
-            ProductId = productId;
-            Name = name;
-            Price = price;
-            Quantity = quantity;
+            ProductId = productId != Guid.Empty
+                ? productId
+                : throw new InvalidOperationException("El producto del item es obligatorio.");
+            Name = NormalizeName(name);
+            Price = NormalizePrice(price);
+            Quantity = NormalizeQuantity(quantity);
             IsPurchased = false;
+        }
+
+        private static string NormalizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidOperationException("El nombre del item es obligatorio.");
+
+            return name.Trim();
+        }
+
+        private static decimal NormalizePrice(decimal price)
+        {
+            if (price < 0)
+                throw new InvalidOperationException("El precio del item no puede ser negativo.");
+
+            return price;
+        }
+
+        private static int NormalizeQuantity(int quantity)
+        {
+            if (quantity <= 0)
+                throw new InvalidOperationException("La cantidad del item debe ser mayor que cero.");
+
+            return quantity;
         }
 
         internal void SetPurchaseList(PurchaseList list)
@@ -38,20 +66,51 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public void updateName(string name)
         {
-            Name = name;
+            var normalizedName = NormalizeName(name);
+            if (Name == normalizedName)
+            {
+                return;
+            }
+
+            Name = normalizedName;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void updatePrice(decimal price)
         {
-            Price = price;
+            var normalizedPrice = NormalizePrice(price);
+            if (Price == normalizedPrice)
+            {
+                return;
+            }
+
+            Price = normalizedPrice;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void updateQuantity(int quantity)
         {
-            Quantity = quantity;
+            var normalizedQuantity = NormalizeQuantity(quantity);
+            if (Quantity == normalizedQuantity)
+            {
+                return;
+            }
+
+            Quantity = normalizedQuantity;
+            UpdatedAt = DateTime.UtcNow;
         }
 
 
-        public void MarkAsPurchased() => IsPurchased = true;
+        public bool MarkAsPurchased()
+        {
+            if (IsPurchased)
+            {
+                return false;
+            }
+
+            IsPurchased = true;
+            UpdatedAt = DateTime.UtcNow;
+            return true;
+        }
     }
 }
