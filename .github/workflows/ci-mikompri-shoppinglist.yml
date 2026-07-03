@@ -16,6 +16,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -45,8 +47,6 @@ jobs:
 
       # --- SONARCLOUD: comenzar análisis ---
       - name: SonarCloud - Begin analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         if: ${{ env.SONAR_TOKEN != '' }}
         run: |
           dotnet-sonarscanner begin \
@@ -85,8 +85,6 @@ jobs:
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
       - name: SonarCloud - End analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         if: ${{ env.SONAR_TOKEN != '' }}
         run: |
           dotnet-sonarscanner end \
