@@ -71,11 +71,15 @@ namespace MiKompri.Users.Api.Controllers
             var identityProvider = _configuration["Authentication:IdentityProvider"] ?? "entra";
 
             var command = new SyncProfileCommand(identityProvider, sub, displayName, email);
-            var (_, created) = await _sender.Send(command, ct);
+            var (_, createdByEndpoint) = await _sender.Send(command, ct);
+
+            var createdByMiddleware = HttpContext.Items.TryGetValue("ProfileCreatedInMiddleware", out var middlewareValue)
+                && middlewareValue is bool created
+                && created;
 
             var profile = await _sender.Send(new GetMyProfileQuery(), ct);
 
-            return created
+            return (createdByEndpoint || createdByMiddleware)
                 ? CreatedAtAction(nameof(GetMyProfile), profile)
                 : Ok(profile);
         }

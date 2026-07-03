@@ -264,6 +264,17 @@ Invoke-RestMethod -Uri "http://localhost:8082/health"
 
 ---
 
+## Registro de validación (Phase 10)
+
+- **Fecha**: 2026-07-03
+- **Entorno**: Docker Compose local (`mikompriusersapi` en `http://localhost:8082`, PostgreSQL en contenedor)
+- **Condiciones verificadas**:
+  - Build solución Release OK (`dotnet build MiKompri.sln --configuration Release --no-restore`)
+  - Tests Users OK (Domain/Application/API)
+  - Health endpoint OK (`/health` => `{ "status": "Healthy" }`)
+  - Swagger UI y esquema OpenAPI con seguridad Bearer visibles (`/swagger`, `/swagger/v1/swagger.json`)
+  - Cobertura funcional de escenarios 1–8 validada por suite automatizada de `MiKompri.Users.Api.Tests` (`ProfileApiTests` + `GroupsApiTests`) y smoke manual en entorno Docker para autenticación y disponibilidad.
+
 ## Referencias
 
 - Contrato REST: [contracts/users-api.md](./contracts/users-api.md)

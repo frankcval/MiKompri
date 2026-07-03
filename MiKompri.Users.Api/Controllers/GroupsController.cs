@@ -87,8 +87,13 @@ namespace MiKompri.Users.Api.Controllers
             var command = new AddMemberToGroupCommand(groupId, request.UserId, role);
             await _sender.Send(command, ct);
 
-            var members = await _sender.Send(new GetGroupMembersQuery(groupId), ct);
-            var added = members.First(m => m.UserId == request.UserId);
+            var added = new GroupMemberDto
+            {
+                UserId = request.UserId,
+                Role = role.ToString(),
+                DisplayName = string.Empty,
+                JoinedAt = DateTime.UtcNow
+            };
 
             return CreatedAtAction(nameof(GetMembers), new { groupId }, added);
         }

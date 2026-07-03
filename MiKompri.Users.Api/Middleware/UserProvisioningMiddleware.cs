@@ -50,6 +50,7 @@ namespace MiKompri.Users.Api.Middleware
                 context.RequestAborted);
 
             context.Items["UserId"] = result.UserId;
+            context.Items["ProfileCreatedInMiddleware"] = result.Created;
 
             await _next(context);
         }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +11,7 @@ using MiKompri.Users.Application.Abstractions;
 using MiKompri.Users.Infrastructure;
 using MiKompri.Users.Infrastructure.Persistence;
 using Serilog;
+using System.Text.Json;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -103,7 +105,10 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
     db.Database.Migrate();
+}
 
+if (!app.Environment.IsProduction())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -116,7 +121,15 @@ app.UseAuthorization();
 app.UseMiddleware<UserProvisioningMiddleware>();
 
 app.MapControllers();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var payload = JsonSerializer.Serialize(new { status = report.Status.ToString() });
+        await context.Response.WriteAsync(payload);
+    }
+});
 
 app.Run();
 
