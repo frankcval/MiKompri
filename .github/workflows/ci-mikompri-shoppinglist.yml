@@ -45,6 +45,7 @@ jobs:
 
       # --- SONARCLOUD: comenzar análisis ---
       - name: SonarCloud - Begin analysis
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -84,6 +85,7 @@ jobs:
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
       - name: SonarCloud - End analysis
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
