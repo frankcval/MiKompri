@@ -78,10 +78,7 @@ namespace MiKompri.Users.Api.Controllers
             if (!Enum.TryParse<GroupRole>(request.Role, ignoreCase: true, out var role) ||
                 role is not (GroupRole.Member or GroupRole.Admin))
             {
-                return BadRequest(new
-                {
-                    error = $"Rol '{request.Role}' no válido. Valores permitidos: Member, Admin."
-                });
+                throw new InvalidOperationException($"Rol '{request.Role}' no válido. Valores permitidos: Member, Admin.");
             }
 
             var command = new AddMemberToGroupCommand(groupId, request.UserId, role);
