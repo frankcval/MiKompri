@@ -4,7 +4,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      - ConnectionStrings__PostgreSQL=Host=postgres;Port=5432;Database=MiKompri_ShoppingList;Username=postgres;Password=12345
+      - ConnectionStrings__PostgreSQ L= "Host=postgres;Port=5432;Database=MiKompri_ShoppingList;Username=postgres;Password=12345"
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -13,14 +13,3 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  mikompriusersapi:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ConnectionStrings__UsersPostgreSQL=Host=postgres;Port=5432;Database=MiKompri_Users;Username=postgres;Password=12345
-      - Authentication__Authority=https://login.microsoftonline.com/common/v2.0
-      - Authentication__Audience=mikompri-users
-      - Authentication__IdentityProvider=entra
-    ports:
-      - "8082:8080"

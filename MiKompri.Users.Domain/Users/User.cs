@@ -1,4 +1,9 @@
 ﻿using MiKompri.Users.Domain.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MiKompri.Users.Domain.Users
 {
@@ -15,6 +20,8 @@ namespace MiKompri.Users.Domain.Users
         private readonly List<GroupMembership> _memberships = new();
         public IReadOnlyCollection<GroupMembership> Memberships => _memberships.AsReadOnly();
 
+         
+
         // Constructor privado para EF
         private User() { }
 
@@ -29,49 +36,15 @@ namespace MiKompri.Users.Domain.Users
             Email = email;
             IdentityProvider = identityProvider;
             ExternalUserId = externalUserId;
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>
-        /// Sincroniza los claims del IdP con el perfil local.
-        /// Solo actualiza <see cref="UpdatedAt"/> si hubo al menos un cambio real,
-        /// garantizando idempotencia en llamadas consecutivas con los mismos datos.
-        /// </summary>
-        public void SyncClaims(string? displayName, string? email)
-        {
-            bool changed = false;
-
-            if (displayName != null && displayName != DisplayName)
-            {
-                DisplayName = displayName;
-                changed = true;
-            }
-
-            if (email != Email)
-            {
-                Email = email;
-                changed = true;
-            }
-
-            if (changed)
-                UpdatedAt = DateTime.UtcNow;
-        }
-
-        /// <summary>
-        /// Actualiza el nombre visible por iniciativa del usuario (FR-004).
-        /// El email no es editable directamente por el usuario; se sincroniza vía <see cref="SyncClaims"/>.
-        /// </summary>
-        public void UpdateProfile(string displayName)
+        public void UpdateProfile(string displayName, string? email)
         {
             if (string.IsNullOrWhiteSpace(displayName))
                 throw new InvalidOperationException("El nombre no puede estar vacío.");
 
-            if (displayName == DisplayName)
-                return;
-
             DisplayName = displayName;
-            UpdatedAt = DateTime.UtcNow;
+            Email = email;
         }
     }
 }

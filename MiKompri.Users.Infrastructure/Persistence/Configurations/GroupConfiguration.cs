@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MiKompri.Users.Domain.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MiKompri.Users.Infrastructure.Persistence.Configurations
 {
@@ -17,12 +22,6 @@ namespace MiKompri.Users.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(g => g.OwnerId)
-                .IsRequired();
-
-            builder.Property(g => g.CreatedAt)
-                .IsRequired();
-
-            builder.Property(g => g.UpdatedAt)
                 .IsRequired();
 
             // Índice para consultas por Owner

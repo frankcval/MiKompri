@@ -37,14 +37,5 @@
     <None Include="specs\002-shopping-list-core\quickstart.md" />
     <None Include="specs\002-shopping-list-core\research.md" />
     <None Include="specs\002-shopping-list-core\tasks.md" />
-    <None Include="specs\003-users-authentication\checklists\requirements.md" />
-    <None Include="specs\003-users-authentication\checklists\spec-quality.md" />
-    <None Include="specs\003-users-authentication\contracts\users-api.md" />
-    <None Include="specs\003-users-authentication\data-model.md" />
-    <None Include="specs\003-users-authentication\plan.md" />
-    <None Include="specs\003-users-authentication\quickstart.md" />
-    <None Include="specs\003-users-authentication\research.md" />
-    <None Include="specs\003-users-authentication\spec.md" />
-    <None Include="specs\003-users-authentication\tasks.md" />
   </ItemGroup>
 </Project>

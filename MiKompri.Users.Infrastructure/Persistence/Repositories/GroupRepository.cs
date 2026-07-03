@@ -42,23 +42,7 @@ namespace MiKompri.Users.Infrastructure.Persistence.Repositories
 
         public async Task UpdateAsync(Group group, CancellationToken cancellationToken = default)
         {
-            // En ciertos proveedores (especialmente InMemory en tests), nuevas memberships del agregado
-            // pueden quedar marcadas como Modified en vez de Added. Eso provoca DbUpdateConcurrencyException.
-            var modifiedMembershipEntries = _context.ChangeTracker
-                .Entries<GroupMembership>()
-                .Where(e => e.State == EntityState.Modified)
-                .ToList();
-
-            foreach (var entry in modifiedMembershipEntries)
-            {
-                var exists = await _context.GroupMemberships
-                    .AsNoTracking()
-                    .AnyAsync(m => m.Id == entry.Entity.Id, cancellationToken);
-
-                if (!exists)
-                    entry.State = EntityState.Added;
-            }
-
+            _context.Groups.Update(group);
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

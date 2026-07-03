@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MiKompri.Users.Domain.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MiKompri.Users.Infrastructure.Persistence.Configurations
 {
@@ -18,19 +23,11 @@ namespace MiKompri.Users.Infrastructure.Persistence.Configurations
             builder.Property(m => m.UserId)
                 .IsRequired();
 
-            // Enum almacenado como string para legibilidad y seguridad ante reordenación de valores
+            // Guardamos el enum GroupRole como string o int.
+            // Yo te recomiendo string para legibilidad, pero puedes usar int si prefieres.
             builder.Property(m => m.Role)
-                .HasConversion<string>()
+                .HasConversion<string>()   // enum ↔ string
                 .HasMaxLength(50)
-                .IsRequired();
-
-            builder.Property(m => m.JoinedAt)
-                .IsRequired();
-
-            builder.Property(m => m.CreatedAt)
-                .IsRequired();
-
-            builder.Property(m => m.UpdatedAt)
                 .IsRequired();
 
             // Constraint única: un usuario no puede tener dos memberships en el mismo grupo

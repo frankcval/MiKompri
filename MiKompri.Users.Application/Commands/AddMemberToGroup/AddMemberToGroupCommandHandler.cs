@@ -1,7 +1,11 @@
 ﻿using MediatR;
 using MiKompri.Users.Application.Abstractions;
-using MiKompri.Users.Domain.Abstractions;
 using MiKompri.Users.Domain.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MiKompri.Users.Application.Commands.AddMemberToGroup
 {
@@ -21,30 +25,30 @@ namespace MiKompri.Users.Application.Commands.AddMemberToGroup
             _userRepository = userRepository;
         }
 
+
         public async Task Handle(AddMemberToGroupCommand request, CancellationToken cancellationToken)
         {
+            if (!_currentUser.IsAuthenticated)
+                throw new InvalidOperationException("Usuario no autenticado.");
+
             var currentUserId = _currentUser.UserId;
 
-            // (a) Grupo no encontrado → 403 para evitar enumeración de grupos [G1, SR-006]
+            // 1) Cargar el grupo
             var group = await _groupRepository.GetByIdAsync(request.GroupId, cancellationToken)
-                ?? throw new ForbiddenOperationException("Acceso denegado.");
+                        ?? throw new KeyNotFoundException("Grupo no encontrado.");
 
-            // (b) El caller debe ser Owner o Admin [C2, FR-012]
-            var callerRole = group.GetMemberRole(currentUserId);
-            if (callerRole is null || callerRole == GroupRole.Member)
-                throw new ForbiddenOperationException("No tienes permisos para añadir miembros a este grupo.");
+            // 2) Regla de negocio: solo el owner puede añadir miembros
+            if (!group.IsOwner(currentUserId))
+                throw new InvalidOperationException("Solo el propietario del grupo puede añadir miembros.");
 
-            // (c) Un Admin no puede asignar rol Admin [C2, FR-007]
-            if (callerRole == GroupRole.Admin && request.Role == GroupRole.Admin)
-                throw new ForbiddenOperationException("Solo el Owner puede asignar rol Admin.");
-
-            // (d) Verificar que el usuario a agregar existe [400 — error del caller, no 404]
+            // 3) Cargar el usuario a añadir
             var memberUser = await _userRepository.GetByIdAsync(request.MemberUserId, cancellationToken)
-                ?? throw new InvalidOperationException("El usuario especificado no existe en el sistema.");
+                             ?? throw new KeyNotFoundException("Usuario a añadir no encontrado.");
 
-            // (e) Añadir miembro; el dominio aplica la regla de duplicados [FR-007]
+            // 4) Añadir al miembro
             group.AddMember(memberUser.Id, request.Role);
 
+            // 5) Guardar cambios
             await _groupRepository.UpdateAsync(group, cancellationToken);
         }
     }
