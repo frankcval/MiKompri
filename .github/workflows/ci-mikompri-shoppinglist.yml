@@ -45,9 +45,9 @@ jobs:
 
       # --- SONARCLOUD: comenzar análisis ---
       - name: SonarCloud - Begin analysis
-        if: ${{ secrets.SONAR_TOKEN != '' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        if: ${{ env.SONAR_TOKEN != '' }}
         run: |
           dotnet-sonarscanner begin \
             /k:"frankcval_MiKompri" \
@@ -85,9 +85,9 @@ jobs:
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
       - name: SonarCloud - End analysis
-        if: ${{ secrets.SONAR_TOKEN != '' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        if: ${{ env.SONAR_TOKEN != '' }}
         run: |
           dotnet-sonarscanner end \
             /d:sonar.token="${SONAR_TOKEN}"
