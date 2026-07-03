@@ -39,11 +39,11 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
 
             // C5: guardar solo si SyncClaims produjo un cambio real (idempotencia)
             var previousUpdatedAt = user.UpdatedAt;
-            user.SyncClaims(request.DisplayName, request.Email);
+            var email = string.IsNullOrEmpty(request.Email) ? null : request.Email;
+            user.SyncClaims(request.DisplayName, email);
 
             if (user.UpdatedAt != previousUpdatedAt)
                 await _userRepository.UpdateAsync(user, cancellationToken);
-
             return (user.Id, Created: false);
         }
     }
