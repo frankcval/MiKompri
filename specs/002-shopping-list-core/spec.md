@@ -1,5 +1,12 @@
 # Feature Specification: Shopping List Core Hardening
 
+> **MVP relacionado**: MVP-0 — Listas de compra personales / Shopping List Core
+>
+> **Tipo de trabajo**: Hardening y cierre funcional del core de listas de compra ya existente
+> antes de la adopción de GitHub Spec Kit. Esta spec no define un MVP nuevo; consolida y
+> completa la funcionalidad del MVP-0 aportando consistencia, cobertura de tests y cierre
+> documental sobre la capacidad preexistente.
+
 **Feature Branch**: `[002-shopping-list-core]`
 
 **Created**: 2026-06-30

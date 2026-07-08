@@ -273,22 +273,55 @@ Application de Users esté implementada.
 
 ## MVPs Definidos
 
-### MVP-0 — Listas de Compra Personales (Estado: ✅ Entregado)
+> **Nota de trazabilidad**: La numeración de specs (`001-`, `002-`, `003-`…) no equivale
+> directamente a la numeración de MVPs. Varias specs pueden contribuir a un mismo MVP
+> (como ocurre con MVP-0), y una spec puede ser de tipo documental/baseline sin representar
+> un MVP propio. La tabla siguiente establece la trazabilidad explícita entre specs y MVPs.
+
+---
+
+### Tabla de trazabilidad MVP ↔ Specs
+
+| MVP    | Nombre                                             | Estado           | Specs relacionadas                                      |
+|--------|----------------------------------------------------|------------------|---------------------------------------------------------|
+| MVP-0  | Listas de compra personales / Shopping List Core   | ✅ Completado     | `001-project-baseline`, `002-shopping-list-core`        |
+| MVP-1  | Usuarios, autenticación e identidad                | 🟡 En curso (Draft) | `003-users-authentication`                           |
+| MVP-2  | Catálogo de productos, mercados e historial de precios | ⬜ Pendiente   | `004-product-catalog` *(spec futura)*                   |
+| MVP-3  | Listas compartidas y reparto de gastos             | ⬜ Pendiente     | `005-shared-lists-settlement` *(spec futura)*           |
+| MVP-4  | Cliente Android con .NET MAUI                      | ⬜ Pendiente     | `006-android-maui-client` *(spec futura)*               |
+| MVP-5  | Presupuesto y control de gasto                     | ⬜ Pendiente     | *(spec futura)*                                         |
+| MVP-6  | Sugerencias inteligentes                           | ⬜ Pendiente     | *(spec futura)*                                         |
+| MVP-7  | Tickets, fotos y OCR                               | ⬜ Pendiente     | *(spec futura)*                                         |
+| MVP-8  | Promociones y alertas                              | ⬜ Pendiente     | *(spec futura)*                                         |
+| MVP-9  | Comunidad e integración con comercios              | ⬜ Pendiente     | *(spec futura)*                                         |
+
+---
+
+### MVP-0 — Listas de Compra Personales / Shopping List Core (Estado: ✅ Completado)
 
 **Alcance**: Un usuario puede crear y gestionar listas de compra propias con sus ítems.
 Sin autenticación. Sin colaboración. Sin cliente móvil.
 
 **Criterio de done**: ShoppingList API funcional y publicada en GHCR, con tests en CI verde.
 
+**Specs que cubren este MVP**:
+- `001-project-baseline`: Documentación del estado de partida del proyecto antes de adoptar
+  GitHub Spec Kit. Establece la baseline documental del MVP-0.
+- `002-shopping-list-core`: Hardening y cierre funcional del core de listas de compra ya
+  existente. No define un MVP nuevo; completa y consolida el MVP-0.
+
 ---
 
-### MVP-1 — Autenticación e Identidad (Estado: 🔴 Pendiente)
+### MVP-1 — Usuarios, Autenticación e Identidad (Estado: 🟡 En curso / Draft)
 
 **Alcance**: Los usuarios se autentican con un IdP externo (OAuth/OIDC). La API valida
 tokens. `OwnerId` en `PurchaseList` se vincula al usuario autenticado. Bounded context
-`Users` operacional con registro de perfil automático.
+`Users` operacional con registro de perfil automático, consulta y actualización de perfil,
+y gestión de grupos colaborativos con roles Owner/Admin/Member.
 
 **Prerequisito de PP4**: Sin identidad real no hay transparencia colaborativa.
+
+**Spec relacionada**: `003-users-authentication`
 
 **Decisiones pendientes (requieren ADR)**:
 - Elección del IdP: Keycloak, Auth0, Entra B2C u otro.
@@ -296,22 +329,82 @@ tokens. `OwnerId` en `PurchaseList` se vincula al usuario autenticado. Bounded c
 
 ---
 
-### MVP-2 — Listas Colaborativas (Estado: 🔴 Pendiente)
+### MVP-2 — Catálogo de Productos, Mercados e Historial de Precios (Estado: ⬜ Pendiente)
 
-**Alcance**: Un usuario puede crear grupos, invitar miembros y compartir listas con el
-grupo. Cada ítem registra quién lo añadió (`AddedBy`). El acceso a listas de grupo está
-restringido a sus miembros.
+**Alcance**: Gestión de un catálogo de productos reutilizables, asociación a mercados
+o tiendas y registro histórico de precios para facilitar comparativas de compra.
 
 **Prerequisito**: MVP-1 completado.
 
+**Spec futura sugerida**: `004-product-catalog`
+
 ---
 
-### MVP-3 — Cliente Android MAUI (Estado: 🔴 Pendiente)
+### MVP-3 — Listas Compartidas y Reparto de Gastos (Estado: ⬜ Pendiente)
+
+**Alcance**: Un usuario puede crear grupos, invitar miembros y compartir listas con el
+grupo. Cada ítem registra quién lo añadió (`AddedBy`). El acceso a listas de grupo está
+restringido a sus miembros. Incluye reparto de gastos entre participantes.
+
+**Prerequisito**: MVP-1 completado.
+
+**Spec futura sugerida**: `005-shared-lists-settlement`
+
+---
+
+### MVP-4 — Cliente Android con .NET MAUI (Estado: ⬜ Pendiente)
 
 **Alcance**: Aplicación Android que permite gestionar listas de compra personales y
 grupales con UX móvil primera (PP5). Consume las APIs REST de MiKompri.
 
-**Prerequisito**: MVP-1 o MVP-2 completado.
+**Prerequisito**: MVP-1 o MVP-3 completado.
+
+**Spec futura sugerida**: `006-android-maui-client`
+
+---
+
+### MVP-5 — Presupuesto y Control de Gasto (Estado: ⬜ Pendiente)
+
+**Alcance**: Herramientas para establecer presupuestos de compra y hacer seguimiento
+del gasto real frente al planificado.
+
+**Prerequisito**: MVP-2 o MVP-3 completado.
+
+---
+
+### MVP-6 — Sugerencias Inteligentes (Estado: ⬜ Pendiente)
+
+**Alcance**: Recomendaciones automáticas de productos basadas en historial de compra,
+patrones de uso y preferencias del usuario o grupo.
+
+**Prerequisito**: MVP-2 o MVP-5 completado.
+
+---
+
+### MVP-7 — Tickets, Fotos y OCR (Estado: ⬜ Pendiente)
+
+**Alcance**: Captura de tickets de compra mediante foto con extracción automática de
+productos y precios por OCR, integrada con el historial de compras.
+
+**Prerequisito**: MVP-2 completado.
+
+---
+
+### MVP-8 — Promociones y Alertas (Estado: ⬜ Pendiente)
+
+**Alcance**: Notificaciones de ofertas y bajadas de precio sobre productos del catálogo
+o de listas activas del usuario.
+
+**Prerequisito**: MVP-2 completado.
+
+---
+
+### MVP-9 — Comunidad e Integración con Comercios (Estado: ⬜ Pendiente)
+
+**Alcance**: Funcionalidades sociales (valoraciones, listas públicas, tendencias) e
+integración directa con comercios para catálogos y precios en tiempo real.
+
+**Prerequisito**: MVP-6, MVP-7 o MVP-8 completado.
 
 ---
 
@@ -328,11 +421,14 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso recomendado**: Ejecutar `002-shopping-list-core` como fase de hardening del
-core individual de ShoppingList. Después de cerrar esa feature, crear la spec de
-autenticación e identidad:
+**Próximo paso activo**: `003-users-authentication` — MVP-1 (Usuarios, autenticación e identidad).
+La spec `002-shopping-list-core` ya está implementada y representa el cierre del MVP-0.
+El flujo recomendado para futuras specs sigue siendo:
 ```
-/speckit.specify Implementar autenticación OAuth/OIDC para la API de ShoppingList y
-el bounded context Users. Los usuarios se registran automáticamente al primer acceso.
-OwnerId en PurchaseList debe resolverse desde el token de autenticación.
+/speckit.specify  → Crea spec.md con requisitos y criterios de aceptación
+/speckit.clarify  → Resuelve ambigüedades antes de planificar (si aplica)
+/speckit.plan     → Crea plan.md con diseño técnico y ADRs
+/speckit.tasks    → Crea tasks.md con ítems ejecutables
+/speckit.implement → Implementa guiado por tasks.md
+/speckit.checklist → Valida cumplimiento antes de PR
 ```
