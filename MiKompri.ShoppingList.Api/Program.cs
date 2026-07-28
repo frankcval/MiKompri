@@ -1,6 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using MiKompri.ShoppingList.Api.Middleware;
 using MiKompri.ShoppingList.Application;
 using MiKompri.ShoppingList.Infrastructure;
+using MiKompri.ShoppingList.Infrastructure.Persistence;
+using Npgsql;
 using Serilog;
 
 
@@ -54,6 +57,37 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ShoppingListDbContext>();
+    if (db.Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+    {
+        db.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""__EFMigrationsHistory"" (
+                ""MigrationId"" character varying(150) NOT NULL,
+                ""ProductVersion"" character varying(32) NOT NULL,
+                CONSTRAINT ""PK___EFMigrationsHistory"" PRIMARY KEY (""MigrationId"")
+            );
+
+            INSERT INTO ""__EFMigrationsHistory"" (""MigrationId"", ""ProductVersion"")
+            SELECT '20251121112328_InitialCreate', '9.0.10'
+            WHERE EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'purchase_lists'
+            )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM ""__EFMigrationsHistory""
+                WHERE ""MigrationId"" = '20251121112328_InitialCreate'
+            );
+        ");
+
+        db.Database.Migrate();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

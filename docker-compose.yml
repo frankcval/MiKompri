@@ -35,7 +35,6 @@ services:
 
   postgres:
     image: postgres:15
-    container_name: mikompri_postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
