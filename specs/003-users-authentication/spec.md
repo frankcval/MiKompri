@@ -1,5 +1,12 @@
 # Feature Specification: Users Authentication & Groups
 
+> **MVP relacionado**: MVP-1 — Usuarios, autenticación e identidad
+>
+> **Tipo de trabajo**: Implementación funcional del MVP-1. Esta spec cubre la gestión de
+> perfiles de usuario locales, sincronización de identidad con proveedores externos
+> (OAuth/OIDC), actualización de perfil, grupos colaborativos con roles Owner/Admin/Member
+> y autorización basada en pertenencia a grupo.
+
 **Feature Branch**: `003-users-authentication`
 
 **Created**: 2026-07-12

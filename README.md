@@ -468,7 +468,12 @@ git push origin v1.0.0
 
 ## 📊 Estado Actual del Proyecto
 
-### ✅ Completado
+El estado del proyecto se organiza por MVPs. Para la trazabilidad detallada entre MVPs y
+specs de GitHub Spec Kit, consultar [`specs/001-project-baseline/spec.md`](specs/001-project-baseline/spec.md).
+
+### MVP-0 — Listas de Compra Personales ✅ Completado
+
+*(Specs: `001-project-baseline`, `002-shopping-list-core`)*
 
 #### ShoppingList Microservice
 - ✅ Arquitectura Clean Architecture completa
@@ -486,27 +491,38 @@ git push origin v1.0.0
 - ✅ CI/CD con GitHub Actions
 - ✅ Swagger/OpenAPI documentation
 
-#### Users Microservice
+### MVP-1 — Usuarios, Autenticación e Identidad 🟡 En curso
+
+*(Spec: `003-users-authentication`)*
+
+#### Users Microservice — Dominio e infraestructura base
 - ✅ Modelo de dominio (User, Group, GroupMembership)
 - ✅ Capa de aplicación con comandos básicos
 - ✅ DbContext y configuraciones
 - ✅ Repositorios implementados
 - ✅ Proyecto API inicializado
 
-### 🚧 En Progreso
-
-#### Users Microservice (Rama actual: `30-feature/users/infra-efcore`)
+#### Users Microservice — Pendiente de implementar
 - ⏳ Migraciones de Entity Framework Core
-- ⏳ Controllers de API
+- ⏳ Controllers de API (perfiles, grupos, membresías)
 - ⏳ Comandos y Queries faltantes
 - ⏳ Validadores
 - ⏳ Tests
+- ⏳ Integración OAuth 2.0 / OpenID Connect
+- ⏳ JWT Bearer Authentication
 
-### ⏳ Próximos Pasos
+### MVP-2 y posteriores ⬜ Pendiente
+
+Ver roadmap completo en [`specs/001-project-baseline/spec.md`](specs/001-project-baseline/spec.md).
+
+---
 
 ## 🎯 Próximos Pasos
 
-### Prioridad Alta
+El roadmap del proyecto se organiza por MVPs. Los elementos siguientes corresponden al
+trabajo activo del **MVP-1** (`003-users-authentication`):
+
+### Prioridad Alta — MVP-1 (En curso)
 
 1. **Completar Users Microservice**
    - [ ] Crear y aplicar migraciones de EF Core
@@ -539,29 +555,20 @@ git push origin v1.0.0
    - [ ] Implementar circuit breaker pattern (Polly)
    - [ ] Agregar retry policies
 
-### Prioridad Media
+### Prioridad Media — MVP-2 y posteriores (Pendiente)
 
-4. **API Gateway**
-   - [ ] Configurar Ocelot o YARP como API Gateway
-   - [ ] Centralizar autenticación
-   - [ ] Implementar rate limiting
-   - [ ] Agregar logging centralizado
+4. **Catálogo de Productos, Mercados e Historial de Precios** *(MVP-2)*
+   - [ ] Definir spec `004-product-catalog`
+   - [ ] Diseñar bounded context de Productos
 
-5. **Mejoras de Infraestructura**
-   - [ ] Agregar Redis para caché
-   - [ ] Implementar Event Sourcing (opcional)
-   - [ ] Configurar monitoreo con Prometheus + Grafana
-   - [ ] Agregar tracing distribuido (OpenTelemetry)
+5. **Listas Compartidas y Reparto de Gastos** *(MVP-3)*
+   - [ ] Definir spec `005-shared-lists-settlement`
+   - [ ] Gestión de grupos y listas compartidas con permisos
 
-6. **Funcionalidades Adicionales**
-   - [ ] Notificaciones en tiempo real (SignalR)
-   - [ ] Compartir lista vía link público
-   - [ ] Historial de cambios en listas
-   - [ ] Templates de listas predefinidas
-   - [ ] Categorización de ítems
-   - [ ] Búsqueda y filtrado avanzado
+6. **Cliente Android con .NET MAUI** *(MVP-4)*
+   - [ ] Definir spec `006-android-maui-client`
 
-### Prioridad Baja
+### Prioridad Baja — Calidad y DevOps (Transversal)
 
 7. **Mejoras de Calidad**
    - [ ] Aumentar cobertura de tests a >80%
