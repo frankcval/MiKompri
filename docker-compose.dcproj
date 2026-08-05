@@ -18,6 +18,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="docker\init-productcatalog-db.sql" />
     <None Include="docs\adr\ADR-001-azure-deployment.md" />
     <None Include="docs\adr\ADR-002-migrations-strategy.md" />
     <None Include="docs\adr\ADR-003-adr-format.md" />
