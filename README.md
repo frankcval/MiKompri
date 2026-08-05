@@ -1,6 +1,7 @@
 # MiKompri
 
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
+[![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
 [![CD - MiKompri ShoppingList API](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml)
 
 **MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD).
@@ -192,39 +193,53 @@ GET    /health                            # Health check
 
 ### 2. Users API
 
-**Puerto**: TBD  
+**Puerto**: 8082  
 **Base de Datos**: MiKompri_Users (PostgreSQL)
+
+#### Capacidades implementadas en MVP-1
+
+- ✅ Validación JWT Bearer contra un proveedor OIDC externo configurado
+- ✅ Auto-provisioning del perfil local en el primer request autenticado
+- ✅ Sincronización explícita del perfil local desde los claims del token
+- ✅ Perfil local editable (`DisplayName`) y consulta de perfil propio
+- ✅ Grupos colaborativos con roles `Owner`, `Admin` y `Member`
+- ✅ Gestión de membresías con reglas de autorización por rol
+- ✅ Migraciones, Docker, health checks, Swagger/OpenAPI y CI para Users
+
+#### Endpoints principales
+
+```text
+GET    /api/v1/users/me
+PUT    /api/v1/users/me
+POST   /api/v1/users/me/sync
+
+GET    /api/v1/groups
+POST   /api/v1/groups
+GET    /api/v1/groups/{groupId}/members
+POST   /api/v1/groups/{groupId}/members
+DELETE /api/v1/groups/{groupId}/members/{userId}
+
+GET    /health
+GET    /swagger
+```
 
 #### Modelo de Dominio
 
-**User**: Usuario con soporte para múltiples proveedores de identidad (OAuth/OIDC)
-- `DisplayName`: Nombre visible
-- `Email`: Correo electrónico
-- `IdentityProvider`: Proveedor externo (Keycloak, Auth0, Entra, etc.)
-- `ExternalUserId`: ID del usuario en el proveedor externo (claim "sub")
+**User**: Perfil local sincronizado desde un proveedor OIDC externo.
+- `DisplayName`: Nombre visible local
+- `Email`: Correo electrónico sincronizado desde claims
+- `IdentityProvider`: Proveedor externo configurado
+- `ExternalUserId`: Claim `sub` del token JWT
 
-**Group**: Grupos colaborativos
+**Group**: Grupo colaborativo con referencia canónica `GroupId`.
 - `Name`: Nombre del grupo
-- `OwnerId`: Usuario propietario
-- `Memberships`: Colección de membresías
+- `OwnerId`: Usuario propietario inicial
+- `Memberships`: Colección de membresías activas
 
-**GroupMembership**: Relación Usuario-Grupo
-- `UserId`: ID del usuario
+**GroupMembership**: Relación Usuario-Grupo.
+- `UserId`: ID del usuario local
 - `GroupId`: ID del grupo
-- `Role`: Rol del usuario (Owner, Admin, Member)
-
-#### Estado Actual
-
-🚧 **En Desarrollo** . La infraestructura base de Users existe, pero quedan pendientes migraciones, controllers, queries, validadores, tests e integración OAuth/OIDC.
-- ✅ Modelo de dominio completo
-- ✅ Capa de aplicación con comandos:
-  - CreateGroup
-  - AddMemberToGroup
-- ✅ DbContext configurado (UsersDbContext)
-- ✅ Repositorios implementados
-- ⏳ Migraciones pendientes
-- ⏳ API Controllers pendientes
-- ⏳ Integración con proveedores OAuth/OIDC pendiente
+- `Role`: Rol del usuario (`Owner`, `Admin`, `Member`)
 
 ## ✨ Características Principales
 
@@ -256,18 +271,19 @@ GET    /health                            # Health check
 
 ### Users Microservice
 
-#### Gestión de Usuarios
+#### Identidad y autenticación
 
-- Registro de usuarios desde proveedores OAuth/OIDC
-- Actualización de perfil
-- Gestión de membresías en grupos
+- Validación JWT de un proveedor OIDC externo
+- Auto-provisioning del perfil local usando el claim `sub`
+- Sincronización manual del perfil desde claims (`name`, `email`)
+- Actualización local del nombre visible
 
-#### Gestión de Grupos
+#### Gestión de grupos
 
 - Creación de grupos colaborativos
-- Asignación de roles (Owner, Admin, Member)
-- Agregar/remover miembros
-- Control de acceso basado en roles
+- Listado de grupos del usuario autenticado
+- Consulta de miembros por grupo
+- Altas y bajas de membresías con matriz de permisos `Owner/Admin/Member`
 
 ## 📋 Requisitos Previos
 
@@ -308,6 +324,11 @@ Editar `MiKompri.Users.Api/appsettings.json`:
 {
   "ConnectionStrings": {
 	"UsersPostgreSQL": "Host=localhost;Port=5432;Database=MiKompri_Users;Username=postgres;Password=TU_PASSWORD"
+  },
+  "Authentication": {
+	"Authority": "https://login.microsoftonline.com/<tenant>/v2.0",
+	"Audience": "mikompri-users",
+	"IdentityProvider": "entra"
   }
 }
 ```
@@ -321,26 +342,31 @@ cd MiKompri.ShoppingList.Infrastructure
 dotnet ef database update --startup-project ../MiKompri.ShoppingList.Api
 ```
 
-#### Users Database (Cuando estén disponibles)
+#### Users Database
 
 ```bash
 cd MiKompri.Users.Infrastructure
 dotnet ef database update --startup-project ../MiKompri.Users.Api
 ```
 
+> La Users API también aplica `Database.Migrate()` al arrancar en entorno Development.
+
 ## 🏃 Ejecución
 
 ### Opción 1: Docker Compose (Recomendado)
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Esto iniciará:
 - ShoppingList API en `http://localhost:8080`
+- Users API en `http://localhost:8082`
 - PostgreSQL en `localhost:5432`
 
-**Swagger UI**: http://localhost:8080/swagger
+**Swagger UI**:
+- ShoppingList: http://localhost:8080/swagger
+- Users: http://localhost:8082/swagger
 
 ### Opción 2: Ejecución Local
 
@@ -351,7 +377,7 @@ cd MiKompri.ShoppingList.Api
 dotnet run
 ```
 
-#### Terminal 2 - Users API (Cuando esté lista)
+#### Terminal 2 - Users API
 
 ```bash
 cd MiKompri.Users.Api
@@ -362,19 +388,13 @@ dotnet run
 
 ```bash
 curl http://localhost:8080/health
+curl http://localhost:8082/health
 ```
 
 Respuesta esperada:
-```json
-{
-  "status": "Healthy",
-  "checks": [
-	{
-	  "name": "PostgreSQL",
-	  "status": "Healthy"
-	}
-  ]
-}
+```text
+Healthy
+{ "status": "Healthy" }
 ```
 
 ## 🧪 Testing
@@ -396,14 +416,15 @@ dotnet test test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain
 ### Tests por Proyecto
 
 ```bash
-# Tests de Dominio
+# ShoppingList
 dotnet test test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj --configuration Release
-
-# Tests de Aplicación
 dotnet test test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj --configuration Release
-
-# Tests de Integración
 dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release
+
+# Users
+dotnet test test/MiKompri.Users.Domain.Tests/MiKompri.Users.Domain.Tests.csproj --configuration Release
+dotnet test test/MiKompri.Users.Application.Tests/MiKompri.Users.Application.Tests.csproj --configuration Release
+dotnet test test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj --configuration Release
 ```
 
 ### Ejecutar un Test Individual
@@ -428,22 +449,13 @@ El proyecto tiene una cobertura significativa de tests:
 
 ### Integración Continua (CI)
 
-**Workflow**: `.github/workflows/ci-mikompri-shoppinglist.yml`
+**Workflows**:
+- `.github/workflows/ci-mikompri-shoppinglist.yml`
+- `.github/workflows/ci-mikompri-users.yml`
 
-**Triggers**:
-- Push a `main`, `develop`, `feature/*`, `hotfix/*`
-- Pull Requests a `main` o `develop`
-
-**Pasos**:
-1. ✅ Checkout del código
-2. ✅ Caché de paquetes NuGet
-3. ✅ Setup .NET 8
-4. ✅ Instalación de SonarScanner
-5. ✅ Inicio de análisis SonarCloud
-6. ✅ Restauración de dependencias
-7. ✅ Build del proyecto
-8. ✅ Ejecución de tests con cobertura
-9. ✅ Finalización de análisis SonarCloud
+**Cobertura actual**:
+- **ShoppingList CI**: restore, build, tests con cobertura, SonarCloud y verificación de Docker Compose
+- **Users CI**: restore, build, tests de dominio/aplicación/API y build de `MiKompri.Users.Api/Dockerfile`
 
 ### Entrega Continua (CD)
 
@@ -491,25 +503,18 @@ specs de GitHub Spec Kit, consultar [`specs/001-project-baseline/spec.md`](specs
 - ✅ CI/CD con GitHub Actions
 - ✅ Swagger/OpenAPI documentation
 
-### MVP-1 — Usuarios, Autenticación e Identidad 🟡 En curso
+### MVP-1 — Usuarios, Autenticación e Identidad ✅ Completado
 
 *(Spec: `003-users-authentication`)*
 
-#### Users Microservice — Dominio e infraestructura base
-- ✅ Modelo de dominio (User, Group, GroupMembership)
-- ✅ Capa de aplicación con comandos básicos
-- ✅ DbContext y configuraciones
-- ✅ Repositorios implementados
-- ✅ Proyecto API inicializado
-
-#### Users Microservice — Pendiente de implementar
-- ⏳ Migraciones de Entity Framework Core
-- ⏳ Controllers de API (perfiles, grupos, membresías)
-- ⏳ Comandos y Queries faltantes
-- ⏳ Validadores
-- ⏳ Tests
-- ⏳ Integración OAuth 2.0 / OpenID Connect
-- ⏳ JWT Bearer Authentication
+#### Users Microservice
+- ✅ Validación JWT Bearer de un proveedor OIDC externo
+- ✅ Perfil local del usuario y auto-provisioning por `sub`
+- ✅ Sincronización explícita desde claims (`POST /api/v1/users/me/sync`)
+- ✅ Actualización de `DisplayName` y consulta de perfil propio
+- ✅ Grupos, membresías y roles `Owner`, `Admin`, `Member`
+- ✅ Endpoints, migraciones, pruebas, Docker y CI
+- ✅ Swagger/OpenAPI con configuración Bearer
 
 ### MVP-2 y posteriores ⬜ Pendiente
 
@@ -519,41 +524,7 @@ Ver roadmap completo en [`specs/001-project-baseline/spec.md`](specs/001-project
 
 ## 🎯 Próximos Pasos
 
-El roadmap del proyecto se organiza por MVPs. Los elementos siguientes corresponden al
-trabajo activo del **MVP-1** (`003-users-authentication`):
-
-### Prioridad Alta — MVP-1 (En curso)
-
-1. **Completar Users Microservice**
-   - [ ] Crear y aplicar migraciones de EF Core
-   - [ ] Implementar todos los Controllers
-   - [ ] Agregar comandos faltantes:
-	 - `UpdateUser`
-	 - `RemoveMemberFromGroup`
-	 - `UpdateGroupRole`
-	 - `DeleteGroup`
-   - [ ] Implementar queries:
-	 - `GetUserById`
-	 - `GetUsersByGroup`
-	 - `GetGroupById`
-	 - `GetGroupsByUser`
-   - [ ] Agregar validadores FluentValidation
-   - [ ] Escribir tests unitarios y de integración
-   - [ ] Dockerizar Users API
-
-2. **Autenticación y Autorización**
-   - [ ] Integrar OAuth 2.0 / OpenID Connect
-   - [ ] Implementar JWT Bearer Authentication
-   - [ ] Configurar Identity Provider (Keycloak, Auth0, o Entra)
-   - [ ] Agregar políticas de autorización basadas en roles
-   - [ ] Proteger endpoints con `[Authorize]`
-   - [ ] Implementar refresh tokens
-
-3. **Comunicación entre Microservicios**
-   - [ ] Definir estrategia de comunicación (REST, gRPC, o Message Queue)
-   - [ ] Validar `OwnerId` y `GroupId` en ShoppingList contra Users API
-   - [ ] Implementar circuit breaker pattern (Polly)
-   - [ ] Agregar retry policies
+El roadmap del proyecto se organiza por MVPs. Con **MVP-1** completado, los siguientes pasos quedan fuera del alcance actual y se abordarán en specs posteriores.
 
 ### Prioridad Media — MVP-2 y posteriores (Pendiente)
 

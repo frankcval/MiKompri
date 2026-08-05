@@ -266,14 +266,23 @@ Invoke-RestMethod -Uri "http://localhost:8082/health"
 
 ## Registro de validación (Phase 10)
 
-- **Fecha**: 2026-07-03
-- **Entorno**: Docker Compose local (`mikompriusersapi` en `http://localhost:8082`, PostgreSQL en contenedor)
-- **Condiciones verificadas**:
-  - Build solución Release OK (`dotnet build MiKompri.sln --configuration Release --no-restore`)
-  - Tests Users OK (Domain/Application/API)
-  - Health endpoint OK (`/health` => `{ "status": "Healthy" }`)
-  - Swagger UI y esquema OpenAPI con seguridad Bearer visibles (`/swagger`, `/swagger/v1/swagger.json`)
-  - Cobertura funcional de escenarios 1–8 validada por suite automatizada de `MiKompri.Users.Api.Tests` (`ProfileApiTests` + `GroupsApiTests`) y smoke manual en entorno Docker para autenticación y disponibilidad.
+- **Fecha**: 2026-08-05
+- **Entorno**: Docker Compose local (`mikompriusersapi` en `http://localhost:8082`, `mikomprishoppinglistapi` en `http://localhost:8080`, PostgreSQL en contenedor)
+- **Resultados reales ejecutados**:
+  - `dotnet restore MiKompri.sln` → OK
+  - `dotnet build MiKompri.sln --configuration Release --no-restore` → OK, 0 errores de compilación
+  - `dotnet test MiKompri.sln --configuration Release --no-build` → OK, **130/130 tests** correctos
+  - `docker compose config` → OK
+  - `docker compose build` → OK
+  - `docker compose up -d` → OK
+  - `docker compose ps` → `mikompriusersapi` y `mikomprishoppinglistapi` en `healthy`
+  - `GET http://localhost:8082/health` → `{ "status": "Healthy" }`
+  - `GET http://localhost:8080/health` → `Healthy`
+  - `GET http://localhost:8082/swagger/v1/swagger.json` → OpenAPI generado correctamente con esquema `Bearer`
+  - Logs de arranque y migración de Users y ShoppingList revisados sin errores
+- **Cobertura funcional validada**:
+  - Escenarios de perfil, sincronización, grupos y membresías cubiertos por `ProfileApiTests` y `GroupsApiTests`
+  - Smoke Docker validado para health checks, Swagger/OpenAPI, definición Bearer y arranque sin errores
 
 ## Referencias
 

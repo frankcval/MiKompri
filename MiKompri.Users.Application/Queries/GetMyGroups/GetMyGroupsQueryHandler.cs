@@ -63,6 +63,9 @@ namespace MiKompri.Users.Application.Queries.GetMyGroups
                     Name = group.Name,
                     OwnerId = group.OwnerId,
                     MyRole = group.GetMemberRole(userId)?.ToString() ?? string.Empty,
+                    MemberCount = group.Memberships.Count,
+                    CreatedAt = group.CreatedAt,
+                    UpdatedAt = group.UpdatedAt,
                     Members = membersDto
                 });
             }

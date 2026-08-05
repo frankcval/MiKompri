@@ -11,7 +11,7 @@
 
 **Created**: 2026-07-12
 
-**Status**: Draft
+**Status**: Completed
 
 **Input**: User description: "Formalizar el bounded context de Users/Auth como la siguiente funcionalidad después de 002-shopping-list-core: perfiles de usuario locales, sincronización de identidad, actualización de perfil, grupos colaborativos con roles Owner/Admin/Member y autorización basada en pertenencia."
 

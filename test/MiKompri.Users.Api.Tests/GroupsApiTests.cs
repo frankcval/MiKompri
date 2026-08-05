@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
 using MiKompri.Users.Api.Models;
 using MiKompri.Users.Application.Dtos;
@@ -25,6 +26,12 @@ public class GroupsApiTests : IClassFixture<CustomWebApplicationFactory>
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         response.Headers.Location.Should().NotBeNull();
+        var created = await response.Content.ReadFromJsonAsync<GroupDto>();
+        created.Should().NotBeNull();
+        created!.MyRole.Should().Be("Owner");
+        created.MemberCount.Should().Be(1);
+        created.CreatedAt.Should().NotBe(default);
+        created.UpdatedAt.Should().NotBe(default);
     }
 
     [Fact]
@@ -49,6 +56,8 @@ public class GroupsApiTests : IClassFixture<CustomWebApplicationFactory>
         var groups = await response.Content.ReadFromJsonAsync<List<GroupDto>>();
         groups.Should().NotBeNullOrEmpty();
         groups!.First().MyRole.Should().Be("Owner");
+        groups!.First().MemberCount.Should().Be(1);
+        groups.First().CreatedAt.Should().NotBe(default);
     }
 
     [Fact]
@@ -105,8 +114,34 @@ public class GroupsApiTests : IClassFixture<CustomWebApplicationFactory>
             Role = "Member"
         });
 
-        var body = await response.Content.ReadAsStringAsync();
-        response.StatusCode.Should().Be(HttpStatusCode.Created, $"Body: {body}");
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var created = await response.Content.ReadFromJsonAsync<GroupMemberDto>();
+        created.Should().NotBeNull();
+        created!.DisplayName.Should().Be("Member");
+        created.Role.Should().Be("Member");
+        created.JoinedAt.Should().NotBe(default);
+    }
+
+    [Fact]
+    public async Task AddMember_WithInvalidRole_Returns400ValidationShape()
+    {
+        var owner = _factory.CreateAuthenticatedClient("owner-invalid-role", "Owner", "owner@demo.com");
+        var member = _factory.CreateAuthenticatedClient("member-invalid-role", "Member", "member@demo.com");
+        var group = await CreateGroup(owner, "Casa");
+        var memberProfile = await member.GetFromJsonAsync<UserProfileDto>("/api/v1/users/me");
+
+        var response = await owner.PostAsJsonAsync($"/api/v1/groups/{group.Id}/members", new AddGroupMemberRequest
+        {
+            UserId = memberProfile!.Id,
+            Role = "Owner"
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        body.RootElement.GetProperty("status").GetInt32().Should().Be(400);
+        body.RootElement.GetProperty("error").GetString().Should().Be("La petición no es válida");
+        body.RootElement.GetProperty("errors")[0].GetProperty("field").GetString().Should().Be("Role");
     }
 
     [Fact]

@@ -54,20 +54,10 @@ namespace MiKompri.Users.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<UserProfileDto>> SyncProfile(CancellationToken ct)
         {
-            // Leer claims del JWT; el middleware de autenticación ya los validó
-            var sub = User.FindFirstValue("sub")
-                      ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
-                      ?? string.Empty;
-
-            var displayName = User.FindFirstValue("name")
-                              ?? User.FindFirstValue(ClaimTypes.Name);
-
-            var emailClaim = User.FindFirstValue("email")
-                             ?? User.FindFirstValue(ClaimTypes.Email);
-
-            // email null si ausente — nunca cadena vacía [C4]
+            var sub = User.FindFirstValue("sub") ?? string.Empty;
+            var displayName = User.FindFirstValue("name") ?? User.FindFirstValue(ClaimTypes.Name);
+            var emailClaim = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email);
             var email = string.IsNullOrEmpty(emailClaim) ? null : emailClaim;
-
             var identityProvider = _configuration["Authentication:IdentityProvider"] ?? "entra";
 
             var command = new SyncProfileCommand(identityProvider, sub, displayName, email);
