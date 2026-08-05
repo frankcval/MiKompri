@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -78,22 +79,28 @@ namespace MiKompri.Users.Api.Controllers
             if (!Enum.TryParse<GroupRole>(request.Role, ignoreCase: true, out var role) ||
                 role is not (GroupRole.Member or GroupRole.Admin))
             {
+                var traceId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
                 return BadRequest(new
                 {
-                    error = $"Rol '{request.Role}' no válido. Valores permitidos: Member, Admin."
+                    status = StatusCodes.Status400BadRequest,
+                    error = "La petición no es válida",
+                    traceId,
+                    errors = new[]
+                    {
+                        new
+                        {
+                            field = nameof(request.Role),
+                            message = $"Rol '{request.Role}' no válido. Valores permitidos: Member, Admin."
+                        }
+                    }
                 });
             }
 
             var command = new AddMemberToGroupCommand(groupId, request.UserId, role);
             await _sender.Send(command, ct);
 
-            var added = new GroupMemberDto
-            {
-                UserId = request.UserId,
-                Role = role.ToString(),
-                DisplayName = string.Empty,
-                JoinedAt = DateTime.UtcNow
-            };
+            var members = await _sender.Send(new GetGroupMembersQuery(groupId), ct);
+            var added = members.First(member => member.UserId == request.UserId);
 
             return CreatedAtAction(nameof(GetMembers), new { groupId }, added);
         }

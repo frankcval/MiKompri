@@ -184,6 +184,18 @@
 - [X] T055 Verificar entorno Docker: `docker compose up --build -d`; `Invoke-RestMethod http://localhost:8082/health` → `{"status":"Healthy"}`; abrir `http://localhost:8082/swagger` → UI de Swagger con definición Bearer visible
 - [X] T056 Ejecutar escenarios 1–8 de `specs/003-users-authentication/quickstart.md` con entorno Docker levantado; si algún escenario produce resultado distinto al esperado, **abrir un issue en GitHub antes de marcar T056 como completado** — esta tarea NO puede marcarse done si hay escenarios fallidos sin issue asociado; si todos los escenarios pasan, anotar fecha y condiciones de validación en quickstart.md [U2]
 
+### Evidencia de cierre MVP-1 (2026-08-05)
+
+- `dotnet restore MiKompri.sln` → OK
+- `dotnet build MiKompri.sln --configuration Release --no-restore` → OK, 0 errores
+- `dotnet test MiKompri.sln --configuration Release --no-build` → OK, **130/130 tests** en verde
+- `docker compose config` → OK
+- `docker compose build` → OK
+- `docker compose up -d` → `mikompriusersapi` y `mikomprishoppinglistapi` en estado `healthy`
+- `GET http://localhost:8082/health` → `{ "status": "Healthy" }`
+- `GET http://localhost:8082/swagger/v1/swagger.json` → OpenAPI generado; esquema `Bearer` presente
+- Logs de arranque y migraciones de Users y ShoppingList revisados sin errores de arranque
+
 ---
 
 ## Dependency Graph
