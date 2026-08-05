@@ -46,5 +46,11 @@
     <None Include="specs\003-users-authentication\research.md" />
     <None Include="specs\003-users-authentication\spec.md" />
     <None Include="specs\003-users-authentication\tasks.md" />
+    <None Include="specs\004-product-catalog\checklists\requirements.md" />
+    <None Include="specs\004-product-catalog\contracts\product-catalog-api.md" />
+    <None Include="specs\004-product-catalog\data-model.md" />
+    <None Include="specs\004-product-catalog\quickstart.md" />
+    <None Include="specs\004-product-catalog\research.md" />
+    <None Include="specs\004-product-catalog\tasks.md" />
   </ItemGroup>
 </Project>

@@ -360,4 +360,10 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
+FodyWeavers.xsd# --- Copilot essential patterns ---
+obj/
+.vscode/
+.idea/
+.env*
+.DS_Store
+Thumbs.db
