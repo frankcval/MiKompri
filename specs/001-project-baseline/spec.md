@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-30
 
-**Status**: Aprobada con gate abierto (TP5) y baseline vigente
+**Status**: Aprobada y actualizada tras el cierre de MVP-1
 
 ---
 
@@ -64,11 +64,11 @@ listas por grupo.
 
 **Estado actual**: ⚠️ Parcialmente implementado. El dominio (`PurchaseList.GroupId`),
 la query `GetShoppingListByGroupId` y el filtro en el endpoint `GET /api/v1/PurchaseLists?groupId=`
-están implementados. Sin embargo, no existe gestión de grupos desde la API (Users API sin
-implementar), y no hay validación de pertenencia al grupo ni permisos.
+están implementados. El bounded context `Users` ya es operativo, pero ShoppingList todavía no
+valida pertenencia al grupo ni permisos contra Users, y la colaboración real sigue pendiente.
 
 **Why this priority**: Diferenciador clave del producto frente a apps de lista individual
-(PP4 - Transparencia Colaborativa). Requiere el bounded context `Users` completo.
+(PP4 - Transparencia Colaborativa). Requiere la integración efectiva entre `ShoppingList` y `Users`.
 
 **Independent Test**: El filtro por `groupId` puede probarse manualmente creando listas con
 `GroupId` asignado. No existe cobertura de test automatizado para el flujo colaborativo completo.
@@ -86,20 +86,21 @@ implementar), y no hay validación de pertenencia al grupo ni permisos.
 
 ### User Story 3 - Gestión de Usuarios y Grupos (Priority: P3)
 
-Un usuario puede registrarse en MiKompri usando un proveedor de identidad externo
+Un usuario puede autenticarse en MiKompri usando un proveedor de identidad externo
 (OAuth/OIDC). Puede crear un grupo, invitar a otros miembros y asignarles roles
-(Owner, Admin, Member). Los miembros del grupo pueden colaborar en listas compartidas.
+(Owner, Admin, Member). Los miembros del grupo pueden colaborar en futuras listas compartidas.
 
-**Estado actual**: 🔶 Dominio definido, aplicación y API sin implementar.
-El bounded context `Users` tiene entidades (`User`, `Group`, `GroupMembership`, `GroupRole`)
-y repositorios de infraestructura configurados. La capa Application está vacía.
-La API expone únicamente el endpoint scaffolded `WeatherForecastController`.
+**Estado actual**: ✅ Implementado y verificado como MVP-1.
+El bounded context `Users` es operativo con validación JWT Bearer contra un proveedor OIDC
+externo, auto-provisioning del perfil local, sincronización explícita desde claims,
+actualización de perfil, gestión de grupos y membresías, tests automatizados, Docker y CI.
 
 **Why this priority**: Prerequisito para la colaboración real. Sin identidad de usuario
 no hay transparencia colaborativa (PP4).
 
-**Independent Test**: No se puede probar de forma independiente aún. Requiere que la capa
-Application de Users esté implementada.
+**Independent Test**: Se puede verificar de forma autónoma mediante la Users API en
+`/api/v1/users` y `/api/v1/groups`. La cobertura automática incluye dominio, aplicación
+y tests de integración de API.
 
 **Acceptance Scenarios**:
 
@@ -108,7 +109,7 @@ Application de Users esté implementada.
 2. **Given** un usuario registrado, **When** crea un grupo con un nombre, **Then** el grupo
    se crea y el usuario queda como Owner automáticamente.
 3. **Given** un grupo existente donde soy Owner, **When** invito a otro usuario con rol Member,
-   **Then** el usuario pasa a ser miembro del grupo y puede acceder a las listas compartidas.
+   **Then** el usuario pasa a ser miembro del grupo y queda listo para futuras listas compartidas cuando ShoppingList integre autorización por grupo.
 
 ---
 
@@ -145,7 +146,7 @@ Application de Users esté implementada.
 - **FR-009**: El sistema DEBE exponer un endpoint de health check (`/health`).
 - **FR-010**: El sistema DEBE documentar su API mediante OpenAPI/Swagger.
 
-#### Bounded Context: Users — Dominio Definido, Aplicación Pendiente ⚠️
+#### Bounded Context: Users — Operacional ✅
 
 - **FR-011**: El sistema DEBE soportar usuarios vinculados a proveedores de identidad externos
   mediante `IdentityProvider` + `ExternalUserId` (OAuth/OIDC).
@@ -154,8 +155,10 @@ Application de Users esté implementada.
 - **FR-013**: El sistema DEBE soportar tres roles de membresía: `Owner`, `Admin`, `Member`.
 - **FR-014**: El sistema DEBE permitir añadir y remover miembros de un grupo.
 - **FR-015**: El sistema DEBE impedir agregar al mismo usuario dos veces al mismo grupo.
-- **FR-016** *(pendiente de implementar)*: La API de Users DEBE exponer endpoints REST para
-  registro de usuario, gestión de grupos y membresías.
+- **FR-016**: La API de Users DEBE exponer endpoints REST para perfil propio, sincronización
+  de claims, gestión de grupos y membresías.
+- **FR-017**: La API de Users DEBE validar JWT Bearer emitidos por un proveedor OIDC externo
+  configurado y aplicar autorización basada en membresía/rol dentro del bounded context.
 
 #### Restricciones de Constitución Vigentes
 
@@ -203,28 +206,29 @@ Application de Users esté implementada.
   para `push` y `pull_request`, y la rama `main` mantiene estado verde en el último build exitoso.
 - **SC-004**: El directorio `specs/` existe y contiene al menos esta spec, estableciendo el
   patrón para futuras specs de features.
-- **SC-005**: Las deudas técnicas documentadas (DT-001 a DT-008) tienen un issue de seguimiento
-  creado en GitHub o están referenciadas en el backlog.
+- **SC-005**: Las deudas técnicas documentadas vigentes tienen un issue de seguimiento
+  creado en GitHub o están referenciadas en el backlog, incluyendo el fallo de cobertura
+  reportado por Sonar.
 - **SC-006**: El equipo puede identificar la siguiente feature activa a ejecutar:
-  `002-shopping-list-core` como hardening/completado del core individual de ShoppingList,
-  dejando autenticación de usuarios y evolución de `Users` como trabajo posterior.
+  `004-product-catalog` como siguiente paso de MVP-2 tras el cierre de MVP-1.
 
 ---
 
 ## Assumptions
 
 - Los bounded contexts `ShoppingList` y `Users` no se comunican directamente en el estado
-  actual. `OwnerId` y `GroupId` en `PurchaseList` son Guids sin validación cruzada con el
-  contexto `Users` (asumido intencional como deuda técnica DT-001).
+  actual. `OwnerId` y `GroupId` en `PurchaseList` siguen siendo Guids sin validación cruzada
+  con el contexto `Users` (asumido intencional como deuda técnica DT-001).
 - El entorno de producción actual es GitHub Container Registry (GHCR). El despliegue en
   Azure está planificado pero no implementado (ver DT-007).
-- No existe autenticación/autorización en ningún endpoint. Los endpoints son públicos
-  (asumido intencional para MVP-0).
+- La autenticación/autorización ya existe en `Users` mediante JWT Bearer validado contra un
+  proveedor OIDC externo. `ShoppingList` sigue sin integración con `Users` ni protección por
+  identidad real, y ese acoplamiento continúa diferido a specs posteriores.
 - `ProductId` en `ListItem` es una referencia externa (Guid). No existe un bounded context
   de Productos actualmente; se asume que el producto es identificado externamente o
   manualmente por el cliente.
 - La deuda técnica documentada en esta spec no bloquea el uso del sistema actual, pero
-  DEBE ser abordada antes de lanzar la funcionalidad colaborativa a usuarios reales.
+  DEBE ser abordada antes de lanzar la funcionalidad colaborativa completa entre bounded contexts.
 
 ---
 
@@ -241,16 +245,16 @@ Application de Users esté implementada.
 | Tests          | ✅ Completo   | Domain, Application y API con cobertura automatizada en CI |
 | CI/CD          | ✅ Activo     | CI: build+test+SonarCloud. CD: push imagen a GHCR          |
 
-### Users — Dominio Definido, Sin Operacional ⚠️
+### Users — Operacional ✅
 
-| Capa           | Estado           | Observaciones                                              |
-|----------------|------------------|------------------------------------------------------------|
-| Domain         | ✅ Completo       | User, Group, GroupMembership, GroupRole definidos          |
-| Application    | 🔴 Sin implementar | Sin commands, queries ni handlers                        |
-| Infrastructure | ⚠️ Parcial        | DbContext + repos creados, sin migraciones conocidas       |
-| API            | 🔴 Solo scaffolding | WeatherForecastController (placeholder), sin endpoints reales |
-| Tests          | 🔴 Sin cobertura  | No existen tests para el bounded context Users             |
-| CI/CD          | ⚠️ Parcial        | El pipeline CI no incluye tests de Users                   |
+| Capa           | Estado       | Observaciones                                                                 |
+|----------------|--------------|-------------------------------------------------------------------------------|
+| Domain         | ✅ Completo   | User, Group, GroupMembership y reglas Owner/Admin/Member implementadas       |
+| Application    | ✅ Completo   | Commands, queries, validadores y handlers operativos                         |
+| Infrastructure | ✅ Completo   | DbContext, repositorios, migraciones y persistencia PostgreSQL operativos    |
+| API            | ✅ Completo   | Endpoints REST de perfil, sync, grupos y membresías; Swagger + Bearer        |
+| Tests          | ✅ Completo   | Domain, Application y API con cobertura automatizada                         |
+| CI/CD          | ✅ Activo     | Workflow dedicado de Users con restore, build, test y Docker build           |
 
 ---
 
@@ -265,9 +269,10 @@ Application de Users esté implementada.
 | DT-005 | Nombres de carpetas/archivos con typos: `AddAplicaction`, `DeleteShoppinList`, `UpdateItemShoopingListCommand` | Baja | Nombrado |
 | DT-006 | Métodos de `ListItem` en minúscula (`updateName`, `updatePrice`, `updateQuantity`) — viola convenciones C# | Media | Convenciones |
 | DT-007 | CD pipeline solo publica en GHCR; no despliega en Azure (TP5 pendiente de cumplir)   | Alta      | Infraestructura   |
-| DT-008 | Users API sin implementar (WeatherForecastController como placeholder)               | Alta      | Funcionalidad     |
-| DT-009 | Sin autenticación ni autorización en ningún endpoint (aceptable en MVP-0, bloqueante para producción colaborativa) | Alta | Seguridad |
-| DT-010 | Docker Compose no incluye Users API ni define configuración para entorno completo     | Media     | Infraestructura   |
+| DT-008 | Cerrada — Users API ya no usa scaffolding; expone endpoints reales de perfil, grupos y membresías | Resuelta | Funcionalidad |
+| DT-009 | Cerrada — Users valida JWT Bearer y aplica autorización por rol/membresía dentro de su bounded context | Resuelta | Seguridad |
+| DT-010 | Cerrada — Docker Compose ya incluye Users API y configuración del entorno local completo | Resuelta | Infraestructura |
+| DT-011 | SonarCloud reporta fallo/deuda de cobertura pendiente de saneamiento en el pipeline actual | Media | Calidad |
 
 ---
 
@@ -285,7 +290,7 @@ Application de Users esté implementada.
 | MVP    | Nombre                                             | Estado           | Specs relacionadas                                      |
 |--------|----------------------------------------------------|------------------|---------------------------------------------------------|
 | MVP-0  | Listas de compra personales / Shopping List Core   | ✅ Completado     | `001-project-baseline`, `002-shopping-list-core`        |
-| MVP-1  | Usuarios, autenticación e identidad                | 🟡 En curso (Draft) | `003-users-authentication`                           |
+| MVP-1  | Usuarios, autenticación e identidad                | ✅ Completado     | `003-users-authentication`                              |
 | MVP-2  | Catálogo de productos, mercados e historial de precios | ⬜ Pendiente   | `004-product-catalog` *(spec futura)*                   |
 | MVP-3  | Listas compartidas y reparto de gastos             | ⬜ Pendiente     | `005-shared-lists-settlement` *(spec futura)*           |
 | MVP-4  | Cliente Android con .NET MAUI                      | ⬜ Pendiente     | `006-android-maui-client` *(spec futura)*               |
@@ -312,20 +317,22 @@ Sin autenticación. Sin colaboración. Sin cliente móvil.
 
 ---
 
-### MVP-1 — Usuarios, Autenticación e Identidad (Estado: 🟡 En curso / Draft)
+### MVP-1 — Usuarios, Autenticación e Identidad (Estado: ✅ Completado)
 
-**Alcance**: Los usuarios se autentican con un IdP externo (OAuth/OIDC). La API valida
-tokens. `OwnerId` en `PurchaseList` se vincula al usuario autenticado. Bounded context
-`Users` operacional con registro de perfil automático, consulta y actualización de perfil,
-y gestión de grupos colaborativos con roles Owner/Admin/Member.
+**Alcance**: Los usuarios se autentican con un IdP externo (OAuth/OIDC). La API de Users
+valida tokens JWT Bearer, auto-provisiona el perfil local, permite sincronización explícita
+por claims, consulta/actualización de perfil y gestión de grupos colaborativos con roles
+Owner/Admin/Member.
 
 **Prerequisito de PP4**: Sin identidad real no hay transparencia colaborativa.
 
 **Spec relacionada**: `003-users-authentication`
 
-**Decisiones pendientes (requieren ADR)**:
-- Elección del IdP: Keycloak, Auth0, Entra B2C u otro.
-- Estrategia de autorización en API: JWT Bearer, middleware, políticas.
+**Decisiones consolidadas en Spec 003**:
+- Validación JWT Bearer contra proveedor OIDC externo configurado.
+- Auto-provisioning del perfil local en primer request autenticado.
+- Sincronización explícita desde claims mediante endpoint dedicado.
+- Autorización por membresía y rol dentro del bounded context Users.
 
 ---
 
@@ -421,8 +428,8 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso activo**: `003-users-authentication` — MVP-1 (Usuarios, autenticación e identidad).
-La spec `002-shopping-list-core` ya está implementada y representa el cierre del MVP-0.
+**Próximo paso activo**: `004-product-catalog` — MVP-2 (Catálogo de productos, mercados e historial de precios).
+La spec `003-users-authentication` ya está implementada y representa el cierre del MVP-1.
 El flujo recomendado para futuras specs sigue siendo:
 ```
 /speckit.specify  → Crea spec.md con requisitos y criterios de aceptación
