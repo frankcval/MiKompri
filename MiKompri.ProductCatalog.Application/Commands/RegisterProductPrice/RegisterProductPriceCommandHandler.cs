@@ -1,6 +1,9 @@
 using MediatR;
+using Microsoft.Extensions.Options;
 using MiKompri.ProductCatalog.Application.Abstractions;
 using MiKompri.ProductCatalog.Application.Interfaces;
+using MiKompri.ProductCatalog.Application.Options;
+using MiKompri.ProductCatalog.Domain.Exceptions;
 using MiKompri.ProductCatalog.Domain.Products;
 using MiKompri.ProductCatalog.Domain.Products.ValueObjects;
 
@@ -8,26 +11,27 @@ namespace MiKompri.ProductCatalog.Application.Commands.RegisterProductPrice;
 
 public class RegisterProductPriceCommandHandler : IRequestHandler<RegisterProductPriceCommand, Guid>
 {
-    private const string DefaultCurrency = "EUR";
-
     private readonly ICatalogProductRepository _catalogProductRepository;
     private readonly IMarketRepository _marketRepository;
     private readonly IProductPriceRecordRepository _productPriceRecordRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly string _currency;
 
     public RegisterProductPriceCommandHandler(
         ICatalogProductRepository catalogProductRepository,
         IMarketRepository marketRepository,
         IProductPriceRecordRepository productPriceRecordRepository,
         IDateTimeProvider dateTimeProvider,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IOptions<ProductCatalogOptions> options)
     {
         _catalogProductRepository = catalogProductRepository;
         _marketRepository = marketRepository;
         _productPriceRecordRepository = productPriceRecordRepository;
         _dateTimeProvider = dateTimeProvider;
         _unitOfWork = unitOfWork;
+        _currency = options.Value.Currency;
     }
 
     public async Task<Guid> Handle(RegisterProductPriceCommand request, CancellationToken cancellationToken)
@@ -61,10 +65,10 @@ public class RegisterProductPriceCommandHandler : IRequestHandler<RegisterProduc
 
         if (exists)
         {
-            throw new InvalidOperationException("Ya existe un registro de precio para producto, mercado y fecha efectiva.");
+            throw new ConflictException("Ya existe un registro de precio para producto, mercado y fecha efectiva.");
         }
 
-        var price = new Money(request.PriceAmount, DefaultCurrency);
+        var price = new Money(request.PriceAmount, _currency);
         var record = new ProductPriceRecord(request.CatalogProductId, request.MarketId, request.EffectiveDate, price);
 
         await _productPriceRecordRepository.AddAsync(record, cancellationToken);

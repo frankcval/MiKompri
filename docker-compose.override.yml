@@ -30,5 +30,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ConnectionStrings__PostgreSQL=Host=postgres;Port=5432;Database=MiKompri_ProductCatalog;Username=postgres;Password=12345
+      - ProductCatalog__Currency=EUR
     ports:
       - "8083:8080"

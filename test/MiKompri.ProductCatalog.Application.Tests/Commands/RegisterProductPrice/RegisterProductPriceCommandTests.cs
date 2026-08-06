@@ -1,11 +1,17 @@
+using Microsoft.Extensions.Options;
 using Moq;
 using MiKompri.ProductCatalog.Application.Commands.RegisterProductPrice;
 using MiKompri.ProductCatalog.Application.Interfaces;
+using MiKompri.ProductCatalog.Application.Options;
+using MiKompri.ProductCatalog.Domain.Exceptions;
 
 namespace MiKompri.ProductCatalog.Application.Tests.Commands.RegisterProductPrice;
 
 public class RegisterProductPriceCommandTests
 {
+    private static IOptions<ProductCatalogOptions> DefaultOptions() =>
+        Microsoft.Extensions.Options.Options.Create(new ProductCatalogOptions { Currency = "EUR" });
+
     [Fact]
     public async Task Handler_Should_Register_ProductPrice_And_SaveChanges()
     {
@@ -43,7 +49,8 @@ public class RegisterProductPriceCommandTests
             marketRepositoryMock.Object,
             productPriceRepositoryMock.Object,
             dateTimeProviderMock.Object,
-            unitOfWorkMock.Object);
+            unitOfWorkMock.Object,
+            DefaultOptions());
 
         var command = new RegisterProductPriceCommand(product.Id, market.Id, new DateOnly(2026, 8, 5), 1.45m);
 
@@ -54,6 +61,48 @@ public class RegisterProductPriceCommandTests
             x => x.AddAsync(It.IsAny<Domain.Products.ProductPriceRecord>(), It.IsAny<CancellationToken>()),
             Times.Once);
         unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handler_Should_Throw_ConflictException_When_Duplicate_Price()
+    {
+        var catalogRepositoryMock = new Mock<ICatalogProductRepository>();
+        var marketRepositoryMock = new Mock<IMarketRepository>();
+        var productPriceRepositoryMock = new Mock<IProductPriceRecordRepository>();
+        var dateTimeProviderMock = new Mock<Abstractions.IDateTimeProvider>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        var product = new Domain.Products.CatalogProduct(new Domain.Products.ValueObjects.ProductName("Leche"), "l");
+        var market = new Domain.Markets.Market("Mercado Central", null);
+        var date = new DateOnly(2026, 8, 5);
+
+        catalogRepositoryMock
+            .Setup(x => x.GetByIdAsync(product.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(product);
+
+        marketRepositoryMock
+            .Setup(x => x.GetByIdAsync(market.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(market);
+
+        productPriceRepositoryMock
+            .Setup(x => x.ExistsAsync(product.Id, market.Id, date, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        dateTimeProviderMock
+            .SetupGet(x => x.UtcToday)
+            .Returns(date);
+
+        var handler = new RegisterProductPriceCommandHandler(
+            catalogRepositoryMock.Object,
+            marketRepositoryMock.Object,
+            productPriceRepositoryMock.Object,
+            dateTimeProviderMock.Object,
+            unitOfWorkMock.Object,
+            DefaultOptions());
+
+        var command = new RegisterProductPriceCommand(product.Id, market.Id, date, 1.45m);
+
+        await Assert.ThrowsAsync<ConflictException>(() => handler.Handle(command, CancellationToken.None));
     }
 
     [Fact]

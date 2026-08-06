@@ -516,24 +516,25 @@ specs de GitHub Spec Kit, consultar [`specs/001-project-baseline/spec.md`](specs
 - ✅ Endpoints, migraciones, pruebas, Docker y CI
 - ✅ Swagger/OpenAPI con configuración Bearer
 
-### MVP-2 y posteriores ⬜ Pendiente
+### MVP-2 — Catálogo de Productos y Precios ✅ Completado
 
-Ver roadmap completo en [`specs/001-project-baseline/spec.md`](specs/001-project-baseline/spec.md).
+*(Spec: `004-product-catalog`)*
+
+Ver detalle en [`specs/004-product-catalog/spec.md`](specs/004-product-catalog/spec.md).
 
 ---
 
 ## 🎯 Próximos Pasos
 
-El roadmap del proyecto se organiza por MVPs. Con **MVP-1** completado, los siguientes pasos quedan fuera del alcance actual y se abordarán en specs posteriores.
+El roadmap del proyecto se organiza por MVPs. Con **MVP-2** completado, el siguiente paso es definir la Spec 005.
 
-### Prioridad Media — MVP-2 y posteriores (Pendiente)
+### Prioridad Media — MVP-3 y posteriores (Pendiente)
 
-4. **Catálogo de Productos, Mercados e Historial de Precios** *(MVP-2)*
-   - [ ] Definir spec `004-product-catalog`
-   - [ ] Diseñar bounded context de Productos
+4. **Catálogo de Productos, Mercados e Historial de Precios** *(MVP-2)* ✅ Completado
+   - [x] Spec `004-product-catalog` implementada y cerrada
 
 5. **Listas Compartidas y Reparto de Gastos** *(MVP-3)*
-   - [ ] Definir spec `005-shared-lists-settlement`
+   - [ ] Definir spec `005-shared-lists-settlement` *(siguiente paso)*
    - [ ] Gestión de grupos y listas compartidas con permisos
 
 6. **Cliente Android con .NET MAUI** *(MVP-4)*

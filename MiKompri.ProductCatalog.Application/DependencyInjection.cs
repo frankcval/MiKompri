@@ -3,6 +3,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using MiKompri.ProductCatalog.Application.Behavior;
+using MiKompri.ProductCatalog.Application.Options;
 
 namespace MiKompri.ProductCatalog.Application;
 
@@ -17,6 +18,10 @@ public static class DependencyInjection
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        services.AddOptions<ProductCatalogOptions>()
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }
