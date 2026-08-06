@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using FluentValidation;
+using MiKompri.ProductCatalog.Domain.Exceptions;
 
 namespace MiKompri.ProductCatalog.Api.Middleware;
 
@@ -34,6 +35,24 @@ public class ExceptionHandlingMiddleware
 
             switch (ex)
             {
+                case ConflictException:
+                    statusCode = HttpStatusCode.Conflict;
+                    body = new
+                    {
+                        status = (int)statusCode,
+                        error = ex.Message,
+                        traceId = correlationId
+                    };
+                    break;
+                case DomainException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    body = new
+                    {
+                        status = (int)statusCode,
+                        error = ex.Message,
+                        traceId = correlationId
+                    };
+                    break;
                 case ValidationException validationException:
                     statusCode = HttpStatusCode.BadRequest;
                     body = new

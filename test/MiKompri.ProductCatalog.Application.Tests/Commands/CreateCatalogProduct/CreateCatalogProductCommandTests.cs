@@ -1,6 +1,7 @@
 using Moq;
 using MiKompri.ProductCatalog.Application.Commands.CreateCatalogProduct;
 using MiKompri.ProductCatalog.Application.Interfaces;
+using MiKompri.ProductCatalog.Domain.Exceptions;
 
 namespace MiKompri.ProductCatalog.Application.Tests.Commands.CreateCatalogProduct;
 
@@ -24,6 +25,22 @@ public class CreateCatalogProductCommandTests
         Assert.NotEqual(Guid.Empty, result);
         repositoryMock.Verify(x => x.AddAsync(It.IsAny<Domain.Products.CatalogProduct>(), It.IsAny<CancellationToken>()), Times.Once);
         unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handler_Should_Throw_ConflictException_When_Duplicate_Product()
+    {
+        var repositoryMock = new Mock<ICatalogProductRepository>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        repositoryMock
+            .Setup(x => x.ExistsActiveWithNameAndUnitAsync(It.IsAny<string>(), It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var handler = new CreateCatalogProductCommandHandler(repositoryMock.Object, unitOfWorkMock.Object);
+        var command = new CreateCatalogProductCommand("Leche Entera", "l");
+
+        await Assert.ThrowsAsync<ConflictException>(() => handler.Handle(command, CancellationToken.None));
     }
 
     [Fact]

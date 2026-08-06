@@ -117,8 +117,8 @@ description: "Lista de tareas para la implementación de Product Catalog (MVP-2)
 
 - [X] T024 [P] Generar la migración inicial y refrescar el snapshot EF Core del contexto en `MiKompri.ProductCatalog.Infrastructure/Persistence/Migrations/` y verificar que el modelo coincide con `MiKompri.ProductCatalog.Infrastructure/Persistence/ProductCatalogDbContext.cs`
 - [X] T025 Validar el despliegue local y la compilación completa con `MiKompri.ProductCatalog.Api/Dockerfile`, `docker-compose.yml`, `MiKompri.sln` y los proyectos de test `test/MiKompri.ProductCatalog.*.Tests/`, corrigiendo cualquier error restante en `MiKompri.ProductCatalog.*`
-- [X] T026 [PENDIENTE-A1] Preparar la validación de rendimiento de `SC-001` y `SC-002` con un script o benchmark reproducible para las operaciones CRUD e historial en `MiKompri.ProductCatalog.*`
-- [X] T027 [PENDIENTE-A4] Integrar `MiKompri.ProductCatalog.Api` y su base de datos en `docker-compose.yml` y `docker-compose.override.yml` con healthcheck y variables de entorno coherentes con `quickstart.md`
+- [x] T026 Benchmark de rendimiento SC-001/SC-002 documentado como deuda técnica DT-PC-001 (script de medición disponible en `MiKompri.ProductCatalog.Api/Performance/Measure-ProductCatalogPerformance.ps1`; validación formal de SLA queda fuera del MVP-2)
+- [x] T027 Integrar `MiKompri.ProductCatalog.Api` y su base de datos en `docker-compose.yml` y `docker-compose.override.yml` con healthcheck y variables de entorno coherentes con `quickstart.md`; moneda configurable añadida vía `ProductCatalog__Currency`
 
 ---
 
@@ -220,6 +220,20 @@ Con varios desarrolladores:
    - Persona B: US2
    - Persona C: US3
 3. Cada story se completa y valida de forma independiente.
+
+---
+
+## Phase 7: Cierre MVP-2 (fix/complete-spec-004-v1)
+
+**Purpose**: Correcciones necesarias para cerrar formalmente el MVP-2.
+
+- [x] T028 Crear `ConflictException` en `MiKompri.ProductCatalog.Domain/Exceptions/ConflictException.cs` y configurar el middleware para devolver HTTP 409
+- [x] T029 Lanzar `ConflictException` en `CreateCatalogProductCommandHandler` y `RegisterProductPriceCommandHandler` en lugar de `InvalidOperationException` para casos de duplicado
+- [x] T030 Añadir `ProductCatalogOptions` con Options Pattern; eliminar moneda fija `"EUR"` del handler; leer moneda desde configuración `ProductCatalog:Currency`
+- [x] T031 Actualizar tests de Application para inyectar `IOptions<ProductCatalogOptions>` y añadir casos de test para `ConflictException`
+- [x] T032 Crear `.github/workflows/ci-mikompri-productcatalog.yml` con restore, build Release, tests Domain/Application/API, docker compose config y docker build
+- [x] T033 Actualizar `tasks.md`, `quickstart.md` y `spec.md` para reflejar el estado real verificado del MVP-2
+- [x] T034 Marcar Spec 004 como `Completed` y actualizar `README.md` y `specs/001-project-baseline/spec.md`
 
 ---
 

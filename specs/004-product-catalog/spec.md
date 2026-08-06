@@ -4,7 +4,16 @@
 
 **Created**: 2026-08-05
 
-**Status**: Draft
+**Completed**: 2026-08-06
+
+**Status**: Completed
+
+**Historias de usuario completadas**:
+- US1 — Gestionar catálogo reutilizable: ✅ Implementada y verificada
+- US2 — Gestionar mercados y registrar precios por mercado: ✅ Implementada y verificada
+- US3 — Consultar historial de precios y preparar asociación futura: ✅ Implementada y verificada
+
+**Funcionalidades fuera de alcance** (sin cambios): listas compartidas, reparto de gastos, OCR, alertas de precios, scraping, recomendaciones, cliente MAUI, integración runtime con Users/ShoppingList.
 
 **Input**: User description: "Crear la especificación 004-product-catalog para MVP-2, basada en 001-project-baseline, incluyendo catálogo reutilizable, mercados, precios por mercado, historial de precios y futura asociación con ítems de listas, con exclusiones explícitas."
 

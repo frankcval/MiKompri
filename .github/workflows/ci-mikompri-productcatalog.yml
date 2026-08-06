@@ -1,0 +1,136 @@
+name: CI - MiKompri ProductCatalog
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/*'
+      - 'fix/*'
+      - 'hotfix/*'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: SonarCloud - Begin analysis
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: |
+          dotnet-sonarscanner begin \
+            /k:"frankcval_MiKompri" \
+            /o:"frankcval" \
+            /d:sonar.token="${SONAR_TOKEN}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+
+      - name: Restore
+        run: dotnet restore MiKompri.sln
+
+      - name: Build Release
+        run: dotnet build MiKompri.sln --configuration Release --no-restore
+
+      - name: Tests Domain
+        run: |
+          dotnet test test/MiKompri.ProductCatalog.Domain.Tests/MiKompri.ProductCatalog.Domain.Tests.csproj \
+            --configuration Release --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+      - name: Tests Application
+        run: |
+          dotnet test test/MiKompri.ProductCatalog.Application.Tests/MiKompri.ProductCatalog.Application.Tests.csproj \
+            --configuration Release --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+      - name: Tests API
+        run: |
+          dotnet test test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj \
+            --configuration Release --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+      - name: SonarCloud - End analysis
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: |
+          dotnet-sonarscanner end \
+            /d:sonar.token="${SONAR_TOKEN}"
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker Compose config validation
+        run: docker compose config
+
+      - name: Docker build ProductCatalog
+        run: docker compose build mikompriproductcatalogapi
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker Compose up
+        run: docker compose up -d --build
+
+      - name: Wait for ProductCatalog health
+        run: |
+          echo "Waiting for ProductCatalog API to become healthy..."
+          for i in {1..20}; do
+            if curl -fsS http://localhost:8083/health > /dev/null 2>&1; then
+              echo "ProductCatalog API is healthy"
+              exit 0
+            fi
+            echo "Attempt $i/20: not ready yet, waiting 5s..."
+            sleep 5
+          done
+          echo "ProductCatalog API did not become healthy in time"
+          docker compose logs mikompriproductcatalogapi
+          exit 1
+
+      - name: Docker Compose down
+        if: always()
+        run: docker compose down

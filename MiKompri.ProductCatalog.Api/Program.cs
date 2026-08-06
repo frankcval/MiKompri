@@ -1,7 +1,10 @@
 using MiKompri.ProductCatalog.Api.Extensions;
 using MiKompri.ProductCatalog.Api.Middleware;
 using MiKompri.ProductCatalog.Application;
+using MiKompri.ProductCatalog.Application.Options;
 using MiKompri.ProductCatalog.Infrastructure;
+using MiKompri.ProductCatalog.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -32,6 +35,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.Configure<ProductCatalogOptions>(
+    builder.Configuration.GetSection(ProductCatalogOptions.SectionName));
 builder.Services.AddProductCatalogApplication();
 builder.Services.AddProductCatalogInfrastructure(builder.Configuration);
 builder.Services.AddMiKompriHealthChecks(builder.Configuration);
@@ -40,6 +45,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ProductCatalogDbContext>();
+    if (db.Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+    {
+        db.Database.Migrate();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

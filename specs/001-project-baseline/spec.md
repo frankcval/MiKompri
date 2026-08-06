@@ -291,7 +291,7 @@ y tests de integración de API.
 |--------|----------------------------------------------------|------------------|---------------------------------------------------------|
 | MVP-0  | Listas de compra personales / Shopping List Core   | ✅ Completado     | `001-project-baseline`, `002-shopping-list-core`        |
 | MVP-1  | Usuarios, autenticación e identidad                | ✅ Completado     | `003-users-authentication`                              |
-| MVP-2  | Catálogo de productos, mercados e historial de precios | ⬜ Pendiente   | `004-product-catalog` *(spec futura)*                   |
+| MVP-2  | Catálogo de productos, mercados e historial de precios | ✅ Completado  | `004-product-catalog`                                   |
 | MVP-3  | Listas compartidas y reparto de gastos             | ⬜ Pendiente     | `005-shared-lists-settlement` *(spec futura)*           |
 | MVP-4  | Cliente Android con .NET MAUI                      | ⬜ Pendiente     | `006-android-maui-client` *(spec futura)*               |
 | MVP-5  | Presupuesto y control de gasto                     | ⬜ Pendiente     | *(spec futura)*                                         |
@@ -336,14 +336,14 @@ Owner/Admin/Member.
 
 ---
 
-### MVP-2 — Catálogo de Productos, Mercados e Historial de Precios (Estado: ⬜ Pendiente)
+### MVP-2 — Catálogo de Productos, Mercados e Historial de Precios (Estado: ✅ Completado)
 
 **Alcance**: Gestión de un catálogo de productos reutilizables, asociación a mercados
 o tiendas y registro histórico de precios para facilitar comparativas de compra.
 
 **Prerequisito**: MVP-1 completado.
 
-**Spec futura sugerida**: `004-product-catalog`
+**Spec**: [`004-product-catalog`](../004-product-catalog/spec.md) — Completada el 2026-08-06
 
 ---
 
@@ -428,7 +428,7 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso activo**: `004-product-catalog` — MVP-2 (Catálogo de productos, mercados e historial de precios).
+**Próximo paso activo**: Definir `005-shared-lists-settlement` — MVP-3 (Listas compartidas y reparto de gastos). La Spec 005 aún no ha sido creada.
 La spec `003-users-authentication` ya está implementada y representa el cierre del MVP-1.
 El flujo recomendado para futuras specs sigue siendo:
 ```
