@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".github\workflows\cd-mikompri-shoppinglist.yml" />
+    <None Include=".github\workflows\ci-mikompri-productcatalog.yml" />
     <None Include=".github\workflows\ci-mikompri-shoppinglist.yml" />
     <None Include=".specify\feature.json" />
     <None Include="docker-compose.override.yml">

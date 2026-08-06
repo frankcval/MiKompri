@@ -44,6 +44,15 @@ public class ExceptionHandlingMiddleware
                         traceId = correlationId
                     };
                     break;
+                case DomainException:
+                    statusCode = HttpStatusCode.BadRequest;
+                    body = new
+                    {
+                        status = (int)statusCode,
+                        error = ex.Message,
+                        traceId = correlationId
+                    };
+                    break;
                 case ValidationException validationException:
                     statusCode = HttpStatusCode.BadRequest;
                     body = new

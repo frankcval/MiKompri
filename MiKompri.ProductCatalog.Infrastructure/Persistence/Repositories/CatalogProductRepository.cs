@@ -39,7 +39,7 @@ public class CatalogProductRepository : ICatalogProductRepository
         }
 
         return await query
-            .OrderBy(x => x.Name.Value)
+            .OrderBy(x => x.NormalizedName)
             .ToListAsync(cancellationToken);
     }
 
