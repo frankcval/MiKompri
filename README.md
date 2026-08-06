@@ -2,6 +2,7 @@
 
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
+[![CI - MiKompri ProductCatalog](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml)
 [![CD - MiKompri ShoppingList API](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml)
 
 **MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD).
@@ -33,6 +34,8 @@ MiKompri es una solución empresarial para la gestión colaborativa de listas de
 - **Gestión de Ítems**: Agregar, modificar, marcar como comprados y eliminar ítems
 - **Gestión de Usuarios**: Registro, perfiles y autenticación con proveedores externos
 - **Gestión de Grupos**: Creación de grupos, membresías y roles (Owner, Admin, Member)
+- **Gestión de Catálogo de Productos**: Alta, actualización y desactivación de productos reutilizables
+- **Gestión de Mercados y Precios**: Registro de precios por mercado y consulta de historial
 - **Colaboración**: Listas compartidas entre miembros de un grupo
 
 ## 🏗️ Arquitectura
@@ -63,6 +66,26 @@ El proyecto implementa **Clean Architecture** dividida en capas:
 │     - Configurations                     │
 └─────────────────────────────────────────┘
 ```
+
+### Relación entre Bounded Contexts (estado actual)
+
+```text
+┌───────────────────────────────┐        ┌───────────────────────────────┐
+│      Users (MVP-1)            │        │   ProductCatalog (MVP-2)      │
+│  identidad, perfiles, grupos  │        │ productos, mercados, precios  │
+└───────────────┬───────────────┘        └───────────────┬───────────────┘
+                │                                        │
+                │ referencia por IDs                     │ catálogo reusable
+                │ (ownerId, groupId, userId)            │ (catalogProductId)
+                ▼                                        ▼
+                 ┌─────────────────────────────────────┐
+                 │      ShoppingList (MVP-0)           │
+                 │ listas e ítems colaborativos        │
+                 └─────────────────────────────────────┘
+```
+
+- La integración es por contratos y referencias canónicas, sin acoplamiento de runtime entre bounded contexts.
+- `catalogProductId` queda como identificador estable para asociaciones futuras desde ShoppingList (MVP-3+).
 
 ### Patrones Implementados
 
@@ -145,10 +168,27 @@ MiKompri/
 │       ├── UsersDbContext.cs              # DbContext para usuarios
 │       └── Repositories/                  # Repositorios de usuarios/grupos
 │
+├── MiKompri.ProductCatalog.Api/            # API de Catálogo de Productos
+├── MiKompri.ProductCatalog.Application/    # Capa de Aplicación - ProductCatalog
+├── MiKompri.ProductCatalog.Domain/         # Capa de Dominio - ProductCatalog
+│   ├── Products/                           # CatalogProduct, ProductPriceRecord, ValueObjects
+│   └── Markets/                            # Market
+├── MiKompri.ProductCatalog.Infrastructure/ # Capa de Infraestructura - ProductCatalog
+│   └── Persistence/
+│       ├── ProductCatalogDbContext.cs     # DbContext para catálogo
+│       ├── Configurations/                # Mapeos EF Core
+│       └── Repositories/                  # Repositorios de catálogo/mercados/precios
+│
 ├── test/                                   # Pruebas
 │   ├── MiKompri.ShoppingList.Api.Tests/   # Tests de integración API
 │   ├── MiKompri.ShoppingList.Application.Tests/  # Tests unitarios de casos de uso
-│   └── MiKompri.ShoppingList.Domain.Tests/       # Tests de dominio
+│   ├── MiKompri.ShoppingList.Domain.Tests/       # Tests de dominio
+│   ├── MiKompri.Users.Api.Tests/
+│   ├── MiKompri.Users.Application.Tests/
+│   ├── MiKompri.Users.Domain.Tests/
+│   ├── MiKompri.ProductCatalog.Api.Tests/
+│   ├── MiKompri.ProductCatalog.Application.Tests/
+│   └── MiKompri.ProductCatalog.Domain.Tests/
 │
 ├── docker-compose.yml                      # Orquestación de contenedores
 ├── .github/workflows/                      # Pipelines CI/CD
@@ -241,6 +281,41 @@ GET    /swagger
 - `GroupId`: ID del grupo
 - `Role`: Rol del usuario (`Owner`, `Admin`, `Member`)
 
+### 3. ProductCatalog API
+
+**Puerto**: 8083  
+**Base de Datos**: MiKompri_ProductCatalog (PostgreSQL)
+
+#### Capacidades implementadas en MVP-2
+
+- ✅ Gestión de productos reutilizables del catálogo (CRUD lógico con desactivación)
+- ✅ Gestión de mercados (alta, edición, desactivación)
+- ✅ Registro de precios por producto/mercado/fecha efectiva
+- ✅ Historial de precios con filtros (`marketId`, `from`, `to`)
+- ✅ Detección de duplicados con respuesta `409 Conflict`
+- ✅ Moneda operativa configurable vía `ProductCatalog:Currency`
+
+#### Endpoints principales
+
+```text
+POST   /api/v1/catalog-products
+PUT    /api/v1/catalog-products/{catalogProductId}
+PATCH  /api/v1/catalog-products/{catalogProductId}/deactivate
+GET    /api/v1/catalog-products
+GET    /api/v1/catalog-products/{catalogProductId}
+GET    /api/v1/catalog-products/{catalogProductId}/price-history
+
+POST   /api/v1/markets
+PUT    /api/v1/markets/{marketId}
+PATCH  /api/v1/markets/{marketId}/deactivate
+GET    /api/v1/markets
+
+POST   /api/v1/product-prices
+
+GET    /health
+GET    /swagger
+```
+
 ## ✨ Características Principales
 
 ### ShoppingList Microservice
@@ -284,6 +359,21 @@ GET    /swagger
 - Listado de grupos del usuario autenticado
 - Consulta de miembros por grupo
 - Altas y bajas de membresías con matriz de permisos `Owner/Admin/Member`
+
+### ProductCatalog Microservice
+
+#### Catálogo y mercados
+
+- Gestión de productos reutilizables con desactivación lógica
+- Gestión de mercados activos/inactivos para trazabilidad de precios
+- Validación de unicidad de productos y mercados activos
+
+#### Precios e historial
+
+- Registro de precio por `catalogProductId + marketId + effectiveDate`
+- Rechazo de duplicados con `409 Conflict`
+- Consulta de historial cronológico con filtros por mercado y fechas
+- Moneda configurable vía `ProductCatalog:Currency`
 
 ## 📋 Requisitos Previos
 
@@ -333,6 +423,21 @@ Editar `MiKompri.Users.Api/appsettings.json`:
 }
 ```
 
+#### ProductCatalog API
+
+Editar `MiKompri.ProductCatalog.Api/appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+	"PostgreSQL": "Host=localhost;Port=5432;Database=MiKompri_ProductCatalog;Username=postgres;Password=TU_PASSWORD"
+  },
+  "ProductCatalog": {
+	"Currency": "EUR"
+  }
+}
+```
+
 ### 3. Aplicar Migraciones
 
 #### ShoppingList Database
@@ -349,6 +454,13 @@ cd MiKompri.Users.Infrastructure
 dotnet ef database update --startup-project ../MiKompri.Users.Api
 ```
 
+#### ProductCatalog Database
+
+```bash
+cd MiKompri.ProductCatalog.Infrastructure
+dotnet ef database update --startup-project ../MiKompri.ProductCatalog.Api
+```
+
 > La Users API también aplica `Database.Migrate()` al arrancar en entorno Development.
 
 ## 🏃 Ejecución
@@ -362,11 +474,13 @@ docker compose up -d
 Esto iniciará:
 - ShoppingList API en `http://localhost:8080`
 - Users API en `http://localhost:8082`
+- ProductCatalog API en `http://localhost:8083`
 - PostgreSQL en `localhost:5432`
 
 **Swagger UI**:
 - ShoppingList: http://localhost:8080/swagger
 - Users: http://localhost:8082/swagger
+- ProductCatalog: http://localhost:8083/swagger
 
 ### Opción 2: Ejecución Local
 
@@ -384,11 +498,19 @@ cd MiKompri.Users.Api
 dotnet run
 ```
 
+#### Terminal 3 - ProductCatalog API
+
+```bash
+cd MiKompri.ProductCatalog.Api
+dotnet run
+```
+
 ### Health Check
 
 ```bash
 curl http://localhost:8080/health
 curl http://localhost:8082/health
+curl http://localhost:8083/health
 ```
 
 Respuesta esperada:
@@ -425,6 +547,11 @@ dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests
 dotnet test test/MiKompri.Users.Domain.Tests/MiKompri.Users.Domain.Tests.csproj --configuration Release
 dotnet test test/MiKompri.Users.Application.Tests/MiKompri.Users.Application.Tests.csproj --configuration Release
 dotnet test test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj --configuration Release
+
+# ProductCatalog
+dotnet test test/MiKompri.ProductCatalog.Domain.Tests/MiKompri.ProductCatalog.Domain.Tests.csproj --configuration Release
+dotnet test test/MiKompri.ProductCatalog.Application.Tests/MiKompri.ProductCatalog.Application.Tests.csproj --configuration Release
+dotnet test test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj --configuration Release
 ```
 
 ### Ejecutar un Test Individual
