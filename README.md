@@ -452,10 +452,12 @@ El proyecto tiene una cobertura significativa de tests:
 **Workflows**:
 - `.github/workflows/ci-mikompri-shoppinglist.yml`
 - `.github/workflows/ci-mikompri-users.yml`
+- `.github/workflows/ci-mikompri-productcatalog.yml`
 
 **Cobertura actual**:
 - **ShoppingList CI**: restore, build, tests con cobertura, SonarCloud y verificación de Docker Compose
 - **Users CI**: restore, build, tests de dominio/aplicación/API y build de `MiKompri.Users.Api/Dockerfile`
+- **ProductCatalog CI**: restore, build Release, tests de dominio/aplicación/API, validación de `docker compose config` y build de `MiKompri.ProductCatalog.Api/Dockerfile`
 
 ### Entrega Continua (CD)
 
@@ -519,6 +521,17 @@ specs de GitHub Spec Kit, consultar [`specs/001-project-baseline/spec.md`](specs
 ### MVP-2 — Catálogo de Productos y Precios ✅ Completado
 
 *(Spec: `004-product-catalog`)*
+
+#### ProductCatalog Microservice
+- ✅ Gestión de catálogo reutilizable (crear, editar, consultar y desactivar productos)
+- ✅ Gestión de mercados (crear, editar, desactivar)
+- ✅ Registro de precios por producto/mercado con validaciones de negocio
+- ✅ Consulta de historial de precios por producto, mercado y rango de fechas
+- ✅ Manejo de conflictos de duplicados con HTTP 409 (`ConflictException`)
+- ✅ Moneda configurable vía `ProductCatalog:Currency` (Options Pattern)
+- ✅ Migraciones, Docker Compose y health checks integrados
+- ✅ Tests de dominio, aplicación e integración API
+- ✅ Pipeline CI dedicado (`ci-mikompri-productcatalog.yml`)
 
 Ver detalle en [`specs/004-product-catalog/spec.md`](specs/004-product-catalog/spec.md).
 
