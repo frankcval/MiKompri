@@ -103,7 +103,7 @@ jobs:
         run: docker compose config
 
       - name: Docker build ProductCatalog
-        run: docker compose build productcatalogapi
+        run: docker compose build mikompriproductcatalogapi
 
   integration-test:
     runs-on: ubuntu-latest
@@ -128,7 +128,7 @@ jobs:
             sleep 5
           done
           echo "ProductCatalog API did not become healthy in time"
-          docker compose logs productcatalogapi
+          docker compose logs mikompriproductcatalogapi
           exit 1
 
       - name: Docker Compose down
