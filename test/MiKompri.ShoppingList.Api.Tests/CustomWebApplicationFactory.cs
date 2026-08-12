@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MiKompri.ShoppingList.Application.Interfaces;
 using MiKompri.ShoppingList.Infrastructure.Persistence;
 using System.Linq;
 
@@ -13,6 +12,8 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
      : WebApplicationFactory<Program> where Program : class
     {
         private readonly string _dbName = $"ShoppingListTestDb_{Guid.NewGuid()}";
+
+        public FakeUsersApiState UsersApiState { get; } = new();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -43,12 +44,10 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
                     options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
                 }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
 
-                var authzDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IGroupAuthorizationService));
-                if (authzDescriptor is not null)
-                {
-                    services.Remove(authzDescriptor);
-                }
-                services.AddSingleton<IGroupAuthorizationService, TestGroupAuthorizationService>();
+                services.AddSingleton(UsersApiState);
+                services.AddTransient<FakeUsersApiHandler>();
+                services.AddHttpClient("UsersApi")
+                    .ConfigurePrimaryHttpMessageHandler(sp => sp.GetRequiredService<FakeUsersApiHandler>());
 
                 builder.UseEnvironment("Development");
             });

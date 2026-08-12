@@ -9,10 +9,13 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 {
     public class SettlementApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
+        private readonly CustomWebApplicationFactory<Program> _factory;
         private readonly HttpClient _client;
 
         public SettlementApiTests(CustomWebApplicationFactory<Program> factory)
         {
+            _factory = factory;
+            _factory.UsersApiState.Reset();
             _client = factory.CreateClient();
         }
 
@@ -26,8 +29,12 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
         [Fact]
         public async Task SettlementEndpoints_ShouldReturn403_WhenAuthenticatedButUnauthorized()
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", TestGroupAuthorizationService.AllowedUserId.ToString());
+            var ownerSub = "settlement-owner-sub";
             var groupId = Guid.NewGuid();
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "Owner");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
             var createListResponse = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
             {
                 Name = "List for authz",
@@ -36,7 +43,7 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
             createListResponse.EnsureSuccessStatusCode();
             var listId = await createListResponse.Content.ReadFromJsonAsync<Guid>();
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", Guid.NewGuid().ToString());
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "settlement-outsider-sub");
             var response = await _client.GetAsync($"/api/v1/shared-lists/{listId}/settlement/proposal");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
@@ -44,8 +51,12 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
         [Fact]
         public async Task SettlementProposal_ShouldBeDeterministic_ForSameData()
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", TestGroupAuthorizationService.AllowedUserId.ToString());
+            var ownerSub = "settlement-deterministic-owner";
             var groupId = Guid.NewGuid();
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "Owner");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
 
             var createListResponse = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
             {
@@ -67,10 +78,10 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 
             var expenseResponse = await _client.PostAsJsonAsync($"/api/v1/shared-lists/{listId}/items/{itemId}/expenses", new RegisterExpenseRequest
             {
-                PaidBy = TestGroupAuthorizationService.AllowedUserId,
+                PaidBy = ownerUserId,
                 RealPaidPrice = 10m,
                 Currency = "EUR",
-                Participants = new List<Guid> { TestGroupAuthorizationService.AllowedUserId }
+                Participants = new List<Guid> { ownerUserId }
             });
             var expenseBody = await expenseResponse.Content.ReadAsStringAsync();
             Assert.True(expenseResponse.IsSuccessStatusCode, expenseBody);

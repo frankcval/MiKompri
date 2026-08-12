@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-06
 
-**Status**: Draft
+**Status**: Completed
 
 **Input**: User description: "Crear la especificación 005-shared-lists-settlement para MVP-3: listas compartidas por grupo y reparto de gastos entre miembros."
 

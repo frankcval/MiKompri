@@ -5,6 +5,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__PostgreSQL=Host=postgres;Port=5432;Database=MiKompri_ShoppingList;Username=postgres;Password=12345
+      - UsersApi__BaseUrl=http://mikompriusersapi:8080
     ports:
       - "8080:8080"
       - "8081:8081"

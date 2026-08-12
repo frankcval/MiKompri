@@ -1,17 +1,22 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using MiKompri.ShoppingList.Api;
 using MiKompri.ShoppingList.Api.Models;
+using MiKompri.ShoppingList.Api.Models.SharedLists;
 using MiKompri.ShoppingList.Application.Tests.IntegrationTest;
 
 namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 {
     public class SharedListsApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
+        private readonly CustomWebApplicationFactory<Program> _factory;
         private readonly HttpClient _client;
 
         public SharedListsApiTests(CustomWebApplicationFactory<Program> factory)
         {
+            _factory = factory;
+            _factory.UsersApiState.Reset();
             _client = factory.CreateClient();
         }
 
@@ -27,19 +32,21 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
         [Fact]
         public async Task SharedEndpoints_ShouldReturn403_WhenAuthenticatedButNotMember()
         {
-            var createPersonalRequest = new CreatePurchaseListRequest
+            var ownerSub = "owner-shared-403";
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            var groupId = Guid.NewGuid();
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "Owner");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
             {
                 Name = "Lista para 403",
-                OwnerId = Guid.NewGuid(),
-                GroupId = Guid.NewGuid()
-            };
-
-            var createResponse = await _client.PostAsJsonAsync("/api/v1/PurchaseLists", createPersonalRequest);
+                GroupId = groupId
+            });
             createResponse.EnsureSuccessStatusCode();
             var sharedListId = await createResponse.Content.ReadFromJsonAsync<Guid>();
 
-            _client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Test", Guid.NewGuid().ToString());
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "outsider-shared-403");
 
             var response = await _client.GetAsync($"/api/v1/shared-lists/{sharedListId}");
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);

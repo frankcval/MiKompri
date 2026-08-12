@@ -9,10 +9,13 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 {
     public class SharedListAuditApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
+        private readonly CustomWebApplicationFactory<Program> _factory;
         private readonly HttpClient _client;
 
         public SharedListAuditApiTests(CustomWebApplicationFactory<Program> factory)
         {
+            _factory = factory;
+            _factory.UsersApiState.Reset();
             _client = factory.CreateClient();
         }
 
@@ -26,17 +29,22 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
         [Fact]
         public async Task AuditEndpoint_ShouldReturn403_WhenUserIsNotActiveMember()
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", TestGroupAuthorizationService.AllowedUserId.ToString());
+            var ownerSub = "audit-owner-sub";
+            var groupId = Guid.NewGuid();
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "Owner");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
 
             var createList = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
             {
                 Name = "Audit list",
-                GroupId = Guid.NewGuid()
+                GroupId = groupId
             });
             createList.EnsureSuccessStatusCode();
             var listId = await createList.Content.ReadFromJsonAsync<Guid>();
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", Guid.NewGuid().ToString());
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "audit-outsider-sub");
             var response = await _client.GetAsync($"/api/v1/shared-lists/{listId}/audit-events");
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -45,8 +53,12 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
         [Fact]
         public async Task AuditEndpoint_ShouldReturnEvents_WhenUserIsAuthorized()
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", TestGroupAuthorizationService.AllowedUserId.ToString());
+            var ownerSub = "audit-authorized-owner";
             var groupId = Guid.NewGuid();
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "Owner");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
 
             var createList = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
             {
