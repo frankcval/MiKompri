@@ -7,12 +7,12 @@ using MiKompri.ShoppingList.Application.Tests.IntegrationTest;
 
 namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 {
-    public class SharedListExpensesApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
+    public class SharedListExpensesApiTests : IClassFixture<CustomWebApplicationFactory<ShoppingListApiProgram>>
     {
-        private readonly CustomWebApplicationFactory<Program> _factory;
+        private readonly CustomWebApplicationFactory<ShoppingListApiProgram> _factory;
         private readonly HttpClient _client;
 
-        public SharedListExpensesApiTests(CustomWebApplicationFactory<Program> factory)
+        public SharedListExpensesApiTests(CustomWebApplicationFactory<ShoppingListApiProgram> factory)
         {
             _factory = factory;
             _factory.UsersApiState.Reset();

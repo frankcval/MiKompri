@@ -7,12 +7,12 @@ using MiKompri.ShoppingList.Application.Tests.IntegrationTest;
 
 namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 {
-    public class SharedListAuthApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
+    public class SharedListAuthApiTests : IClassFixture<CustomWebApplicationFactory<ShoppingListApiProgram>>
     {
-        private readonly CustomWebApplicationFactory<Program> _factory;
+        private readonly CustomWebApplicationFactory<ShoppingListApiProgram> _factory;
         private readonly HttpClient _client;
 
-        public SharedListAuthApiTests(CustomWebApplicationFactory<Program> factory)
+        public SharedListAuthApiTests(CustomWebApplicationFactory<ShoppingListApiProgram> factory)
         {
             _factory = factory;
             _factory.UsersApiState.Reset();
@@ -78,6 +78,54 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
             var response = await _client.GetAsync($"/api/v1/shared-lists/{listId}");
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task SharedEndpoints_ShouldReturn403_WhenUsersApiReturnsUnknownRole()
+        {
+            // Rol desconocido que no puede parsearse a GroupRole → fail-closed → 403
+            var ownerSub = "unknown-role-sub";
+            var groupId = Guid.NewGuid();
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "UNKNOWN_ROLE_XYZ");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
+
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
+            {
+                Name = "Unknown role list",
+                GroupId = groupId
+            });
+
+            // La creación pasa porque el handler de Create también llama a GetMembership;
+            // si el rol es desconocido, fail-closed devuelve 403.
+            Assert.Equal(HttpStatusCode.Forbidden, createResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task SharedEndpoints_ShouldReturn503_WhenUsersApiReturns5xx()
+        {
+            var ownerSub = "owner-503-sub";
+            var groupId = Guid.NewGuid();
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            _factory.UsersApiState.SetMembership(groupId, ownerUserId, "Owner");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", ownerSub);
+
+            // Crear la lista mientras el servicio está disponible
+            var createResponse = await _client.PostAsJsonAsync("/api/v1/shared-lists", new CreateSharedListRequest
+            {
+                Name = "503 test list",
+                GroupId = groupId
+            });
+            createResponse.EnsureSuccessStatusCode();
+            var listId = await createResponse.Content.ReadFromJsonAsync<Guid>();
+
+            // Forzar error 500 de Users API para la siguiente llamada a membresía
+            _factory.UsersApiState.SimulateHttpErrorForGroup(groupId, 500);
+
+            var response = await _client.GetAsync($"/api/v1/shared-lists/{listId}");
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
     }
 }

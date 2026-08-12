@@ -51,12 +51,24 @@ builder.Services
     {
         options.Authority = configuration["Authentication:Authority"];
         options.Audience = configuration["Authentication:Audience"];
+
+        // Permite que ShoppingList reenvíe sus tokens (aud distinto) hacia Users.
+        // Configurar Authentication:ValidAudiences como lista separada por comas en
+        // docker-compose / env vars para aceptar múltiples audiences.
+        var validAudiencesRaw = configuration["Authentication:ValidAudiences"];
+        var validAudiences = validAudiencesRaw?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToArray();
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = true
+            ValidateIssuerSigningKey = true,
+            ValidAudiences = validAudiences?.Length > 0
+                ? validAudiences
+                : new[] { configuration["Authentication:Audience"] ?? string.Empty }
         };
     });
 
@@ -134,3 +146,10 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 app.Run();
 
 public partial class Program;
+
+/// <summary>
+/// Marcador de entrada para WebApplicationFactory en tests cross-service.
+/// Usa <see cref="UsersApiProgram"/> en lugar de <see cref="Program"/> cuando
+/// el proyecto de test también referencia MiKompri.ShoppingList.Api.
+/// </summary>
+public sealed class UsersApiProgram { }

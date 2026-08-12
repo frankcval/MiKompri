@@ -79,6 +79,36 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
                 _usersByExternalSub.Clear();
                 _membershipsByGroup.Clear();
                 _requests.Clear();
+                _forcedGroupErrors.Clear();
+            }
+        }
+
+        // ── Error simulation ──────────────────────────────────────────────────
+
+        private readonly Dictionary<Guid, int> _forcedGroupErrors = new();
+
+        /// <summary>
+        /// Fuerza que la siguiente llamada a /api/v1/groups/{groupId}/members
+        /// devuelva el código HTTP indicado (p. ej. 500, 503).
+        /// </summary>
+        public void SimulateHttpErrorForGroup(Guid groupId, int statusCode)
+        {
+            lock (_sync)
+            {
+                _forcedGroupErrors[groupId] = statusCode;
+            }
+        }
+
+        public bool TryConsumeForcedGroupError(Guid groupId, out int statusCode)
+        {
+            lock (_sync)
+            {
+                if (_forcedGroupErrors.TryGetValue(groupId, out statusCode))
+                {
+                    _forcedGroupErrors.Remove(groupId);
+                    return true;
+                }
+                return false;
             }
         }
     }
@@ -123,6 +153,12 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
                 if (segments.Length != 5 || !Guid.TryParse(segments[3], out var groupId))
                 {
                     return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+                }
+
+                // Simular error HTTP forzado (para tests de error de dependencia)
+                if (_state.TryConsumeForcedGroupError(groupId, out var forcedStatus))
+                {
+                    return Task.FromResult(new HttpResponseMessage((HttpStatusCode)forcedStatus));
                 }
 
                 if (!_state.TryGetMembers(groupId, out var members) || members.All(x => x.UserId != callerUserId))

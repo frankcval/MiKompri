@@ -24,12 +24,12 @@ using Xunit;
 
 namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
 {
-    public class PurchaseListsApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
+    public class PurchaseListsApiTests : IClassFixture<CustomWebApplicationFactory<ShoppingListApiProgram>>
     {
 
 
         private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory<Program> _factory;
+        private readonly CustomWebApplicationFactory<ShoppingListApiProgram> _factory;
 
 
         //GetAll Test Methods
@@ -109,7 +109,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
 
 
 
-        public PurchaseListsApiTests(CustomWebApplicationFactory<Program> factory)
+        public PurchaseListsApiTests(CustomWebApplicationFactory<ShoppingListApiProgram> factory)
         {
             _factory = factory;
             ResetDatabase(factory);
@@ -119,7 +119,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             });
         }
 
-        private static void ResetDatabase(CustomWebApplicationFactory<Program> factory)
+        private static void ResetDatabase(CustomWebApplicationFactory<ShoppingListApiProgram> factory)
         {
             using var scope = factory.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ShoppingListDbContext>();

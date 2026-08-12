@@ -62,10 +62,7 @@ Varios miembros de un grupo pueden compartir listas de compra. Una lista puede e
 a un grupo, y los miembros del grupo pueden consultarla y gestionarla. Se puede filtrar las
 listas por grupo.
 
-**Estado actual**: ⚠️ Parcialmente implementado. El dominio (`PurchaseList.GroupId`),
-la query `GetShoppingListByGroupId` y el filtro en el endpoint `GET /api/v1/PurchaseLists?groupId=`
-están implementados. El bounded context `Users` ya es operativo, pero ShoppingList todavía no
-valida pertenencia al grupo ni permisos contra Users, y la colaboración real sigue pendiente.
+**Estado actual**: ✅ Implementado como parte de MVP-3 (`005-shared-lists-settlement`). Las listas compartidas con control de acceso por membresía de grupo están completamente operativas. ShoppingList valida pertenencia y rol contra Users.Api (`IGroupAuthorizationService`). Cobertura de tests automatizados incluyendo tests cross-service con Users.Api real.
 
 **Why this priority**: Diferenciador clave del producto frente a apps de lista individual
 (PP4 - Transparencia Colaborativa). Requiere la integración efectiva entre `ShoppingList` y `Users`.

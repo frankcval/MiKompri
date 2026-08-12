@@ -171,3 +171,10 @@ app.MapMiKompriHealthChecks();
 app.Run();
 
 Log.CloseAndFlush();
+
+/// <summary>
+/// Marcador de entrada para WebApplicationFactory en tests de integración.
+/// Usar <see cref="ShoppingListApiProgram"/> cuando el proyecto de test
+/// también referencie MiKompri.Users.Api para evitar ambigüedad con Program.
+/// </summary>
+public sealed class ShoppingListApiProgram { }

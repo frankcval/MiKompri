@@ -34,6 +34,8 @@
     <ProjectReference Include="..\..\MiKompri.ShoppingList.Domain\MiKompri.ShoppingList.Domain.csproj" />
     <ProjectReference Include="..\..\MiKompri.ShoppingList.Infrastructure\MiKompri.ShoppingList.Infrastructure.csproj" />
     <ProjectReference Include="..\MiKompri.ShoppingList.Application.Tests\MiKompri.ShoppingList.Application.Tests.csproj" />
+    <!-- Referencia a Users.Api para test cross-service (WebApplicationFactory real) -->
+    <ProjectReference Include="..\..\MiKompri.Users.Api\MiKompri.Users.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

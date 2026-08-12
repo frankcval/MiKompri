@@ -6,6 +6,9 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__PostgreSQL=Host=postgres;Port=5432;Database=MiKompri_ShoppingList;Username=postgres;Password=12345
       - UsersApi__BaseUrl=http://mikompriusersapi:8080
+      # Mismo proveedor OIDC que Users.Api para que los tokens sean compatibles
+      - Authentication__Authority=https://login.microsoftonline.com/common/v2.0
+      - Authentication__Audience=mikompri-shoppinglist-api
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -23,6 +26,8 @@ services:
       - Authentication__Authority=https://login.microsoftonline.com/common/v2.0
       - Authentication__Audience=mikompri-users
       - Authentication__IdentityProvider=entra
+      # Acepta tokens con aud=mikompri-shoppinglist-api reenviados por ShoppingList
+      - Authentication__ValidAudiences=mikompri-users,mikompri-shoppinglist-api
     ports:
       - "8082:8080"
 
