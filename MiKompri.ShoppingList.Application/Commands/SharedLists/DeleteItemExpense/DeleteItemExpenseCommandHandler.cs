@@ -1,0 +1,51 @@
+using MediatR;
+using MiKompri.ShoppingList.Application.Exceptions;
+using MiKompri.ShoppingList.Application.Interfaces;
+using MiKompri.ShoppingList.Domain.Entities;
+
+namespace MiKompri.ShoppingList.Application.Commands.SharedLists.DeleteItemExpense
+{
+    public sealed class DeleteItemExpenseCommandHandler : IRequestHandler<DeleteItemExpenseCommand>
+    {
+        private readonly IPurchaseListRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IGroupAuthorizationService _groupAuthorization;
+
+        public DeleteItemExpenseCommandHandler(
+            IPurchaseListRepository repository,
+            IUnitOfWork unitOfWork,
+            ICurrentUserService currentUser,
+            IGroupAuthorizationService groupAuthorization)
+        {
+            _repository = repository;
+            _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
+            _groupAuthorization = groupAuthorization;
+        }
+
+        public async Task Handle(DeleteItemExpenseCommand request, CancellationToken cancellationToken)
+        {
+            if (!_currentUser.IsAuthenticated || _currentUser.UserId == Guid.Empty)
+                throw new UnauthorizedAccessException("Authentication failed.");
+
+            var list = await _repository.GetByIdAsync(request.SharedListId)
+                ?? throw new KeyNotFoundException("Lista no encontrada.");
+
+            if (!list.IsShared || !list.GroupId.HasValue)
+                throw new ForbiddenOperationException("La operación solo aplica a listas compartidas.");
+
+            var membership = await _groupAuthorization.GetMembershipAsync(list.GroupId.Value, _currentUser.UserId, cancellationToken);
+            if (!membership.IsAuthorizedMember || membership.Role is not (GroupRole.Owner or GroupRole.Admin))
+                throw new ForbiddenOperationException("No tienes permisos para eliminar gastos en esta lista compartida.");
+
+            var item = list.Items.FirstOrDefault(x => x.Id == request.ItemId)
+                ?? throw new KeyNotFoundException("Ítem no encontrado.");
+
+            item.DeleteExpense(request.ExpenseId);
+
+            await _repository.AddSharedListAuditEventAsync(new SharedListAuditEvent(list.Id, _currentUser.UserId, "ExpenseDeleted", nameof(ItemExpenseRecord), request.ExpenseId));
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+    }
+}

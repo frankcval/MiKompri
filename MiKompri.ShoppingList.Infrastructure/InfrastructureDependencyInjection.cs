@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MiKompri.ShoppingList.Application.Interfaces;
 using MiKompri.ShoppingList.Infrastructure.Persistence;
 using MiKompri.ShoppingList.Infrastructure.Persistence.Repositories;
+using MiKompri.ShoppingList.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace MiKompri.ShoppingList.Infrastructure
 
             // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Integración de autorización de grupos (Users)
+            services.AddScoped<IGroupAuthorizationService, UsersGroupAuthorizationAdapter>();
 
             return services;
         }

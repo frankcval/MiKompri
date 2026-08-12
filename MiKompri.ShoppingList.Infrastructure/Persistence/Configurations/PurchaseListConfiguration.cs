@@ -17,6 +17,11 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations
                 .IsRequired();
             builder.Property(p => p.CreatedAt)
                 .IsRequired();
+
+            builder.Property(p => p.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired();
             builder.HasMany(p => p.Items)
               .WithOne(i => i.PurchaseList)
               .HasForeignKey(i => i.PurchaseListId)

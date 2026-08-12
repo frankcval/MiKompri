@@ -105,20 +105,22 @@ dotnet test test\MiKompri.Users.Api.Tests\MiKompri.Users.Api.Tests.csproj --conf
 
 ## Protocolo de validación de SC-003
 
-1. Preparar una lista compartida de prueba con al menos 3 miembros.
-2. Medir el tiempo desde la creación de la lista hasta la obtención de la propuesta de liquidación final.
-3. Guardar la evidencia en una nota de validación o salida de consola reproducible.
-4. Repetir la ejecución con el mismo conjunto de datos para confirmar reproducibilidad.
+1. Preparar una lista compartida de prueba con al menos 3 miembros activos y token JWT válido (`sub` GUID).
+2. Ejecutar el flujo: crear lista (`CreateSharedListRequest`) → agregar ítem (`AddSharedItemRequest`) → registrar gasto (`RegisterExpenseRequest`) → consultar propuesta de liquidación.
+3. Medir el tiempo desde la creación de la lista hasta la obtención de `/settlement/proposal`.
+4. Guardar evidencia de tiempos y payloads utilizados en una nota de validación o salida de consola reproducible.
+5. Repetir la ejecución con el mismo conjunto de datos para confirmar reproducibilidad (misma propuesta de transferencias).
 
 **Criterio de aceptación**
 - El flujo completo es ejecutable de forma reproducible y la evidencia queda documentada en el repositorio o en el artefacto de validación.
 
-## Protocolo de validación de SC-006
+## Protocolo humano de validación de SC-006
 
-1. Usar una plantilla de preguntas cortas sobre el reparto y la liquidación.
-2. Aplicar la validación a participantes humanos con contexto del dominio.
+1. Usar una plantilla breve (5-10 preguntas) sobre interpretación de balances y propuesta de liquidación.
+2. Aplicar la validación a participantes humanos con contexto del dominio (no sustituir por asserts automatizados).
 3. Registrar respuestas y porcentaje de acierto en una tabla o formulario simple.
 4. Confirmar que al menos el 90% identifica correctamente deudores, acreedores y direcciones de pago.
+5. Adjuntar fecha, versión del entorno y referencia a la lista de ejemplo utilizada para que el ejercicio sea repetible.
 
 **Criterio de aceptación**
 - La validación es humana, documentada y repetible; no se convierte en una prueba técnica automatizada artificial.

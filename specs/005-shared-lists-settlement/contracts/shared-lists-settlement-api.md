@@ -28,6 +28,8 @@
 ### `POST /api/v1/shared-lists`
 Crea una lista compartida asociada a un grupo.
 
+**Payload final (API Model): `CreateSharedListRequest`**
+
 **Request**
 ```json
 {
@@ -38,7 +40,7 @@ Crea una lista compartida asociada a un grupo.
 ```
 
 **Responses**
-- `201 Created` + detalle de la lista.
+- `201 Created` + `Guid` del recurso creado.
 - `401 Unauthorized` si no existe identidad válida.
 - `403 Forbidden` si el caller no es miembro activo del grupo.
 - `400 Bad Request` por validación.
@@ -66,6 +68,8 @@ Elimina lista compartida (solo `Owner`/`Admin` según matriz aprobada).
 
 ### `POST /api/v1/shared-lists/{sharedListId}/items`
 Agrega ítem a la lista compartida. Registra automáticamente `AddedBy`.
+
+**Payload final (API Model): `AddSharedItemRequest`**
 
 **Request**
 ```json
@@ -96,12 +100,15 @@ Marca o revierte compra del ítem.
 ### `POST /api/v1/shared-lists/{sharedListId}/items/{itemId}/expenses`
 Registra gasto real del ítem.
 
+**Payload final (API Model): `RegisterExpenseRequest`**
+
 **Request**
 ```json
 {
   "paidBy": "f4d4b27d-b337-4e92-bf4a-6de3c949f9a2",
   "purchasedBy": "f4d4b27d-b337-4e92-bf4a-6de3c949f9a2",
   "realPaidPrice": 3.79,
+  "currency": "EUR",
   "participants": [
     "f4d4b27d-b337-4e92-bf4a-6de3c949f9a2",
     "0a9a9f3d-2473-4d9b-a7f2-2cd0dc45d0d3"
@@ -124,6 +131,8 @@ Registra gasto real del ítem.
 
 ### `PATCH /api/v1/shared-lists/{sharedListId}/items/{itemId}/expenses/{expenseId}`
 Actualiza gasto y/o participantes (según permisos).
+
+**Payload final (API Model): `UpdateExpenseRequest`**
 
 ### `DELETE /api/v1/shared-lists/{sharedListId}/items/{itemId}/expenses/{expenseId}`
 Elimina gasto (solo rol autorizado por matriz).

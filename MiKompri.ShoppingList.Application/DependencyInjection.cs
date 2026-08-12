@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using MiKompri.ShoppingList.Application.Behavior;
+using MiKompri.ShoppingList.Application.Services;
 using System.Reflection;
 
 namespace MiKompri.ShoppingList.Application
@@ -26,8 +27,7 @@ namespace MiKompri.ShoppingList.Application
             // Pipeline de validación
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-
-
+            services.AddScoped<ActiveMembershipPolicy>();
 
             return services;
         }

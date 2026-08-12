@@ -26,11 +26,11 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 **Purpose**: Preparar la estructura de trabajo y la base transversal para MVP-3 dentro del bounded context ShoppingList.
 
-- [ ] T001 Crear carpetas base de feature en `MiKompri.ShoppingList.Application/Commands/SharedLists/`, `MiKompri.ShoppingList.Application/Queries/SharedLists/`, `MiKompri.ShoppingList.Api/Models/SharedLists/`, `MiKompri.ShoppingList.Api/Services/`, `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/` y `MiKompri.ShoppingList.Infrastructure/Services/`
-- [ ] T002 [P] Crear contratos de salida iniciales para shared lists en `MiKompri.ShoppingList.Application/DTOs/SharedPurchaseListDto.cs`, `MiKompri.ShoppingList.Application/DTOs/SharedListItemDto.cs`, `MiKompri.ShoppingList.Application/DTOs/SettlementSummaryDto.cs`, `MiKompri.ShoppingList.Application/DTOs/SettlementProposalDto.cs` y `MiKompri.ShoppingList.Application/DTOs/SharedListAuditEventDto.cs`
-- [ ] T003 [P] Crear modelos HTTP iniciales para shared lists en `MiKompri.ShoppingList.Api/Models/SharedLists/CreateSharedListRequest.cs`, `MiKompri.ShoppingList.Api/Models/SharedLists/RegisterExpenseRequest.cs`, `MiKompri.ShoppingList.Api/Models/SharedLists/UpdateSharedListRequest.cs` y `MiKompri.ShoppingList.Api/Models/SharedLists/UpdateExpenseRequest.cs`
-- [ ] T004 [P] Alinear documentación de spec/plan/contract/quickstart en `specs/005-shared-lists-settlement/spec.md`, `specs/005-shared-lists-settlement/plan.md`, `specs/005-shared-lists-settlement/contracts/shared-lists-settlement-api.md` y `specs/005-shared-lists-settlement/quickstart.md` para que todas las rutas, nombres y criterios de validación coincidan antes de codificar
-- [ ] T005 [P] Preparar estructura de pruebas para shared lists en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/` y `test/MiKompri.ShoppingList.Api.Tests/SharedLists/`
+- [X] T001 Crear carpetas base de feature en `MiKompri.ShoppingList.Application/Commands/SharedLists/`
+- [X] T002 [P] Crear contratos de salida iniciales para shared lists en `MiKompri.ShoppingList.Application/DTOs/SharedPurchaseListDto.cs`
+- [X] T003 [P] Crear modelos HTTP iniciales para shared lists en `MiKompri.ShoppingList.Api/Models/SharedLists/CreateSharedListRequest.cs`
+- [X] T004 [P] Alinear documentación de spec/plan/contract/quickstart en `specs/005-shared-lists-settlement/spec.md`
+- [X] T005 [P] Preparar estructura de pruebas para shared lists en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/`
 
 ---
 
@@ -40,14 +40,14 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 **⚠️ CRITICAL**: No iniciar user stories hasta completar esta fase.
 
-- [ ] T006 [P] Extender el aggregate de lista para modo compartido y estado de ciclo de vida en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
-- [ ] T007 [P] Añadir trazabilidad de actor colaborativo en ítems (`AddedBy`, `UpdatedBy`) en `MiKompri.ShoppingList.Domain/Entities/ListItem.cs`
-- [ ] T008 [P] Crear la abstracción de identidad local y autorización de grupo en `MiKompri.ShoppingList.Application/Interfaces/ICurrentUserService.cs`, `MiKompri.ShoppingList.Application/Interfaces/IGroupAuthorizationService.cs` y `MiKompri.ShoppingList.Application/Interfaces/GroupAuthorizationResult.cs`
-- [ ] T009 [P] Configurar JWT Bearer y extracción de identidad desde `sub` en `MiKompri.ShoppingList.Api/Program.cs`, `MiKompri.ShoppingList.Api/appsettings.json`, `MiKompri.ShoppingList.Api/appsettings.Development.json`, `MiKompri.ShoppingList.Api/Middleware/UserProvisioningMiddleware.cs` y `MiKompri.ShoppingList.Api/Services/HttpCurrentUserService.cs`
-- [ ] T010 [P] Implementar el adapter de infraestructura para consultar membresía/rol sin acceso directo a la base de datos de Users en `MiKompri.ShoppingList.Infrastructure/Services/UsersGroupAuthorizationAdapter.cs` y registrarlo en `MiKompri.ShoppingList.Infrastructure/InfrastructureDependencyInjection.cs`
-- [ ] T011 [P] Registrar nuevas entidades compartidas y configuración base en `MiKompri.ShoppingList.Infrastructure/Persistence/ShoppingListDbContext.cs`
-- [ ] T012 Implementar configuraciones EF Core base para entidades compartidas en `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/SharedListItemConfiguration.cs`, `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/ItemExpenseRecordConfiguration.cs`, `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/ExpenseParticipantConfiguration.cs` y `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/SharedListAuditEventConfiguration.cs`
-- [ ] T013 Generar migración de infraestructura para shared lists y settlement en `MiKompri.ShoppingList.Infrastructure/Migrations/` y actualizar `MiKompri.ShoppingList.Infrastructure/Migrations/ShoppingListDbContextModelSnapshot.cs`
+- [X] T006 [P] Extender el aggregate de lista para modo compartido y estado de ciclo de vida en `MiKompri.ShoppingList.Domain/Entities/PurchaseList.cs`
+- [X] T007 [P] Añadir trazabilidad de actor colaborativo en ítems (`AddedBy`, `UpdatedBy`) en `MiKompri.ShoppingList.Domain/Entities/ListItem.cs`
+- [X] T008 [P] Crear la abstracción de identidad local y autorización de grupo en `MiKompri.ShoppingList.Application/Interfaces/ICurrentUserService.cs`, `MiKompri.ShoppingList.Application/Interfaces/IGroupAuthorizationService.cs` y `MiKompri.ShoppingList.Application/Interfaces/GroupAuthorizationResult.cs`
+- [X] T009 [P] Configurar JWT Bearer y extracción de identidad desde `sub` en `MiKompri.ShoppingList.Api/Program.cs`, `MiKompri.ShoppingList.Api/appsettings.json`, `MiKompri.ShoppingList.Api/appsettings.Development.json`, `MiKompri.ShoppingList.Api/Middleware/UserProvisioningMiddleware.cs` y `MiKompri.ShoppingList.Api/Services/HttpCurrentUserService.cs`
+- [X] T010 [P] Implementar el adapter de infraestructura para consultar membresía/rol sin acceso directo a la base de datos de Users en `MiKompri.ShoppingList.Infrastructure/Services/UsersGroupAuthorizationAdapter.cs` y registrarlo en `MiKompri.ShoppingList.Infrastructure/InfrastructureDependencyInjection.cs`
+- [X] T011 [P] Registrar nuevas entidades compartidas y configuración base en `MiKompri.ShoppingList.Infrastructure/Persistence/ShoppingListDbContext.cs`
+- [X] T012 Implementar configuraciones EF Core base para entidades compartidas en `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/SharedListItemConfiguration.cs`, `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/ItemExpenseRecordConfiguration.cs`, `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/ExpenseParticipantConfiguration.cs` y `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/SharedListAuditEventConfiguration.cs`
+- [X] T013 Generar migración de infraestructura para shared lists y settlement en `MiKompri.ShoppingList.Infrastructure/Migrations/` y actualizar `MiKompri.ShoppingList.Infrastructure/Migrations/ShoppingListDbContextModelSnapshot.cs`
 
 **Checkpoint**: Fundación lista; las historias ya pueden desarrollarse por prioridad.
 
@@ -61,19 +61,19 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 ### Tests for User Story 1
 
-- [ ] T014 [P] [US1] Crear pruebas de dominio para ciclo de vida de listas compartidas y compatibilidad con listas personales en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/PurchaseListSharedModeTests.cs`
-- [ ] T015 [P] [US1] Crear pruebas de Application para comandos y queries de shared lists en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/CreateSharedListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/UpdateSharedListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/CloseSharedListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSharedListByIdQueryHandlerTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSharedListsByGroupQueryHandlerTests.cs`
-- [ ] T016 [P] [US1] Crear pruebas API/integration para creación, consulta, acceso 401/403 y regresión de listas personales en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListsApiTests.cs`
+- [X] T014 [P] [US1] Crear pruebas de dominio para ciclo de vida de listas compartidas y compatibilidad con listas personales en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/PurchaseListSharedModeTests.cs`
+- [X] T015 [P] [US1] Crear pruebas de Application para comandos y queries de shared lists en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/CreateSharedListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/UpdateSharedListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/CloseSharedListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSharedListByIdQueryHandlerTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSharedListsByGroupQueryHandlerTests.cs`
+- [X] T016 [P] [US1] Crear pruebas API/integration para creación, consulta, acceso 401/403 y regresión de listas personales en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListsApiTests.cs`
 
 ### Implementation for User Story 1
 
-- [ ] T017 [P] [US1] Implementar comandos de ciclo de vida de shared list en `MiKompri.ShoppingList.Application/Commands/SharedLists/CreateSharedList/CreateSharedListCommand.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateSharedList/UpdateSharedListCommand.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/CloseSharedList/CloseSharedListCommand.cs`
-- [ ] T018 [P] [US1] Implementar validadores de shared list en `MiKompri.ShoppingList.Application/Commands/SharedLists/CreateSharedList/CreateSharedListCommandValidator.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateSharedList/UpdateSharedListCommandValidator.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/CloseSharedList/CloseSharedListCommandValidator.cs`
-- [ ] T019 [US1] Implementar handlers con validación de membresía/rol contra `IGroupAuthorizationService` en `MiKompri.ShoppingList.Application/Commands/SharedLists/CreateSharedList/CreateSharedListCommandHandler.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateSharedList/UpdateSharedListCommandHandler.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/CloseSharedList/CloseSharedListCommandHandler.cs`
-- [ ] T020 [P] [US1] Implementar queries de lectura de shared list en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSharedListById/GetSharedListByIdQuery.cs`, `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSharedListsByGroup/GetSharedListsByGroupQuery.cs` y sus handlers
-- [ ] T021 [US1] Extender repositorio para carga/filtrado de shared lists en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/PurchaseListRepository.cs` y `MiKompri.ShoppingList.Application/Interfaces/IPurchaseListRepository.cs`
-- [ ] T022 [US1] Exponer endpoints `/api/v1/shared-lists` y operaciones básicas en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
-- [ ] T023 [US1] Mantener compatibilidad de listas personales ajustando mapeos DTO y filtros existentes en `MiKompri.ShoppingList.Application/DTOs/PurchaseListMappings.cs` y `MiKompri.ShoppingList.Application/Queries/GetAllShoppingLists/GetAllShoppingListsQueryHandler.cs`
+- [X] T017 [P] [US1] Implementar comandos de ciclo de vida de shared list en `MiKompri.ShoppingList.Application/Commands/SharedLists/CreateSharedList/CreateSharedListCommand.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateSharedList/UpdateSharedListCommand.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/CloseSharedList/CloseSharedListCommand.cs`
+- [X] T018 [P] [US1] Implementar validadores de shared list en `MiKompri.ShoppingList.Application/Commands/SharedLists/CreateSharedList/CreateSharedListCommandValidator.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateSharedList/UpdateSharedListCommandValidator.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/CloseSharedList/CloseSharedListCommandValidator.cs`
+- [X] T019 [US1] Implementar handlers con validación de membresía/rol contra `IGroupAuthorizationService` en `MiKompri.ShoppingList.Application/Commands/SharedLists/CreateSharedList/CreateSharedListCommandHandler.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateSharedList/UpdateSharedListCommandHandler.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/CloseSharedList/CloseSharedListCommandHandler.cs`
+- [X] T020 [P] [US1] Implementar queries de lectura de shared list en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSharedListById/GetSharedListByIdQuery.cs`, `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSharedListsByGroup/GetSharedListsByGroupQuery.cs` y sus handlers
+- [X] T021 [US1] Extender repositorio para carga/filtrado de shared lists en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/PurchaseListRepository.cs` y `MiKompri.ShoppingList.Application/Interfaces/IPurchaseListRepository.cs`
+- [X] T022 [US1] Exponer endpoints `/api/v1/shared-lists` y operaciones básicas en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [X] T023 [US1] Mantener compatibilidad de listas personales ajustando mapeos DTO y filtros existentes en `MiKompri.ShoppingList.Application/DTOs/PurchaseListMappings.cs` y `MiKompri.ShoppingList.Application/Queries/GetAllShoppingLists/GetAllShoppingListsQueryHandler.cs`
 
 **Checkpoint**: US1 funcional e independiente.
 
@@ -87,21 +87,21 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 ### Tests for User Story 2
 
-- [ ] T024 [P] [US2] Crear pruebas de dominio para reglas de gasto, trazabilidad y participantes en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ItemExpenseRecordTests.cs`, `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ExpenseParticipantTests.cs` y `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/SharedListAuditEventTests.cs`
-- [ ] T025 [P] [US2] Crear pruebas de Application para comandos de colaboración y gastos en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/AddSharedItemCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/RegisterItemExpenseCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/UpdateItemExpenseCommandHandlerTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/DeleteItemExpenseCommandHandlerTests.cs`
-- [ ] T026 [P] [US2] Crear pruebas API/integration para gasto colaborativo, validaciones, autorización y casos 401/403 en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListExpensesApiTests.cs`
+- [X] T024 [P] [US2] Crear pruebas de dominio para reglas de gasto, trazabilidad y participantes en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ItemExpenseRecordTests.cs`, `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ExpenseParticipantTests.cs` y `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/SharedListAuditEventTests.cs`
+- [X] T025 [P] [US2] Crear pruebas de Application para comandos de colaboración y gastos en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/AddSharedItemCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/RegisterItemExpenseCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/SharedLists/UpdateItemExpenseCommandHandlerTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/DeleteItemExpenseCommandHandlerTests.cs`
+- [X] T026 [P] [US2] Crear pruebas API/integration para gasto colaborativo, validaciones, autorización y casos 401/403 en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListExpensesApiTests.cs`
 
 ### Implementation for User Story 2
 
-- [ ] T027 [P] [US2] Crear entidades de gasto colaborativo en `MiKompri.ShoppingList.Domain/Entities/ItemExpenseRecord.cs` y `MiKompri.ShoppingList.Domain/Entities/ExpenseParticipant.cs`
-- [ ] T028 [P] [US2] Crear entidad de trazabilidad de operaciones en `MiKompri.ShoppingList.Domain/Entities/SharedListAuditEvent.cs`
-- [ ] T029 [US2] Implementar invariantes de gasto (`PaidBy` obligatorio, mínimo 1 participante activo, sin duplicados, `RealPaidPrice > 0`) en `MiKompri.ShoppingList.Domain/Entities/ItemExpenseRecord.cs`
-- [ ] T030 [P] [US2] Implementar comandos de colaboración y gastos en `MiKompri.ShoppingList.Application/Commands/SharedLists/AddSharedItem/AddSharedItemCommand.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommand.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateItemExpense/UpdateItemExpenseCommand.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/DeleteItemExpense/DeleteItemExpenseCommand.cs`
-- [ ] T031 [P] [US2] Implementar validadores de comandos de gastos en `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommandValidator.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateItemExpense/UpdateItemExpenseCommandValidator.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/DeleteItemExpense/DeleteItemExpenseCommandValidator.cs`
-- [ ] T032 [US2] Implementar handlers de gastos con control de permisos Owner/Admin/Member en `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommandHandler.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateItemExpense/UpdateItemExpenseCommandHandler.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/DeleteItemExpense/DeleteItemExpenseCommandHandler.cs`
-- [ ] T033 [US2] Persistir gastos, participantes y auditoría en `MiKompri.ShoppingList.Infrastructure/Persistence/ShoppingListDbContext.cs` y `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/SharedListAuditEventConfiguration.cs`
-- [ ] T034 [US2] Actualizar carga agregada del repositorio para incluir gastos/participantes en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/PurchaseListRepository.cs`
-- [ ] T035 [US2] Exponer endpoints de ítems y gastos compartidos en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs` y `MiKompri.ShoppingList.Api/Models/SharedLists/RegisterExpenseRequest.cs`
+- [X] T027 [P] [US2] Crear entidades de gasto colaborativo en `MiKompri.ShoppingList.Domain/Entities/ItemExpenseRecord.cs` y `MiKompri.ShoppingList.Domain/Entities/ExpenseParticipant.cs`
+- [X] T028 [P] [US2] Crear entidad de trazabilidad de operaciones en `MiKompri.ShoppingList.Domain/Entities/SharedListAuditEvent.cs`
+- [X] T029 [US2] Implementar invariantes de gasto (`PaidBy` obligatorio, mínimo 1 participante activo, sin duplicados, `RealPaidPrice > 0`) en `MiKompri.ShoppingList.Domain/Entities/ItemExpenseRecord.cs`
+- [X] T030 [P] [US2] Implementar comandos de colaboración y gastos en `MiKompri.ShoppingList.Application/Commands/SharedLists/AddSharedItem/AddSharedItemCommand.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommand.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateItemExpense/UpdateItemExpenseCommand.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/DeleteItemExpense/DeleteItemExpenseCommand.cs`
+- [X] T031 [P] [US2] Implementar validadores de comandos de gastos en `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommandValidator.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateItemExpense/UpdateItemExpenseCommandValidator.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/DeleteItemExpense/DeleteItemExpenseCommandValidator.cs`
+- [X] T032 [US2] Implementar handlers de gastos con control de permisos Owner/Admin/Member en `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommandHandler.cs`, `MiKompri.ShoppingList.Application/Commands/SharedLists/UpdateItemExpense/UpdateItemExpenseCommandHandler.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/DeleteItemExpense/DeleteItemExpenseCommandHandler.cs`
+- [X] T033 [US2] Persistir gastos, participantes y auditoría en `MiKompri.ShoppingList.Infrastructure/Persistence/ShoppingListDbContext.cs` y `MiKompri.ShoppingList.Infrastructure/Persistence/Configurations/SharedLists/SharedListAuditEventConfiguration.cs`
+- [X] T034 [US2] Actualizar carga agregada del repositorio para incluir gastos/participantes en `MiKompri.ShoppingList.Infrastructure/Persistence/Repositories/PurchaseListRepository.cs`
+- [X] T035 [US2] Exponer endpoints de ítems y gastos compartidos en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs` y `MiKompri.ShoppingList.Api/Models/SharedLists/RegisterExpenseRequest.cs`
 
 **Checkpoint**: US2 funcional e independiente.
 
@@ -115,18 +115,18 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 ### Tests for User Story 3
 
-- [ ] T036 [P] [US3] Crear pruebas de dominio para cálculo de reparto, redondeo y settlement determinista en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ExpenseSettlementCalculatorTests.cs`, `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ExpenseShareRoundingPolicyTests.cs` y `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/DeterministicSettlementProposalBuilderTests.cs`
-- [ ] T037 [P] [US3] Crear pruebas de Application para queries de settlement summary/proposal y sus validaciones en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSettlementSummaryQueryHandlerTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSettlementProposalQueryHandlerTests.cs`
-- [ ] T038 [P] [US3] Crear pruebas API/integration para resumen, propuesta y reproducibilidad del settlement en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SettlementApiTests.cs`
+- [X] T036 [P] [US3] Crear pruebas de dominio para cálculo de reparto, redondeo y settlement determinista en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ExpenseSettlementCalculatorTests.cs`, `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/ExpenseShareRoundingPolicyTests.cs` y `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/DeterministicSettlementProposalBuilderTests.cs`
+- [X] T037 [P] [US3] Crear pruebas de Application para queries de settlement summary/proposal y sus validaciones en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSettlementSummaryQueryHandlerTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSettlementProposalQueryHandlerTests.cs`
+- [X] T038 [P] [US3] Crear pruebas API/integration para resumen, propuesta y reproducibilidad del settlement en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SettlementApiTests.cs`
 
 ### Implementation for User Story 3
 
-- [ ] T039 [P] [US3] Implementar servicio de dominio de cálculo de reparto en `MiKompri.ShoppingList.Domain/Services/ExpenseSettlementCalculator.cs`
-- [ ] T040 [P] [US3] Implementar redondeo y asignación de residuo al pagador en `MiKompri.ShoppingList.Domain/Services/ExpenseShareRoundingPolicy.cs`
-- [ ] T041 [US3] Implementar algoritmo determinista de liquidación con límite verificable `D + A - 1` en `MiKompri.ShoppingList.Domain/Services/DeterministicSettlementProposalBuilder.cs`
-- [ ] T042 [P] [US3] Implementar queries de settlement summary/proposal en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSettlementSummary/GetSettlementSummaryQuery.cs`, `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSettlementProposal/GetSettlementProposalQuery.cs` y handlers
-- [ ] T043 [US3] Implementar DTOs de balances y transferencias en `MiKompri.ShoppingList.Application/DTOs/SettlementSummaryDto.cs` y `MiKompri.ShoppingList.Application/DTOs/SettlementProposalDto.cs`
-- [ ] T044 [US3] Exponer endpoints `/api/v1/shared-lists/{id}/settlement/summary` y `/proposal` en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [X] T039 [P] [US3] Implementar servicio de dominio de cálculo de reparto en `MiKompri.ShoppingList.Domain/Services/ExpenseSettlementCalculator.cs`
+- [X] T040 [P] [US3] Implementar redondeo y asignación de residuo al pagador en `MiKompri.ShoppingList.Domain/Services/ExpenseShareRoundingPolicy.cs`
+- [X] T041 [US3] Implementar algoritmo determinista de liquidación con límite verificable `D + A - 1` en `MiKompri.ShoppingList.Domain/Services/DeterministicSettlementProposalBuilder.cs`
+- [X] T042 [P] [US3] Implementar queries de settlement summary/proposal en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSettlementSummary/GetSettlementSummaryQuery.cs`, `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSettlementProposal/GetSettlementProposalQuery.cs` y handlers
+- [X] T043 [US3] Implementar DTOs de balances y transferencias en `MiKompri.ShoppingList.Application/DTOs/SettlementSummaryDto.cs` y `MiKompri.ShoppingList.Application/DTOs/SettlementProposalDto.cs`
+- [X] T044 [US3] Exponer endpoints `/api/v1/shared-lists/{id}/settlement/summary` y `/proposal` en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
 
 **Checkpoint**: US3 funcional e independiente.
 
@@ -140,17 +140,17 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 ### Tests for User Story 4
 
-- [ ] T045 [P] [US4] Crear pruebas de dominio para preservación de histórico y estados de membresía en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/SharedListHistoryTests.cs`
-- [ ] T046 [P] [US4] Crear pruebas de Application para política de membresía activa, auditoría y validaciones en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/ActiveMembershipPolicyTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSharedListAuditEventsQueryHandlerTests.cs`
-- [ ] T047 [P] [US4] Crear pruebas API/integration para auditoría y rechazo de miembros inactivos en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListAuditApiTests.cs`
+- [X] T045 [P] [US4] Crear pruebas de dominio para preservación de histórico y estados de membresía en `test/MiKompri.ShoppingList.Domain.Tests/SharedLists/SharedListHistoryTests.cs`
+- [X] T046 [P] [US4] Crear pruebas de Application para política de membresía activa, auditoría y validaciones en `test/MiKompri.ShoppingList.Application.Tests/SharedLists/ActiveMembershipPolicyTests.cs` y `test/MiKompri.ShoppingList.Application.Tests/SharedLists/GetSharedListAuditEventsQueryHandlerTests.cs`
+- [X] T047 [P] [US4] Crear pruebas API/integration para auditoría y rechazo de miembros inactivos en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListAuditApiTests.cs`
 
 ### Implementation for User Story 4
 
-- [ ] T048 [P] [US4] Implementar política de membresía activa para operaciones nuevas en `MiKompri.ShoppingList.Application/Services/ActiveMembershipPolicy.cs`
-- [ ] T049 [US4] Aplicar validación de membresía activa en comandos de ítems/gastos en `MiKompri.ShoppingList.Application/Commands/SharedLists/AddSharedItem/AddSharedItemCommandHandler.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommandHandler.cs`
-- [ ] T050 [US4] Implementar consulta de auditoría de operaciones compartidas en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSharedListAuditEvents/GetSharedListAuditEventsQuery.cs` y handler
-- [ ] T051 [US4] Exponer endpoint de auditoría `GET /api/v1/shared-lists/{id}/audit-events` en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
-- [ ] T052 [US4] Garantizar preservación de histórico ante baja de miembro en mapeos y consultas de settlement en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSettlementSummary/GetSettlementSummaryQueryHandler.cs`
+- [X] T048 [P] [US4] Implementar política de membresía activa para operaciones nuevas en `MiKompri.ShoppingList.Application/Services/ActiveMembershipPolicy.cs`
+- [X] T049 [US4] Aplicar validación de membresía activa en comandos de ítems/gastos en `MiKompri.ShoppingList.Application/Commands/SharedLists/AddSharedItem/AddSharedItemCommandHandler.cs` y `MiKompri.ShoppingList.Application/Commands/SharedLists/RegisterItemExpense/RegisterItemExpenseCommandHandler.cs`
+- [X] T050 [US4] Implementar consulta de auditoría de operaciones compartidas en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSharedListAuditEvents/GetSharedListAuditEventsQuery.cs` y handler
+- [X] T051 [US4] Exponer endpoint de auditoría `GET /api/v1/shared-lists/{id}/audit-events` en `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [X] T052 [US4] Garantizar preservación de histórico ante baja de miembro en mapeos y consultas de settlement en `MiKompri.ShoppingList.Application/Queries/SharedLists/GetSettlementSummary/GetSettlementSummaryQueryHandler.cs`
 
 **Checkpoint**: US4 funcional e independiente.
 
@@ -160,12 +160,12 @@ description: "Lista de tareas para la implementación de MVP-3 Shared Lists & Se
 
 **Purpose**: Cierre integral, hardening y validación transversal.
 
-- [ ] T053 [P] Crear pruebas específicas de autenticación/autorización runtime en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListAuthApiTests.cs` cubriendo JWT Bearer, claim `sub`, `401 Unauthorized` y `403 Forbidden` para operaciones compartidas
-- [ ] T054 [P] Asegurar regresión de listas personales existentes en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/CreateShoppingListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs` y su `CustomWebApplicationFactory` correspondiente
-- [ ] T055 [P] Actualizar documentación funcional de feature en `specs/005-shared-lists-settlement/contracts/shared-lists-settlement-api.md` y `specs/005-shared-lists-settlement/quickstart.md` con nombres finales de payloads, protocolo de validación SC-003 y protocolo humano SC-006
-- [ ] T056 [P] Ajustar documentación Swagger y seguridad de endpoints compartidos en `MiKompri.ShoppingList.Api/Program.cs` y `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
-- [ ] T057 Verificar no regresión de despliegue: `docker compose config`, `dotnet build MiKompri.sln --configuration Release --no-restore` y confirmación de que no se cambia la plataforma de despliegue ni el modelo CD
-- [ ] T058 Ejecutar regresión completa de ShoppingList, Users y ProductCatalog para validar que la Spec 005 no rompe contextos existentes: `test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj`, `test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj`, `test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj`, `test/MiKompri.Users.Domain.Tests/MiKompri.Users.Domain.Tests.csproj`, `test/MiKompri.Users.Application.Tests/MiKompri.Users.Application.Tests.csproj`, `test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj`, `test/MiKompri.ProductCatalog.Domain.Tests/MiKompri.ProductCatalog.Domain.Tests.csproj`, `test/MiKompri.ProductCatalog.Application.Tests/MiKompri.ProductCatalog.Application.Tests.csproj` y `test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj`
+- [X] T053 [P] Crear pruebas específicas de autenticación/autorización runtime en `test/MiKompri.ShoppingList.Api.Tests/SharedLists/SharedListAuthApiTests.cs` cubriendo JWT Bearer, claim `sub`, `401 Unauthorized` y `403 Forbidden` para operaciones compartidas
+- [X] T054 [P] Asegurar regresión de listas personales existentes en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`, `test/MiKompri.ShoppingList.Application.Tests/CreateShoppingListCommandHandlerTests.cs`, `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs` y su `CustomWebApplicationFactory` correspondiente
+- [X] T055 [P] Actualizar documentación funcional de feature en `specs/005-shared-lists-settlement/contracts/shared-lists-settlement-api.md` y `specs/005-shared-lists-settlement/quickstart.md` con nombres finales de payloads, protocolo de validación SC-003 y protocolo humano SC-006
+- [X] T056 [P] Ajustar documentación Swagger y seguridad de endpoints compartidos en `MiKompri.ShoppingList.Api/Program.cs` y `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs`
+- [X] T057 Verificar no regresión de despliegue: `docker compose config`, `dotnet build MiKompri.sln --configuration Release --no-restore` y confirmación de que no se cambia la plataforma de despliegue ni el modelo CD
+- [X] T058 Ejecutar regresión completa de ShoppingList, Users y ProductCatalog para validar que la Spec 005 no rompe contextos existentes: `test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj`, `test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj`, `test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj`, `test/MiKompri.Users.Domain.Tests/MiKompri.Users.Domain.Tests.csproj`, `test/MiKompri.Users.Application.Tests/MiKompri.Users.Application.Tests.csproj`, `test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj`, `test/MiKompri.ProductCatalog.Domain.Tests/MiKompri.ProductCatalog.Domain.Tests.csproj`, `test/MiKompri.ProductCatalog.Application.Tests/MiKompri.ProductCatalog.Application.Tests.csproj` y `test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj`
 
 ---
 

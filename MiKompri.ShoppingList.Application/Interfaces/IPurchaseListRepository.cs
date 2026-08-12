@@ -19,5 +19,7 @@ namespace MiKompri.ShoppingList.Application.Interfaces
         public Task DeleteItemAsync(Guid listId, Guid itemId);
         //Task UpdateItemAsync(Guid listId, Guid itemId, string name, decimal price);  //por principios SOLID es mejor hacer un repo especializado, un atajo
         public Task<ListItem?> GetItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken);
+        public Task AddSharedListAuditEventAsync(SharedListAuditEvent auditEvent);
+        public Task<IReadOnlyCollection<SharedListAuditEvent>> GetSharedListAuditEventsAsync(Guid sharedListId, CancellationToken cancellationToken);
     }
 }

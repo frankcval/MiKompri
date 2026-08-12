@@ -10,6 +10,8 @@ namespace MiKompri.ShoppingList.Domain.Entities
         public string? Description { get; private set; }
         public Guid OwnerId { get; private set; }
         public Guid? GroupId { get; private set; }
+        public bool IsShared => GroupId.HasValue;
+        public SharedListStatus Status { get; private set; } = SharedListStatus.Active;
 
         private readonly List<ListItem> _items = new();
         public IReadOnlyCollection<ListItem> Items => _items.AsReadOnly();
@@ -29,6 +31,7 @@ namespace MiKompri.ShoppingList.Domain.Entities
                 ? ownerId
                 : throw new InvalidOperationException("El propietario de la lista es obligatorio.");
             GroupId = groupId;
+            Status = SharedListStatus.Active;
         }
 
         private static string NormalizeName(string name)
@@ -60,6 +63,10 @@ namespace MiKompri.ShoppingList.Domain.Entities
             }
 
             GroupId = newGroupId;
+            if (!GroupId.HasValue)
+            {
+                Status = SharedListStatus.Active;
+            }
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -89,7 +96,11 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public void AddItem(ListItem item)
         {
-            //  _items.Add(item);
+            if (Status == SharedListStatus.Closed || Status == SharedListStatus.Archived)
+            {
+                throw new InvalidOperationException("No se pueden agregar ítems a una lista compartida cerrada o archivada.");
+            }
+
             // Regla de negocio: no repetir producto en la misma lista
             if (_items.Any(i => i.ProductId == item.ProductId))
             {
@@ -146,6 +157,38 @@ namespace MiKompri.ShoppingList.Domain.Entities
             {
                 UpdatedAt = item.UpdatedAt;
             }
+        }
+
+        public void CloseSharedList()
+        {
+            if (!IsShared)
+            {
+                throw new InvalidOperationException("Solo las listas compartidas pueden cerrarse.");
+            }
+
+            if (Status == SharedListStatus.Closed)
+            {
+                return;
+            }
+
+            Status = SharedListStatus.Closed;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void ReopenSharedList()
+        {
+            if (!IsShared)
+            {
+                throw new InvalidOperationException("Solo las listas compartidas pueden reabrirse.");
+            }
+
+            if (Status == SharedListStatus.Active)
+            {
+                return;
+            }
+
+            Status = SharedListStatus.Active;
+            UpdatedAt = DateTime.UtcNow;
         }
 
 

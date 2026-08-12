@@ -22,10 +22,75 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ExpenseParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ItemExpenseRecordId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ParticipantUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ShareAmount")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemExpenseRecordId", "ParticipantUserId")
+                        .IsUnique();
+
+                    b.ToTable("shared_list_expense_participants", (string)null);
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ItemExpenseRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<DateTime>("ExpenseDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PaidBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PurchasedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("RealPaidPrice")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<Guid>("SharedListItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SharedListItemId");
+
+                    b.ToTable("shared_list_item_expenses", (string)null);
+                });
+
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ListItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AddedBy")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -55,6 +120,9 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -87,12 +155,73 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.ToTable("purchase_lists", (string)null);
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.SharedListAuditEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ActionType")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<Guid>("ActorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Metadata")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SharedPurchaseListId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TargetEntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetEntityType")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SharedPurchaseListId");
+
+                    b.ToTable("shared_list_audit_events", (string)null);
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ExpenseParticipant", b =>
+                {
+                    b.HasOne("MiKompri.ShoppingList.Domain.Entities.ItemExpenseRecord", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("ItemExpenseRecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ItemExpenseRecord", b =>
+                {
+                    b.HasOne("MiKompri.ShoppingList.Domain.Entities.ListItem", null)
+                        .WithMany("Expenses")
+                        .HasForeignKey("SharedListItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ListItem", b =>
@@ -104,6 +233,16 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("PurchaseList");
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ItemExpenseRecord", b =>
+                {
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.ListItem", b =>
+                {
+                    b.Navigation("Expenses");
                 });
 
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.PurchaseList", b =>
