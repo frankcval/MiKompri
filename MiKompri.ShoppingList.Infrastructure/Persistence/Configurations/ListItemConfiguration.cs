@@ -13,7 +13,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations
             builder.HasKey(i => i.Id);
 
             builder.Property(i => i.Id)
-                   .ValueGeneratedOnAdd();   // Guid generado al insertar
+                   .ValueGeneratedNever();
 
             // ProductId puede repetirse en la tabla
             builder.Property(i => i.ProductId)
@@ -24,6 +24,12 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations
             .HasMaxLength(200);
 
             builder.Property(i => i.Quantity)
+                .IsRequired();
+
+            builder.Property(i => i.AddedBy)
+                .IsRequired();
+
+            builder.Property(i => i.UpdatedBy)
                 .IsRequired();
 
             builder.Property(i => i.IsPurchased)
@@ -40,6 +46,11 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations
             // 🔒 Regla: un mismo producto no puede repetirse en la misma lista
             builder.HasIndex(i => new { i.PurchaseListId, i.ProductId })
                    .IsUnique();
+
+            builder.HasMany(i => i.Expenses)
+                   .WithOne()
+                   .HasForeignKey(e => e.SharedListItemId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -7,6 +7,9 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence
     {
         public DbSet<PurchaseList> PurchaseList => Set<PurchaseList>();
         public DbSet<ListItem> ListItems => Set<ListItem>();
+        public DbSet<ItemExpenseRecord> ItemExpenseRecords => Set<ItemExpenseRecord>();
+        public DbSet<ExpenseParticipant> ExpenseParticipants => Set<ExpenseParticipant>();
+        public DbSet<SharedListAuditEvent> SharedListAuditEvents => Set<SharedListAuditEvent>();
 
         public ShoppingListDbContext(DbContextOptions<ShoppingListDbContext> options) : base(options) { }
 

@@ -2,6 +2,7 @@
 using System.Text.Json;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using MiKompri.ShoppingList.Application.Exceptions;
 
 namespace MiKompri.ShoppingList.Api.Middleware
 {
@@ -64,6 +65,26 @@ namespace MiKompri.ShoppingList.Api.Middleware
                             error = ex.Message,
                             traceId = correlationId  
 
+                        };
+                        break;
+
+                    case ForbiddenOperationException:
+                        statusCode = HttpStatusCode.Forbidden;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = ex.Message,
+                            traceId = correlationId
+                        };
+                        break;
+
+                    case UnauthorizedAccessException:
+                        statusCode = HttpStatusCode.Unauthorized;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = ex.Message,
+                            traceId = correlationId
                         };
                         break;
 

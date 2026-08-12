@@ -8,7 +8,10 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
     public class PurchaseListRepository : IPurchaseListRepository
     {
         private readonly ShoppingListDbContext _context;
-        private IQueryable<PurchaseList> PurchaseListsWithItems => _context.PurchaseList.Include(p => p.Items);
+        private IQueryable<PurchaseList> PurchaseListsWithItems => _context.PurchaseList
+            .Include(p => p.Items)
+                .ThenInclude(i => i.Expenses)
+                    .ThenInclude(e => e.Participants);
 
         public PurchaseListRepository(ShoppingListDbContext context)
         {
@@ -110,11 +113,26 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
             // El SaveChangesAsync lo hará el UnitOfWork / DbContext fuera de aquí.
         }
 
-        public async Task<ListItem?> GetItemAsync(Guid listId, Guid productId, CancellationToken cancellationToken)
+        public async Task<ListItem?> GetItemAsync(Guid listId, Guid itemId, CancellationToken cancellationToken)
         {
             return await _context.ListItems
-        .Where(i => i.PurchaseListId == listId && i.ProductId == productId)
-        .FirstOrDefaultAsync(cancellationToken);
+                .Include(i => i.Expenses)
+                    .ThenInclude(e => e.Participants)
+                .Where(i => i.PurchaseListId == listId && i.Id == itemId)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task AddSharedListAuditEventAsync(SharedListAuditEvent auditEvent)
+        {
+            await _context.SharedListAuditEvents.AddAsync(auditEvent);
+        }
+
+        public async Task<IReadOnlyCollection<SharedListAuditEvent>> GetSharedListAuditEventsAsync(Guid sharedListId, CancellationToken cancellationToken)
+        {
+            return await _context.SharedListAuditEvents
+                .Where(x => x.SharedPurchaseListId == sharedListId)
+                .OrderByDescending(x => x.OccurredAt)
+                .ToListAsync(cancellationToken);
         }
     }
 }

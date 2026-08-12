@@ -32,6 +32,8 @@ namespace MiKompri.ShoppingList.Application.DTOs
                 ProductName = item.Name,
                 ProductPrice = item.Price,
                 Quantity = item.Quantity,
+                AddedBy = item.AddedBy,
+                UpdatedBy = item.UpdatedBy,
                 CreatedAt = item.CreatedAt,
                 UpdatedAt = item.UpdatedAt
             };

@@ -54,5 +54,6 @@
     <None Include="specs\004-product-catalog\quickstart.md" />
     <None Include="specs\004-product-catalog\research.md" />
     <None Include="specs\004-product-catalog\tasks.md" />
+    <None Include="specs\005-shared-lists-settlement\tasks.md" />
   </ItemGroup>
 </Project>

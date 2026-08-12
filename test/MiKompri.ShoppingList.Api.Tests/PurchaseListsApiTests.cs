@@ -625,7 +625,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             var postItemResponse = await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", addItemRequest);
             var createdItemId = await postItemResponse.Content.ReadFromJsonAsync<Guid>();
             // Act: Obtener el item por Id
-            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{createdItemId}");
             // Assert
             getItemResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var itemDto = await getItemResponse.Content.ReadFromJsonAsync<ListItemDto>();
@@ -670,7 +670,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             // Assert PUT
             putItemResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
             // Act: Obtener el item actualizado
-            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{createdItemId}");
             // Assert GET
             getItemResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var itemDto = await getItemResponse.Content.ReadFromJsonAsync<ListItemDto>();
@@ -726,7 +726,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             markResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             // Assert current state
-            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            var getItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{createdItemId}");
             getItemResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var itemDto = await getItemResponse.Content.ReadFromJsonAsync<ListItemDto>();
             itemDto.Should().NotBeNull();
@@ -753,7 +753,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             deleteItemResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             // Assert deleted
-            var getDeletedItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}");
+            var getDeletedItemResponse = await _client.GetAsync($"/api/v1/purchaselists/{createdListId}/items/{createdItemId}");
             getDeletedItemResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 

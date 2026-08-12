@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MiKompri.ShoppingList.Api.Models;
+using MiKompri.ShoppingList.Api.Models.SharedLists;
 using MiKompri.ShoppingList.Application.Commands.AddItemToList;
 using MiKompri.ShoppingList.Application.Commands.CreateShoppingList;
 using MiKompri.ShoppingList.Application.Commands.DeleteItemShoppingList;
@@ -8,12 +10,24 @@ using MiKompri.ShoppingList.Application.Commands.DeleteShoppinList;
 using MiKompri.ShoppingList.Application.Commands.MarkItemAsPurchased;
 using MiKompri.ShoppingList.Application.Commands.UpdateItemShoppingList;
 using MiKompri.ShoppingList.Application.Commands.UpdateShoppingList;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.AddSharedItem;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.CloseSharedList;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.CreateSharedList;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.DeleteItemExpense;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExpense;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpense;
+using MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateSharedList;
 using MiKompri.ShoppingList.Application.DTOs;
 using MiKompri.ShoppingList.Application.Queries.GetAllShoppingLists;
 using MiKompri.ShoppingList.Application.Queries.GetItemListById;
 using MiKompri.ShoppingList.Application.Queries.GetShoppingListByGroupId;
 using MiKompri.ShoppingList.Application.Queries.GetShoppingListById;
 using MiKompri.ShoppingList.Application.Queries.GetShoppingListsByOwner;
+using MiKompri.ShoppingList.Application.Queries.SharedLists.GetSharedListAuditEvents;
+using MiKompri.ShoppingList.Application.Queries.SharedLists.GetSharedListById;
+using MiKompri.ShoppingList.Application.Queries.SharedLists.GetSharedListsByGroup;
+using MiKompri.ShoppingList.Application.Queries.SharedLists.GetSettlementProposal;
+using MiKompri.ShoppingList.Application.Queries.SharedLists.GetSettlementSummary;
 
 namespace MiKompri.ShoppingList.Api.Controllers
 {
@@ -37,10 +51,151 @@ namespace MiKompri.ShoppingList.Api.Controllers
                 request.OwnerId,
                 request.GroupId
             );
-          
+
             var id = await _mediator.Send(command, cancellationToken);
 
             return CreatedAtAction(nameof(GetById), new { id }, id);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpPost("/api/v1/shared-lists")]
+        public async Task<ActionResult<Guid>> CreateSharedList([FromBody] CreateSharedListRequest request, CancellationToken cancellationToken)
+        {
+            var command = new CreateSharedListCommand(request.Name, request.GroupId, request.Description);
+            var id = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetSharedListById), new { sharedListId = id }, id);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(PurchaseListDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet("/api/v1/shared-lists/{sharedListId:guid}")]
+        public async Task<ActionResult<PurchaseListDTO>> GetSharedListById(Guid sharedListId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetSharedListByIdQuery(sharedListId), cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(IEnumerable<PurchaseListDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet("/api/v1/shared-lists")]
+        public async Task<ActionResult<IEnumerable<PurchaseListDTO>>> GetSharedListsByGroup([FromQuery] Guid groupId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetSharedListsByGroupQuery(groupId), cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPatch("/api/v1/shared-lists/{sharedListId:guid}")]
+        public async Task<IActionResult> UpdateSharedList(Guid sharedListId, [FromBody] UpdateSharedListRequest request, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new UpdateSharedListCommand(sharedListId, request.Name, request.Description), cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPatch("/api/v1/shared-lists/{sharedListId:guid}/close")]
+        public async Task<IActionResult> CloseSharedList(Guid sharedListId, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new CloseSharedListCommand(sharedListId), cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(SettlementSummaryDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet("/api/v1/shared-lists/{sharedListId:guid}/settlement/summary")]
+        public async Task<ActionResult<SettlementSummaryDto>> GetSettlementSummary(Guid sharedListId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetSettlementSummaryQuery(sharedListId), cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(SettlementProposalDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet("/api/v1/shared-lists/{sharedListId:guid}/settlement/proposal")]
+        public async Task<ActionResult<SettlementProposalDto>> GetSettlementProposal(Guid sharedListId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetSettlementProposalQuery(sharedListId), cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(IEnumerable<SharedListAuditEventDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpGet("/api/v1/shared-lists/{sharedListId:guid}/audit-events")]
+        public async Task<ActionResult<IEnumerable<SharedListAuditEventDto>>> GetAuditEvents(Guid sharedListId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetSharedListAuditEventsQuery(sharedListId), cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpPost("/api/v1/shared-lists/{sharedListId:guid}/items")]
+        public async Task<ActionResult<Guid>> AddSharedItem(Guid sharedListId, [FromBody] AddSharedItemRequest request, CancellationToken cancellationToken)
+        {
+            var command = new AddSharedItemCommand(sharedListId, request.ProductId, request.Name, request.EstimatedPrice, request.Quantity);
+            var id = await _mediator.Send(command, cancellationToken);
+            return Created($"/api/v1/shared-lists/{sharedListId}/items/{id}", id);
+        }
+
+        [Authorize]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [HttpPost("/api/v1/shared-lists/{sharedListId:guid}/items/{itemId:guid}/expenses")]
+        public async Task<ActionResult<Guid>> RegisterItemExpense(Guid sharedListId, Guid itemId, [FromBody] RegisterExpenseRequest request, CancellationToken cancellationToken)
+        {
+            var command = new RegisterItemExpenseCommand(
+                sharedListId,
+                itemId,
+                request.PaidBy,
+                request.PurchasedBy,
+                request.RealPaidPrice,
+                request.Currency,
+                request.Participants);
+
+            var expenseId = await _mediator.Send(command, cancellationToken);
+            return Created($"/api/v1/shared-lists/{sharedListId}/items/{itemId}/expenses/{expenseId}", expenseId);
+        }
+
+        [Authorize]
+        [HttpPatch("/api/v1/shared-lists/{sharedListId:guid}/items/{itemId:guid}/expenses/{expenseId:guid}")]
+        public async Task<IActionResult> UpdateItemExpense(Guid sharedListId, Guid itemId, Guid expenseId, [FromBody] UpdateExpenseRequest request, CancellationToken cancellationToken)
+        {
+            var command = new UpdateItemExpenseCommand(
+                sharedListId,
+                itemId,
+                expenseId,
+                request.PaidBy,
+                request.PurchasedBy,
+                request.RealPaidPrice,
+                request.Currency,
+                request.Participants);
+
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("/api/v1/shared-lists/{sharedListId:guid}/items/{itemId:guid}/expenses/{expenseId:guid}")]
+        public async Task<IActionResult> DeleteItemExpense(Guid sharedListId, Guid itemId, Guid expenseId, CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new DeleteItemExpenseCommand(sharedListId, itemId, expenseId), cancellationToken);
+            return NoContent();
         }
 
         //GET obtener lista de compras
