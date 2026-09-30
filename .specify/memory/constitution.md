@@ -2,23 +2,20 @@
 =============================================================================
 SYNC IMPACT REPORT
 =============================================================================
-Version change   : N/A → 1.0.0 (ratificación inicial del proyecto)
-Modified         : Ajustes aplicados antes de ratificación final
+Version change   : 1.0.0 → 1.1.0 (adición de política de Identidad y Autenticación)
+Modified         : Se añadió el principio técnico TP11 y se aclararon reglas de correlación
+
+Modified principles:
+  - TP2: aclarada la comunicación entre bounded contexts respecto a identidad
 
 Added sections:
-  - § 1. Misión
-  - § 2. Principios de Producto  (PP1 – PP5)
-  - § 3. Principios Técnicos     (TP1 – TP10)
-  - § 4. Gobernanza              (4.1 Enmienda · 4.2 Versionado · 4.3 Cumplimiento)
-
-Removed sections : (ninguna — plantilla base reemplazada)
+  - § 3. Principios Técnicos (TP11 · Identidad y Autenticación Transversal)
 
 Templates requiring review:
-  ⚠ .specify/templates/plan-template.md   — revisar alineación con esta constitución
-  ⚠ .specify/templates/spec-template.md   — revisar alineación con esta constitución
-  ⚠ .specify/templates/tasks-template.md  — revisar alineación con esta constitución
-  ⚠ .github/prompts/                      — revisar comandos Copilot generados por Spec Kit
-  ⚠ .github/copilot-instructions.md       — revisar que refleje los principios del proyecto
+  ⚠ .specify/templates/plan-template.md   — revisar alineación con la política de identidad
+  ⚠ .specify/templates/spec-template.md   — asegurar requisitos de seguridad y scopes
+  ⚠ .specify/templates/tasks-template.md  — actualizar categorías relacionadas con auth/identity
+  ⚠ .specify/templates/commands/          — revisar comandos de hooks que interactúen con auth
 
 Follow-up TODOs:
   - TODO(AUTHOR_LIST): Confirmar lista oficial de maintainers/autores del proyecto.
@@ -26,12 +23,13 @@ Follow-up TODOs:
     (sugerido: trimestral o al inicio de cada bounded context nuevo).
   - TODO(COVERAGE_THRESHOLD): Validar umbral obligatorio de cobertura de dominio contra
     la línea base real del proyecto antes de hacerlo vinculante en CI.
+  - TODO(CONTRACT_006): Aplicar esta política obligatoria a la spec `006-android-maui-client`
 =============================================================================
 -->
 
 # Constitución del Proyecto: MiKompri
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-06-30 | **Última Enmienda**: 2026-06-30
+**Versión**: 1.1.0 | **Ratificada**: 2026-06-30 | **Última Enmienda**: 2026-09-30
 
 ---
 
@@ -231,6 +229,50 @@ Ninguna feature nueva DEBE comenzar su implementación sin que existan previamen
 **Verificable**: Todo PR de feature DEBE referenciar los tres artefactos correspondientes en `specs/<feature>/`. Los revisores DEBEN rechazar PRs de feature que omitan estos artefactos.
 
 **Rationale**: La especificación previa a la implementación reduce el retrabajo, alinea expectativas y garantiza que cada feature tenga criterios de aceptación claros antes de escribir código.
+
+---
+
+### TP11 · Identidad y Autenticación Transversal
+
+La plataforma DEBE establecer una estrategia única y transversal de identidad y autenticación que gobierne cómo los distintos clientes y bounded contexts representan y validan identidades de usuario.
+
+Reglas obligatorias:
+
+- Microsoft Entra ID DEBE ser el proveedor OIDC externo oficial de MiKompri para el primer despliegue. (MUST)
+
+- Cada aplicación cliente (Android/.NET MAUI, Web, iOS y futuros clientes) DEBE tener un registro de cliente independiente en Microsoft Entra, pero los registros representan al mismo usuario de MiKompri. (MUST)
+
+- La identidad externa persistente del usuario NO DEBE correlacionarse globalmente usando únicamente el claim `sub`. (MUST NOT)
+
+- Para Microsoft Entra, la identidad canónica entre aplicaciones DEBE ser la tupla (tid, oid). Los mapeos y correlaciones canónicas del proveedor deben usar `(tid, oid)` para identificar de forma única una identidad externa. (MUST)
+
+- MiKompri DEBE mantener un `UserId` interno propio (GUID) como identidad canónica dentro del dominio, independiente de cualquier proveedor externo. (MUST)
+
+- El bounded context `Users` ES el propietario exclusivo de la correlación `(tid, oid) -> MiKompri UserId`. Ningún otro bounded context puede escribir ni leer directamente la base de datos de `Users` para propósitos de correlación. (MUST)
+
+- Todos los demás bounded contexts DEBEN usar el `UserId` interno de MiKompri para relaciones de dominio tales como OwnerId, AddedBy, PaidBy, membresías y auditoría. (MUST)
+
+- Ningún bounded context puede acceder directamente a la base de datos de `Users`. La comunicación con `Users` DEBE realizarse mediante APIs públicas o contratos documentados. (MUST)
+
+- Inicialmente, las APIs de MiKompri DEBEN tratarse como un único recurso lógico OAuth con una audience de backend común para simplificar la validación y evitar complejidad OBO. (MUST)
+
+- Cada API DEBE validar, como mínimo: issuer, audience, firma, expiración y scopes aplicables. (MUST)
+
+- La autorización de negocio (Owner/Admin/Member, pertenencia a grupos, propiedad de recursos) CONTINÚA siendo responsabilidad de cada bounded context; la plataforma solo provee la identidad y claims necesarios para la toma de decisiones. (MUST)
+
+- La arquitectura DEBE permitir añadir nuevos clientes Web, iOS u otros sin crear usuarios duplicados ni cambiar el identificador interno de MiKompri. El proyecto DEBE documentar el flujo de onboarding de nuevos clientes para evitar duplicados. (MUST)
+
+- Si en el futuro se separan las audiences por microservicio, la organización DEBE definir explícitamente OAuth On-Behalf-Of (OBO) o una estrategia equivalente para llamadas API-to-API y documentarla mediante ADR. (SHOULD)
+
+Rationale:
+
+Esta política garantiza una correlación predecible y segura entre identidades externas y la identidad interna del dominio, evita duplicación accidental de usuarios cuando se añaden nuevos clientes y preserva la autonomía de los bounded contexts para aplicar autorización de negocio específica.
+
+Verificable:
+
+- Los specs nuevos que impliquen autenticación o onboarding DEBEN referenciar esta sección en su `spec.md` y explicar cómo mapearán `(tid, oid)` a `UserId`.
+
+- La spec `006-android-maui-client` DEBE respetar estas reglas obligatorias al diseñar su flujo de login y onboarding (esta constitución exige que la política se aplique a la spec 006 cuando se cree). (MUST)
 
 ---
 

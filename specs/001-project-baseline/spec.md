@@ -213,21 +213,83 @@ y tests de integración de API.
 
 ## Assumptions
 
-- Los bounded contexts `ShoppingList` y `Users` no se comunican directamente en el estado
-  actual. `OwnerId` y `GroupId` en `PurchaseList` siguen siendo Guids sin validación cruzada
-  con el contexto `Users` (asumido intencional como deuda técnica DT-001).
-- El entorno de producción actual es GitHub Container Registry (GHCR). El despliegue en
-  Azure está planificado pero no implementado (ver DT-007).
-- La autenticación/autorización ya existe en `Users` mediante JWT Bearer validado contra un
-  proveedor OIDC externo. `ShoppingList` sigue sin integración con `Users` ni protección por
-  identidad real, y ese acoplamiento continúa diferido a specs posteriores.
-- `ProductId` en `ListItem` es una referencia externa (Guid). No existe un bounded context
-  de Productos actualmente; se asume que el producto es identificado externamente o
-  manualmente por el cliente.
-- La deuda técnica documentada en esta spec no bloquea el uso del sistema actual, pero
-  DEBE ser abordada antes de lanzar la funcionalidad colaborativa completa entre bounded contexts.
+- `ShoppingList` se integra con `Users.Api` mediante contrato HTTP para resolver la identidad local del usuario, su pertenencia a grupos y su rol (`Owner`, `Admin` o `Member`), sin acceso directo a la base de datos de `Users`.
+
+- La autenticación se basa en JWT Bearer emitidos por Microsoft Entra ID. La correlación de identidad externa evolucionará de `sub` a la clave canónica `(tid, oid)` antes de implementar el cliente MVP-4, manteniendo un `UserId` interno propio de MiKompri.
+
+- `ShoppingList` utiliza el `UserId` interno de MiKompri para referencias de dominio y auditoría como `OwnerId`, `AddedBy` y `PaidBy`.
+
+- El entorno de publicación actual utiliza GitHub Container Registry (GHCR). El despliegue en Azure está planificado pero aún no forma parte del baseline operativo de producción.
+
+- `ProductCatalog` existe como bounded context independiente. `ProductId` en `ListItem` actúa como referencia externa mediante `Guid`; no existe acceso directo a la base de datos de ProductCatalog ni acoplamiento de persistencia entre ambos contextos.
+
+- Las integraciones entre bounded contexts deben realizarse mediante contratos explícitos (HTTP, eventos u otro mecanismo definido por arquitectura). Ningún bounded context puede acceder directamente a la base de datos de otro.
+
+- La autorización de negocio continúa siendo responsabilidad del bounded context que ejecuta la operación. `Users` es propietario de perfiles, grupos, membresías y roles; `ShoppingList` decide si una operación sobre una lista está permitida utilizando esa información.
+
+- La arquitectura debe permitir incorporar clientes Android/.NET MAUI, Web, iOS y futuros clientes sin crear identidades duplicadas dentro de MiKompri.
+
+- La deuda técnica pendiente no debe impedir la evolución del sistema, pero las decisiones de identidad, autenticación y contratos entre bounded contexts deben quedar alineadas antes de ampliar clientes o introducir nuevas integraciones.
 
 ---
+
+---
+
+## Identity Architecture
+
+### Identidad externa
+
+Microsoft Entra ID es el proveedor OIDC de MiKompri.
+
+La identidad externa canónica de un usuario entre aplicaciones cliente será:
+
+`(tid, oid)`
+
+El claim `sub` no se utilizará como identificador global persistente entre aplicaciones.
+
+### Identidad interna
+
+MiKompri mantiene un identificador interno propio:
+
+`UserId : Guid`
+
+El bounded context `Users` es responsable de resolver:
+
+`(tid, oid) -> UserId`
+
+Los demás bounded contexts utilizan el `UserId` interno para referencias de dominio como:
+
+- OwnerId
+- AddedBy
+- PaidBy
+- auditoría
+- membresías y relaciones internas
+
+### Clientes
+
+Android/.NET MAUI, Web, iOS y futuros clientes podrán tener registros de aplicación independientes en Entra sin crear usuarios diferentes dentro de MiKompri.
+
+### OAuth Backend
+
+Inicialmente las APIs de MiKompri se consideran un único recurso lógico OAuth con una audience de backend común.
+
+Cada API debe validar:
+
+- issuer
+- audience
+- firma
+- expiración
+- scopes aplicables
+
+Si en el futuro se separan las audiences por microservicio, deberá definirse explícitamente OAuth On-Behalf-Of o una estrategia equivalente para llamadas API-to-API.
+
+### Límites entre bounded contexts
+
+Ningún bounded context puede acceder directamente a la base de datos de `Users`.
+
+`Users` mantiene la identidad, perfiles, grupos y membresías.
+
+La autorización específica del dominio continúa siendo responsabilidad de cada bounded context.
 
 ## Estado Actual del Proyecto por Bounded Context
 
