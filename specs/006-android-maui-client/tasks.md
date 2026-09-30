@@ -32,7 +32,7 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 
 **Purpose**: Línea base y esqueleto de proyectos.
 
-- [ ] T001 Verificar línea base backend: `dotnet restore MiKompri.sln` y `dotnet test MiKompri.sln --configuration Release` en verde antes de cambios (regresión MVP-0..MVP-3), anotar resultado en `specs/006-android-maui-client/quickstart.md` § Prerrequisitos si hay fallos previos
+- [X] T001 Verificar línea base backend: `dotnet restore MiKompri.sln` y `dotnet test MiKompri.sln --configuration Release` en verde antes de cambios (regresión MVP-0..MVP-3), anotar resultado en `specs/006-android-maui-client/quickstart.md` § Prerrequisitos si hay fallos previos
 - [ ] T002 Instalar/verificar workload MAUI Android (`dotnet workload install maui-android`) y documentarlo en `specs/006-android-maui-client/quickstart.md` § Prerrequisitos
 - [ ] T003 Crear proyecto `MiKompri.Mobile/MiKompri.Mobile.csproj` (.NET MAUI, `net8.0-android` únicamente) con estructura `Platforms/Android/`, `Services/{Auth,Http,Navigation}/`, `ViewModels/`, `Views/`, `Models/`, `Configuration/`, `Resources/` y añadirlo a `MiKompri.sln`
 - [ ] T004 Crear proyecto de tests `test/MiKompri.Mobile.Tests/MiKompri.Mobile.Tests.csproj` (xUnit, sin UI automation) con referencia a `MiKompri.Mobile` y añadirlo a `MiKompri.sln`
@@ -49,26 +49,26 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 
 ### Tests primero (Domain)
 
-- [ ] T007 [P] Tests de dominio para `User` (captura `TenantId`/`ObjectId`, `ExternalUserId` nulo, creación de usuario nuevo solo con `(tid, oid)` sin `ExternalUserId`, rechazo de `""` como `ExternalUserId`) en `test/MiKompri.Users.Domain.Tests/` (nuevo `UserIdentityTests.cs`)
+- [X] T007 [P] Tests de dominio para `User` (captura `TenantId`/`ObjectId`, `ExternalUserId` nulo, creación de usuario nuevo solo con `(tid, oid)` sin `ExternalUserId`, rechazo de `""` como `ExternalUserId`) en `test/MiKompri.Users.Domain.Tests/` (nuevo `UserIdentityTests.cs`)
 
 ### Tests primero (Application)
 
-- [ ] T008 [P] Tests del handler de resolución/sincronización de identidad en `test/MiKompri.Users.Application.Tests/Commands/SyncProfileCommandHandlerTests.cs`: usuario nuevo por `(tid, oid)`; usuario legacy por `sub` que autentica → conserva `UserId` y obtiene `(tid, oid)`; usuario ya migrado; nunca crea duplicado; usuario legacy que no autentica permanece sin `(tid, oid)`
+- [X] T008 [P] Tests del handler de resolución/sincronización de identidad en `test/MiKompri.Users.Application.Tests/Commands/SyncProfileCommandHandlerTests.cs`: usuario nuevo por `(tid, oid)`; usuario legacy por `sub` que autentica → conserva `UserId` y obtiene `(tid, oid)`; usuario ya migrado; nunca crea duplicado; usuario legacy que no autentica permanece sin `(tid, oid)`
 
 ### Tests primero (API)
 
-- [ ] T014a [P] Verificar o crear `CustomWebApplicationFactory.cs` y `TestAuthHandler.cs` en `test/MiKompri.Users.Api.Tests/` con claims `tid`/`oid`/`sub` configurables (mismo patrón que ShoppingList)
-- [ ] T015 Tests de integración de migración de identidad Fase 1 (deben fallar antes de T013/T014; depende de T014a) en `test/MiKompri.Users.Api.Tests/IdentityMigrationApiTests.cs` (usando `TestAuthHandler.cs` y `CustomWebApplicationFactory.cs`, con tokens que incluyen `tid`/`oid`/`sub`): (a) usuario legacy (solo `sub`) que autentica conserva el mismo `UserId`; (b) `tid` y `oid` quedan capturados y persistidos correctamente en ese perfil; (c) usuario nuevo se crea correlacionado por `(tid, oid)`; (d) un segundo login del mismo usuario no genera usuarios duplicados (legacy ni nuevo); (e) usuarios nuevos tienen `ExternalUserId = null` (nunca `""`); (f) perfil legacy que no autentica permanece intacto
+- [X] T014a [P] Verificar o crear `CustomWebApplicationFactory.cs` y `TestAuthHandler.cs` en `test/MiKompri.Users.Api.Tests/` con claims `tid`/`oid`/`sub` configurables (mismo patrón que ShoppingList)
+- [X] T015 Tests de integración de migración de identidad Fase 1 (deben fallar antes de T013/T014; depende de T014a) en `test/MiKompri.Users.Api.Tests/IdentityMigrationApiTests.cs` (usando `TestAuthHandler.cs` y `CustomWebApplicationFactory.cs`, con tokens que incluyen `tid`/`oid`/`sub`): (a) usuario legacy (solo `sub`) que autentica conserva el mismo `UserId`; (b) `tid` y `oid` quedan capturados y persistidos correctamente en ese perfil; (c) usuario nuevo se crea correlacionado por `(tid, oid)`; (d) un segundo login del mismo usuario no genera usuarios duplicados (legacy ni nuevo); (e) usuarios nuevos tienen `ExternalUserId = null` (nunca `""`); (f) perfil legacy que no autentica permanece intacto
 
 ### Implementación
 
-- [ ] T009 Modificar `MiKompri.Users.Domain/Users/User.cs`: `ExternalUserId` → `string?`, añadir `TenantId: string?` y `ObjectId: string?`, método para asociar `(tid, oid)` a perfil legacy, factoría para usuario nuevo solo por `(tid, oid)`; prohibir `""` (data-model.md)
-- [ ] T010 Modificar `MiKompri.Users.Domain/Users/IUserRepository.cs` y `MiKompri.Users.Infrastructure/Persistence/Repositories/UserRepository.cs`: búsqueda por `(TenantId, ObjectId)` además de por `ExternalUserId`/`IdentityProvider`
-- [ ] T011 Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/UserConfiguration.cs`: columna `ExternalUserId` nullable; reemplazar índice único de `ExternalUserId` por índice único filtrado que excluya `NULL`; añadir índice único filtrado sobre `(TenantId, ObjectId)` que excluya `NULL`
-- [ ] T012 Generar migración EF Core en `MiKompri.Users.Infrastructure/Persistence/Migrations/` (nullable `ExternalUserId`, columnas `TenantId`/`ObjectId`, índices filtrados) y actualizar `UsersDbContextModelSnapshot.cs`; la migración no ejecuta backfill de datos
-- [ ] T013 Modificar `MiKompri.Users.Application/Commands/SyncProfile/SyncProfileCommand.cs` y `SyncProfileCommandHandler.cs` para incluir `tid`/`oid` y aplicar lógica Fase 1 (lazy): buscar por `(tid, oid)` → si no, por `sub` y asociar `(tid, oid)` al `UserId` existente → si no, crear nuevo solo con `(tid, oid)`
-- [ ] T014 Modificar `MiKompri.Users.Api/Services/HttpCurrentUserService.cs` y el punto de sincronización en `MiKompri.Users.Api/Controllers/ProfileController.cs` para extraer claims `tid`/`oid` (y `sub` solo para correlación legacy transitoria)
-- [ ] T016 Verificar que `dotnet test test/MiKompri.Users.Domain.Tests`, `Users.Application.Tests` y `Users.Api.Tests` pasan en Release
+- [X] T009 Modificar `MiKompri.Users.Domain/Users/User.cs`: `ExternalUserId` → `string?`, añadir `TenantId: string?` y `ObjectId: string?`, método para asociar `(tid, oid)` a perfil legacy, factoría para usuario nuevo solo por `(tid, oid)`; prohibir `""` (data-model.md)
+- [X] T010 Modificar `MiKompri.Users.Domain/Users/IUserRepository.cs` y `MiKompri.Users.Infrastructure/Persistence/Repositories/UserRepository.cs`: búsqueda por `(TenantId, ObjectId)` además de por `ExternalUserId`/`IdentityProvider`
+- [X] T011 Modificar `MiKompri.Users.Infrastructure/Persistence/Configurations/UserConfiguration.cs`: columna `ExternalUserId` nullable; reemplazar índice único de `ExternalUserId` por índice único filtrado que excluya `NULL`; añadir índice único filtrado sobre `(TenantId, ObjectId)` que excluya `NULL`
+- [X] T012 Generar migración EF Core en `MiKompri.Users.Infrastructure/Persistence/Migrations/` (nullable `ExternalUserId`, columnas `TenantId`/`ObjectId`, índices filtrados) y actualizar `UsersDbContextModelSnapshot.cs`; la migración no ejecuta backfill de datos
+- [X] T013 Modificar `MiKompri.Users.Application/Commands/SyncProfile/SyncProfileCommand.cs` y `SyncProfileCommandHandler.cs` para incluir `tid`/`oid` y aplicar lógica Fase 1 (lazy): buscar por `(tid, oid)` → si no, por `sub` y asociar `(tid, oid)` al `UserId` existente → si no, crear nuevo solo con `(tid, oid)`
+- [X] T014 Modificar `MiKompri.Users.Api/Services/HttpCurrentUserService.cs` y el punto de sincronización en `MiKompri.Users.Api/Controllers/ProfileController.cs` para extraer claims `tid`/`oid` (y `sub` solo para correlación legacy transitoria)
+- [X] T016 Verificar que `dotnet test test/MiKompri.Users.Domain.Tests`, `Users.Application.Tests` y `Users.Api.Tests` pasan en Release
 
 **Checkpoint**: Fase 1 de migración operativa en `Users`.
 
