@@ -69,7 +69,7 @@ specs/006-android-maui-client/
 ├── data-model.md         # Fase 1 (entidades cliente + ajustes de correlación de identidad)
 ├── quickstart.md         # Fase 1 (guía de validación end-to-end)
 ├── contracts/            # Fase 1 (contratos HTTP consumidos/ajustados)
-└── tasks.md              # Fase 2 (/speckit.tasks - no generado por este comando)
+└── tasks.md              # generado por /speckit.tasks (no por este comando)
 ```
 
 ### Source Code (repository root)
@@ -209,7 +209,7 @@ No se implementa cambio de rol ni administración avanzada de grupo (fuera de al
 
 ## ProductCatalog (solo lectura + autenticación real)
 
-El cliente consume únicamente los endpoints de consulta ya existentes en `ProductCatalog.Api` (productos activos, mercados activos, historial de precios). No se añade ningún endpoint de creación/edición al backend ni pantallas de escritura al cliente (FR-016d, FR-011).
+El cliente consume únicamente los endpoints de consulta ya existentes en `ProductCatalog.Api` (productos activos, mercados activos, historial de precios). No se añade ningún endpoint de creación/edición al backend ni pantallas de escritura al cliente (FR-016d, FR-011). El backend exige JWT en todos sus endpoints existentes, incluidos los de escritura, aunque el cliente no los use.
 
 Actualmente `MiKompri.ProductCatalog.Api/Program.cs` **no** configura `AddAuthentication()`/`AddJwtBearer(...)` ni `UseAuthentication()`, a diferencia de `Users.Api`/`ShoppingList.Api`. Esto se corrige como parte de este plan (FR-023a):
 

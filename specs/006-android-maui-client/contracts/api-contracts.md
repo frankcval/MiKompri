@@ -62,7 +62,7 @@ Contratos de consulta ya existentes, consumidos en modo **solo lectura** (FR-016
 | `GET` | `/api/v1/markets` (activos) | Sin autenticación. | Requiere `[Authorize]`; `401` sin token válido. |
 | `GET` | `/api/v1/products/{id}/price-history` | Sin autenticación. | Requiere `[Authorize]`; `401` sin token válido. |
 
-No se documentan ni se implementan endpoints de escritura para este bounded context en este MVP.
+Los endpoints de escritura existentes (POST/PUT/PATCH) no forman parte del contrato del cliente en este MVP y no se documentan aquí, pero también requieren JWT (FR-023a).
 
 ### Autenticación en `ProductCatalog.Api` (nuevo)
 

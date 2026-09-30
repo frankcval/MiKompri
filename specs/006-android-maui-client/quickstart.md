@@ -51,6 +51,8 @@ Esta guía describe cómo validar end-to-end el cumplimiento de esta feature, un
 2. **Resultado esperado**: la API responde `401 Unauthorized` (FR-023a).
 3. Autenticarse en el cliente y repetir la consulta con un token válido.
 4. **Resultado esperado**: la API responde `200 OK` con el catálogo esperado.
+5. Sin token, intentar un endpoint de escritura existente (por ejemplo, `POST api/v1/markets`).
+6. **Resultado esperado**: la API responde `401 Unauthorized` (FR-023a).
 5. Navegar a la sección de Catálogo en el cliente y consultar productos activos, mercados activos, e historial de precios de un producto.
 6. Verificar que no existe ninguna acción de creación/edición disponible en la UI para catálogo, mercados o precios (FR-016d).
 
