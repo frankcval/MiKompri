@@ -66,7 +66,7 @@ No se documentan ni se implementan endpoints de escritura para este bounded cont
 
 ### Autenticación en `ProductCatalog.Api` (nuevo)
 
-`ProductCatalog.Api` debe incorporar `AddAuthentication().AddJwtBearer(...)` con la misma `Authority` que `Users.Api`/`ShoppingList.Api`, soporte de `ValidAudiences` para la transición de audience común (TP11), y `UseAuthentication()` antes de `UseAuthorization()` en el pipeline. Ver `plan.md` § "ProductCatalog (solo lectura + autenticación real)" para el detalle de implementación y la estrategia de tests (`401` sin token, `200` con token válido).
+`ProductCatalog.Api` debe incorporar `AddAuthentication().AddJwtBearer(...)` y exigir JWT en TODOS sus endpoints existentes (consulta y escritura; el cliente solo consume GET) con la misma `Authority` que `Users.Api`/`ShoppingList.Api`, soporte de `ValidAudiences` para la transición de audience común (TP11), y `UseAuthentication()` antes de `UseAuthorization()` en el pipeline. Ver `plan.md` § "ProductCatalog (solo lectura + autenticación real)" para el detalle de implementación y la estrategia de tests (`401` sin token, `200` con token válido).
 
 ## Audience común (transición TP11)
 

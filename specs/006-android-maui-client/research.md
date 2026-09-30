@@ -52,7 +52,7 @@ Este documento consolida las decisiones técnicas necesarias para pasar de `spec
 
 ## 9. Autenticación real en `ProductCatalog.Api`
 
-- **Decision**: Incorporar `AddAuthentication().AddJwtBearer(...)` en `MiKompri.ProductCatalog.Api/Program.cs`, con la misma `Authority` y soporte de `ValidAudiences` ya usado en `Users.Api`/`ShoppingList.Api`, más `UseAuthentication()` (hoy ausente) antes de `UseAuthorization()`, y `[Authorize]` en los endpoints de consulta consumidos por el cliente.
+- **Decision**: Incorporar `AddAuthentication().AddJwtBearer(...)` en `MiKompri.ProductCatalog.Api/Program.cs`, con la misma `Authority` y soporte de `ValidAudiences` ya usado en `Users.Api`/`ShoppingList.Api`, más `UseAuthentication()` (hoy ausente) antes de `UseAuthorization()`, y `[Authorize]` en TODOS los endpoints existentes (consulta y escritura); el cliente solo consume los de consulta.
 - **Rationale**: Hoy `ProductCatalog.Api` no valida JWT en absoluto (confirmado en `Program.cs`), lo cual es inconsistente con TP11 y con el resto del backend; el cliente Android consumiría un endpoint desprotegido si no se corrige, contradiciendo FR-017/FR-022/FR-023.
 - **Alternatives considered**: Dejar `ProductCatalog.Api` sin autenticación por tratarse de datos "públicos" de solo lectura — rechazado porque TP11 exige que las tres APIs se traten como un único recurso lógico OAuth con controles de autenticación consistentes, y porque la spec (FR-023a) exige explícitamente esta protección.
 
