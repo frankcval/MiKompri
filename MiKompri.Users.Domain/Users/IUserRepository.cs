@@ -14,6 +14,11 @@ namespace MiKompri.Users.Domain.Users
             string externalUserId,
             CancellationToken cancellationToken = default);
 
+        Task<User?> GetByCanonicalIdentityAsync(
+            string tenantId,
+            string objectId,
+            CancellationToken cancellationToken = default);
+
         Task AddAsync(User user, CancellationToken cancellationToken = default);
         Task UpdateAsync(User user, CancellationToken cancellationToken = default);
     }

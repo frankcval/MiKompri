@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MiKompri.Users.Domain.Users;
 using System;
 using System.Collections.Generic;
@@ -32,6 +32,17 @@ namespace MiKompri.Users.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(
                     u => u.IdentityProvider == identityProvider &&
                          u.ExternalUserId == externalUserId,
+                    cancellationToken);
+        }
+
+        public async Task<User?> GetByCanonicalIdentityAsync(
+            string tenantId,
+            string objectId,
+            CancellationToken cancellationToken = default)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(
+                    u => u.TenantId == tenantId && u.ObjectId == objectId,
                     cancellationToken);
         }
 

@@ -23,7 +23,10 @@ namespace MiKompri.Users.Api.Middleware
             }
 
             var sub = context.User.FindFirst("sub")?.Value;
-            if (string.IsNullOrWhiteSpace(sub))
+            var tid = context.User.FindFirst("tid")?.Value;
+            var oid = context.User.FindFirst("oid")?.Value;
+            var hasCanonical = !string.IsNullOrWhiteSpace(tid) && !string.IsNullOrWhiteSpace(oid);
+            if (string.IsNullOrWhiteSpace(sub) && !hasCanonical)
             {
                 var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
 
@@ -46,7 +49,7 @@ namespace MiKompri.Users.Api.Middleware
             var email = context.User.FindFirst("email")?.Value;
 
             var result = await sender.Send(
-                new SyncProfileCommand(identityProvider, sub, name, email),
+                new SyncProfileCommand(identityProvider, sub ?? string.Empty, name, email, hasCanonical ? tid : null, hasCanonical ? oid : null),
                 context.RequestAborted);
 
             context.Items["UserId"] = result.UserId;

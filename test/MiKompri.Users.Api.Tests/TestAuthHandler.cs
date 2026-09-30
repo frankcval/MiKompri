@@ -11,6 +11,8 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     public const string SubHeaderName = "X-Test-Sub";
     public const string NameHeaderName = "X-Test-Name";
     public const string EmailHeaderName = "X-Test-Email";
+    public const string TidHeaderName = "X-Test-Tid";
+    public const string OidHeaderName = "X-Test-Oid";
 
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -42,6 +44,12 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         if (Request.Headers.TryGetValue(EmailHeaderName, out var emailValues) && !string.IsNullOrWhiteSpace(emailValues))
             claims.Add(new Claim("email", emailValues.ToString()));
+
+        if (Request.Headers.TryGetValue(TidHeaderName, out var tidValues) && !string.IsNullOrWhiteSpace(tidValues))
+            claims.Add(new Claim("tid", tidValues.ToString()));
+
+        if (Request.Headers.TryGetValue(OidHeaderName, out var oidValues) && !string.IsNullOrWhiteSpace(oidValues))
+            claims.Add(new Claim("oid", oidValues.ToString()));
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);

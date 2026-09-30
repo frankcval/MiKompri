@@ -94,6 +94,43 @@ public class CustomWebApplicationFactory : WebApplicationFactory<global::Program
         return client;
     }
 
+    public HttpClient CreateAuthenticatedClient(string sub, string? name, string? email, string? tid, string? oid)
+    {
+        var client = CreateAuthenticatedClient(sub, name, email);
+
+        if (tid is not null)
+            client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.TidHeaderName, tid);
+
+        if (oid is not null)
+            client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.OidHeaderName, oid);
+
+        return client;
+    }
+
+    public Guid SeedLegacyUser(string sub, string displayName = "Legacy", string? email = null)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+        var user = new MiKompri.Users.Domain.Users.User(displayName, email, "entra", sub);
+        db.Users.Add(user);
+        db.SaveChanges();
+        return user.Id;
+    }
+
+    public MiKompri.Users.Domain.Users.User? FindUser(Guid id)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+        return db.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
+    }
+
+    public List<MiKompri.Users.Domain.Users.User> AllUsers()
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+        return db.Users.AsNoTracking().ToList();
+    }
+
     public void ResetDatabase()
     {
         using var scope = Services.CreateScope();

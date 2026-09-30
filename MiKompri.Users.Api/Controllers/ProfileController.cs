@@ -56,12 +56,17 @@ namespace MiKompri.Users.Api.Controllers
         {
             var ct = HttpContext.RequestAborted;
             var sub = User.FindFirstValue("sub") ?? string.Empty;
+            var tidClaim = User.FindFirstValue("tid");
+            var oidClaim = User.FindFirstValue("oid");
+            var hasCanonical = !string.IsNullOrWhiteSpace(tidClaim) && !string.IsNullOrWhiteSpace(oidClaim);
+            var tid = hasCanonical ? tidClaim : null;
+            var oid = hasCanonical ? oidClaim : null;
             var displayName = User.FindFirstValue("name") ?? User.FindFirstValue(ClaimTypes.Name);
             var emailClaim = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email);
             var email = string.IsNullOrEmpty(emailClaim) ? null : emailClaim;
             var identityProvider = _configuration["Authentication:IdentityProvider"] ?? "entra";
 
-            var command = new SyncProfileCommand(identityProvider, sub, displayName, email);
+            var command = new SyncProfileCommand(identityProvider, sub, displayName, email, tid, oid);
             var (_, createdByEndpoint) = await _sender.Send(command, ct);
 
             var createdByMiddleware = HttpContext.Items.TryGetValue("ProfileCreatedInMiddleware", out var middlewareValue)

@@ -10,6 +10,8 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
         string IdentityProvider,
         string ExternalUserId,
         string? DisplayName,
-        string? Email
+        string? Email,
+        string? TenantId = null,
+        string? ObjectId = null
     ) : IRequest<(Guid UserId, bool Created)>;
 }
