@@ -55,6 +55,11 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 
 - [ ] T008 [P] Tests del handler de resolución/sincronización de identidad en `test/MiKompri.Users.Application.Tests/Commands/SyncProfileCommandHandlerTests.cs`: usuario nuevo por `(tid, oid)`; usuario legacy por `sub` que autentica → conserva `UserId` y obtiene `(tid, oid)`; usuario ya migrado; nunca crea duplicado; usuario legacy que no autentica permanece sin `(tid, oid)`
 
+### Tests primero (API)
+
+- [ ] T014a [P] Verificar o crear `CustomWebApplicationFactory.cs` y `TestAuthHandler.cs` en `test/MiKompri.Users.Api.Tests/` con claims `tid`/`oid`/`sub` configurables (mismo patrón que ShoppingList)
+- [ ] T015 Tests de integración de migración de identidad Fase 1 (deben fallar antes de T013/T014; depende de T014a) en `test/MiKompri.Users.Api.Tests/IdentityMigrationApiTests.cs` (usando `TestAuthHandler.cs` y `CustomWebApplicationFactory.cs`, con tokens que incluyen `tid`/`oid`/`sub`): (a) usuario legacy (solo `sub`) que autentica conserva el mismo `UserId`; (b) `tid` y `oid` quedan capturados y persistidos correctamente en ese perfil; (c) usuario nuevo se crea correlacionado por `(tid, oid)`; (d) un segundo login del mismo usuario no genera usuarios duplicados (legacy ni nuevo); (e) usuarios nuevos tienen `ExternalUserId = null` (nunca `""`); (f) perfil legacy que no autentica permanece intacto
+
 ### Implementación
 
 - [ ] T009 Modificar `MiKompri.Users.Domain/Users/User.cs`: `ExternalUserId` → `string?`, añadir `TenantId: string?` y `ObjectId: string?`, método para asociar `(tid, oid)` a perfil legacy, factoría para usuario nuevo solo por `(tid, oid)`; prohibir `""` (data-model.md)
@@ -63,7 +68,6 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 - [ ] T012 Generar migración EF Core en `MiKompri.Users.Infrastructure/Persistence/Migrations/` (nullable `ExternalUserId`, columnas `TenantId`/`ObjectId`, índices filtrados) y actualizar `UsersDbContextModelSnapshot.cs`; la migración no ejecuta backfill de datos
 - [ ] T013 Modificar `MiKompri.Users.Application/Commands/SyncProfile/SyncProfileCommand.cs` y `SyncProfileCommandHandler.cs` para incluir `tid`/`oid` y aplicar lógica Fase 1 (lazy): buscar por `(tid, oid)` → si no, por `sub` y asociar `(tid, oid)` al `UserId` existente → si no, crear nuevo solo con `(tid, oid)`
 - [ ] T014 Modificar `MiKompri.Users.Api/Services/HttpCurrentUserService.cs` y el punto de sincronización en `MiKompri.Users.Api/Controllers/ProfileController.cs` para extraer claims `tid`/`oid` (y `sub` solo para correlación legacy transitoria)
-- [ ] T015 Tests de integración de migración de identidad Fase 1 en `test/MiKompri.Users.Api.Tests/IdentityMigrationApiTests.cs` (usando `TestAuthHandler.cs` y `CustomWebApplicationFactory.cs`, con tokens que incluyen `tid`/`oid`/`sub`): (a) usuario legacy (solo `sub`) que autentica conserva el mismo `UserId`; (b) `tid` y `oid` quedan capturados y persistidos correctamente en ese perfil; (c) usuario nuevo se crea correlacionado por `(tid, oid)`; (d) un segundo login del mismo usuario no genera usuarios duplicados (legacy ni nuevo); (e) usuarios nuevos tienen `ExternalUserId = null` (nunca `""`); (f) perfil legacy que no autentica permanece intacto
 - [ ] T016 Verificar que `dotnet test test/MiKompri.Users.Domain.Tests`, `Users.Application.Tests` y `Users.Api.Tests` pasan en Release
 
 **Checkpoint**: Fase 1 de migración operativa en `Users`.
@@ -77,14 +81,15 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 ### Tests primero
 
 - [ ] T017 [P] Crear `test/MiKompri.ProductCatalog.Api.Tests/CustomWebApplicationFactory.cs` y `TestAuthHandler.cs` (mismo patrón que `test/MiKompri.ShoppingList.Api.Tests/`) si no existen
-- [ ] T018 Tests en `test/MiKompri.ProductCatalog.Api.Tests/CatalogAuthApiTests.cs` para TODOS los endpoints existentes de `ProductCatalog.Api`: `401 Unauthorized` sin token y acceso correcto (no 401/403) con token válido en `GET/POST/PUT api/v1/catalog-products`, `GET api/v1/catalog-products/{id}`, `GET api/v1/catalog-products/{id}/price-history`, `GET/POST/PUT api/v1/markets`, `GET api/v1/markets/{id}` y `POST api/v1/product-prices` (y cualquier DELETE existente); los tests de escritura validan solo autenticación, no cambian su comportamiento funcional
+- [ ] T017a Inventariar los endpoints reales de `ProductCatalog.Api` (controladores, verbos y rutas) y fijar esa lista como alcance definitivo de T018 y T022
+- [ ] T018 Tests (lista según T017a) en `test/MiKompri.ProductCatalog.Api.Tests/CatalogAuthApiTests.cs` para TODOS los endpoints existentes de `ProductCatalog.Api`: `401 Unauthorized` sin token y acceso correcto (no 401/403) con token v�lido en `GET/POST/PUT api/v1/catalog-products`, `GET api/v1/catalog-products/{id}`, `GET api/v1/catalog-products/{id}/price-history`, `GET/POST/PUT api/v1/markets`, `GET api/v1/markets/{id}` y `POST api/v1/product-prices` (lista final según T017a); los tests de escritura validan solo autenticaci�n, no cambian su comportamiento funcional
 - [ ] T019 Adaptar `test/MiKompri.ProductCatalog.Api.Tests/CatalogProductsPriceHistoryApiTests.cs` para autenticarse con el handler de test (regresión MVP-1/2)
 
 ### Implementación
 
 - [ ] T020 Modificar `MiKompri.ProductCatalog.Api/Program.cs`: `AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(...)` con `Authority` común y soporte `ValidAudiences` (mismo patrón que `MiKompri.Users.Api/Program.cs`), `app.UseAuthentication()` antes de `app.UseAuthorization()`
 - [ ] T021 Añadir paquete `Microsoft.AspNetCore.Authentication.JwtBearer` en `MiKompri.ProductCatalog.Api/MiKompri.ProductCatalog.Api.csproj` y configuración `Authentication:*` en `MiKompri.ProductCatalog.Api/appsettings.json` y `appsettings.Development.json`
-- [ ] T022 Aplicar `[Authorize]` a nivel de controlador en `MiKompri.ProductCatalog.Api/Controllers/CatalogProductsController.cs`, `MarketsController.cs` y `ProductPricesController.cs`, de modo que TODOS los endpoints existentes (GET, POST, PUT y DELETE si existiera) requieran JWT; no se añaden endpoints nuevos ni roles/políticas adicionales, y el cliente Android sigue siendo read-only (solo GET)
+- [ ] T022 Aplicar `[Authorize]` a nivel de controlador en `MiKompri.ProductCatalog.Api/Controllers/CatalogProductsController.cs`, `MarketsController.cs` y `ProductPricesController.cs`, de modo que TODOS los endpoints existentes (lista exacta según T017a; documentación diferida a T079) requieran JWT; no se a�aden endpoints nuevos ni roles/pol�ticas adicionales, y el cliente Android sigue siendo read-only (solo GET)
 - [ ] T023 [P] Homogeneizar `ValidAudiences` en `MiKompri.ShoppingList.Api/Program.cs` y `MiKompri.ShoppingList.Api/appsettings*.json` reutilizando el patrón de `Users.Api` (audience histórica + audience backend común, transición TP11)
 - [ ] T024 [P] Documentar/configurar variables de entorno de audience y authority para las tres APIs en `docker-compose.yml` y `docker-compose.override.yml` (solo backend)
 - [ ] T025 Verificar `dotnet test` de `ProductCatalog.Api.Tests` y `ShoppingList.Api.Tests` en Release
@@ -103,7 +108,7 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 - [ ] T027 [P] Tests Application: queries/commands de consulta, edición y eliminación de listas personales rechazan acceso cuando `OwnerId` ≠ `UserId` autenticado (error de autorización/`KeyNotFoundException` según convención de `ExceptionHandlingMiddleware`), en `test/MiKompri.ShoppingList.Application.Tests/`
 - [ ] T028 [P] Tests Domain: `PurchaseList` mantiene `OwnerId` inmutable tras construcción, en `test/MiKompri.ShoppingList.Domain.Tests/PurchaseListTests.cs`
 - [ ] T029 Tests API `401` sin token en todos los endpoints de listas personales y `403/404` en acceso cruzado entre dos usuarios (Usuario B sobre lista de A: consultar, editar, eliminar, añadir ítem) en `test/MiKompri.ShoppingList.Api.Tests/PurchaseListsApiTests.cs` (o nuevo `PersonalListsAuthApiTests.cs`)
-- [ ] T030 Test API de no regresión: listas personales preexistentes con `OwnerId` válido siguen accesibles para su propietario (spec US4 escenario 6)
+- [ ] T030 Test API de no regresión en `test/MiKompri.ShoppingList.Api.Tests/PersonalListsRegressionApiTests.cs`: lista preexistente con `OwnerId` válido; GET/PUT/DELETE del propietario responden 2xx (spec US4 escenario 6)
 
 ### Implementación
 
@@ -128,7 +133,7 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 
 - [ ] T037 [P] [US1] Tests de `AuthService` (fake MSAL): login ok, cancelación/fallo con error reintentable, restauración de sesión sin interacción en `test/MiKompri.Mobile.Tests/Services/AuthServiceTests.cs`
 - [ ] T038 [P] [US2] Tests del `DelegatingHandler` de autenticación: orden `AcquireTokenSilent` → fallback interactivo solo ante `MsalUiRequiredException` → reintento; ninguna gestión manual de refresh tokens, en `test/MiKompri.Mobile.Tests/Services/AuthDelegatingHandlerTests.cs`
-- [ ] T039 [US2] Tests de ciclo de vida de sesión MSAL con fake de `IPublicClientApplication` en `test/MiKompri.Mobile.Tests/Services/MsalSessionTests.cs`: (a) restauración de sesión al reabrir la app usando la cuenta cacheada sin login interactivo; (b) `AcquireTokenSilent` se invoca antes de cada llamada a API protegida; (c) fallback a adquisición interactiva solo ante `MsalUiRequiredException` y reintento de la operación pendiente; (d) logout invoca `RemoveAccount` y deja la sesión cerrada en memoria; (e) la app no persiste tokens en `SecureStorage` ni gestiona refresh tokens manualmente
+- [ ] T039 [US2] Tests de logout y no persistencia propia con fake de `IPublicClientApplication` en `test/MiKompri.Mobile.Tests/Services/MsalSessionTests.cs`: (a) logout invoca `RemoveAccount` y limpia el estado de sesión en memoria; (b) la app no usa `SecureStorage` ni persiste tokens/refresh tokens (FR-016b); restauración de sesión y fallback ya cubiertos por T037/T038
 
 ### Implementación
 
@@ -195,7 +200,7 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 **Independent Test**: quickstart Escenario 4.
 
 - [ ] T063 [P] [US5b] Tests de `GroupsViewModel`: listar con rol, crear grupo, ver miembros, añadir/eliminar miembro, UI deshabilita acciones según rol pero el backend decide (FR-025), en `test/MiKompri.Mobile.Tests/ViewModels/GroupsViewModelTests.cs`
-- [ ] T064 [P] [US5b] Verificar/completar cobertura API mínima de grupos (listar, crear, ver miembros, añadir, eliminar, matriz Owner/Admin/Member) en `test/MiKompri.Users.Api.Tests/GroupsApiTests.cs`
+- [ ] T064 [P] [US5b] Añadir los tests que falten de cobertura API mínima de grupos (listar, crear, ver miembros, añadir, eliminar, matriz Owner/Admin/Member) en `test/MiKompri.Users.Api.Tests/GroupsApiTests.cs` (listar en el PR los casos ya cubiertos)
 - [ ] T065 [US5b] Implementar métodos de grupos en `MiKompri.Mobile/Services/Http/UsersApiClient.cs` consumiendo `MiKompri.Users.Api/Controllers/GroupsController.cs` (sin cambio de rol ni administración avanzada)
 - [ ] T066 [US5b] Crear `GroupsViewModel`, `GroupMembersViewModel` y vistas en `MiKompri.Mobile/ViewModels/Groups/` y `Views/`
 
@@ -228,11 +233,12 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 - [ ] T075 Regresión completa MVP-0..MVP-3: `dotnet test MiKompri.sln --configuration Release` (Domain, Application, Api de Users, ShoppingList y ProductCatalog) y revisar que no hay cambios de comportamiento fuera de lo descrito en contracts/api-contracts.md
 - [ ] T076 Test de verificación SC-007: búsqueda técnica de usos de `sub`/`ExternalUserId` para correlación fuera de la ruta legacy transitoria (código backend y cliente) y registrar resultado en `specs/006-android-maui-client/quickstart.md`
 - [ ] T077 [P] Ajustar `.github/workflows/ci-mikompri-shoppinglist.yml` y `.github/workflows/ci-mikompri-productcatalog.yml` para ejecutar los nuevos tests; revisar el workflow/CI de Users si existe o documentar que se cubre por `dotnet test MiKompri.sln`. Sin pipeline de contenedor para el cliente MAUI
-- [ ] T078 [P] Añadir job de CI en `.github/workflows/` (p. ej. `ci-mikompri-mobile.yml`) que, en este orden: instale/verifique el workload `maui-android` (`dotnet workload install maui-android`, más JDK/Android SDK si el runner lo requiere), compile `MiKompri.Mobile` (`dotnet build -f net8.0-android`) y ejecute `test/MiKompri.Mobile.Tests`, sin `docker build` para este artefacto (TP4 no aplica al cliente)
-- [ ] T079 Actualizar `specs/006-android-maui-client/plan.md`, `contracts/api-contracts.md` y `quickstart.md` para reflejar que TODOS los endpoints de `ProductCatalog.Api` (incluidos los de escritura) requieren JWT, que las rutas reales son `api/v1/catalog-products`, `api/v1/markets` y `api/v1/product-prices`, y que el cliente solo consume GET; la autorización por roles para escritura queda fuera de alcance
+- [ ] T078 [P] Añadir job de CI en `.github/workflows/` (p. ej. `ci-mikompri-mobile.yml`) que, en este orden: instale/verifique el workload `maui-android` (mismo comando que T002; `dotnet workload install maui-android`, más JDK/Android SDK si el runner lo requiere), compile `MiKompri.Mobile` (`dotnet build -f net8.0-android`) y ejecute `test/MiKompri.Mobile.Tests`, sin `docker build` para este artefacto (TP4 no aplica al cliente)
+- [ ] T079 Actualizar `specs/006-android-maui-client/spec.md` (FR-023a), `plan.md`, `contracts/api-contracts.md` y `quickstart.md` para reflejar que TODOS los endpoints de `ProductCatalog.Api` (incluidos los de escritura) requieren JWT, que las rutas reales son `api/v1/catalog-products`, `api/v1/markets` y `api/v1/product-prices`, y que el cliente solo consume GET; la autorización por roles para escritura queda fuera de alcance
 - [ ] T080 [P] Documento operativo del criterio de entrada a Fase 2 (consulta/reporte de cobertura de perfiles activos con `(tid, oid)`; backfill administrativo como alternativa) en `specs/006-android-maui-client/quickstart.md`
-- [ ] T081 Implementar y testear la **capacidad** de Fase 2 (no su activación): resolución primaria por `(tid, oid)` con `sub` como fallback de solo lectura en `MiKompri.Users.Application/Commands/SyncProfile/SyncProfileCommandHandler.cs`, controlada por configuración (p. ej. `Identity:CanonicalCorrelation=TidOid`, desactivada por defecto), y soporte de audience backend común como principal vía `ValidAudiences` en `Program.cs` de las tres APIs; tests en `test/MiKompri.Users.Application.Tests/` y `test/MiKompri.Users.Api.Tests/` con el flag activado y desactivado (sin duplicados, mismo `UserId`). Depende de T013 y T023
-- [ ] T082 Ejecutar la validación completa de `specs/006-android-maui-client/quickstart.md` (Escenarios 1-7) en emulador/dispositivo con backend vía `docker-compose.yml`
+- [ ] T081 Implementar y testear la **capacidad** de Fase 2 (no su activación): resolución primaria por `(tid, oid)` con `sub` como fallback de solo lectura en `MiKompri.Users.Application/Commands/SyncProfile/SyncProfileCommandHandler.cs`, controlada por `Identity:CanonicalCorrelation` (`Legacy` por defecto, `TidOid`); tests con ambos valores (mismo `UserId`, sin duplicados) en `test/MiKompri.Users.Application.Tests/` y `test/MiKompri.Users.Api.Tests/` con el flag activado y desactivado (sin duplicados, mismo `UserId`). Depende de T013 y T023
+- [ ] T081b Implementar y testear el cambio de audience principal de Fase 2 mediante `Authentication:PrimaryAudience` en `Program.cs` de las tres APIs (la convivencia de `ValidAudiences` ya la configura T023); tests: token con audience común aceptado y token con audience histórica aceptado durante la transición. Depende de T023 y T081
+- [ ] T082 Ejecutar la validación completa de `specs/006-android-maui-client/quickstart.md` (Escenarios 1-7) en emulador/dispositivo con backend vía `docker-compose.yml`, midiendo y registrando SC-001 (login y perfil < 1 min), SC-003 (flujo de lista < 2 min) y SC-005 (estado visible < 10 s)
 - [ ] T083 [P] Actualizar `README.md` con el estado de MVP-4 (cliente Android, identidad `(tid, oid)`, despliegue actual en GHCR y Azure planificado)
 - [ ] T084 Activación operativa del corte de Fase 2 (**post-MVP, no bloquea el cierre técnico de MVP-4**): activar el flag de T081 en el entorno real solo cuando se cumpla el criterio documentado en T080 (cobertura suficiente de perfiles activos con `(tid, oid)`) o tras ejecutar un backfill administrativo; registrar evidencia (reporte de cobertura/backfill) en `specs/006-android-maui-client/quickstart.md`
 
@@ -248,7 +254,7 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 4. **Phase 4 (ShoppingList)** depende de Phase 2 (resolución de `UserId`) y de T023.
 5. **Phases 5-6 (cliente base)** dependen de T003-T006 y de Phases 2-4 para pruebas end-to-end; el desarrollo contra fakes puede comenzar tras Phase 1.
 6. **Phases 7-11 (historias)** dependen de Phases 5-6 (auth, Http, navegación, estados).
-7. **Phase 12** depende de las historias deseadas. **T081** (capacidad de Fase 2 + tests) sí forma parte del cierre técnico y depende de T013/T023; **T080** documenta el criterio; **T084** (activación operativa real) depende de T080, T081 y del despliegue de Fase 1, y queda fuera del cierre técnico del MVP.
+7. **Phase 12** depende de las historias deseadas. **T081/T081b** (capacidad de Fase 2 + tests) sí forma parte del cierre técnico y depende de T013/T023; **T080** documenta el criterio; **T084** (activación operativa real) depende de T080, T081 y del despliegue de Fase 1, y queda fuera del cierre técnico del MVP.
 
 ### Orden entre historias
 
@@ -258,7 +264,7 @@ description: "Task list for MVP-4 Cliente Android con .NET MAUI"
 ### Oportunidades de paralelismo
 
 - Phase 1: T005, T006.
-- Phase 2: T007 y T008 (tests); T015 tras T013/T014.
+- Phase 2: T007, T008 y T014a (tests); T015 antes de T013/T014 (debe fallar primero).
 - Phase 3: T017, T023, T024.
 - Phase 4: T026, T027, T028.
 - Cliente: tests [P] de cada historia antes de su implementación; historias US3, US5b, US8 pueden avanzar en paralelo entre sí tras Phase 6 (ficheros distintos), salvo `UsersApiClient.cs` compartido por US3 y US5b (T056 y T065 no son paralelos entre sí).
