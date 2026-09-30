@@ -1,10 +1,10 @@
 # Implementation Plan: MVP-4 Cliente Android con .NET MAUI
 
-**Branch**: `006-android-maui-client` | **Date**: 2026-10-04 | **Spec**: [spec.md](./spec.md)
+**Branch**: `006-android-maui-client` | **Date**: 2026-09-30 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `specs/006-android-maui-client/spec.md`
 
-**Note**: Este plan respeta estrictamente las decisiones ya cerradas en `spec.md` (sesiones de clarificación 2026-09-30, 2026-10-01, 2026-10-02 y 2026-10-03) y en la Constitución v1.1.0 (TP1-TP11). No reabre ninguna decisión ya aclarada, no amplía el alcance de MVP-4 y no incluye código de implementación.
+**Note**: Este plan respeta estrictamente las decisiones ya cerradas en `spec.md` (sesión de clarificación 2026-09-30) y en la Constitución v1.1.0 (TP1-TP11). No reabre ninguna decisión ya aclarada, no amplía el alcance de MVP-4 y no incluye código de implementación. Los cambios de backend descritos aquí afectan a los tres bounded contexts: `Users`, `ShoppingList` y `ProductCatalog`.
 
 ## Summary
 
@@ -24,7 +24,7 @@ Construir el primer cliente móvil de MiKompri (Android, .NET MAUI) que consume 
 - Backend: xUnit + FluentAssertions/Moq (consistente con `test/MiKompri.*.Tests` existentes), EF Core InMemory para integración de API vía `CustomWebApplicationFactory`, cobertura con Coverlet/OpenCover como en CI actual.
 - Cliente: tests unitarios de ViewModels y servicios de aplicación cliente (sin UI automation en este MVP, ver Fuera de alcance).
 
-**Target Platform**: Backend en contenedores Linux (Docker, despliegue objetivo Azure per TP5). Cliente: Android targeting `net8.0-android`, UI de referencia en dispositivos de hasta 430px de ancho (PP5).
+**Target Platform**: Backend en contenedores Linux (Docker); las imágenes se publican actualmente en GitHub Container Registry (GHCR), con despliegue en Azure planificado pero aún no vigente (TP5). Cliente: Android targeting `net8.0-android`, UI de referencia en dispositivos de hasta 430px de ancho (PP5).
 
 **Project Type**: Mobile + API — se añade un cuarto proyecto (cliente MAUI) a la solución existente de bounded contexts backend; no se introduce un quinto framework ni un backend-for-frontend adicional.
 
@@ -48,7 +48,7 @@ Construir el primer cliente móvil de MiKompri (Android, .NET MAUI) que consume 
 - **TP2 (Bounded contexts)**: Cumple — no se crean nuevos bounded contexts; el cliente MAUI consume `Users.Api`, `ShoppingList.Api`, `ProductCatalog.Api` exclusivamente vía sus APIs públicas (REST), sin acceso directo a bases de datos de otro contexto.
 - **TP3 (Monorepo)**: Cumple — el proyecto MAUI vive en el mismo repositorio `frankcval/MiKompri`.
 - **TP4 (Docker obligatorio)**: Cumple para el backend (build/test en contenedores); el cliente Android MAUI no es dockerizable de forma nativa (limitación de la plataforma AOT/Android), por lo que el alcance de Docker/CI en este plan se limita explícitamente al backend existente (ver sección "Docker/CI"), conforme a lo solicitado por el usuario.
-- **TP5 (Azure)**: Sin cambios — el backend sigue desplegándose en Azure; este MVP no introduce nueva infraestructura de despliegue del cliente (distribución fuera de Google Play, per Alcance).
+- **TP5 (Azure)**: Sin cambios — el backend actualmente publica sus imágenes en GitHub Container Registry (GHCR); el despliegue en Azure sigue planificado pero aún no es el mecanismo vigente. Este MVP no introduce nueva infraestructura de despliegue del cliente (distribución fuera de Google Play, per Alcance) ni adelanta la migración a Azure, que permanece fuera de alcance de esta feature.
 - **TP6 (Cliente Android .NET MAUI)**: Cumple directamente — es el objeto central de esta spec/plan.
 - **TP7 (REST + OpenAPI)**: Cumple — no se cambian contratos existentes salvo lo estrictamente necesario para TP11 (ver Fase 1/Fase 2 de migración); Swagger se mantiene disponible en no-productivo.
 - **TP8 (Testing obligatorio)**: Se exige cobertura de dominio/aplicación/integración para los cambios de backend (migración de identidad, endurecimiento de `OwnerId`, grupos) y tests de ViewModels/servicios en el cliente. Ver sección "Estrategia de Tests".
@@ -128,7 +128,7 @@ test/
 └── MiKompri.Mobile.Tests/               # Tests de ViewModels/servicios (sin UI automation en MVP-4)
 ```
 
-**Structure Decision**: Se adopta la variante "Mobile + API" del template: el backend existente permanece intacto en su organización por bounded context (`Api`/`Application`/`Domain`/`Infrastructure`), y se añade un único proyecto cliente `MiKompri.Mobile` (.NET MAUI, `net8.0-android`) más su proyecto de tests `MiKompri.Mobile.Tests`, ambos integrados en `MiKompri.sln`. No se crean nuevos bounded contexts backend; los únicos cambios de backend son ajustes acotados dentro de `Users` (migración de identidad) y `ShoppingList` (endurecimiento de `OwnerId`), documentados a continuación.
+**Structure Decision**: Se adopta la variante "Mobile + API" del template: el backend existente permanece intacto en su organización por bounded context (`Api`/`Application`/`Domain`/`Infrastructure`), y se añade un único proyecto cliente `MiKompri.Mobile` (.NET MAUI, `net8.0-android`) más su proyecto de tests `MiKompri.Mobile.Tests`, ambos integrados en `MiKompri.sln`. No se crean nuevos bounded contexts backend; los únicos cambios de backend son ajustes acotados dentro de `Users` (migración de identidad), `ShoppingList` (endurecimiento de `OwnerId`) y `ProductCatalog` (incorporación de autenticación JWT real y protección `[Authorize]`), documentados a continuación.
 
 ---
 
@@ -139,7 +139,7 @@ Esta sección traduce las decisiones ya cerradas en `spec.md` (FR-017 a FR-027) 
 ### Estado actual relevante
 
 - `MiKompri.Users.Domain.Users.User` persiste `IdentityProvider` + `ExternalUserId` (`sub`) como única correlación externa hoy.
-- `Users.Api`, `ShoppingList.Api` y `ProductCatalog.Api` validan JWT vía `JwtBearerDefaults` con `Authority`/`Audience` configurados por `appsettings`; `Users.Api` ya soporta `ValidAudiences` múltiples (mecanismo reutilizable para la transición de audience).
+- `Users.Api` y `ShoppingList.Api` validan JWT vía `JwtBearerDefaults` con `Authority`/`Audience` configurados por `appsettings`; `Users.Api` ya soporta `ValidAudiences` múltiples (mecanismo reutilizable para la transición de audience). `ProductCatalog.Api` **no** valida JWT actualmente (no configura `AddAuthentication()`/`AddJwtBearer(...)` ni `UseAuthentication()`); este plan añade dicha autenticación (ver sección "ProductCatalog (solo lectura + autenticación real)").
 - `PurchaseList.OwnerId` es un `Guid` de dominio ya presente; el endpoint `POST /api/v1/PurchaseLists` actualmente recibe `OwnerId` en el `CreatePurchaseListRequest` (payload del cliente) — este es el punto concreto a endurecer para FR-026/FR-027.
 
 ### Fase 1 — Convivencia (migración lazy, sin cambiar correlación canónica)

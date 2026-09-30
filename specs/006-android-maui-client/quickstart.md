@@ -13,7 +13,7 @@ Esta guía describe cómo validar end-to-end el cumplimiento de esta feature, un
 
 1. Levantar el backend con la configuración de Fase 1 activa (captura de `tid`/`oid` sin cambiar correlación canónica).
 2. Iniciar sesión en el cliente con un usuario de prueba nuevo (sin perfil previo en `Users`).
-3. Verificar en `Users.Api` que se creó un `User` con `TenantId`/`ObjectId` resueltos y `ExternalUserId` vacío o no aplicable (usuario nuevo, sin paso por `sub`).
+3. Verificar en `Users.Api` que se creó un `User` con `TenantId`/`ObjectId` resueltos y `ExternalUserId = null` (usuario nuevo, sin paso por `sub`; nunca se usa cadena vacía como sustituto).
 4. Cerrar sesión (`RemoveAccount` vía MSAL) y volver a iniciar sesión con el mismo usuario.
 5. Verificar que **no** se creó un segundo `User` (mismo `UserId` interno que en el paso 3).
 6. **Resultado esperado**: SC-002 de la spec — ningún usuario existente pierde acceso ni se duplica.
