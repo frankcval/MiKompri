@@ -311,7 +311,7 @@ La versión de la constitución sigue Semantic Versioning —SemVer—:
 ### 4.3 Revisión de Cumplimiento
 
 * La constitución DEBE revisarse al inicio de cada nuevo bounded context o feature mayor.
-* El cumplimiento de los principios técnicos `TP1`–`TP10` DEBE verificarse como parte del checklist de revisión de PRs.
+* El cumplimiento de los principios técnicos `TP1`–`TP11` DEBE verificarse como parte del checklist de revisión de PRs.
 * Las specs nuevas DEBEN demostrar alineación con esta constitución en su `plan.md`.
 * Las excepciones a esta constitución DEBEN documentarse mediante ADR y, si cambian un principio obligatorio, mediante enmienda constitucional.
 * TODO(REVIEW_CADENCE): Definir cadencia periódica formal de revisión constitucional, sugerido trimestral.
