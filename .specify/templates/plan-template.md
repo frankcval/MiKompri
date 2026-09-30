@@ -40,6 +40,10 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
+- Confirm TP8: tests are mandatory for domain, use-case, and API coverage when applicable.
+- Confirm TP11: identity/auth flows use Microsoft Entra ID, canonical (tid, oid), internal UserId, and no global correlation by sub.
+- Confirm bounded-context boundaries: no direct access to Users database from other contexts.
+
 [Gates determined based on constitution file]
 
 ## Project Structure
@@ -106,6 +110,7 @@ directories captured above]
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
+> Do not use this section to relax TP8 or TP11; only document unavoidable constitutional violations.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
