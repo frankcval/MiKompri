@@ -84,7 +84,7 @@ El proyecto implementa **Clean Architecture** dividida en capas:
                  └─────────────────────────────────────┘
 ```
 
-- La integración es por contratos y referencias canónicas, sin acoplamiento de runtime entre bounded contexts.
+- La integración entre bounded contexts se realiza mediante contratos públicos y referencias canónicas. ShoppingList consume Users.Api en runtime para resolver identidad, membresía y roles, sin acceso directo a su base de datos.
 - `catalogProductId` queda como identificador estable para asociaciones con ShoppingList y futuras extensiones.
 
 ### Patrones Implementados
