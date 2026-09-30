@@ -105,7 +105,7 @@ dotnet test test\MiKompri.Users.Api.Tests\MiKompri.Users.Api.Tests.csproj --conf
 
 ## Protocolo de validación de SC-003
 
-1. Preparar una lista compartida de prueba con al menos 3 miembros activos y token JWT válido (`sub` GUID).
+1. Preparar una lista compartida de prueba con al menos 3 miembros activos y token JWT válido (el claim `sub` puede ser cualquier string; la identidad interna la resuelve `UsersGroupAuthorizationAdapter` contra `/api/v1/users/me`).
 2. Ejecutar el flujo: crear lista (`CreateSharedListRequest`) → agregar ítem (`AddSharedItemRequest`) → registrar gasto (`RegisterExpenseRequest`) → consultar propuesta de liquidación.
 3. Medir el tiempo desde la creación de la lista hasta la obtención de `/settlement/proposal`.
 4. Guardar evidencia de tiempos y payloads utilizados en una nota de validación o salida de consola reproducible.
@@ -113,6 +113,8 @@ dotnet test test\MiKompri.Users.Api.Tests\MiKompri.Users.Api.Tests.csproj --conf
 
 **Criterio de aceptación**
 - El flujo completo es ejecutable de forma reproducible y la evidencia queda documentada en el repositorio o en el artefacto de validación.
+
+> **Nota de integración de tests**: Los tests de integración (`MiKompri.ShoppingList.Api.Tests`) no dependen de una Users API real. `FakeUsersApiHandler` + `FakeUsersApiState` interceptan el `HttpClient("UsersApi")` y simulan `/api/v1/users/me` y `/api/v1/groups/{groupId}/members`. Para configurar un escenario en tests, usar `factory.UsersApiState.EnsureUser(sub)` + `factory.UsersApiState.SetMembership(groupId, userId, "Owner|Admin|Member")`.
 
 ## Protocolo humano de validación de SC-006
 

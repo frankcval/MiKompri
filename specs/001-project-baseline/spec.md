@@ -62,10 +62,7 @@ Varios miembros de un grupo pueden compartir listas de compra. Una lista puede e
 a un grupo, y los miembros del grupo pueden consultarla y gestionarla. Se puede filtrar las
 listas por grupo.
 
-**Estado actual**: ⚠️ Parcialmente implementado. El dominio (`PurchaseList.GroupId`),
-la query `GetShoppingListByGroupId` y el filtro en el endpoint `GET /api/v1/PurchaseLists?groupId=`
-están implementados. El bounded context `Users` ya es operativo, pero ShoppingList todavía no
-valida pertenencia al grupo ni permisos contra Users, y la colaboración real sigue pendiente.
+**Estado actual**: ✅ Implementado como parte de MVP-3 (`005-shared-lists-settlement`). Las listas compartidas con control de acceso por membresía de grupo están completamente operativas. ShoppingList valida pertenencia y rol contra Users.Api (`IGroupAuthorizationService`). Cobertura de tests automatizados incluyendo tests cross-service con Users.Api real.
 
 **Why this priority**: Diferenciador clave del producto frente a apps de lista individual
 (PP4 - Transparencia Colaborativa). Requiere la integración efectiva entre `ShoppingList` y `Users`.
@@ -292,7 +289,7 @@ y tests de integración de API.
 | MVP-0  | Listas de compra personales / Shopping List Core   | ✅ Completado     | `001-project-baseline`, `002-shopping-list-core`        |
 | MVP-1  | Usuarios, autenticación e identidad                | ✅ Completado     | `003-users-authentication`                              |
 | MVP-2  | Catálogo de productos, mercados e historial de precios | ✅ Completado  | `004-product-catalog`                                   |
-| MVP-3  | Listas compartidas y reparto de gastos             | ⬜ Pendiente     | `005-shared-lists-settlement` *(spec futura)*           |
+| MVP-3  | Listas compartidas y reparto de gastos             | ✅ Completado     | `005-shared-lists-settlement`                           |
 | MVP-4  | Cliente Android con .NET MAUI                      | ⬜ Pendiente     | `006-android-maui-client` *(spec futura)*               |
 | MVP-5  | Presupuesto y control de gasto                     | ⬜ Pendiente     | *(spec futura)*                                         |
 | MVP-6  | Sugerencias inteligentes                           | ⬜ Pendiente     | *(spec futura)*                                         |
@@ -347,7 +344,7 @@ o tiendas y registro histórico de precios para facilitar comparativas de compra
 
 ---
 
-### MVP-3 — Listas Compartidas y Reparto de Gastos (Estado: ⬜ Pendiente)
+### MVP-3 — Listas Compartidas y Reparto de Gastos (Estado: ✅ Completado)
 
 **Alcance**: Un usuario puede crear grupos, invitar miembros y compartir listas con el
 grupo. Cada ítem registra quién lo añadió (`AddedBy`). El acceso a listas de grupo está
@@ -355,7 +352,7 @@ restringido a sus miembros. Incluye reparto de gastos entre participantes.
 
 **Prerequisito**: MVP-1 completado.
 
-**Spec futura sugerida**: `005-shared-lists-settlement`
+**Spec**: [`005-shared-lists-settlement`](../005-shared-lists-settlement/spec.md) — Completada el 2026-08-09
 
 ---
 
@@ -428,7 +425,7 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso activo**: Definir `005-shared-lists-settlement` — MVP-3 (Listas compartidas y reparto de gastos). La Spec 005 aún no ha sido creada.
+**Próximo paso activo**: Definir `006-android-maui-client` — MVP-4 (Cliente Android con .NET MAUI). MVP-3 (`005-shared-lists-settlement`) completado.
 La spec `003-users-authentication` ya está implementada y representa el cierre del MVP-1.
 El flujo recomendado para futuras specs sigue siendo:
 ```

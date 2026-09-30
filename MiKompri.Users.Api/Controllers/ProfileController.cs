@@ -52,8 +52,9 @@ namespace MiKompri.Users.Api.Controllers
         [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<UserProfileDto>> SyncProfile(CancellationToken ct)
+        public async Task<ActionResult<UserProfileDto>> SyncProfile()
         {
+            var ct = HttpContext.RequestAborted;
             var sub = User.FindFirstValue("sub") ?? string.Empty;
             var displayName = User.FindFirstValue("name") ?? User.FindFirstValue(ClaimTypes.Name);
             var emailClaim = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email);

@@ -5,11 +5,6 @@ using MiKompri.ShoppingList.Application.Interfaces;
 using MiKompri.ShoppingList.Infrastructure.Persistence;
 using MiKompri.ShoppingList.Infrastructure.Persistence.Repositories;
 using MiKompri.ShoppingList.Infrastructure.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MiKompri.ShoppingList.Infrastructure
 {
@@ -17,18 +12,24 @@ namespace MiKompri.ShoppingList.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // EF Core + PostgreSQL
             services.AddDbContext<ShoppingListDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("PostgreSQL")));
 
-            // Repositorios
             services.AddScoped<IPurchaseListRepository, PurchaseListRepository>();
-
-            // Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Integración de autorización de grupos (Users)
-            services.AddScoped<IGroupAuthorizationService, UsersGroupAuthorizationAdapter>();
+            var usersApiBaseUrl = configuration["UsersApi:BaseUrl"];
+            if (string.IsNullOrWhiteSpace(usersApiBaseUrl))
+                throw new InvalidOperationException("UsersApi:BaseUrl no puede estar vacío.");
+
+            services.AddHttpClient("UsersApi", client =>
+            {
+                client.BaseAddress = new Uri(usersApiBaseUrl, UriKind.Absolute);
+            });
+
+            services.AddScoped<UsersGroupAuthorizationAdapter>();
+            services.AddScoped<IGroupAuthorizationService>(sp => sp.GetRequiredService<UsersGroupAuthorizationAdapter>());
+            services.AddScoped<IUserIdentityResolver>(sp => sp.GetRequiredService<UsersGroupAuthorizationAdapter>());
 
             return services;
         }

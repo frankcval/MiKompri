@@ -666,19 +666,24 @@ Ver detalle en [`specs/004-product-catalog/spec.md`](specs/004-product-catalog/s
 
 ## 🎯 Próximos Pasos
 
-El roadmap del proyecto se organiza por MVPs. Con **MVP-2** completado, el siguiente paso es definir la Spec 005.
+El roadmap del proyecto se organiza por MVPs. Con **MVP-3** completado, el siguiente paso es definir la Spec 006.
 
-### Prioridad Media — MVP-3 y posteriores (Pendiente)
-
-4. **Catálogo de Productos, Mercados e Historial de Precios** *(MVP-2)* ✅ Completado
-   - [x] Spec `004-product-catalog` implementada y cerrada
+### MVP-3 — Listas Compartidas y Reparto de Gastos ✅ Completado
 
 5. **Listas Compartidas y Reparto de Gastos** *(MVP-3)*
-   - [ ] Definir spec `005-shared-lists-settlement` *(siguiente paso)*
-   - [ ] Gestión de grupos y listas compartidas con permisos
+   - [x] Spec [`005-shared-lists-settlement`](specs/005-shared-lists-settlement/spec.md) implementada y cerrada
+   - [x] Listas compartidas por grupo con roles Owner/Admin/Member
+   - [x] Registro colaborativo de gastos por ítem con `PaidBy` + participantes
+   - [x] Cálculo de balances y liquidación determinista (D + A − 1 transferencias)
+   - [x] Trazabilidad de operaciones compartidas (`SharedListAuditEvent`)
+   - [x] Autorización por membresía delegada a Users.Api (sin acceso directo a su BD)
+   - [x] Fake Users API en tests + tests cross-service con Users.Api real
+   - [x] JWT/OIDC alineado: ambas APIs usan el mismo proveedor Entra + `ValidAudiences`
+
+### Prioridad Media — MVP-4 y posteriores (Pendiente)
 
 6. **Cliente Android con .NET MAUI** *(MVP-4)*
-   - [ ] Definir spec `006-android-maui-client`
+   - [ ] Definir spec `006-android-maui-client` *(siguiente paso)*
 
 ### Prioridad Baja — Calidad y DevOps (Transversal)
 

@@ -78,6 +78,16 @@ namespace MiKompri.ShoppingList.Api.Middleware
                         };
                         break;
 
+                    case DependencyUnavailableException:
+                        statusCode = HttpStatusCode.ServiceUnavailable;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = "Servicio dependiente no disponible. Reinténtalo en unos momentos.",
+                            traceId = correlationId
+                        };
+                        break;
+
                     case UnauthorizedAccessException:
                         statusCode = HttpStatusCode.Unauthorized;
                         body = new

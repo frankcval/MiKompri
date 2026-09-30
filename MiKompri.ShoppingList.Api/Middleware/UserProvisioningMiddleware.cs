@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using MiKompri.ShoppingList.Application.Interfaces;
 
 namespace MiKompri.ShoppingList.Api.Middleware
 {
@@ -12,7 +13,7 @@ namespace MiKompri.ShoppingList.Api.Middleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IUserIdentityResolver userIdentityResolver)
         {
             if (context.User.Identity?.IsAuthenticated != true)
             {
@@ -21,27 +22,39 @@ namespace MiKompri.ShoppingList.Api.Middleware
             }
 
             var sub = context.User.FindFirst("sub")?.Value;
-            if (string.IsNullOrWhiteSpace(sub) || !Guid.TryParse(sub, out var userId))
+            if (string.IsNullOrWhiteSpace(sub))
             {
-                var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/json";
-
-                var body = new
-                {
-                    status = StatusCodes.Status401Unauthorized,
-                    error = "Authentication failed.",
-                    traceId
-                };
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(body));
+                await WriteUnauthorizedAsync(context);
                 return;
             }
 
-            context.Items["UserId"] = userId;
+            var userId = await userIdentityResolver.ResolveCurrentUserIdAsync(context.RequestAborted);
+            if (userId is null || userId == Guid.Empty)
+            {
+                await WriteUnauthorizedAsync(context);
+                return;
+            }
+
+            context.Items["UserId"] = userId.Value;
 
             await _next(context);
+        }
+
+        private static Task WriteUnauthorizedAsync(HttpContext context)
+        {
+            var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            var body = new
+            {
+                status = StatusCodes.Status401Unauthorized,
+                error = "Authentication failed.",
+                traceId
+            };
+
+            return context.Response.WriteAsync(JsonSerializer.Serialize(body));
         }
     }
 }
