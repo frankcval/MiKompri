@@ -25,6 +25,15 @@
 - Q: ¿El cliente Android debe soportar múltiples cuentas Microsoft Entra en el mismo dispositivo? → A: No en este MVP; una sesión activa por instalación de la app es suficiente. Cambiar de cuenta implica cerrar sesión y volver a autenticar.
 - Q: ¿Cómo debe comportarse la app cuando el access token expira durante el uso? → A: Renovación silenciosa mediante refresh token/token silencioso de MSAL cuando sea posible; si falla, se solicita reautenticación interactiva antes de reintentar la operación pendiente.
 
+### Session 2026-10-01
+
+- Q: ¿Cómo se migran los usuarios existentes de `sub` a `(tid, oid)` sin crear duplicados ni perder el `UserId` interno? → A: Migración lazy (bajo demanda) ejecutada en el primer login posterior al despliegue: al recibir un token válido, `Users` busca primero por `(tid, oid)`; si no existe, busca por `sub` (compatibilidad transitoria) y, si encuentra coincidencia, actualiza ese mismo registro agregando `(tid, oid)` sin crear un perfil nuevo ni cambiar el `UserId`. Si no existe ninguna coincidencia, se crea un perfil nuevo correlacionado directamente por `(tid, oid)`. `sub` queda como dato heredado de solo lectura y no se usa para nuevas correlaciones una vez completada la migración del perfil.
+- Q: ¿Quién determina el `OwnerId` de una lista personal y cómo se protege el acceso entre usuarios? → A: El `OwnerId` se deriva exclusivamente del `UserId` interno resuelto por el backend a partir del token autenticado; el cliente nunca envía ni puede sobreescribir el `OwnerId`. Toda operación de lectura, edición o eliminación sobre una lista personal exige que el `UserId` autenticado coincida con el `OwnerId` de la lista, devolviendo error de autorización en caso contrario.
+- Q: ¿Qué librería y qué información gestiona la sesión/token en el cliente? → A: La app usa MSAL (Microsoft Authentication Library) para todo el ciclo de vida de tokens (adquisición interactiva, adquisición silenciosa y caché); la app no implementa lógica propia de almacenamiento o renovación de refresh tokens. En `SecureStorage` del dispositivo solo se conserva la información mínima de sesión gestionada por MSAL (su caché cifrada de cuenta/token); la app no guarda copias adicionales de tokens ni credenciales en otro almacenamiento.
+- Q: ¿MVP-4 debe incluir gestión de grupos desde el cliente o depende de Swagger/Users.Api directamente? → A: MVP-4 incluye gestión mínima de grupos en el cliente: listar grupos propios, crear grupo, ver miembros de un grupo, añadir/eliminar miembros según el rol del usuario autenticado (Owner/Admin conforme a las reglas ya definidas en Spec 003), y mostrar el rol propio (Owner/Admin/Member) en cada grupo. Esto permite preparar listas compartidas sin depender de Swagger.
+- Q: ¿MVP-4 permite gestionar (crear/editar) el catálogo de productos, mercados y precios, o solo consultarlos? → A: MVP-4 es de solo lectura sobre `ProductCatalog.Api`: consulta de catálogo, mercados e historial de precios. La creación y edición de productos, mercados y precios permanece fuera de alcance de este MVP y podrá incorporarse en una spec posterior si se justifica por valor de usuario.
+- Q: ¿La arquitectura de autenticación implementada para Android debe reutilizarse literalmente en Web/iOS? → A: No. Se reutilizan la identidad canónica `(tid, oid)`, el `UserId` interno, los contratos de API y la arquitectura de acceso a backend (capa de servicios/clientes HTTP), pero la implementación concreta de autenticación por plataforma (por ejemplo, MSAL para Android/iOS vs. un flujo OIDC basado en navegador/redirección para Web) se resuelve mediante adaptadores específicos por plataforma detrás de una abstracción común.
+
 ---
 
 ## User Scenarios & Testing *(mandatory)*
@@ -52,20 +61,21 @@ Como usuario de MiKompri, quiero iniciar sesión con mi cuenta Microsoft Entra I
 
 ---
 
-### User Story 2 - Gestión segura del access token (Priority: P1)
+### User Story 2 - Gestión segura del access token con MSAL (Priority: P1)
 
-Como usuario autenticado, quiero que la app mantenga mi sesión de forma segura y la renueve automáticamente para no tener que iniciar sesión constantemente ni exponer mis credenciales.
+Como usuario autenticado, quiero que la app mantenga mi sesión de forma segura usando el ciclo de vida estándar de MSAL y la renueve automáticamente para no tener que iniciar sesión constantemente ni exponer mis credenciales.
 
 **Why this priority**: Es prerequisito técnico para que cualquier otra historia de usuario funcione de forma continua; sin gestión de token no hay experiencia de uso viable.
 
-**Independent Test**: Se puede validar forzando la expiración del access token y verificando que la app lo renueva de forma transparente o solicita reautenticación solo cuando es estrictamente necesario.
+**Independent Test**: Se puede validar forzando la expiración del access token y verificando que la app lo renueva de forma transparente mediante adquisición silenciosa de MSAL, o solicita reautenticación solo cuando es estrictamente necesario.
 
 **Acceptance Scenarios**:
 
-1. **Given** un access token próximo a expirar, **When** la app necesita llamar a una API protegida, **Then** intenta renovar el token de forma silenciosa antes de ejecutar la solicitud.
-2. **Given** que la renovación silenciosa falla, **When** la app detecta esta condición, **Then** solicita reautenticación interactiva y reintenta la operación pendiente tras el éxito.
-3. **Given** un usuario que cierra sesión explícitamente, **When** confirma la acción, **Then** la app elimina el token almacenado y cualquier caché de sesión local relacionada con su identidad.
-4. **Given** el almacenamiento seguro del dispositivo, **When** se guarda el token, **Then** se utiliza el mecanismo de almacenamiento seguro nativo de la plataforma (no texto plano ni preferencias no cifradas).
+1. **Given** un access token próximo a expirar, **When** la app necesita llamar a una API protegida, **Then** intenta una adquisición silenciosa de token mediante MSAL antes de ejecutar la solicitud.
+2. **Given** que la adquisición silenciosa falla, **When** la app detecta esta condición, **Then** solicita reautenticación interactiva mediante MSAL y reintenta la operación pendiente tras el éxito.
+3. **Given** un usuario que cierra sesión explícitamente, **When** confirma la acción, **Then** la app invoca el `RemoveAccount` (o equivalente) de MSAL para limpiar la cuenta cacheada, junto con cualquier caché de sesión local relacionada con su identidad.
+4. **Given** el ciclo de vida de tokens, **When** la app necesita adquirir, renovar o invalidar un token, **Then** toda esta gestión se delega exclusivamente a MSAL; la app no implementa lógica propia de almacenamiento, parsing o renovación manual de refresh tokens.
+5. **Given** el almacenamiento seguro del dispositivo, **When** MSAL persiste su caché de cuenta/token, **Then** se utiliza el mecanismo de almacenamiento seguro nativo de la plataforma provisto por MSAL; la app no guarda copias adicionales de tokens, refresh tokens ni credenciales en otro almacenamiento propio (incluyendo `SecureStorage` u otro).
 
 ---
 
@@ -87,18 +97,20 @@ Como usuario autenticado, quiero ver y actualizar mi nombre visible para que mis
 
 ### User Story 4 - Listas personales (Priority: P1)
 
-Como usuario autenticado, quiero crear, ver, editar y eliminar mis listas de compra personales desde el móvil para gestionar mis compras del día a día.
+Como usuario autenticado, quiero crear, ver, editar y eliminar mis listas de compra personales desde el móvil para gestionar mis compras del día a día, con la certeza de que nadie más puede acceder a ellas.
 
 **Why this priority**: Es el núcleo irrenunciable del producto (PP3) y debe estar disponible desde el primer cliente.
 
-**Independent Test**: Se puede validar creando una lista personal, agregando un ítem, marcándolo como comprado y eliminando la lista, verificando persistencia contra `ShoppingList.Api`.
+**Independent Test**: Se puede validar creando una lista personal, agregando un ítem, marcándolo como comprado y eliminando la lista, verificando persistencia contra `ShoppingList.Api`. Adicionalmente, se valida que un segundo usuario autenticado no puede ver ni modificar la lista del primero.
 
 **Acceptance Scenarios**:
 
-1. **Given** un usuario autenticado, **When** crea una lista personal con nombre válido, **Then** la lista aparece en su listado principal.
+1. **Given** un usuario autenticado, **When** crea una lista personal con nombre válido, **Then** la lista se crea con `OwnerId` igual al `UserId` interno derivado del usuario autenticado (nunca de un valor enviado por el cliente) y aparece en su listado principal.
 2. **Given** una lista personal existente, **When** el usuario la edita (nombre/descripción), **Then** los cambios se reflejan en la app y en el backend.
 3. **Given** una lista personal existente, **When** el usuario la elimina, **Then** la lista desaparece del listado y de sus ítems asociados.
 4. **Given** un error de red o backend al operar sobre una lista, **When** la operación falla, **Then** la app muestra un estado de error claro sin perder datos ya ingresados en el formulario.
+5. **Given** una lista personal propiedad de otro usuario, **When** un usuario autenticado distinto intenta consultarla, editarla o eliminarla (por ejemplo, mediante un identificador conocido), **Then** el backend rechaza la operación con error de autorización y la app no expone ningún dato de esa lista.
+6. **Given** listas personales creadas antes de esta spec con `OwnerId` ya asignado, **When** se despliega la nueva validación de autorización, **Then** dichas listas siguen siendo accesibles normalmente por su propietario original sin requerir migración de datos adicional.
 
 ---
 
@@ -116,6 +128,25 @@ Como usuario autenticado, quiero agregar, editar, marcar como comprado y elimina
 2. **Given** un ítem existente, **When** el usuario lo marca como comprado, **Then** el estado visual cambia y el progreso de la lista aumenta.
 3. **Given** un ítem existente, **When** el usuario lo elimina, **Then** desaparece de la lista y el progreso se recalcula.
 4. **Given** un intento de agregar un ítem con `ProductId` duplicado en la misma lista, **When** se envía la solicitud, **Then** la app muestra el error de negocio devuelto por el backend sin duplicar el ítem localmente.
+
+---
+
+### User Story 5b - Gestión mínima de grupos (Priority: P2)
+
+Como usuario autenticado, quiero listar mis grupos, crear un grupo nuevo, ver sus miembros y gestionar membresías según mi rol, para poder preparar listas compartidas sin depender de Swagger.
+
+**Why this priority**: Es prerequisito funcional directo de las listas compartidas (User Story 6); sin un mínimo de gestión de grupos en el cliente, la colaboración por grupo no es utilizable de forma autónoma desde la app.
+
+**Independent Test**: Se puede validar creando un grupo desde la app, verificando que el creador aparece como Owner, añadiendo un segundo miembro y comprobando que aparece en la lista de miembros con el rol asignado.
+
+**Acceptance Scenarios**:
+
+1. **Given** un usuario autenticado, **When** consulta la sección de grupos, **Then** ve el listado de grupos donde tiene membresía activa, con su rol (Owner/Admin/Member) en cada uno.
+2. **Given** un usuario autenticado, **When** crea un grupo con nombre válido, **Then** el grupo se crea y el usuario queda registrado automáticamente como Owner.
+3. **Given** un grupo existente, **When** el usuario consulta sus miembros, **Then** la app muestra la lista de miembros junto con el rol de cada uno.
+4. **Given** un usuario con rol Owner o Admin en un grupo, **When** añade un nuevo miembro respetando las reglas de asignación de rol de Spec 003 (Admin solo puede asignar Member; Owner puede asignar Admin o Member), **Then** el miembro queda registrado y visible en la lista de miembros.
+5. **Given** un usuario con rol Owner o Admin, **When** elimina a un miembro conforme a las reglas de autorización de Spec 003, **Then** el miembro deja de aparecer en la lista de miembros del grupo.
+6. **Given** un usuario con rol Member, **When** intenta añadir o eliminar miembros, **Then** la app no ofrece esa acción o el backend la rechaza con error de autorización.
 
 ---
 
@@ -152,11 +183,13 @@ Como miembro de un grupo, quiero ver los balances de gasto y la propuesta de liq
 
 ---
 
-### User Story 8 - Catálogo de productos, mercados e historial de precios (Priority: P3)
+### User Story 8 - Consulta de catálogo de productos, mercados e historial de precios (solo lectura) (Priority: P3)
 
 Como usuario que planifica compras, quiero consultar el catálogo de productos, los mercados disponibles y el historial de precios para decidir mejor dónde y qué comprar.
 
 **Why this priority**: Aporta valor analítico adicional ya soportado por el backend (Spec 004), pero no es bloqueante para el núcleo de listas y colaboración; puede entregarse en una fase posterior del MVP.
+
+**Alcance explícito**: Esta historia es exclusivamente de **solo lectura** sobre `ProductCatalog.Api`. La creación y edición de productos, mercados y registro de precios desde el cliente Android queda fuera de alcance de MVP-4 (ver sección "Alcance").
 
 **Independent Test**: Se puede validar consultando el catálogo de productos, filtrando por mercado y revisando el historial de precios de un producto concreto desde la app.
 
@@ -217,10 +250,10 @@ Como responsable técnico del proyecto, quiero poder configurar las URLs base de
 
 #### Cliente Android / .NET MAUI
 
-- **FR-001**: La app DEBE permitir iniciar sesión mediante Microsoft Entra ID usando un flujo interactivo estándar (OIDC/OAuth2 con PKCE) apropiado para aplicaciones móviles públicas.
-- **FR-002**: La app DEBE almacenar el access token y el refresh token (o equivalente) utilizando el mecanismo de almacenamiento seguro nativo de la plataforma Android.
-- **FR-003**: La app DEBE intentar renovar el access token de forma silenciosa antes de solicitar reautenticación interactiva.
-- **FR-004**: La app DEBE permitir cerrar sesión explícitamente, eliminando el token almacenado y cualquier dato de sesión en memoria/caché local asociado al usuario.
+- **FR-001**: La app DEBE permitir iniciar sesión mediante Microsoft Entra ID usando MSAL con un flujo interactivo estándar (OIDC/OAuth2 con PKCE) apropiado para aplicaciones móviles públicas.
+- **FR-002**: La app DEBE delegar en MSAL el almacenamiento del access token y del refresh token (o equivalente), usando el caché cifrado nativo que MSAL gestiona sobre el mecanismo de almacenamiento seguro de la plataforma Android; la app no implementa un almacenamiento propio adicional para estos datos.
+- **FR-003**: La app DEBE intentar renovar el access token mediante adquisición silenciosa de MSAL antes de solicitar reautenticación interactiva.
+- **FR-004**: La app DEBE permitir cerrar sesión explícitamente, invocando la eliminación de cuenta de MSAL y limpiando cualquier dato de sesión en memoria/caché local adicional asociado al usuario.
 - **FR-005**: La app DEBE permitir consultar y actualizar el perfil propio (nombre visible) contra `Users.Api`.
 - **FR-006**: La app DEBE permitir crear, consultar, editar y eliminar listas personales contra `ShoppingList.Api`.
 - **FR-007**: La app DEBE permitir agregar, editar, marcar como comprado y eliminar ítems dentro de una lista contra `ShoppingList.Api`.
@@ -232,19 +265,24 @@ Como responsable técnico del proyecto, quiero poder configurar las URLs base de
 - **FR-013**: La app DEBE comunicar explícitamente, para cada operación relevante contra el backend, al menos los estados: cargando, éxito, error y sin conexión.
 - **FR-014**: La app DEBE permitir configurar las URLs base de `Users.Api`, `ShoppingList.Api` y `ProductCatalog.Api` por entorno (desarrollo, staging, producción) sin requerir cambios en el código de las pantallas.
 - **FR-015**: La app NO DEBE implementar sincronización offline bidireccional; las operaciones de escritura requieren conectividad activa con el backend correspondiente.
-- **FR-016**: La arquitectura del cliente DEBE estructurarse de forma que la lógica de autenticación, sesión y acceso a APIs sea reutilizable por futuros clientes (Web, iOS) sin duplicar la lógica de identidad.
+- **FR-016**: La arquitectura del cliente DEBE estructurarse en capas que separen (a) la identidad canónica del usuario `(tid, oid)` y el `UserId` interno, (b) los contratos de acceso a `Users.Api`, `ShoppingList.Api` y `ProductCatalog.Api`, y (c) el mecanismo concreto de autenticación por plataforma. Los futuros clientes (Web, iOS) DEBEN poder reutilizar (a) y (b) sin cambios, implementando un adaptador de autenticación propio de su plataforma para (c) detrás de una abstracción común, en lugar de reutilizar literalmente la implementación de autenticación móvil basada en MSAL para Android.
+- **FR-016a**: La app DEBE usar MSAL (Microsoft Authentication Library) como único mecanismo de adquisición, caché, renovación silenciosa e invalidación de tokens; la app NO DEBE implementar almacenamiento, parsing ni renovación manual de refresh tokens fuera de MSAL.
+- **FR-016b**: La app NO DEBE persistir tokens, refresh tokens ni credenciales en `SecureStorage` u otro almacenamiento propio adicional al caché cifrado gestionado internamente por MSAL.
+- **FR-016c**: La app DEBE ofrecer gestión mínima de grupos: listar grupos propios con el rol del usuario en cada uno, crear grupo, ver miembros de un grupo, y añadir/eliminar miembros respetando la matriz de autorización Owner/Admin/Member ya definida en Spec 003.
+- **FR-016d**: La app DEBE limitarse a operaciones de lectura sobre `ProductCatalog.Api` (catálogo de productos, mercados e historial de precios); la creación y edición de productos, mercados y precios desde el cliente queda fuera de alcance de MVP-4.
 
 #### Identidad y Backend (cumplimiento de TP11)
 
 - **FR-017**: El sistema DEBE autenticar a los usuarios del cliente Android mediante Microsoft Entra ID como proveedor OIDC externo, conforme a TP11.
 - **FR-018**: El bounded context `Users` DEBE resolver la identidad externa canónica `(tid, oid)` de cada usuario y mantenerla como clave de correlación hacia el `UserId` interno de MiKompri.
 - **FR-019**: El sistema NO DEBE utilizar el claim `sub` como identificador global persistente de correlación entre aplicaciones cliente a partir de esta spec.
-- **FR-020**: El backend DEBE ejecutar una migración de datos que, para los perfiles de `Users` existentes creados antes de esta spec (correlacionados por `sub`), resuelva y persista `(tid, oid)` en el primer login posterior al despliegue, sin crear perfiles duplicados y preservando el `UserId` interno existente.
+- **FR-020**: El backend DEBE ejecutar una migración de datos *lazy* (bajo demanda): en el primer login posterior al despliegue, `Users` busca el perfil primero por `(tid, oid)`; si no existe, busca por `sub` como mecanismo transitorio y, de encontrar coincidencia, actualiza ese registro agregando `(tid, oid)` sin crear un perfil nuevo ni modificar el `UserId` interno existente. Si tampoco existe coincidencia por `sub`, se crea un perfil nuevo correlacionado directamente por `(tid, oid)`.
 - **FR-021**: Mientras un perfil no tenga `(tid, oid)` resuelto, el sistema DEBE seguir permitiendo la operación normal del backend existente (Users, ShoppingList, ProductCatalog) usando el `UserId` interno ya asignado, sin interrumpir funcionalidad ya operativa.
 - **FR-022**: Las APIs de MiKompri (`Users.Api`, `ShoppingList.Api`, `ProductCatalog.Api`) DEBEN tratarse como un único recurso lógico OAuth con una audience de backend común para el cliente Android, conforme a TP11.
 - **FR-023**: Cada API DEBE continuar validando issuer, audience, firma, expiración y scopes aplicables de los tokens emitidos para el cliente Android, sin relajar controles existentes.
 - **FR-024**: El registro de aplicación cliente en Microsoft Entra ID para Android DEBE ser independiente del de otros clientes futuros (Web, iOS), pero DEBE representar siempre al mismo usuario de MiKompri mediante `(tid, oid)`.
 - **FR-025**: La autorización de negocio (Owner/Admin/Member, pertenencia a grupos, propiedad de listas) DEBE seguir siendo responsabilidad exclusiva de los bounded contexts correspondientes; el cliente Android no DEBE implementar lógica de autorización propia más allá de reflejar los estados/errores devueltos por el backend.
+- **FR-026**: Para operaciones sobre listas personales, el backend (`ShoppingList`) DEBE derivar el `OwnerId` efectivo exclusivamente del `UserId` interno resuelto a partir del token autenticado; el backend NO DEBE aceptar ni confiar en un `OwnerId` u otro identificador de propietario enviado explícitamente por el cliente.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -288,7 +326,9 @@ Como responsable técnico del proyecto, quiero poder configurar las URLs base de
 - Cliente Android con .NET MAUI consumiendo `Users.Api`, `ShoppingList.Api` y `ProductCatalog.Api`.
 - Inicio de sesión con Microsoft Entra ID y gestión segura de sesión/token en el dispositivo.
 - Migración de correlación de identidad en `Users` de `sub` a `(tid, oid)`, manteniendo el `UserId` interno existente.
-- Perfil de usuario, listas personales, listas compartidas, ítems, gastos compartidos, balances y liquidación, catálogo de productos, mercados e historial de precios, todo desde la app.
+- Perfil de usuario, listas personales (con autorización estricta por `OwnerId` derivado del usuario autenticado), listas compartidas, ítems, gastos compartidos, balances y liquidación, todo desde la app.
+- Gestión mínima de grupos desde el cliente: listar grupos propios con rol, crear grupo, ver miembros, añadir/eliminar miembros según rol.
+- Consulta de solo lectura del catálogo de productos, mercados e historial de precios (sin creación/edición desde el cliente).
 - Navegación principal y manejo explícito de estados de carga, error y sin conexión.
 - Configuración de URLs de backend por entorno.
 - Arquitectura de identidad y acceso a API preparada para ser reutilizada por futuros clientes Web e iOS.
