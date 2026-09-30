@@ -46,7 +46,9 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest.CrossService
             ownerUsersClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Test", OwnerSub);
 
-            var syncOwnerResp = await ownerUsersClient.PostAsync("/api/v1/users/me/sync", null);
+            var syncOwnerResp = await ownerUsersClient.PostAsync(
+                "/api/v1/users/me/sync",
+                new System.Net.Http.StringContent("{}", System.Text.Encoding.UTF8, "application/json"));
             syncOwnerResp.EnsureSuccessStatusCode();
 
             // ── 2. Crear grupo (el owner queda automáticamente como miembro Owner) ──
@@ -60,7 +62,9 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest.CrossService
             var memberUsersClient = _usersFactory.CreateClient();
             memberUsersClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Test", MemberSub);
-            var syncMemberResp = await memberUsersClient.PostAsync("/api/v1/users/me/sync", null);
+            var syncMemberResp = await memberUsersClient.PostAsync(
+                "/api/v1/users/me/sync",
+                new System.Net.Http.StringContent("{}", System.Text.Encoding.UTF8, "application/json"));
             syncMemberResp.EnsureSuccessStatusCode();
             var memberProfile = await syncMemberResp.Content.ReadFromJsonAsync<UserProfileDto>();
 

@@ -53,13 +53,26 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest.CrossService
             builder.ConfigureServices(services =>
             {
                 // Reemplazar DbContext por InMemory
+                // Remove any existing UsersDbContext / DbContextOptions registrations
                 var toRemove = services
-                    .Where(d => d.ServiceType == typeof(DbContextOptions<UsersDbContext>))
+                    .Where(d => d.ServiceType == typeof(DbContextOptions<UsersDbContext>)
+                                || d.ServiceType == typeof(UsersDbContext)
+                                || d.ImplementationType == typeof(UsersDbContext))
                     .ToList();
                 foreach (var d in toRemove) services.Remove(d);
 
+                // Re-register UsersDbContext using InMemory provider for tests.
+                // Use a dedicated internal service provider for the InMemory EF services
+                // to avoid registering two global EF Core providers in the same IServiceCollection.
+                var efServices = new ServiceCollection()
+                    .AddEntityFrameworkInMemoryDatabase()
+                    .BuildServiceProvider();
+
                 services.AddDbContext<UsersDbContext>(opts =>
-                    opts.UseInMemoryDatabase(_dbName));
+                {
+                    opts.UseInMemoryDatabase(_dbName);
+                    opts.UseInternalServiceProvider(efServices);
+                });
 
                 // Reemplazar autenticación con el mismo esquema "Test {sub}"
                 // para que los tokens reenviados por ShoppingList sean aceptados.
