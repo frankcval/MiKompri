@@ -55,5 +55,11 @@
     <None Include="specs\004-product-catalog\research.md" />
     <None Include="specs\004-product-catalog\tasks.md" />
     <None Include="specs\005-shared-lists-settlement\tasks.md" />
+    <None Include="specs\006-android-maui-client\checklists\requirements.md" />
+    <None Include="specs\006-android-maui-client\contracts\api-contracts.md" />
+    <None Include="specs\006-android-maui-client\data-model.md" />
+    <None Include="specs\006-android-maui-client\quickstart.md" />
+    <None Include="specs\006-android-maui-client\research.md" />
+    <None Include="specs\006-android-maui-client\spec.md" />
   </ItemGroup>
 </Project>

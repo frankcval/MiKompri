@@ -18,12 +18,15 @@ Esta guía describe cómo validar end-to-end el cumplimiento de esta feature, un
 5. Verificar que **no** se creó un segundo `User` (mismo `UserId` interno que en el paso 3).
 6. **Resultado esperado**: SC-002 de la spec — ningún usuario existente pierde acceso ni se duplica.
 
-## Escenario 2 — Migración de usuario legacy (`sub` → `(tid, oid)`)
+## Escenario 2 — Migración de usuario legacy (`sub` → `(tid, oid)`), migración lazy
 
 1. Provisionar manualmente (o mediante datos de prueba) un `User` existente correlacionado solo por `ExternalUserId` (`sub`), simulando un perfil pre-migración.
 2. Iniciar sesión en el cliente con la cuenta Entra ID correspondiente a ese `sub`.
 3. Verificar que el backend asocia `tid`/`oid` al `UserId` existente (mismo `Id`), sin crear un perfil nuevo.
-4. **Resultado esperado**: FR-020 cumplido — convivencia sin duplicación.
+4. Provisionar un segundo `User` legacy que **no** inicia sesión durante la ventana de prueba.
+5. Verificar que este segundo perfil permanece con `TenantId`/`ObjectId` en `null` y `ExternalUserId` no nulo, sin que esto se trate como un error ni bloquee ninguna operación existente (migración lazy).
+6. Verificar que la Fase 2 (cambio de correlación canónica a `(tid, oid)` y adopción de audience común) solo se activa en el entorno de prueba tras confirmar manualmente el cumplimiento de un criterio de cobertura de perfiles activos, o tras ejecutar un backfill simulado para perfiles pendientes.
+7. **Resultado esperado**: FR-020 cumplido — convivencia sin duplicación, sin exigir migración de perfiles inactivos, y con un criterio explícito de entrada a Fase 2.
 
 ## Escenario 3 — Endurecimiento de `OwnerId` en listas personales
 
@@ -42,12 +45,14 @@ Esta guía describe cómo validar end-to-end el cumplimiento de esta feature, un
 5. Intentar desde la cuenta de Usuario B (rol `Member`) añadir un nuevo miembro.
 6. **Resultado esperado**: la operación es rechazada por el backend según la matriz de roles de Spec 003 (FR-016c); la UI del cliente refleja el rol correspondiente.
 
-## Escenario 5 — Catálogo de productos (solo lectura)
+## Escenario 5 — Catálogo de productos (solo lectura, con autenticación real)
 
-1. Autenticarse en el cliente.
-2. Navegar a la sección de Catálogo.
-3. Consultar productos activos, mercados activos, e historial de precios de un producto.
-4. Verificar que no existe ninguna acción de creación/edición disponible en la UI para catálogo, mercados o precios (FR-016d).
+1. Sin autenticarse (sin token), intentar consultar directamente un endpoint de `ProductCatalog.Api` (por ejemplo, productos activos).
+2. **Resultado esperado**: la API responde `401 Unauthorized` (FR-023a).
+3. Autenticarse en el cliente y repetir la consulta con un token válido.
+4. **Resultado esperado**: la API responde `200 OK` con el catálogo esperado.
+5. Navegar a la sección de Catálogo en el cliente y consultar productos activos, mercados activos, e historial de precios de un producto.
+6. Verificar que no existe ninguna acción de creación/edición disponible en la UI para catálogo, mercados o precios (FR-016d).
 
 ## Escenario 6 — Estados de UI (loading/error/offline)
 

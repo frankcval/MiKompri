@@ -54,15 +54,19 @@ Sin cambios de contrato — ya están protegidas por `[Authorize]` y por las reg
 
 ## `ProductCatalog.Api`
 
-Contratos de consulta ya existentes, consumidos en modo **solo lectura** (FR-016d, FR-011):
+Contratos de consulta ya existentes, consumidos en modo **solo lectura** (FR-016d, FR-011). **Cambio de contrato para esta feature**: estos endpoints pasan de no requerir autenticación a exigir `Authorization: Bearer <token>` válido (FR-023a), alineando `ProductCatalog.Api` con `Users.Api`/`ShoppingList.Api`.
 
-| Método | Ruta (indicativa, ver contrato real ya publicado en Swagger) | Notas |
-|---|---|---|
-| `GET` | `/api/v1/products` (activos) | Sin cambios de contrato. |
-| `GET` | `/api/v1/markets` (activos) | Sin cambios de contrato. |
-| `GET` | `/api/v1/products/{id}/price-history` | Sin cambios de contrato. |
+| Método | Ruta (indicativa, ver contrato real ya publicado en Swagger) | Contrato actual | Contrato ajustado |
+|---|---|---|---|
+| `GET` | `/api/v1/products` (activos) | Sin autenticación. | Requiere `[Authorize]`; `401` sin token válido. |
+| `GET` | `/api/v1/markets` (activos) | Sin autenticación. | Requiere `[Authorize]`; `401` sin token válido. |
+| `GET` | `/api/v1/products/{id}/price-history` | Sin autenticación. | Requiere `[Authorize]`; `401` sin token válido. |
 
 No se documentan ni se implementan endpoints de escritura para este bounded context en este MVP.
+
+### Autenticación en `ProductCatalog.Api` (nuevo)
+
+`ProductCatalog.Api` debe incorporar `AddAuthentication().AddJwtBearer(...)` con la misma `Authority` que `Users.Api`/`ShoppingList.Api`, soporte de `ValidAudiences` para la transición de audience común (TP11), y `UseAuthentication()` antes de `UseAuthorization()` en el pipeline. Ver `plan.md` § "ProductCatalog (solo lectura + autenticación real)" para el detalle de implementación y la estrategia de tests (`401` sin token, `200` con token válido).
 
 ## Audience común (transición TP11)
 

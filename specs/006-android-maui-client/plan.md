@@ -1,10 +1,10 @@
 # Implementation Plan: MVP-4 Cliente Android con .NET MAUI
 
-**Branch**: `006-android-maui-client` | **Date**: 2026-10-03 | **Spec**: [spec.md](./spec.md)
+**Branch**: `006-android-maui-client` | **Date**: 2026-10-04 | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `specs/006-android-maui-client/spec.md`
 
-**Note**: Este plan respeta estrictamente las decisiones ya cerradas en `spec.md` (sesiones de clarificación 2026-09-30, 2026-10-01 y 2026-10-02) y en la Constitución v1.1.0 (TP1-TP11). No reabre ninguna decisión ya aclarada, no amplía el alcance de MVP-4 y no incluye código de implementación.
+**Note**: Este plan respeta estrictamente las decisiones ya cerradas en `spec.md` (sesiones de clarificación 2026-09-30, 2026-10-01, 2026-10-02 y 2026-10-03) y en la Constitución v1.1.0 (TP1-TP11). No reabre ninguna decisión ya aclarada, no amplía el alcance de MVP-4 y no incluye código de implementación.
 
 ## Summary
 
@@ -142,26 +142,46 @@ Esta sección traduce las decisiones ya cerradas en `spec.md` (FR-017 a FR-027) 
 - `Users.Api`, `ShoppingList.Api` y `ProductCatalog.Api` validan JWT vía `JwtBearerDefaults` con `Authority`/`Audience` configurados por `appsettings`; `Users.Api` ya soporta `ValidAudiences` múltiples (mecanismo reutilizable para la transición de audience).
 - `PurchaseList.OwnerId` es un `Guid` de dominio ya presente; el endpoint `POST /api/v1/PurchaseLists` actualmente recibe `OwnerId` en el `CreatePurchaseListRequest` (payload del cliente) — este es el punto concreto a endurecer para FR-026/FR-027.
 
-### Fase 1 — Convivencia (sin cambiar correlación canónica)
+### Fase 1 — Convivencia (migración lazy, sin cambiar correlación canónica)
 
-1. Extender `User` (Domain) con campos opcionales `TenantId` (`tid`) y `ObjectId` (`oid`), nulos por defecto, sin alterar `ExternalUserId`.
+1. Extender `User` (Domain) con campos opcionales `TenantId` (`tid`) y `ObjectId` (`oid`), nulos por defecto. `ExternalUserId` pasa a ser **nullable** y se trata como dato legacy desde este momento (ver sección "`ExternalUserId` legacy y migración EF Core"); no se sustituye nunca por cadena vacía.
 2. En el punto de resolución de identidad de `Users.Api` (ejecutado en cualquier request autenticado), al recibir un token con claims `tid`/`oid`:
    - Si el usuario ya existe (correlacionado por `sub`) y no tiene `tid`/`oid` persistidos, persistirlos contra ese mismo `UserId` (actualización, no creación).
-   - Si el usuario no existe por `sub` ni por `(tid, oid)`, crear un perfil nuevo correlacionado directamente por `(tid, oid)` (caso de usuario nuevo, no legacy).
+   - Si el usuario no existe por `sub` ni por `(tid, oid)`, crear un perfil nuevo correlacionado directamente por `(tid, oid)`, **sin requerir `ExternalUserId`** (caso de usuario nuevo, no legacy; FR-020, FR-023a no aplica aquí).
    - Nunca crear un `UserId` nuevo si ya existe correlación por `sub` o por `(tid, oid)` (FR-020).
-3. La audience/issuer de validación de tokens permanece igual a la configuración actual durante la Fase 1 (sin adoptar todavía la audience común).
-4. Todas las operaciones de negocio (Users, ShoppingList, ProductCatalog) continúan usando el `UserId` interno ya asignado (FR-021); `sub` sigue siendo legible pero no se usa como clave para nuevas resoluciones.
+3. La resolución de `(tid, oid)` es estrictamente **lazy**: solo ocurre cuando el usuario efectivamente autentica durante la Fase 1. Perfiles que nunca autentican permanecen legítimamente sin `tid`/`oid` resuelto; esto no bloquea ni invalida el avance de la migración (FR-020, SC-002 corregido).
+4. La audience/issuer de validación de tokens permanece igual a la configuración actual durante la Fase 1 (sin adoptar todavía la audience común).
+5. Todas las operaciones de negocio (Users, ShoppingList, ProductCatalog) continúan usando el `UserId` interno ya asignado (FR-021); `sub` sigue siendo legible pero no se usa como clave para nuevas resoluciones.
+
+### Criterio explícito de entrada a Fase 2
+
+La Fase 2 **no** se inicia automáticamente ni por fecha fija. Se requiere cumplir explícitamente al menos uno de estos criterios (FR-020):
+
+- **(a) Umbral de cobertura operativo**: un porcentaje mínimo (a definir operativamente, p. ej. 95%) de perfiles **activos** (con autenticación dentro de una ventana reciente definida, p. ej. últimos 90 días) ya correlacionados por `(tid, oid)`, verificable mediante una consulta/reporte sobre `Users` (no automatizado por código de aplicación en este MVP, sino un reporte operativo/SQL).
+- **(b) Backfill administrativo ejecutado**: un job o script (fuera del alcance de código de producción de este MVP, puede ser un script operativo puntual) que resuelve `(tid, oid)` para perfiles pendientes que no han autenticado recientemente, por ejemplo consultando Microsoft Graph por `UserPrincipalName`/`Email`, dejando constancia de los perfiles que no pudieron resolverse (y que permanecerán legacy indefinidamente si no autentican).
+
+Solo al cumplirse (a) o (b) se ejecuta el corte:
 
 ### Fase 2 — Corte (adopción de correlación canónica)
 
-1. Una vez verificado que los perfiles activos relevantes tienen `tid`/`oid` resueltos (criterio operativo, verificable vía consulta/reporte, no automatizado por esta spec), cambiar la resolución de identidad en `Users.Api` para que la búsqueda primaria sea por `(tid, oid)`, usando `sub` solo como fallback de solo lectura para perfiles aún no migrados.
+1. Cambiar la resolución de identidad en `Users.Api` para que la búsqueda primaria sea por `(tid, oid)`, usando `sub` solo como fallback de solo lectura para perfiles aún no migrados (si alguno persiste tras el backfill).
 2. Adoptar la audience de backend común (TP11) como mecanismo principal de validación en `Users.Api`, `ShoppingList.Api` y `ProductCatalog.Api`, reutilizando el mecanismo `ValidAudiences` ya existente en `Users.Api` para una transición sin downtime (aceptar temporalmente audience antigua + audience común, luego retirar la antigua).
-3. Marcar `ExternalUserId`/`sub` como dato legacy de solo lectura en el dominio (sin eliminarlo, para trazabilidad histórica).
+3. Marcar `ExternalUserId`/`sub` como dato legacy de solo lectura en el dominio (sin eliminarlo, para trazabilidad histórica); ya es nullable desde la Fase 1.
 
 ### Riesgo y mitigación
 
-- **Riesgo**: perfiles que nunca vuelven a autenticarse quedan sin `tid`/`oid` resuelto indefinidamente. **Mitigación**: fuera de alcance de este MVP definir un job de backfill masivo; se documenta como seguimiento futuro (no bloquea Fase 2 para usuarios activos).
+- **Riesgo**: perfiles que nunca vuelven a autenticarse quedan sin `tid`/`oid` resuelto indefinidamente. **Mitigación**: aceptado explícitamente como comportamiento esperado de la migración lazy (no es un defecto); el criterio de entrada a Fase 2 (cobertura de activos o backfill) permite avanzar sin esperar al 100% de perfiles históricos.
 - **Riesgo**: cambio de audience rompe clientes ya emitidos. **Mitigación**: uso de `ValidAudiences` para aceptar ambas audiences durante la transición, igual que el patrón ya usado entre `ShoppingList` y `Users`.
+
+### `ExternalUserId` legacy y migración EF Core
+
+1. **Dominio**: `ExternalUserId` cambia de `string` (posiblemente ya nullable u obligatorio según el estado actual) a explícitamente **`string?` (nullable)**; usuarios nuevos creados directamente por `(tid, oid)` NO reciben un valor de `ExternalUserId` (permanece `null`), nunca se sustituye por cadena vacía (`""`) como valor por defecto.
+2. **Persistencia (EF Core)**: se añade una migración que:
+   - Modifica la columna `ExternalUserId` a nullable (si no lo era).
+   - Añade las columnas `TenantId` y `ObjectId` (nullable).
+   - Reemplaza cualquier índice único existente sobre `ExternalUserId` (si aplica, por combinación con `IdentityProvider`) por un índice único **filtrado** (`HasFilter` en EF Core / `WHERE` parcial en PostgreSQL) que excluya valores `NULL`, de modo que múltiples perfiles legacy sin `ExternalUserId` (`NULL`) no generen conflicto de unicidad.
+   - Añade un índice único **filtrado** sobre `(TenantId, ObjectId)` que excluya filas donde alguno de los dos sea `NULL`, garantizando que no coexistan dos perfiles con la misma correlación canónica no nula.
+3. **Compatibilidad temporal**: perfiles legacy (`ExternalUserId` no nulo, `TenantId`/`ObjectId` aún nulos) siguen siendo válidos y operables durante toda la Fase 1 y hasta que autentiquen o se resuelvan por backfill; no se fuerza ninguna migración de datos síncrona al desplegar la migración EF Core (la migración EF Core solo cambia el esquema, no resuelve identidades).
 
 ---
 
@@ -187,9 +207,17 @@ No se implementa cambio de rol ni administración avanzada de grupo (fuera de al
 
 ---
 
-## ProductCatalog (solo lectura)
+## ProductCatalog (solo lectura + autenticación real)
 
 El cliente consume únicamente los endpoints de consulta ya existentes en `ProductCatalog.Api` (productos activos, mercados activos, historial de precios). No se añade ningún endpoint de creación/edición al backend ni pantallas de escritura al cliente (FR-016d, FR-011).
+
+Actualmente `MiKompri.ProductCatalog.Api/Program.cs` **no** configura `AddAuthentication()`/`AddJwtBearer(...)` ni `UseAuthentication()`, a diferencia de `Users.Api`/`ShoppingList.Api`. Esto se corrige como parte de este plan (FR-023a):
+
+1. Añadir `builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(...)` en `MiKompri.ProductCatalog.Api/Program.cs`, con la misma `Authority` que `Users.Api`/`ShoppingList.Api` y soporte de `ValidAudiences` (lista separada por comas), reutilizando el mismo patrón de configuración (`appsettings`/variables de entorno) ya usado en `Users.Api`.
+2. Añadir `app.UseAuthentication()` **antes** de `app.UseAuthorization()` en el pipeline (hoy solo existe `UseAuthorization()` sin `UseAuthentication()` precedente, lo cual es inconsistente con JwtBearer).
+3. Proteger con `[Authorize]` los controladores/endpoints de consulta de catálogo, mercados e historial de precios consumidos por el cliente Android.
+4. Durante la Fase 1/Fase 2 de migración de identidad (TP11), `ProductCatalog.Api` participa del mismo mecanismo `ValidAudiences` que `Users.Api`/`ShoppingList.Api`, aceptando temporalmente la audience histórica (si existiera) y la audience de backend común.
+5. Tests de integración (`MiKompri.ProductCatalog.Api.Tests`, a crear si no existe ya suite de integración): caso `401 Unauthorized` para solicitudes sin token sobre los endpoints protegidos, y caso de éxito (`200 OK`) con un token válido simulado (patrón ya usado en `MiKompri.ShoppingList.Api.Tests`/`CustomWebApplicationFactory`).
 
 ---
 
@@ -208,7 +236,7 @@ El cliente consume únicamente los endpoints de consulta ya existentes en `Produ
 
 - **Dominio** (`MiKompri.Users.Domain.Tests`, `MiKompri.ShoppingList.Domain.Tests`): tests para la extensión de `User` (captura de `tid`/`oid` sin duplicar perfil, comportamiento de Fase 1/Fase 2) y para `PurchaseList` si se introduce alguna regla de dominio adicional ligada a `OwnerId` inmutable.
 - **Aplicación** (`MiKompri.Users.Application.Tests`, `MiKompri.ShoppingList.Application.Tests`): tests de los handlers de resolución de identidad (casos: usuario nuevo, usuario legacy por `sub`, usuario ya migrado por `(tid, oid)`) y de los comandos de listas personales (verificar que `OwnerId` se toma de `ICurrentUserService` y no del request).
-- **Integración de API** (`MiKompri.Users.Api.Tests`, `MiKompri.ShoppingList.Api.Tests`): tests end-to-end contra `CustomWebApplicationFactory` cubriendo: (a) rechazo 401 sin token en endpoints de listas personales, (b) rechazo de acceso cruzado entre `OwnerId` distinto al autenticado, (c) flujo de migración Fase 1 con token simulado que incluye `tid`/`oid`, (d) endpoints de grupos ya cubiertos si no existen, añadir cobertura mínima de listar/crear/ver miembros/añadir-eliminar.
+- **Integración de API** (`MiKompri.Users.Api.Tests`, `MiKompri.ShoppingList.Api.Tests`, `MiKompri.ProductCatalog.Api.Tests`): tests end-to-end contra `CustomWebApplicationFactory` cubriendo: (a) rechazo 401 sin token en endpoints de listas personales y en los endpoints de consulta de `ProductCatalog.Api` recién protegidos, (b) rechazo de acceso cruzado entre `OwnerId` distinto al autenticado, (c) flujo de migración Fase 1 con token simulado que incluye `tid`/`oid`, (d) endpoints de grupos ya cubiertos si no existen, añadir cobertura mínima de listar/crear/ver miembros/añadir-eliminar, (e) éxito (`200 OK`) con token válido simulado en los endpoints de `ProductCatalog.Api` protegidos.
 - Estos tests se ejecutan con los comandos ya definidos en `.github/copilot-instructions.md` (`dotnet test ... --configuration Release`) y se integran en el pipeline de cobertura existente (Coverlet/OpenCover) sin introducir un nuevo formato.
 
 ### Cliente (`MiKompri.Mobile.Tests`)

@@ -6,25 +6,34 @@ Este documento describe las entidades relevantes para esta feature: los ajustes 
 
 ### `User` (bounded context `Users`, `MiKompri.Users.Domain.Users.User`)
 
-Campos actuales (sin cambios):
+Campos actuales (con ajuste):
 - `Id: Guid` — `UserId` interno de MiKompri, identidad canónica estable.
 - `DisplayName: string`
 - `Email: string?`
 - `IdentityProvider: string` — hoy usado para el IdP (`"entra"`, etc.).
-- `ExternalUserId: string` — hoy almacena el claim `sub`. Pasa a tratarse como **dato legacy de solo lectura** tras completar la Fase 2 de migración (FR-021).
+- `ExternalUserId: string?` — pasa a ser **nullable** desde la Fase 1. Almacena el claim `sub` únicamente para perfiles legacy ya correlacionados por ese medio antes de esta spec. Se trata como **dato legacy de solo lectura** desde la Fase 1 en adelante (no solo tras la Fase 2): no se usa para nuevas correlaciones de usuarios nuevos, y nunca se sustituye por cadena vacía (`""`) cuando no aplica — el valor ausente siempre es `null`.
 
 Campos nuevos (Fase 1):
 - `TenantId: string?` (`tid`) — nullable hasta que se resuelva para el perfil.
 - `ObjectId: string?` (`oid`) — nullable hasta que se resuelva para el perfil.
 
 Reglas de validación / invariantes:
-- No pueden coexistir dos perfiles `User` con el mismo `(TenantId, ObjectId)` no nulo (invariante de unicidad de correlación canónica).
-- No pueden coexistre dos perfiles `User` con el mismo `ExternalUserId` no vacío para el mismo `IdentityProvider` (invariante ya implícita hoy).
+- No pueden coexistir dos perfiles `User` con el mismo `(TenantId, ObjectId)` no nulo (invariante de unicidad de correlación canónica, implementada como índice único filtrado en EF Core/PostgreSQL que excluye `NULL`).
+- No pueden coexistir dos perfiles `User` con el mismo `ExternalUserId` no nulo para el mismo `IdentityProvider` (invariante ya implícita hoy; el índice único correspondiente pasa a ser filtrado para excluir `NULL`, de modo que múltiples perfiles sin `ExternalUserId` no generen conflicto).
+- Un usuario nuevo creado directamente por `(tid, oid)` (sin correlación previa por `sub`) NO requiere `ExternalUserId`; dicho campo permanece `null` para ese perfil de forma permanente, salvo que en el futuro se asocie un login legacy adicional (fuera de alcance de este MVP).
 - Nunca se crea un `User` nuevo si ya existe una fila correlacionable por `(TenantId, ObjectId)` o, transitoriamente, por `ExternalUserId` (FR-020).
 
+Migración EF Core requerida (ver `plan.md` § "`ExternalUserId` legacy y migración EF Core"):
+1. Alterar columna `ExternalUserId` a nullable (si no lo era).
+2. Añadir columnas `TenantId`/`ObjectId` (nullable).
+3. Reemplazar el índice único existente sobre `ExternalUserId` (si aplica) por un índice único filtrado que excluya `NULL`.
+4. Añadir índice único filtrado sobre `(TenantId, ObjectId)` que excluya filas con cualquiera de los dos campos en `NULL`.
+5. La migración solo cambia esquema; no ejecuta backfill de datos (el backfill, si se decide, es un proceso operativo aparte, ver criterio de entrada a Fase 2 en `plan.md`).
+
 Transiciones de estado (conceptual, no una máquina de estados formal):
-- `Legacy (solo sub)` → `Convivencia (sub + tid/oid)` [Fase 1] → `Canónico (tid/oid, sub legacy)` [Fase 2].
-- `Nuevo (solo tid/oid)` — usuarios que se registran después de iniciada la Fase 1 no pasan por el estado `Legacy`.
+- `Legacy (solo sub)` → `Convivencia (sub + tid/oid, vía autenticación lazy)` [Fase 1, solo si el usuario autentica] → `Canónico (tid/oid, sub legacy)` [Fase 2, tras cumplir criterio de cobertura o backfill].
+- `Legacy nunca migrado (solo sub, sin tid/oid)` — estado terminal legítimo para perfiles que nunca vuelven a autenticar durante la Fase 1; no es un error y no bloquea la entrada a Fase 2 si se cumple el criterio de cobertura de perfiles activos.
+- `Nuevo (solo tid/oid, sin ExternalUserId)` — usuarios que se registran después de iniciada la Fase 1 no pasan por el estado `Legacy` y nunca reciben un valor de `ExternalUserId`.
 
 ### `PurchaseList` (bounded context `ShoppingList`, `MiKompri.ShoppingList.Domain.Entities.PurchaseList`)
 

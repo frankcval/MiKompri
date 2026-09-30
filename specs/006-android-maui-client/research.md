@@ -50,6 +50,12 @@ Este documento consolida las decisiones técnicas necesarias para pasar de `spec
 - **Rationale**: TP4 exige Docker para servicios desplegables; el cliente Android no es un servicio desplegable en contenedor, por lo que la obligación no aplica técnicamente a ese artefacto. Instrucción explícita del usuario de limitar Docker/CI al backend existente.
 - **Alternatives considered**: Forzar un contenedor de build para el cliente MAUI (por ejemplo, para estandarizar el entorno de compilación) — rechazado por complejidad desproporcionada frente al beneficio en este MVP; puede reconsiderarse en una spec futura si se requiere reproducibilidad estricta del entorno de build Android.
 
+## 9. Autenticación real en `ProductCatalog.Api`
+
+- **Decision**: Incorporar `AddAuthentication().AddJwtBearer(...)` en `MiKompri.ProductCatalog.Api/Program.cs`, con la misma `Authority` y soporte de `ValidAudiences` ya usado en `Users.Api`/`ShoppingList.Api`, más `UseAuthentication()` (hoy ausente) antes de `UseAuthorization()`, y `[Authorize]` en los endpoints de consulta consumidos por el cliente.
+- **Rationale**: Hoy `ProductCatalog.Api` no valida JWT en absoluto (confirmado en `Program.cs`), lo cual es inconsistente con TP11 y con el resto del backend; el cliente Android consumiría un endpoint desprotegido si no se corrige, contradiciendo FR-017/FR-022/FR-023.
+- **Alternatives considered**: Dejar `ProductCatalog.Api` sin autenticación por tratarse de datos "públicos" de solo lectura — rechazado porque TP11 exige que las tres APIs se traten como un único recurso lógico OAuth con controles de autenticación consistentes, y porque la spec (FR-023a) exige explícitamente esta protección.
+
 ## Resumen de incógnitas resueltas
 
 Todas las decisiones anteriores derivan directamente de requisitos ya cerrados en `spec.md`; no quedan `NEEDS CLARIFICATION` abiertos para este plan.
