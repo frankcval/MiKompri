@@ -21,6 +21,7 @@
   - Tested independently
   - Deployed independently
   - Demonstrated to users independently
+  For authentication/identity features, align with TP11 of the constitution: Microsoft Entra ID, canonical (tid, oid), internal UserId, and no global correlation by sub.
 -->
 
 ### User Story 1 - [Brief Title] (Priority: P1)
@@ -83,6 +84,8 @@
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
   Fill them out with the right functional requirements.
+  Keep tests and validation explicit when the feature touches domain, application, or API behavior.
+  Authentication and identity requirements must follow TP11 when applicable.
 -->
 
 ### Functional Requirements

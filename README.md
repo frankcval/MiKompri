@@ -5,7 +5,7 @@
 [![CI - MiKompri ProductCatalog](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml)
 [![CD - MiKompri ShoppingList API](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml)
 
-**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD).
+**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD). Actualmente, los MVP-0, MVP-1, MVP-2 y MVP-3 están completados; el siguiente paso es `006-android-maui-client` (MVP-4). ShoppingList ya se integra con Users.Api para identidad, membresía y roles, y ProductCatalog ya existe como bounded context completado.
 
 ## 📋 Tabla de Contenidos
 
@@ -85,7 +85,7 @@ El proyecto implementa **Clean Architecture** dividida en capas:
 ```
 
 - La integración es por contratos y referencias canónicas, sin acoplamiento de runtime entre bounded contexts.
-- `catalogProductId` queda como identificador estable para asociaciones futuras desde ShoppingList (MVP-3+).
+- `catalogProductId` queda como identificador estable para asociaciones con ShoppingList y futuras extensiones.
 
 ### Patrones Implementados
 
@@ -269,7 +269,7 @@ GET    /swagger
 - `DisplayName`: Nombre visible local
 - `Email`: Correo electrónico sincronizado desde claims
 - `IdentityProvider`: Proveedor externo configurado
-- `ExternalUserId`: Claim `sub` del token JWT
+- `ExternalIdentityKey`: clave canónica del proveedor externo en MiKompri; para Microsoft Entra se usa la tupla `(tid, oid)`
 
 **Group**: Grupo colaborativo con referencia canónica `GroupId`.
 - `Name`: Nombre del grupo
@@ -349,7 +349,7 @@ GET    /swagger
 #### Identidad y autenticación
 
 - Validación JWT de un proveedor OIDC externo
-- Auto-provisioning del perfil local usando el claim `sub`
+- Auto-provisioning del perfil local usando la identidad canónica del proveedor externo y resolución al `UserId` interno
 - Sincronización manual del perfil desde claims (`name`, `email`)
 - Actualización local del nombre visible
 
@@ -638,7 +638,7 @@ specs de GitHub Spec Kit, consultar [`specs/001-project-baseline/spec.md`](specs
 
 #### Users Microservice
 - ✅ Validación JWT Bearer de un proveedor OIDC externo
-- ✅ Perfil local del usuario y auto-provisioning por `sub`
+- ✅ Perfil local del usuario y auto-provisioning por identidad canónica del proveedor externo
 - ✅ Sincronización explícita desde claims (`POST /api/v1/users/me/sync`)
 - ✅ Actualización de `DisplayName` y consulta de perfil propio
 - ✅ Grupos, membresías y roles `Owner`, `Admin`, `Member`
@@ -666,9 +666,11 @@ Ver detalle en [`specs/004-product-catalog/spec.md`](specs/004-product-catalog/s
 
 ## 🎯 Próximos Pasos
 
-El roadmap del proyecto se organiza por MVPs. Con **MVP-3** completado, el siguiente paso es definir la Spec 006.
+El roadmap del proyecto se organiza por MVPs. Con **MVP-0**, **MVP-1**, **MVP-2** y **MVP-3** completados, el siguiente paso es definir la Spec 006 (`006-android-maui-client`).
 
 ### MVP-3 — Listas Compartidas y Reparto de Gastos ✅ Completado
+
+- ✅ ShoppingList integra con Users.Api para identidad, membresía y roles
 
 5. **Listas Compartidas y Reparto de Gastos** *(MVP-3)*
    - [x] Spec [`005-shared-lists-settlement`](specs/005-shared-lists-settlement/spec.md) implementada y cerrada

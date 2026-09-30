@@ -143,10 +143,9 @@ y tests de integración de API.
 - **FR-009**: El sistema DEBE exponer un endpoint de health check (`/health`).
 - **FR-010**: El sistema DEBE documentar su API mediante OpenAPI/Swagger.
 
-#### Bounded Context: Users — Operacional ✅
+#### Bounded Context: Users — Completado e integrado ✅
 
-- **FR-011**: El sistema DEBE soportar usuarios vinculados a proveedores de identidad externos
-  mediante `IdentityProvider` + `ExternalUserId` (OAuth/OIDC).
+- **FR-011**: El sistema DEBE soportar usuarios vinculados a Microsoft Entra ID mediante la identidad canónica `(tid, oid)` y mantener un `UserId` interno independiente.
 - **FR-012**: El sistema DEBE permitir crear grupos con nombre y asignar automáticamente al
   creador como Owner.
 - **FR-013**: El sistema DEBE soportar tres roles de membresía: `Owner`, `Admin`, `Member`.
@@ -183,7 +182,7 @@ y tests de integración de API.
 #### Bounded Context: Users
 
 - **User**: Entidad. Atributos: `Id`, `DisplayName`, `Email`, `IdentityProvider`,
-  `ExternalUserId`. Soporte multi-IdP (Keycloak, Auth0, Entra, MiKompri-Auth).
+  `ExternalIdentityKey`. Para Microsoft Entra, la identidad canónica es `(tid, oid)` y el `UserId` interno sigue siendo un GUID propio de MiKompri.
 - **Group**: Entidad. Atributos: `Id`, `Name`, `OwnerId`. Contiene colección de
   `GroupMembership`. El owner se agrega automáticamente al crear el grupo.
 - **GroupMembership**: Entidad. Atributos: `Id`, `GroupId`, `UserId`, `Role` (enum:
@@ -207,7 +206,7 @@ y tests de integración de API.
   creado en GitHub o están referenciadas en el backlog, incluyendo el fallo de cobertura
   reportado por Sonar.
 - **SC-006**: El equipo puede identificar la siguiente feature activa a ejecutar:
-  `004-product-catalog` como siguiente paso de MVP-2 tras el cierre de MVP-1.
+  `006-android-maui-client` como siguiente spec después de completar MVP-3.
 
 ---
 
@@ -215,7 +214,7 @@ y tests de integración de API.
 
 - `ShoppingList` se integra con `Users.Api` mediante contrato HTTP para resolver la identidad local del usuario, su pertenencia a grupos y su rol (`Owner`, `Admin` o `Member`), sin acceso directo a la base de datos de `Users`.
 
-- La autenticación se basa en JWT Bearer emitidos por Microsoft Entra ID. La correlación de identidad externa evolucionará de `sub` a la clave canónica `(tid, oid)` antes de implementar el cliente MVP-4, manteniendo un `UserId` interno propio de MiKompri.
+- La autenticación se basa en JWT Bearer emitidos por Microsoft Entra ID. La correlación de identidad externa usa la clave canónica `(tid, oid)` y mantiene un `UserId` interno propio de MiKompri, sin depender globalmente de `sub`.
 
 - `ShoppingList` utiliza el `UserId` interno de MiKompri para referencias de dominio y auditoría como `OwnerId`, `AddedBy` y `PaidBy`.
 
@@ -487,7 +486,7 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso activo**: Definir `006-android-maui-client` — MVP-4 (Cliente Android con .NET MAUI). MVP-3 (`005-shared-lists-settlement`) completado.
+**Próximo paso activo**: Definir `006-android-maui-client` — MVP-4 (Cliente Android con .NET MAUI). MVP-0, MVP-1, MVP-2 y MVP-3 están completados.
 La spec `003-users-authentication` ya está implementada y representa el cierre del MVP-1.
 El flujo recomendado para futuras specs sigue siendo:
 ```

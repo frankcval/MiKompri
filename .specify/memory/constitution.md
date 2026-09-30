@@ -113,6 +113,7 @@ Los bounded contexts inicialmente previstos son:
 
 * `ShoppingList`
 * `Users`
+* `ProductCatalog`
 
 Cada bounded context DEBE mantener separación clara entre responsabilidades de `Api`, `Application`, `Domain` e `Infrastructure`, ya sea como proyectos separados o como módulos claramente delimitados dentro del monorepo.
 
