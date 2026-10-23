@@ -5,7 +5,7 @@
 [![CI - MiKompri ProductCatalog](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml)
 [![CD - MiKompri ShoppingList API](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml)
 
-**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD). Actualmente, los MVP-0, MVP-1, MVP-2 y MVP-3 están completados; el siguiente paso es `006-android-maui-client` (MVP-4). ShoppingList ya se integra con Users.Api para identidad, membresía y roles, y ProductCatalog ya existe como bounded context completado.
+**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD). Actualmente, los MVP-0, MVP-1, MVP-2 y MVP-3 están completados; `006-android-maui-client` permanece planificada en estado deferred y la siguiente iniciativa activa es `007-web-react-client`. ShoppingList ya se integra con Users.Api para identidad, membresía y roles, y ProductCatalog ya existe como bounded context completado.
 
 ## 📋 Tabla de Contenidos
 
@@ -666,7 +666,16 @@ Ver detalle en [`specs/004-product-catalog/spec.md`](specs/004-product-catalog/s
 
 ## 🎯 Próximos Pasos
 
-El roadmap del proyecto se organiza por MVPs. Con **MVP-0**, **MVP-1**, **MVP-2** y **MVP-3** completados, el siguiente paso es definir la Spec 006 (`006-android-maui-client`).
+El roadmap del proyecto se organiza por MVPs y prioridades de entrega. Estado conceptual actual:
+
+- MVP-0 → ✅ Completed
+- MVP-1 → ✅ Completed
+- MVP-2 → ✅ Completed
+- MVP-3 → ✅ Completed
+- `006-android-maui-client` → 🟨 Planned / Deferred
+- `007-web-react-client` → 🟩 Next / Active
+
+> El cliente Web se prioriza como primer consumidor full-stack de las APIs para validar autenticación, autorización, contratos, UX e integración cloud antes del cliente móvil. La Spec 006 permanece planificada y reutilizará posteriormente la arquitectura y contratos estabilizados por el cliente Web.
 
 ### MVP-3 — Listas Compartidas y Reparto de Gastos ✅ Completado
 
@@ -682,21 +691,24 @@ El roadmap del proyecto se organiza por MVPs. Con **MVP-0**, **MVP-1**, **MVP-2*
    - [x] Fake Users API en tests + tests cross-service con Users.Api real
    - [x] JWT/OIDC alineado: ambas APIs usan el mismo proveedor Entra + `ValidAudiences`
 
-### Prioridad Media — MVP-4 y posteriores (Pendiente)
+### Prioridad Media — Cliente Web primero, MAUI diferido
 
-6. **Cliente Android con .NET MAUI** *(MVP-4)*
-   - [ ] Definir spec `006-android-maui-client` *(siguiente paso)*
+6. **Cliente Web con React** *(siguiente iniciativa)*
+   - [ ] Definir spec `007-web-react-client` *(next/active, no creada aún)*
+
+7. **Cliente Android con .NET MAUI** *(planificado / deferred)*
+   - [ ] Mantener `006-android-maui-client` para ejecución posterior
 
 ### Prioridad Baja — Calidad y DevOps (Transversal)
 
-7. **Mejoras de Calidad**
+8. **Mejoras de Calidad**
    - [ ] Aumentar cobertura de tests a >80%
    - [ ] Implementar mutation testing (Stryker)
    - [ ] Agregar tests de carga (k6 o JMeter)
    - [ ] Documentación técnica detallada
    - [ ] Agregar ejemplos de uso en README
 
-8. **DevOps**
+9. **DevOps**
    - [ ] Configurar staging environment
    - [ ] Implementar canary deployments
    - [ ] Agregar rollback automático
