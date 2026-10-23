@@ -1,28 +1,22 @@
+import type { AccountInfo, IPublicClientApplication } from '@azure/msal-browser'
 import { describe, expect, it, vi } from 'vitest'
+import { createAuthSessionService } from '../../../src/auth/session/authSessionService'
 import { fetchMyProfile } from '../../../src/features/profile/api/profileApi'
-import {
-  AUTH_SESSION_STORAGE_KEY,
-  createSessionSnapshot,
-  restoreSessionSnapshot,
-} from '../../../src/auth/session/authSessionService'
 
 describe('session integration', () => {
-  it('restaura sesión y consulta /users/me', async () => {
-    const storage = new Map<string, string>()
-    const snapshot = createSessionSnapshot('acc-1', 'ana@demo.com', 'token-abc', Date.now() + 60_000)
-    storage.set(AUTH_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
+  it('obtiene token con MSAL y consulta /users/me', async () => {
+    const account = { homeAccountId: 'acc-1', username: 'ana@demo.com' } as AccountInfo
 
-    const restored = restoreSessionSnapshot(
-      {
-        getItem: (key: string) => storage.get(key) ?? null,
-        setItem: (key: string, value: string) => storage.set(key, value),
-        removeItem: (key: string) => storage.delete(key),
-      },
-      AUTH_SESSION_STORAGE_KEY,
-      Date.now(),
-    )
+    const msal = {
+      loginRedirect: vi.fn(),
+      logoutRedirect: vi.fn(),
+      acquireTokenSilent: vi.fn(async () => ({ accessToken: 'token-abc' })),
+      getActiveAccount: vi.fn(() => account),
+      getAllAccounts: vi.fn(() => [account]),
+    } as unknown as IPublicClientApplication
 
-    expect(restored).not.toBeNull()
+    const sessionService = createAuthSessionService(msal)
+    const token = await sessionService.getAccessToken(['scope-a'])
 
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
@@ -33,10 +27,10 @@ describe('session integration', () => {
         }),
       )
 
-    const profile = await fetchMyProfile('http://localhost:5001', restored!.accessToken)
+    const profile = await fetchMyProfile('http://localhost:8082', token)
 
     expect(profile.displayName).toBe('Ana')
-    expect(fetchMock).toHaveBeenCalledWith('http://localhost:5001/api/v1/users/me', expect.any(Object))
+    expect(fetchMock).toHaveBeenCalledWith('http://localhost:8082/api/v1/users/me', expect.any(Object))
 
     fetchMock.mockRestore()
   })

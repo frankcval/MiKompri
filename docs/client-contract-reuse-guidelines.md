@@ -6,7 +6,7 @@ Definir una guía reutilizable para clientes de MiKompri (Web, MAUI, iOS) basada
 ## Reglas base obligatorias
 - Identidad externa: claims canónicos `(tid, oid)`.
 - Identidad de dominio: `UserId` interno de MiKompri.
-- Audience OAuth común backend (`VITE_API_AUDIENCE` en Web; equivalente en móviles).
+- Scope delegado común backend (`VITE_API_SCOPE` en Web; equivalente en móviles).
 - Sin secretos embebidos en cliente.
 
 ## Matriz de contratos por bounded context

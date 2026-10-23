@@ -1,57 +1,60 @@
-import { describe, expect, it } from 'vitest'
-import {
-  AUTH_SESSION_STORAGE_KEY,
-  clearSessionSnapshot,
-  createSessionSnapshot,
-  isSessionRestorable,
-  restoreSessionSnapshot,
-} from '../../../src/auth/session/authSessionService'
+import type { AccountInfo, IPublicClientApplication } from '@azure/msal-browser'
+import { describe, expect, it, vi } from 'vitest'
+import { createAuthSessionService } from '../../../src/auth/session/authSessionService'
 
-describe('authSessionService helpers', () => {
-  it('isSessionRestorable retorna true cuando la expiración es futura', () => {
-    const now = 1_000
-    expect(isSessionRestorable(now + 10_000, now)).toBe(true)
+describe('authSessionService', () => {
+  it('getAccessToken usa acquireTokenSilent con la cuenta recibida', async () => {
+    const account = { homeAccountId: 'acc-1', username: 'ana@demo.com' } as AccountInfo
+    const acquireTokenSilent = vi.fn(async () => ({ accessToken: 'token-abc' }))
+
+    const msal = {
+      loginRedirect: vi.fn(),
+      logoutRedirect: vi.fn(),
+      acquireTokenSilent,
+      getActiveAccount: vi.fn(() => null),
+      getAllAccounts: vi.fn(() => [account]),
+    } as unknown as IPublicClientApplication
+
+    const service = createAuthSessionService(msal)
+    const token = await service.getAccessToken(['scope-a'], account)
+
+    expect(token).toBe('token-abc')
+    expect(acquireTokenSilent).toHaveBeenCalledWith({ scopes: ['scope-a'], account })
   })
 
-  it('isSessionRestorable retorna false cuando la expiración es pasada', () => {
-    const now = 1_000
-    expect(isSessionRestorable(now - 1, now)).toBe(false)
+  it('getAccessToken falla si no hay cuenta MSAL disponible', async () => {
+    const msal = {
+      loginRedirect: vi.fn(),
+      logoutRedirect: vi.fn(),
+      acquireTokenSilent: vi.fn(),
+      getActiveAccount: vi.fn(() => null),
+      getAllAccounts: vi.fn(() => []),
+    } as unknown as IPublicClientApplication
+
+    const service = createAuthSessionService(msal)
+
+    await expect(service.getAccessToken(['scope-a'])).rejects.toThrow('No hay cuenta activa en MSAL para adquirir token.')
   })
 
-  it('restoreSessionSnapshot recupera sesión válida desde storage', () => {
-    const storage = new Map<string, string>()
-    const snapshot = createSessionSnapshot('acc-1', 'ana@demo.com', 'token-1', Date.now() + 60_000)
+  it('login y logout delegan en MSAL redirect', async () => {
+    const account = { homeAccountId: 'acc-1', username: 'ana@demo.com' } as AccountInfo
+    const loginRedirect = vi.fn(async () => undefined)
+    const logoutRedirect = vi.fn(async () => undefined)
 
-    storage.set(AUTH_SESSION_STORAGE_KEY, JSON.stringify(snapshot))
+    const msal = {
+      loginRedirect,
+      logoutRedirect,
+      acquireTokenSilent: vi.fn(),
+      getActiveAccount: vi.fn(() => null),
+      getAllAccounts: vi.fn(() => []),
+    } as unknown as IPublicClientApplication
 
-    const result = restoreSessionSnapshot(
-      {
-        getItem: (key: string) => storage.get(key) ?? null,
-        setItem: (key: string, value: string) => storage.set(key, value),
-        removeItem: (key: string) => storage.delete(key),
-      },
-      AUTH_SESSION_STORAGE_KEY,
-      Date.now(),
-    )
+    const service = createAuthSessionService(msal)
 
-    expect(result).not.toBeNull()
-    expect(result?.accountId).toBe('acc-1')
-    expect(result?.accessToken).toBe('token-1')
-  })
+    await service.login(['scope-a'])
+    await service.logout(account)
 
-  it('clearSessionSnapshot elimina el valor persistido', () => {
-    const storage = new Map<string, string>()
-    storage.set(AUTH_SESSION_STORAGE_KEY, 'x')
-
-    clearSessionSnapshot(
-      {
-        getItem: (key: string) => storage.get(key) ?? null,
-        setItem: (key: string, value: string) => storage.set(key, value),
-        removeItem: (key: string) => storage.delete(key),
-      },
-      AUTH_SESSION_STORAGE_KEY,
-    )
-
-    expect(storage.has(AUTH_SESSION_STORAGE_KEY)).toBe(false)
+    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ['scope-a'] })
+    expect(logoutRedirect).toHaveBeenCalledWith({ account })
   })
 })

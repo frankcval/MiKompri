@@ -23,20 +23,20 @@ function getEnv(key: string, value: string | undefined, fallback: string): strin
 }
 
 const localhostOrigin = typeof window === 'undefined' ? 'http://localhost:5173' : window.location.origin
-const entraTenantId = getEnv('VITE_ENTRA_TENANT_ID', import.meta.env.VITE_ENTRA_TENANT_ID, 'common')
+const entraTenantId = getEnv('VITE_ENTRA_TENANT_ID', import.meta.env.VITE_ENTRA_TENANT_ID, 'a6b72a33-ade4-45d3-a2a7-52b88d96f5eb')
 
 export const env: Env = {
   environment: import.meta.env.VITE_ENVIRONMENT ?? 'local',
-  usersApiBaseUrl: getEnv('VITE_USERS_API_BASE_URL', import.meta.env.VITE_USERS_API_BASE_URL, 'http://localhost:5001'),
+  usersApiBaseUrl: getEnv('VITE_USERS_API_BASE_URL', import.meta.env.VITE_USERS_API_BASE_URL, 'http://localhost:8082'),
   shoppingListApiBaseUrl: getEnv(
     'VITE_SHOPPINGLIST_API_BASE_URL',
     import.meta.env.VITE_SHOPPINGLIST_API_BASE_URL,
-    'http://localhost:5002',
+    'http://localhost:8080',
   ),
   productCatalogApiBaseUrl: getEnv(
     'VITE_PRODUCTCATALOG_API_BASE_URL',
     import.meta.env.VITE_PRODUCTCATALOG_API_BASE_URL,
-    'http://localhost:5003',
+    'http://localhost:8083',
   ),
   entraClientId: getEnv('VITE_ENTRA_CLIENT_ID', import.meta.env.VITE_ENTRA_CLIENT_ID, '00000000-0000-0000-0000-000000000000'),
   entraTenantId,
@@ -51,7 +51,11 @@ export const env: Env = {
     import.meta.env.VITE_ENTRA_POST_LOGOUT_REDIRECT_URI,
     localhostOrigin,
   ),
-  apiScope: getEnv('VITE_API_SCOPE', import.meta.env.VITE_API_SCOPE, 'api://mikompri-backend/access_as_user'),
+  apiScope: getEnv(
+    'VITE_API_SCOPE',
+    import.meta.env.VITE_API_SCOPE,
+    'api://36adb79e-9563-4642-8bc9-455358d76273/access_as_user',
+  ),
 }
 
 if (missingEnvKeys.length > 0) {

@@ -37,5 +37,5 @@ Alinear la SPA `MiKompri.Web` con las APIs `Users`, `ShoppingList` y `ProductCat
 
 ## Troubleshooting rápido
 - **Error CORS en navegador**: revisar `Access-Control-Allow-Origin` y `Access-Control-Allow-Headers`.
-- **401 en vez de CORS**: revisar token/audience (`VITE_API_AUDIENCE`).
+- **401 en vez de CORS**: revisar token/scope delegado (`VITE_API_SCOPE`) y audience emitida en el access token.
 - **Solo falla en cloud**: agregar dominio SWA exacto en política CORS backend.

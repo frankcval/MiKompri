@@ -6,9 +6,9 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__PostgreSQL=Host=postgres;Port=5432;Database=MiKompri_ShoppingList;Username=postgres;Password=12345
       - UsersApi__BaseUrl=http://mikompriusersapi:8080
-      # Mismo proveedor OIDC que Users.Api para que los tokens sean compatibles
-      - Authentication__Authority=https://login.microsoftonline.com/common/v2.0
-      - Authentication__Audience=mikompri-shoppinglist-api
+      - Authentication__Authority=https://login.microsoftonline.com/a6b72a33-ade4-45d3-a2a7-52b88d96f5eb/v2.0
+      - Authentication__Audience=api://36adb79e-9563-4642-8bc9-455358d76273
+      - Authentication__ValidAudiences=api://36adb79e-9563-4642-8bc9-455358d76273,36adb79e-9563-4642-8bc9-455358d76273,mikompri-shoppinglist-api
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -35,6 +35,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ConnectionStrings__PostgreSQL=Host=postgres;Port=5432;Database=MiKompri_ProductCatalog;Username=postgres;Password=12345
+      - Authentication__Authority=https://login.microsoftonline.com/a6b72a33-ade4-45d3-a2a7-52b88d96f5eb/v2.0
+      - Authentication__Audience=api://36adb79e-9563-4642-8bc9-455358d76273
+      - Authentication__ValidAudiences=api://36adb79e-9563-4642-8bc9-455358d76273,36adb79e-9563-4642-8bc9-455358d76273,mikompri-productcatalog-api
       - ProductCatalog__Currency=EUR
     ports:
       - "8083:8080"
