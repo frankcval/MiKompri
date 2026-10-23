@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MiKompri.ShoppingList.Api.Middleware;
+using MiKompri.ShoppingList.Api.Security;
 using MiKompri.ShoppingList.Api.Services;
 using MiKompri.ShoppingList.Application;
 using MiKompri.ShoppingList.Application.Interfaces;
@@ -33,13 +34,16 @@ builder.Host.UseSerilog((context, services, loggerConfig) =>
 //  CORS  reglas, por ahora abiertas
 // ----------------------
 const string CorsPolicy = "MiKompriCors";
+var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]?
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? new[] { "http://localhost:5173", "http://127.0.0.1:5173" };
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicy, policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins(allowedOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -54,13 +58,10 @@ builder.Services
     {
         options.Authority = builder.Configuration["Authentication:Authority"];
         options.Audience = builder.Configuration["Authentication:Audience"];
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true
-        };
+        options.TokenValidationParameters = ShoppingListJwtValidation.BuildTokenValidationParameters(
+            issuer: builder.Configuration["Authentication:Authority"],
+            audience: builder.Configuration["Authentication:Audience"],
+            validAudiencesRaw: builder.Configuration["Authentication:ValidAudiences"]);
     });
 
 builder.Services.AddAuthorization();

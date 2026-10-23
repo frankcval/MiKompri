@@ -8,7 +8,9 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
     /// </summary>
     public sealed record SyncProfileCommand(
         string IdentityProvider,
-        string ExternalUserId,
+        string TenantId,
+        string ObjectId,
+        string? ExternalUserId,
         string? DisplayName,
         string? Email
     ) : IRequest<(Guid UserId, bool Created)>;

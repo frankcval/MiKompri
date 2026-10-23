@@ -111,12 +111,19 @@ namespace MiKompri.Users.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<string>("ExternalUserId")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
                     b.Property<string>("IdentityProvider")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ObjectId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("TenantId")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -126,7 +133,12 @@ namespace MiKompri.Users.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityProvider", "ExternalUserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"ExternalUserId\" IS NOT NULL");
+
+                    b.HasIndex("IdentityProvider", "TenantId", "ObjectId")
+                        .IsUnique()
+                        .HasFilter("\"TenantId\" IS NOT NULL AND \"ObjectId\" IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
                 });

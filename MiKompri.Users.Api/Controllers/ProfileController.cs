@@ -55,13 +55,20 @@ namespace MiKompri.Users.Api.Controllers
         public async Task<ActionResult<UserProfileDto>> SyncProfile()
         {
             var ct = HttpContext.RequestAborted;
-            var sub = User.FindFirstValue("sub") ?? string.Empty;
+            var tid = User.FindFirstValue("tid");
+            var oid = User.FindFirstValue("oid");
+            if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
+            {
+                return Unauthorized(new { status = StatusCodes.Status401Unauthorized, error = "Authentication failed.", traceId = HttpContext.TraceIdentifier });
+            }
+
+            var sub = User.FindFirstValue("sub");
             var displayName = User.FindFirstValue("name") ?? User.FindFirstValue(ClaimTypes.Name);
             var emailClaim = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email);
             var email = string.IsNullOrEmpty(emailClaim) ? null : emailClaim;
             var identityProvider = _configuration["Authentication:IdentityProvider"] ?? "entra";
 
-            var command = new SyncProfileCommand(identityProvider, sub, displayName, email);
+            var command = new SyncProfileCommand(identityProvider, tid, oid, sub, displayName, email);
             var (_, createdByEndpoint) = await _sender.Send(command, ct);
 
             var createdByMiddleware = HttpContext.Items.TryGetValue("ProfileCreatedInMiddleware", out var middlewareValue)

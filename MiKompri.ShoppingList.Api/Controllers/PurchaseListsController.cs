@@ -18,6 +18,7 @@ using MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExpense
 using MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpense;
 using MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateSharedList;
 using MiKompri.ShoppingList.Application.DTOs;
+using MiKompri.ShoppingList.Application.Interfaces;
 using MiKompri.ShoppingList.Application.Queries.GetAllShoppingLists;
 using MiKompri.ShoppingList.Application.Queries.GetItemListById;
 using MiKompri.ShoppingList.Application.Queries.GetShoppingListByGroupId;
@@ -37,18 +38,22 @@ namespace MiKompri.ShoppingList.Api.Controllers
     public class PurchaseListsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ICurrentUserService _currentUser;
 
-        public PurchaseListsController(IMediator mediator)
+        public PurchaseListsController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
         }
-     
+
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreatePurchaseListRequest request, CancellationToken cancellationToken)
         {
+            var ownerId = _currentUser.UserId;
             var command = new CreateShoppingListCommand(
                 request.Name,
-                request.OwnerId,
+                ownerId,
                 request.GroupId
             );
 
@@ -199,6 +204,7 @@ namespace MiKompri.ShoppingList.Api.Controllers
         }
 
         //GET obtener lista de compras
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<PurchaseListDTO>>> GetAll(
                 [FromQuery] Guid? ownerId,

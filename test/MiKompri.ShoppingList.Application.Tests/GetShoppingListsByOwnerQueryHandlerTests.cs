@@ -33,7 +33,11 @@ namespace MiKompri.ShoppingList.Application.Tests
                 .Setup(r => r.GetByOwnerAsync(ownerId))
                 .ReturnsAsync(lists);
 
-            var handler = new GetShoppingListsByOwnerQueryHandler(repoMock.Object);
+            var currentUserMock = new Mock<ICurrentUserService>();
+            currentUserMock.SetupGet(x => x.IsAuthenticated).Returns(true);
+            currentUserMock.SetupGet(x => x.UserId).Returns(ownerId);
+
+            var handler = new GetShoppingListsByOwnerQueryHandler(repoMock.Object, currentUserMock.Object);
 
             var query = new GetShoppingListsByOwnerQuery(ownerId);
 

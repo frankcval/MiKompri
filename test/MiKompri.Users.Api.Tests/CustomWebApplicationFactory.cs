@@ -16,7 +16,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<global::Program
     public CustomWebApplicationFactory()
     {
         Environment.SetEnvironmentVariable("Authentication__Authority", "https://login.microsoftonline.com/common/v2.0");
-        Environment.SetEnvironmentVariable("Authentication__Audience", "mikompri-users");
+        Environment.SetEnvironmentVariable("Authentication__Audience", "api://mikompri-backend");
+        Environment.SetEnvironmentVariable("Authentication__ValidAudiences", "api://mikompri-backend,mikompri-users");
         Environment.SetEnvironmentVariable("Authentication__IdentityProvider", "entra");
         Environment.SetEnvironmentVariable("ConnectionStrings__UsersPostgreSQL", "Host=localhost;Port=5432;Database=MiKompri_Users;Username=postgres;Password=12345");
     }
@@ -30,8 +31,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<global::Program
             var testSettings = new Dictionary<string, string?>
             {
                 ["Authentication:Authority"] = "https://login.microsoftonline.com/common/v2.0",
-                ["Authentication:Audience"] = "mikompri-users",
+                ["Authentication:Audience"] = "api://mikompri-backend",
+                ["Authentication:ValidAudiences"] = "api://mikompri-backend,mikompri-users",
                 ["Authentication:IdentityProvider"] = "entra",
+                ["Cors:AllowedOrigins"] = "http://localhost:5173,http://127.0.0.1:5173",
                 ["ConnectionStrings:UsersPostgreSQL"] = "Host=localhost;Port=5432;Database=MiKompri_Users;Username=postgres;Password=12345"
             };
 
@@ -77,7 +80,30 @@ public class CustomWebApplicationFactory : WebApplicationFactory<global::Program
         });
     }
 
-    public HttpClient CreateAuthenticatedClient(string sub, string? name = null, string? email = null)
+    public HttpClient CreateAuthenticatedClient(string sub, string? name = null, string? email = null, string? tid = null, string? oid = null)
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "test-token");
+        client.DefaultRequestHeaders.TryAddWithoutValidation(
+            TestAuthHandler.SubHeaderName,
+            string.IsNullOrEmpty(sub) ? " " : sub);
+
+        if (name is not null)
+            client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.NameHeaderName, name);
+
+        if (email is not null)
+            client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.EmailHeaderName, email);
+
+        var effectiveTid = tid ?? "tenant-test";
+        var effectiveOid = oid ?? (string.IsNullOrWhiteSpace(sub) ? "oid-test" : sub);
+
+        client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.TidHeaderName, effectiveTid);
+        client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.OidHeaderName, effectiveOid);
+
+        return client;
+    }
+
+    public HttpClient CreateAuthenticatedClientWithoutCanonicalClaims(string sub, string? name = null, string? email = null)
     {
         var client = CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "test-token");

@@ -17,28 +17,38 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
             SyncProfileCommand request,
             CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByExternalIdAsync(
+            var user = await _userRepository.GetByCanonicalIdentityAsync(
                 request.IdentityProvider,
-                request.ExternalUserId,
+                request.TenantId,
+                request.ObjectId,
                 cancellationToken);
+
+            if (user is null && !string.IsNullOrWhiteSpace(request.ExternalUserId))
+            {
+                user = await _userRepository.GetByExternalIdAsync(
+                    request.IdentityProvider,
+                    request.ExternalUserId,
+                    cancellationToken);
+            }
 
             if (user is null)
             {
-                // C4: email null si ausente — nunca cadena vacía
                 var email = string.IsNullOrEmpty(request.Email) ? null : request.Email;
 
                 user = new User(
                     request.DisplayName ?? string.Empty,
                     email,
                     request.IdentityProvider,
+                    request.TenantId,
+                    request.ObjectId,
                     request.ExternalUserId);
 
                 await _userRepository.AddAsync(user, cancellationToken);
                 return (user.Id, Created: true);
             }
 
-            // C5: guardar solo si SyncClaims produjo un cambio real (idempotencia)
             var previousUpdatedAt = user.UpdatedAt;
+            user.AssignCanonicalIdentity(request.TenantId, request.ObjectId);
             user.SyncClaims(request.DisplayName, request.Email);
 
             if (user.UpdatedAt != previousUpdatedAt)

@@ -367,3 +367,5 @@ obj/
 .env*
 .DS_Store
 Thumbs.db
+dist/
+*.swp

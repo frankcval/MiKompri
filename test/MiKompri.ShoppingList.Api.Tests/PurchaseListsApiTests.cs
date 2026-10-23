@@ -935,5 +935,44 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             body.RootElement.GetProperty("traceId").GetString().Should().Be(correlationId);
         }
 
+        [Fact]
+        public async Task GetAll_ByOwner_WithoutAuthentication_ShouldReturn401()
+        {
+            var response = await _client.GetAsync($"/api/v1/purchaselists?ownerId={Guid.NewGuid()}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task GetAll_ByOwner_WithDifferentAuthenticatedUser_ShouldReturn403()
+        {
+            var ownerSub = "owner-sub-phase2";
+            var outsiderSub = "outsider-sub-phase2";
+
+            var ownerUserId = _factory.UsersApiState.EnsureUser(ownerSub);
+            var createClient = _factory.CreateClient();
+            createClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test", ownerSub);
+            createClient.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.TidHeaderName, "tenant-owner");
+            createClient.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.OidHeaderName, "oid-owner");
+
+            var createResponse = await createClient.PostAsJsonAsync("/api/v1/purchaselists", new CreatePurchaseListRequest
+            {
+                Name = "Lista privada",
+                OwnerId = ownerUserId,
+                GroupId = null
+            });
+            createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test", outsiderSub);
+            _client.DefaultRequestHeaders.Remove(TestAuthHandler.TidHeaderName);
+            _client.DefaultRequestHeaders.Remove(TestAuthHandler.OidHeaderName);
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.TidHeaderName, "tenant-outsider");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.OidHeaderName, "oid-outsider");
+
+            var response = await _client.GetAsync($"/api/v1/purchaselists?ownerId={ownerUserId}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
     }
 }

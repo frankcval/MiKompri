@@ -23,6 +23,20 @@ namespace MiKompri.Users.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
         }
 
+        public async Task<User?> GetByCanonicalIdentityAsync(
+            string identityProvider,
+            string tenantId,
+            string objectId,
+            CancellationToken cancellationToken = default)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(
+                    u => u.IdentityProvider == identityProvider &&
+                         u.TenantId == tenantId &&
+                         u.ObjectId == objectId,
+                    cancellationToken);
+        }
+
         public async Task<User?> GetByExternalIdAsync(
             string identityProvider,
             string externalUserId,

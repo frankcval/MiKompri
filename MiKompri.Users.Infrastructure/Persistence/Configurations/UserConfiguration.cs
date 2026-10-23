@@ -23,9 +23,17 @@ namespace MiKompri.Users.Infrastructure.Persistence.Configurations
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.Property(u => u.TenantId)
+                .HasMaxLength(100)
+                .IsRequired(false);
+
+            builder.Property(u => u.ObjectId)
+                .HasMaxLength(100)
+                .IsRequired(false);
+
             builder.Property(u => u.ExternalUserId)
                 .HasMaxLength(200)
-                .IsRequired();
+                .IsRequired(false);
 
             builder.Property(u => u.CreatedAt)
                 .IsRequired();
@@ -33,9 +41,15 @@ namespace MiKompri.Users.Infrastructure.Persistence.Configurations
             builder.Property(u => u.UpdatedAt)
                 .IsRequired();
 
-            // Índice único para (IdentityProvider, ExternalUserId)
+            // Índice único canónico (IdentityProvider, TenantId, ObjectId)
+            builder.HasIndex(u => new { u.IdentityProvider, u.TenantId, u.ObjectId })
+                .IsUnique()
+                .HasFilter("\"TenantId\" IS NOT NULL AND \"ObjectId\" IS NOT NULL");
+
+            // Índice único legado (IdentityProvider, ExternalUserId)
             builder.HasIndex(u => new { u.IdentityProvider, u.ExternalUserId })
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("\"ExternalUserId\" IS NOT NULL");
 
             // Relación con memberships (un usuario tiene muchas memberships)
             builder.HasMany<GroupMembership>()
