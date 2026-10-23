@@ -17,31 +17,36 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
             SyncProfileCommand request,
             CancellationToken cancellationToken)
         {
+            var identityProvider = LimitRequired(request.IdentityProvider, 100);
+            var tenantId = LimitOptional(request.TenantId, 100);
+            var objectId = LimitOptional(request.ObjectId, 100);
+            var externalUserId = LimitOptional(request.ExternalUserId, 200);
+            var email = LimitOptional(request.Email, 200);
+            var displayName = BuildDisplayName(request.DisplayName, email);
+
             var user = await _userRepository.GetByCanonicalIdentityAsync(
-                request.IdentityProvider,
-                request.TenantId,
-                request.ObjectId,
+                identityProvider,
+                tenantId!,
+                objectId!,
                 cancellationToken);
 
-            if (user is null && !string.IsNullOrWhiteSpace(request.ExternalUserId))
+            if (user is null && !string.IsNullOrWhiteSpace(externalUserId))
             {
                 user = await _userRepository.GetByExternalIdAsync(
-                    request.IdentityProvider,
-                    request.ExternalUserId,
+                    identityProvider,
+                    externalUserId,
                     cancellationToken);
             }
 
             if (user is null)
             {
-                var email = string.IsNullOrEmpty(request.Email) ? null : request.Email;
-
                 user = new User(
-                    request.DisplayName ?? string.Empty,
+                    displayName,
                     email,
-                    request.IdentityProvider,
-                    request.TenantId,
-                    request.ObjectId,
-                    request.ExternalUserId);
+                    identityProvider,
+                    tenantId,
+                    objectId,
+                    externalUserId);
 
                 try
                 {
@@ -51,9 +56,9 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
                 catch
                 {
                     var existingByCanonical = await _userRepository.GetByCanonicalIdentityAsync(
-                        request.IdentityProvider,
-                        request.TenantId,
-                        request.ObjectId,
+                        identityProvider,
+                        tenantId!,
+                        objectId!,
                         cancellationToken);
 
                     if (existingByCanonical is not null)
@@ -61,11 +66,11 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
                         return (existingByCanonical.Id, Created: false);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(request.ExternalUserId))
+                    if (!string.IsNullOrWhiteSpace(externalUserId))
                     {
                         var existingByExternalId = await _userRepository.GetByExternalIdAsync(
-                            request.IdentityProvider,
-                            request.ExternalUserId,
+                            identityProvider,
+                            externalUserId,
                             cancellationToken);
 
                         if (existingByExternalId is not null)
@@ -79,8 +84,8 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
             }
 
             var previousUpdatedAt = user.UpdatedAt;
-            user.AssignCanonicalIdentity(request.TenantId, request.ObjectId);
-            user.SyncClaims(request.DisplayName, request.Email);
+            user.AssignCanonicalIdentity(tenantId!, objectId!);
+            user.SyncClaims(displayName, email);
 
             if (user.UpdatedAt != previousUpdatedAt)
             {
@@ -91,9 +96,9 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
                 catch
                 {
                     var existingByCanonical = await _userRepository.GetByCanonicalIdentityAsync(
-                        request.IdentityProvider,
-                        request.TenantId,
-                        request.ObjectId,
+                        identityProvider,
+                        tenantId!,
+                        objectId!,
                         cancellationToken);
 
                     if (existingByCanonical is not null)
@@ -106,6 +111,39 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
             }
 
             return (user.Id, Created: false);
+        }
+
+        private static string BuildDisplayName(string? displayName, string? email)
+        {
+            var candidate = string.IsNullOrWhiteSpace(displayName) ? email : displayName;
+            if (string.IsNullOrWhiteSpace(candidate))
+            {
+                candidate = "Usuario";
+            }
+
+            return LimitRequired(candidate, 100);
+        }
+
+        private static string? LimitOptional(string? value, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            var trimmed = value.Trim();
+            return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
+        }
+
+        private static string LimitRequired(string value, int maxLength)
+        {
+            var normalized = LimitOptional(value, maxLength);
+            if (normalized is null)
+            {
+                throw new InvalidOperationException("El valor requerido de identidad no puede estar vacío.");
+            }
+
+            return normalized;
         }
     }
 }
