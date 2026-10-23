@@ -672,8 +672,8 @@ El roadmap del proyecto se organiza por MVPs y prioridades de entrega. Estado co
 - MVP-1 → ✅ Completed
 - MVP-2 → ✅ Completed
 - MVP-3 → ✅ Completed
-- `006-android-maui-client` → 🟨 Planned / Deferred
-- `007-web-react-client` → 🟩 Next / Active
+- MVP-4 (`007-web-react-client`) → 🟩 Next / Active
+- MVP-5 (`006-android-maui-client`) → 🟨 Planned / Deferred
 
 > El cliente Web se prioriza como primer consumidor full-stack de las APIs para validar autenticación, autorización, contratos, UX e integración cloud antes del cliente móvil. La Spec 006 permanece planificada y reutilizará posteriormente la arquitectura y contratos estabilizados por el cliente Web.
 
@@ -693,10 +693,11 @@ El roadmap del proyecto se organiza por MVPs y prioridades de entrega. Estado co
 
 ### Prioridad Media — Cliente Web primero, MAUI diferido
 
-6. **Cliente Web con React** *(siguiente iniciativa)*
-   - [ ] Definir spec `007-web-react-client` *(next/active, no creada aún)*
+6. **Cliente Web con React** *(MVP-4 · siguiente iniciativa activa)*
+   - [x] Spec [`007-web-react-client`](specs/007-web-react-client/spec.md) creada (draft)
+   - [ ] Ejecutar `/speckit.clarify` y `/speckit.plan` para iniciar implementación
 
-7. **Cliente Android con .NET MAUI** *(planificado / deferred)*
+7. **Cliente Android con .NET MAUI** *(MVP-5 · planificado / deferred)*
    - [ ] Mantener `006-android-maui-client` para ejecución posterior
 
 ### Prioridad Baja — Calidad y DevOps (Transversal)
