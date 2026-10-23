@@ -205,8 +205,8 @@ y tests de integración de API.
 - **SC-005**: Las deudas técnicas documentadas vigentes tienen un issue de seguimiento
   creado en GitHub o están referenciadas en el backlog, incluyendo el fallo de cobertura
   reportado por Sonar.
-- **SC-006**: El equipo puede identificar la siguiente feature activa a ejecutar:
-  `006-android-maui-client` como siguiente spec después de completar MVP-3.
+- **SC-006**: El equipo puede identificar la siguiente iniciativa activa a ejecutar:
+  `007-web-react-client` como siguiente spec, manteniendo `006-android-maui-client` en estado planned/deferred después de completar MVP-3.
 
 ---
 
@@ -347,16 +347,28 @@ La autorización específica del dominio continúa siendo responsabilidad de cad
 
 | MVP    | Nombre                                             | Estado           | Specs relacionadas                                      |
 |--------|----------------------------------------------------|------------------|---------------------------------------------------------|
-| MVP-0  | Listas de compra personales / Shopping List Core   | ✅ Completado     | `001-project-baseline`, `002-shopping-list-core`        |
-| MVP-1  | Usuarios, autenticación e identidad                | ✅ Completado     | `003-users-authentication`                              |
-| MVP-2  | Catálogo de productos, mercados e historial de precios | ✅ Completado  | `004-product-catalog`                                   |
-| MVP-3  | Listas compartidas y reparto de gastos             | ✅ Completado     | `005-shared-lists-settlement`                           |
-| MVP-4  | Cliente Android con .NET MAUI                      | ⬜ Pendiente     | `006-android-maui-client` *(spec futura)*               |
-| MVP-5  | Presupuesto y control de gasto                     | ⬜ Pendiente     | *(spec futura)*                                         |
-| MVP-6  | Sugerencias inteligentes                           | ⬜ Pendiente     | *(spec futura)*                                         |
-| MVP-7  | Tickets, fotos y OCR                               | ⬜ Pendiente     | *(spec futura)*                                         |
-| MVP-8  | Promociones y alertas                              | ⬜ Pendiente     | *(spec futura)*                                         |
-| MVP-9  | Comunidad e integración con comercios              | ⬜ Pendiente     | *(spec futura)*                                         |
+| MVP-0  | Listas de compra personales / Shopping List Core   | ✅ Completado         | `001-project-baseline`, `002-shopping-list-core`        |
+| MVP-1  | Usuarios, autenticación e identidad                | ✅ Completado         | `003-users-authentication`                              |
+| MVP-2  | Catálogo de productos, mercados e historial de precios | ✅ Completado      | `004-product-catalog`                                   |
+| MVP-3  | Listas compartidas y reparto de gastos             | ✅ Completado         | `005-shared-lists-settlement`                           |
+| MVP-4  | Cliente Web full-stack (React SPA)                 | 🟩 Next / Active      | `007-web-react-client`                                  |
+| MVP-5  | Cliente Android con .NET MAUI                      | 🟨 Planned / Deferred | `006-android-maui-client` *(spec existente, diferida)* |
+| MVP-6  | Presupuesto y control de gasto                     | ⬜ Pendiente         | *(spec futura)*                                         |
+| MVP-7  | Sugerencias inteligentes                           | ⬜ Pendiente         | *(spec futura)*                                         |
+| MVP-8  | Tickets, fotos y OCR                               | ⬜ Pendiente         | *(spec futura)*                                         |
+| MVP-9  | Promociones y alertas                              | ⬜ Pendiente         | *(spec futura)*                                         |
+| MVP-10 | Comunidad e integración con comercios              | ⬜ Pendiente         | *(spec futura)*                                         |
+
+### Prioridad de iniciativas cliente (actualización de roadmap)
+
+- MVP-0 → ✅ Completed
+- MVP-1 → ✅ Completed
+- MVP-2 → ✅ Completed
+- MVP-3 → ✅ Completed
+- MVP-4 (`007-web-react-client`) → 🟩 Next / Active
+- MVP-5 (`006-android-maui-client`) → 🟨 Planned / Deferred
+
+> El cliente Web se prioriza como primer consumidor full-stack de las APIs para validar autenticación, autorización, contratos, UX e integración cloud antes del cliente móvil. La Spec 006 permanece planificada y reutilizará posteriormente la arquitectura y contratos estabilizados por el cliente Web.
 
 ---
 
@@ -417,18 +429,30 @@ restringido a sus miembros. Incluye reparto de gastos entre participantes.
 
 ---
 
-### MVP-4 — Cliente Android con .NET MAUI (Estado: ⬜ Pendiente)
+### MVP-4 — Cliente Web Full-Stack (Estado: 🟩 Next / Active)
+
+**Alcance**: SPA Web como primer cliente real de MiKompri para consumir de forma completa
+las APIs de Users, ShoppingList y ProductCatalog, validando identidad, autorización,
+contratos, UX e integración cloud.
+
+**Prerequisito**: MVP-1, MVP-2 y MVP-3 completados.
+
+**Spec**: [`007-web-react-client`](../007-web-react-client/spec.md) — Draft
+
+---
+
+### MVP-5 — Cliente Android con .NET MAUI (Estado: 🟨 Planned / Deferred)
 
 **Alcance**: Aplicación Android que permite gestionar listas de compra personales y
 grupales con UX móvil primera (PP5). Consume las APIs REST de MiKompri.
 
 **Prerequisito**: MVP-1 o MVP-3 completado.
 
-**Spec futura sugerida**: `006-android-maui-client`
+**Spec planificada (sin cambios de contenido)**: `006-android-maui-client`
 
 ---
 
-### MVP-5 — Presupuesto y Control de Gasto (Estado: ⬜ Pendiente)
+### MVP-6 — Presupuesto y Control de Gasto (Estado: ⬜ Pendiente)
 
 **Alcance**: Herramientas para establecer presupuestos de compra y hacer seguimiento
 del gasto real frente al planificado.
@@ -437,16 +461,16 @@ del gasto real frente al planificado.
 
 ---
 
-### MVP-6 — Sugerencias Inteligentes (Estado: ⬜ Pendiente)
+### MVP-7 — Sugerencias Inteligentes (Estado: ⬜ Pendiente)
 
 **Alcance**: Recomendaciones automáticas de productos basadas en historial de compra,
 patrones de uso y preferencias del usuario o grupo.
 
-**Prerequisito**: MVP-2 o MVP-5 completado.
+**Prerequisito**: MVP-2 o MVP-6 completado.
 
 ---
 
-### MVP-7 — Tickets, Fotos y OCR (Estado: ⬜ Pendiente)
+### MVP-8 — Tickets, Fotos y OCR (Estado: ⬜ Pendiente)
 
 **Alcance**: Captura de tickets de compra mediante foto con extracción automática de
 productos y precios por OCR, integrada con el historial de compras.
@@ -455,7 +479,7 @@ productos y precios por OCR, integrada con el historial de compras.
 
 ---
 
-### MVP-8 — Promociones y Alertas (Estado: ⬜ Pendiente)
+### MVP-9 — Promociones y Alertas (Estado: ⬜ Pendiente)
 
 **Alcance**: Notificaciones de ofertas y bajadas de precio sobre productos del catálogo
 o de listas activas del usuario.
@@ -464,12 +488,12 @@ o de listas activas del usuario.
 
 ---
 
-### MVP-9 — Comunidad e Integración con Comercios (Estado: ⬜ Pendiente)
+### MVP-10 — Comunidad e Integración con Comercios (Estado: ⬜ Pendiente)
 
 **Alcance**: Funcionalidades sociales (valoraciones, listas públicas, tendencias) e
 integración directa con comercios para catálogos y precios en tiempo real.
 
-**Prerequisito**: MVP-6, MVP-7 o MVP-8 completado.
+**Prerequisito**: MVP-7, MVP-8 o MVP-9 completado.
 
 ---
 
@@ -486,7 +510,7 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso activo**: Definir `006-android-maui-client` — MVP-4 (Cliente Android con .NET MAUI). MVP-0, MVP-1, MVP-2 y MVP-3 están completados.
+**Próximo paso activo**: Definir `007-web-react-client` como primer cliente real de MiKompri para validación end-to-end del backend. `006-android-maui-client` se mantiene planificada en estado deferred.
 La spec `003-users-authentication` ya está implementada y representa el cierre del MVP-1.
 El flujo recomendado para futuras specs sigue siendo:
 ```
