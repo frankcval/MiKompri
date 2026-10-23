@@ -21,5 +21,5 @@ export const msalConfig: Configuration = {
 }
 
 export const loginRequest = {
-  scopes: [`${env.apiAudience}/.default`],
+  scopes: [env.apiScope],
 }

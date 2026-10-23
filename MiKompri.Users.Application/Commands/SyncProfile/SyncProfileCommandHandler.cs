@@ -43,8 +43,39 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
                     request.ObjectId,
                     request.ExternalUserId);
 
-                await _userRepository.AddAsync(user, cancellationToken);
-                return (user.Id, Created: true);
+                try
+                {
+                    await _userRepository.AddAsync(user, cancellationToken);
+                    return (user.Id, Created: true);
+                }
+                catch
+                {
+                    var existingByCanonical = await _userRepository.GetByCanonicalIdentityAsync(
+                        request.IdentityProvider,
+                        request.TenantId,
+                        request.ObjectId,
+                        cancellationToken);
+
+                    if (existingByCanonical is not null)
+                    {
+                        return (existingByCanonical.Id, Created: false);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(request.ExternalUserId))
+                    {
+                        var existingByExternalId = await _userRepository.GetByExternalIdAsync(
+                            request.IdentityProvider,
+                            request.ExternalUserId,
+                            cancellationToken);
+
+                        if (existingByExternalId is not null)
+                        {
+                            return (existingByExternalId.Id, Created: false);
+                        }
+                    }
+
+                    throw;
+                }
             }
 
             var previousUpdatedAt = user.UpdatedAt;
@@ -52,7 +83,27 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
             user.SyncClaims(request.DisplayName, request.Email);
 
             if (user.UpdatedAt != previousUpdatedAt)
-                await _userRepository.UpdateAsync(user, cancellationToken);
+            {
+                try
+                {
+                    await _userRepository.UpdateAsync(user, cancellationToken);
+                }
+                catch
+                {
+                    var existingByCanonical = await _userRepository.GetByCanonicalIdentityAsync(
+                        request.IdentityProvider,
+                        request.TenantId,
+                        request.ObjectId,
+                        cancellationToken);
+
+                    if (existingByCanonical is not null)
+                    {
+                        return (existingByCanonical.Id, Created: false);
+                    }
+
+                    throw;
+                }
+            }
 
             return (user.Id, Created: false);
         }

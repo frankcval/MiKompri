@@ -103,7 +103,16 @@ export function createAuthSessionService(
     async bootstrapFromRedirect(): Promise<SessionSnapshot | null> {
       const result = await msalInstance.handleRedirectPromise()
       if (!result) {
+        const firstAccount = msalInstance.getAllAccounts()[0]
+        if (firstAccount) {
+          msalInstance.setActiveAccount(firstAccount)
+        }
+
         return restoreSessionSnapshot(storage)
+      }
+
+      if (result.account) {
+        msalInstance.setActiveAccount(result.account)
       }
 
       return storeAuthResult(result, storage)

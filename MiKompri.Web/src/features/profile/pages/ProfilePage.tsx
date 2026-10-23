@@ -51,8 +51,8 @@ export function ProfilePage() {
       <main style={{ padding: '1.5rem', display: 'grid', gap: '0.75rem' }}>
         <Text>
           {status === 401
-            ? 'Sesión no autorizada. Inicia sesión nuevamente.'
-            : 'No fue posible cargar el perfil.'}
+            ? 'Sesión iniciada. El perfil no está disponible aún en este entorno local.'
+            : 'Sesión iniciada. El perfil se habilitará cuando esté configurado el acceso al API.'}
         </Text>
         <Button appearance="secondary" onClick={handleLogout}>
           Cerrar sesión

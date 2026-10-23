@@ -8,26 +8,54 @@ type Env = {
   entraAuthority: string
   entraRedirectUri: string
   entraPostLogoutRedirectUri: string
-  apiAudience: string
+  apiScope: string
 }
 
-function required(key: string, value: string | undefined): string {
-  if (!value || value.trim().length === 0) {
-    throw new Error(`Falta variable de entorno requerida: ${key}`)
+const missingEnvKeys: string[] = []
+
+function getEnv(key: string, value: string | undefined, fallback: string): string {
+  if (value && value.trim().length > 0) {
+    return value
   }
 
-  return value
+  missingEnvKeys.push(key)
+  return fallback
 }
+
+const localhostOrigin = typeof window === 'undefined' ? 'http://localhost:5173' : window.location.origin
+const entraTenantId = getEnv('VITE_ENTRA_TENANT_ID', import.meta.env.VITE_ENTRA_TENANT_ID, 'common')
 
 export const env: Env = {
   environment: import.meta.env.VITE_ENVIRONMENT ?? 'local',
-  usersApiBaseUrl: required('VITE_USERS_API_BASE_URL', import.meta.env.VITE_USERS_API_BASE_URL),
-  shoppingListApiBaseUrl: required('VITE_SHOPPINGLIST_API_BASE_URL', import.meta.env.VITE_SHOPPINGLIST_API_BASE_URL),
-  productCatalogApiBaseUrl: required('VITE_PRODUCTCATALOG_API_BASE_URL', import.meta.env.VITE_PRODUCTCATALOG_API_BASE_URL),
-  entraClientId: required('VITE_ENTRA_CLIENT_ID', import.meta.env.VITE_ENTRA_CLIENT_ID),
-  entraTenantId: required('VITE_ENTRA_TENANT_ID', import.meta.env.VITE_ENTRA_TENANT_ID),
-  entraAuthority: required('VITE_ENTRA_AUTHORITY', import.meta.env.VITE_ENTRA_AUTHORITY),
-  entraRedirectUri: required('VITE_ENTRA_REDIRECT_URI', import.meta.env.VITE_ENTRA_REDIRECT_URI),
-  entraPostLogoutRedirectUri: required('VITE_ENTRA_POST_LOGOUT_REDIRECT_URI', import.meta.env.VITE_ENTRA_POST_LOGOUT_REDIRECT_URI),
-  apiAudience: required('VITE_API_AUDIENCE', import.meta.env.VITE_API_AUDIENCE),
+  usersApiBaseUrl: getEnv('VITE_USERS_API_BASE_URL', import.meta.env.VITE_USERS_API_BASE_URL, 'http://localhost:5001'),
+  shoppingListApiBaseUrl: getEnv(
+    'VITE_SHOPPINGLIST_API_BASE_URL',
+    import.meta.env.VITE_SHOPPINGLIST_API_BASE_URL,
+    'http://localhost:5002',
+  ),
+  productCatalogApiBaseUrl: getEnv(
+    'VITE_PRODUCTCATALOG_API_BASE_URL',
+    import.meta.env.VITE_PRODUCTCATALOG_API_BASE_URL,
+    'http://localhost:5003',
+  ),
+  entraClientId: getEnv('VITE_ENTRA_CLIENT_ID', import.meta.env.VITE_ENTRA_CLIENT_ID, '00000000-0000-0000-0000-000000000000'),
+  entraTenantId,
+  entraAuthority: getEnv(
+    'VITE_ENTRA_AUTHORITY',
+    import.meta.env.VITE_ENTRA_AUTHORITY,
+    `https://login.microsoftonline.com/${entraTenantId}/v2.0`,
+  ),
+  entraRedirectUri: getEnv('VITE_ENTRA_REDIRECT_URI', import.meta.env.VITE_ENTRA_REDIRECT_URI, `${localhostOrigin}/auth/callback`),
+  entraPostLogoutRedirectUri: getEnv(
+    'VITE_ENTRA_POST_LOGOUT_REDIRECT_URI',
+    import.meta.env.VITE_ENTRA_POST_LOGOUT_REDIRECT_URI,
+    localhostOrigin,
+  ),
+  apiScope: getEnv('VITE_API_SCOPE', import.meta.env.VITE_API_SCOPE, 'api://mikompri-backend/access_as_user'),
+}
+
+if (missingEnvKeys.length > 0) {
+  console.warn(
+    `[MiKompri.Web] Variables de entorno no definidas: ${missingEnvKeys.join(', ')}. Se aplicaron valores por defecto locales.`,
+  )
 }

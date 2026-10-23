@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Text.Json;
+using System.Security.Claims;
 using MediatR;
 using MiKompri.Users.Application.Commands.SyncProfile;
 
@@ -22,18 +21,24 @@ namespace MiKompri.Users.Api.Middleware
                 return;
             }
 
-            var tid = context.User.FindFirst("tid")?.Value;
-            var oid = context.User.FindFirst("oid")?.Value;
+            var tid = FirstClaimValue(context.User, "tid", "http://schemas.microsoft.com/identity/claims/tenantid")
+                ?? ExtractTenantIdFromIssuer(context.User.FindFirst("iss")?.Value);
+            var oid = FirstClaimValue(
+                context.User,
+                "oid",
+                "http://schemas.microsoft.com/identity/claims/objectidentifier",
+                "sub",
+                ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
             {
-                await WriteUnauthorizedAsync(context);
+                await _next(context);
                 return;
             }
 
-            var sub = context.User.FindFirst("sub")?.Value;
+            var sub = FirstClaimValue(context.User, "sub", ClaimTypes.NameIdentifier);
             var identityProvider = configuration["Authentication:IdentityProvider"] ?? "entra";
-            var name = context.User.FindFirst("name")?.Value;
-            var email = context.User.FindFirst("email")?.Value;
+            var name = FirstClaimValue(context.User, "name", ClaimTypes.Name);
+            var email = FirstClaimValue(context.User, "email", ClaimTypes.Email, "preferred_username", "upn");
 
             var result = await sender.Send(
                 new SyncProfileCommand(identityProvider, tid, oid, sub, name, email),
@@ -45,21 +50,34 @@ namespace MiKompri.Users.Api.Middleware
             await _next(context);
         }
 
-        private static Task WriteUnauthorizedAsync(HttpContext context)
+        private static string? FirstClaimValue(ClaimsPrincipal user, params string[] claimTypes)
         {
-            var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
-
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
-
-            var body = new
+            foreach (var claimType in claimTypes)
             {
-                status = StatusCodes.Status401Unauthorized,
-                error = "Authentication failed.",
-                traceId
-            };
+                var value = user.FindFirst(claimType)?.Value;
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+            }
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(body));
+            return null;
+        }
+
+        private static string? ExtractTenantIdFromIssuer(string? issuer)
+        {
+            if (string.IsNullOrWhiteSpace(issuer))
+            {
+                return null;
+            }
+
+            if (!Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
+            {
+                return null;
+            }
+
+            var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            return segments.Length > 0 ? segments[0] : null;
         }
     }
 }
