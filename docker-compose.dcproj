@@ -10,6 +10,8 @@
     <DockerServiceName>mikomprishoppinglistapi</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".github\instructions\mikompri-web-tests.instructions.md" />
+    <None Include=".github\instructions\mikompri-web.instructions.md" />
     <None Include=".github\workflows\cd-mikompri-shoppinglist.yml" />
     <None Include=".github\workflows\ci-mikompri-productcatalog.yml" />
     <None Include=".github\workflows\ci-mikompri-shoppinglist.yml" />
@@ -23,6 +25,30 @@
     <None Include="docs\adr\ADR-001-azure-deployment.md" />
     <None Include="docs\adr\ADR-002-migrations-strategy.md" />
     <None Include="docs\adr\ADR-003-adr-format.md" />
+    <None Include="MiKompri.Web\.env.example" />
+    <None Include="MiKompri.Web\playwright.config.ts" />
+    <None Include="MiKompri.Web\src\api\client\httpClient.ts" />
+    <None Include="MiKompri.Web\src\api\errors\httpErrorMapper.ts" />
+    <None Include="MiKompri.Web\src\app\App.tsx" />
+    <None Include="MiKompri.Web\src\app\providers\AppProviders.tsx" />
+    <None Include="MiKompri.Web\src\app\providers\queryClient.ts" />
+    <None Include="MiKompri.Web\src\app\router\index.tsx" />
+    <None Include="MiKompri.Web\src\app\router\routes.tsx" />
+    <None Include="MiKompri.Web\src\auth\guards\ProtectedRoute.tsx" />
+    <None Include="MiKompri.Web\src\auth\msal\msalConfig.ts" />
+    <None Include="MiKompri.Web\src\auth\session\authSessionService.ts" />
+    <None Include="MiKompri.Web\src\features\profile\api\profileApi.ts" />
+    <None Include="MiKompri.Web\src\features\profile\pages\LoginPage.tsx" />
+    <None Include="MiKompri.Web\src\features\profile\pages\ProfilePage.tsx" />
+    <None Include="MiKompri.Web\src\shared\config\env.ts" />
+    <None Include="MiKompri.Web\src\shared\ui\theme.ts" />
+    <None Include="MiKompri.Web\tests\component\auth\ProtectedRoute.spec.tsx" />
+    <None Include="MiKompri.Web\tests\e2e\auth\auth-session.spec.ts" />
+    <None Include="MiKompri.Web\tests\integration\auth\session.integration.spec.tsx" />
+    <None Include="MiKompri.Web\tests\integration\auth\token-expiration-write.integration.spec.tsx" />
+    <None Include="MiKompri.Web\tests\setup\vitest.setup.ts" />
+    <None Include="MiKompri.Web\tests\unit\auth\session.spec.ts" />
+    <None Include="MiKompri.Web\vitest.config.ts" />
     <None Include="README.md" />
     <None Include="specs\001-project-baseline\checklists\requirements.md" />
     <None Include="specs\001-project-baseline\contracts\adr-template.md" />
@@ -55,5 +81,12 @@
     <None Include="specs\004-product-catalog\research.md" />
     <None Include="specs\004-product-catalog\tasks.md" />
     <None Include="specs\005-shared-lists-settlement\tasks.md" />
+    <None Include="specs\007-web-react-client\checklists\requirements.md" />
+    <None Include="specs\007-web-react-client\contracts\frontend-backend-integration.md" />
+    <None Include="specs\007-web-react-client\data-model.md" />
+    <None Include="specs\007-web-react-client\quickstart.md" />
+    <None Include="specs\007-web-react-client\research.md" />
+    <None Include="specs\007-web-react-client\spec.md" />
+    <None Include="specs\007-web-react-client\tasks.md" />
   </ItemGroup>
 </Project>
