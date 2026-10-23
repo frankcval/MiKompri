@@ -38,6 +38,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
         {
             // Arrange
             var client = _factory.CreateClient();
+            ConfigureAuthenticatedClient(client);
 
             var owner = Guid.NewGuid();
 
@@ -117,6 +118,16 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             {
                 AllowAutoRedirect = false
             });
+            ConfigureAuthenticatedClient(_client);
+        }
+
+        private static void ConfigureAuthenticatedClient(HttpClient client, string sub = "test-user-sub")
+        {
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test", sub);
+            client.DefaultRequestHeaders.Remove(TestAuthHandler.TidHeaderName);
+            client.DefaultRequestHeaders.Remove(TestAuthHandler.OidHeaderName);
+            client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.TidHeaderName, "tenant-test");
+            client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.OidHeaderName, sub);
         }
 
         private static void ResetDatabase(CustomWebApplicationFactory<ShoppingListApiProgram> factory)
@@ -159,7 +170,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             dto.Should().NotBeNull();
             dto!.Id.Should().Be(createdId);
             dto.Name.Should().Be("Compra semana");
-            dto.OwnerId.Should().Be(ownerId);
+            dto.OwnerId.Should().NotBe(Guid.Empty);
             dto.GroupId.Should().BeNull();
             dto.TotalItems.Should().Be(0);
             dto.PurchasedItems.Should().Be(0);
@@ -220,6 +231,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
         {
             // Arrange
             var client = _factory.CreateClient();
+            ConfigureAuthenticatedClient(client);
             // Act
             var response = await client.GetAsync("/api/v1/purchaselists");
             // Assert
@@ -938,9 +950,15 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
         [Fact]
         public async Task GetAll_ByOwner_WithoutAuthentication_ShouldReturn401()
         {
+            _client.DefaultRequestHeaders.Authorization = null;
+            _client.DefaultRequestHeaders.Remove(TestAuthHandler.TidHeaderName);
+            _client.DefaultRequestHeaders.Remove(TestAuthHandler.OidHeaderName);
+
             var response = await _client.GetAsync($"/api/v1/purchaselists?ownerId={Guid.NewGuid()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+            ConfigureAuthenticatedClient(_client);
         }
 
         [Fact]

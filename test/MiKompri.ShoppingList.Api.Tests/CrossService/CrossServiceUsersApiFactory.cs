@@ -121,7 +121,9 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest.CrossService
             {
                 new Claim("sub", sub),
                 new Claim(System.Security.Claims.ClaimTypes.NameIdentifier, sub),
-                new Claim("name", sub)
+                new Claim("name", sub),
+                new Claim("tid", "tenant-test"),
+                new Claim("oid", sub)
             };
 
             var identity = new ClaimsIdentity(claims, SchemeName);
