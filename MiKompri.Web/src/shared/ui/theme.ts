@@ -22,4 +22,8 @@ const brandColors = {
 export const appTheme: Theme = {
   ...webLightTheme,
   ...createLightTheme(brandColors),
+  colorStrokeFocus2: '#173166',
+  strokeWidthThick: '3px',
+  colorBrandForeground1: '#173166',
+  colorBrandBackground: '#2e6dea',
 }

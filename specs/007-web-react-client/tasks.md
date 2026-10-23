@@ -95,19 +95,19 @@
 
 ### Tests for User Story 1
 
-- [ ] T040 [P] [US1] Crear pruebas unitarias de sesión/auth helpers en `MiKompri.Web/tests/unit/auth/session.spec.ts`
-- [ ] T041 [P] [US1] Crear pruebas de componente de `ProtectedRoute` en `MiKompri.Web/tests/component/auth/ProtectedRoute.spec.tsx`
-- [ ] T042 [P] [US1] Crear pruebas de integración MSW para `/users/me` y restauración de sesión en `MiKompri.Web/tests/integration/auth/session.integration.spec.tsx`
-- [ ] T103 [US1] Crear prueba de integración para expiración de token durante operación de escritura y reautenticación guiada en `MiKompri.Web/tests/integration/auth/token-expiration-write.integration.spec.tsx`
-- [ ] T043 [US1] Crear prueba E2E de login/logout/restore en `MiKompri.Web/tests/e2e/auth/auth-session.spec.ts`
+- [X] T040 [P] [US1] Crear pruebas unitarias de sesión/auth helpers en `MiKompri.Web/tests/unit/auth/session.spec.ts`
+- [X] T041 [P] [US1] Crear pruebas de componente de `ProtectedRoute` en `MiKompri.Web/tests/component/auth/ProtectedRoute.spec.tsx`
+- [X] T042 [P] [US1] Crear pruebas de integración MSW para `/users/me` y restauración de sesión en `MiKompri.Web/tests/integration/auth/session.integration.spec.tsx`
+- [X] T103 [US1] Crear prueba de integración para expiración de token durante operación de escritura y reautenticación guiada en `MiKompri.Web/tests/integration/auth/token-expiration-write.integration.spec.tsx`
+- [X] T043 [US1] Crear prueba E2E de login/logout/restore en `MiKompri.Web/tests/e2e/auth/auth-session.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T044 [P] [US1] Implementar flujo de login/logout en `MiKompri.Web/src/auth/session/authSessionService.ts`
-- [ ] T045 [P] [US1] Implementar pantalla de login y callback en `MiKompri.Web/src/features/profile/pages/LoginPage.tsx`
-- [ ] T046 [US1] Implementar consulta de perfil autenticado con TanStack Query en `MiKompri.Web/src/features/profile/api/profileApi.ts`
-- [ ] T047 [US1] Implementar vista de perfil con estados loading/error/empty/unauthorized en `MiKompri.Web/src/features/profile/pages/ProfilePage.tsx`
-- [ ] T048 [US1] Registrar rutas protegidas de perfil en `MiKompri.Web/src/app/router/routes.tsx`
+- [X] T044 [P] [US1] Implementar flujo de login/logout en `MiKompri.Web/src/auth/session/authSessionService.ts`
+- [X] T045 [P] [US1] Implementar pantalla de login y callback en `MiKompri.Web/src/features/profile/pages/LoginPage.tsx`
+- [X] T046 [US1] Implementar consulta de perfil autenticado con TanStack Query en `MiKompri.Web/src/features/profile/api/profileApi.ts`
+- [X] T047 [US1] Implementar vista de perfil con estados loading/error/empty/unauthorized en `MiKompri.Web/src/features/profile/pages/ProfilePage.tsx`
+- [X] T048 [US1] Registrar rutas protegidas de perfil en `MiKompri.Web/src/app/router/routes.tsx`
 
 **Checkpoint**: US1 funcional y testeable independientemente.
 
@@ -121,23 +121,23 @@
 
 ### Tests for User Story 2
 
-- [ ] T049 [P] [US2] Crear pruebas unitarias de validación de formularios (RHF + Zod) en `MiKompri.Web/tests/unit/features/groups/groupSchemas.spec.ts`
-- [ ] T050 [P] [US2] Crear pruebas de componente de lista personal en `MiKompri.Web/tests/component/features/shopping-lists/PersonalListPage.spec.tsx`
-- [ ] T051 [P] [US2] Crear pruebas de componente de lista compartida en `MiKompri.Web/tests/component/features/shared-lists/SharedListPage.spec.tsx`
-- [ ] T052 [P] [US2] Crear pruebas MSW para grupos/listas/ítems y errores 400/403/409 en `MiKompri.Web/tests/integration/features/lists-and-groups.integration.spec.tsx`
-- [ ] T053 [US2] Crear prueba E2E de CRUD de lista personal e ítems en `MiKompri.Web/tests/e2e/lists/personal-lists.spec.ts`
-- [ ] T054 [US2] Crear prueba E2E de acceso autorizado/no autorizado a lista compartida en `MiKompri.Web/tests/e2e/lists/shared-lists-authorization.spec.ts`
+- [X] T049 [P] [US2] Crear pruebas unitarias de validación de formularios (RHF + Zod) en `MiKompri.Web/tests/unit/features/groups/groupSchemas.spec.ts`
+- [X] T050 [P] [US2] Crear pruebas de componente de lista personal en `MiKompri.Web/tests/component/features/shopping-lists/PersonalListPage.spec.tsx`
+- [X] T051 [P] [US2] Crear pruebas de componente de lista compartida en `MiKompri.Web/tests/component/features/shared-lists/SharedListPage.spec.tsx`
+- [X] T052 [P] [US2] Crear pruebas MSW para grupos/listas/ítems y errores 400/403/409 en `MiKompri.Web/tests/integration/features/lists-and-groups.integration.spec.tsx`
+- [X] T053 [US2] Crear prueba E2E de CRUD de lista personal e ítems en `MiKompri.Web/tests/e2e/lists/personal-lists.spec.ts`
+- [X] T054 [US2] Crear prueba E2E de acceso autorizado/no autorizado a lista compartida en `MiKompri.Web/tests/e2e/lists/shared-lists-authorization.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T055 [P] [US2] Implementar API de grupos (crear/listar/membresías/invitar) en `MiKompri.Web/src/features/groups/api/groupsApi.ts`
-- [ ] T056 [P] [US2] Implementar páginas de grupos y membresías en `MiKompri.Web/src/features/groups/pages/GroupsPage.tsx`
-- [ ] T057 [P] [US2] Implementar API de listas personales e ítems en `MiKompri.Web/src/features/shopping-lists/api/shoppingListsApi.ts`
-- [ ] T058 [P] [US2] Implementar API de listas compartidas e ítems en `MiKompri.Web/src/features/shared-lists/api/sharedListsApi.ts`
-- [ ] T059 [US2] Implementar página de listas personales con formularios RHF+Zod en `MiKompri.Web/src/features/shopping-lists/pages/PersonalListsPage.tsx`
-- [ ] T060 [US2] Implementar página de listas compartidas con validación de estados 403 en `MiKompri.Web/src/features/shared-lists/pages/SharedListsPage.tsx`
-- [ ] T061 [US2] Implementar componentes de ítems y acciones CRUD en `MiKompri.Web/src/features/shopping-lists/components/ListItemsPanel.tsx`
-- [ ] T062 [US2] Registrar rutas de grupos/listas en `MiKompri.Web/src/app/router/routes.tsx`
+- [X] T055 [P] [US2] Implementar API de grupos (crear/listar/membresías/invitar) en `MiKompri.Web/src/features/groups/api/groupsApi.ts`
+- [X] T056 [P] [US2] Implementar páginas de grupos y membresías en `MiKompri.Web/src/features/groups/pages/GroupsPage.tsx`
+- [X] T057 [P] [US2] Implementar API de listas personales e ítems en `MiKompri.Web/src/features/shopping-lists/api/shoppingListsApi.ts`
+- [X] T058 [P] [US2] Implementar API de listas compartidas e ítems en `MiKompri.Web/src/features/shared-lists/api/sharedListsApi.ts`
+- [X] T059 [US2] Implementar página de listas personales con formularios RHF+Zod en `MiKompri.Web/src/features/shopping-lists/pages/PersonalListsPage.tsx`
+- [X] T060 [US2] Implementar página de listas compartidas con validación de estados 403 en `MiKompri.Web/src/features/shared-lists/pages/SharedListsPage.tsx`
+- [X] T061 [US2] Implementar componentes de ítems y acciones CRUD en `MiKompri.Web/src/features/shopping-lists/components/ListItemsPanel.tsx`
+- [X] T062 [US2] Registrar rutas de grupos/listas en `MiKompri.Web/src/app/router/routes.tsx`
 
 **Checkpoint**: US2 funcional e independiente, manteniendo US1 estable.
 
@@ -151,19 +151,19 @@
 
 ### Tests for User Story 3
 
-- [ ] T063 [P] [US3] Crear pruebas unitarias de reglas de formulario de gastos en `MiKompri.Web/tests/unit/features/settlements/expenseSchemas.spec.ts`
-- [ ] T064 [P] [US3] Crear pruebas de componente de balances/settlement en `MiKompri.Web/tests/component/features/settlements/SettlementPanel.spec.tsx`
-- [ ] T065 [P] [US3] Crear pruebas MSW de gastos, balances y settlement (incluye 503) en `MiKompri.Web/tests/integration/features/settlements.integration.spec.tsx`
-- [ ] T066 [US3] Crear prueba E2E de flujo registrar gasto + consultar settlement en `MiKompri.Web/tests/e2e/settlements/settlement-flow.spec.ts`
-- [ ] T102 [US3] Crear prueba E2E de acceso no autorizado (403) a settlement para miembro sin permisos en `MiKompri.Web/tests/e2e/settlements/settlement-authorization.spec.ts`
+- [X] T063 [P] [US3] Crear pruebas unitarias de reglas de formulario de gastos en `MiKompri.Web/tests/unit/features/settlements/expenseSchemas.spec.ts`
+- [X] T064 [P] [US3] Crear pruebas de componente de balances/settlement en `MiKompri.Web/tests/component/features/settlements/SettlementPanel.spec.tsx`
+- [X] T065 [P] [US3] Crear pruebas MSW de gastos, balances y settlement (incluye 503) en `MiKompri.Web/tests/integration/features/settlements.integration.spec.tsx`
+- [X] T066 [US3] Crear prueba E2E de flujo registrar gasto + consultar settlement en `MiKompri.Web/tests/e2e/settlements/settlement-flow.spec.ts`
+- [X] T102 [US3] Crear prueba E2E de acceso no autorizado (403) a settlement para miembro sin permisos en `MiKompri.Web/tests/e2e/settlements/settlement-authorization.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T067 [P] [US3] Implementar API de gastos compartidos en `MiKompri.Web/src/features/settlements/api/expensesApi.ts`
-- [ ] T068 [P] [US3] Implementar API de balances/settlement en `MiKompri.Web/src/features/settlements/api/settlementApi.ts`
-- [ ] T069 [US3] Implementar formulario de gasto compartido con RHF+Zod en `MiKompri.Web/src/features/settlements/components/ExpenseForm.tsx`
-- [ ] T070 [US3] Implementar vista de balances y transferencias propuestas en `MiKompri.Web/src/features/settlements/pages/SettlementPage.tsx`
-- [ ] T071 [US3] Integrar settlement en navegación de listas compartidas en `MiKompri.Web/src/features/shared-lists/pages/SharedListsPage.tsx`
+- [X] T067 [P] [US3] Implementar API de gastos compartidos en `MiKompri.Web/src/features/settlements/api/expensesApi.ts`
+- [X] T068 [P] [US3] Implementar API de balances/settlement en `MiKompri.Web/src/features/settlements/api/settlementApi.ts`
+- [X] T069 [US3] Implementar formulario de gasto compartido con RHF+Zod en `MiKompri.Web/src/features/settlements/components/ExpenseForm.tsx`
+- [X] T070 [US3] Implementar vista de balances y transferencias propuestas en `MiKompri.Web/src/features/settlements/pages/SettlementPage.tsx`
+- [X] T071 [US3] Integrar settlement en navegación de listas compartidas en `MiKompri.Web/src/features/shared-lists/pages/SharedListsPage.tsx`
 
 **Checkpoint**: US3 funcional e independiente, sin romper US1/US2.
 
@@ -177,17 +177,17 @@
 
 ### Tests for User Story 4
 
-- [ ] T072 [P] [US4] Crear pruebas unitarias de transformadores de catálogo en `MiKompri.Web/tests/unit/features/product-catalog/catalogMappers.spec.ts`
-- [ ] T073 [P] [US4] Crear pruebas de componente de listado de catálogo en `MiKompri.Web/tests/component/features/product-catalog/ProductCatalogPage.spec.tsx`
-- [ ] T074 [P] [US4] Crear pruebas MSW para catálogo read-only e historial (empty/503) en `MiKompri.Web/tests/integration/features/product-catalog.integration.spec.tsx`
-- [ ] T075 [US4] Crear prueba E2E de navegación y consulta de ProductCatalog en `MiKompri.Web/tests/e2e/product-catalog/product-catalog-readonly.spec.ts`
+- [X] T072 [P] [US4] Crear pruebas unitarias de transformadores de catálogo en `MiKompri.Web/tests/unit/features/product-catalog/catalogMappers.spec.ts`
+- [X] T073 [P] [US4] Crear pruebas de componente de listado de catálogo en `MiKompri.Web/tests/component/features/product-catalog/ProductCatalogPage.spec.tsx`
+- [X] T074 [P] [US4] Crear pruebas MSW para catálogo read-only e historial (empty/503) en `MiKompri.Web/tests/integration/features/product-catalog.integration.spec.tsx`
+- [X] T075 [US4] Crear prueba E2E de navegación y consulta de ProductCatalog en `MiKompri.Web/tests/e2e/product-catalog/product-catalog-readonly.spec.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T076 [P] [US4] Implementar API read-only de ProductCatalog en `MiKompri.Web/src/features/product-catalog/api/productCatalogApi.ts`
-- [ ] T077 [US4] Implementar página read-only de productos/mercados en `MiKompri.Web/src/features/product-catalog/pages/ProductCatalogPage.tsx`
-- [ ] T078 [US4] Implementar vista de historial de precios por producto/mercado en `MiKompri.Web/src/features/product-catalog/components/PriceHistoryPanel.tsx`
-- [ ] T079 [US4] Registrar ruta de ProductCatalog en `MiKompri.Web/src/app/router/routes.tsx`
+- [X] T076 [P] [US4] Implementar API read-only de ProductCatalog en `MiKompri.Web/src/features/product-catalog/api/productCatalogApi.ts`
+- [X] T077 [US4] Implementar página read-only de productos/mercados en `MiKompri.Web/src/features/product-catalog/pages/ProductCatalogPage.tsx`
+- [X] T078 [US4] Implementar vista de historial de precios por producto/mercado en `MiKompri.Web/src/features/product-catalog/components/PriceHistoryPanel.tsx`
+- [X] T079 [US4] Registrar ruta de ProductCatalog en `MiKompri.Web/src/app/router/routes.tsx`
 
 **Checkpoint**: US4 funcional e independiente.
 
@@ -201,18 +201,18 @@
 
 ### Tests for User Story 5
 
-- [ ] T080 [P] [US5] Crear pruebas de componente para estados UI globales en `MiKompri.Web/tests/component/shared/UiStateViews.spec.tsx`
-- [ ] T081 [P] [US5] Crear pruebas de accesibilidad básica en componentes clave con RTL en `MiKompri.Web/tests/component/accessibility/accessibility-smoke.spec.tsx`
-- [ ] T082 [P] [US5] Crear pruebas MSW de mapeo de errores HTTP 401/403/503 en `MiKompri.Web/tests/integration/shared/http-error-states.integration.spec.tsx`
-- [ ] T083 [US5] Crear prueba E2E responsive (mobile/tablet/desktop) de flujos P1 en `MiKompri.Web/tests/e2e/responsive/responsive-smoke.spec.ts`
+- [X] T080 [P] [US5] Crear pruebas de componente para estados UI globales en `MiKompri.Web/tests/component/shared/UiStateViews.spec.tsx`
+- [X] T081 [P] [US5] Crear pruebas de accesibilidad básica en componentes clave con RTL en `MiKompri.Web/tests/component/accessibility/accessibility-smoke.spec.tsx`
+- [X] T082 [P] [US5] Crear pruebas MSW de mapeo de errores HTTP 401/403/503 en `MiKompri.Web/tests/integration/shared/http-error-states.integration.spec.tsx`
+- [X] T083 [US5] Crear prueba E2E responsive (mobile/tablet/desktop) de flujos P1 en `MiKompri.Web/tests/e2e/responsive/responsive-smoke.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T084 [P] [US5] Implementar componentes globales `LoadingState`, `EmptyState`, `ErrorState`, `UnauthorizedState`, `ForbiddenState`, `ServiceUnavailableState` en `MiKompri.Web/src/shared/ui/states/`
-- [ ] T085 [P] [US5] Implementar utilidades de accesibilidad (focus management, nombres accesibles) en `MiKompri.Web/src/shared/accessibility/a11y.ts`
-- [ ] T086 [US5] Aplicar layout responsive base en `MiKompri.Web/src/app/layout/MainLayout.tsx`
-- [ ] T087 [US5] Integrar estados UX globales en páginas de features en `MiKompri.Web/src/shared/ui/states/withViewState.tsx`
-- [ ] T088 [US5] Ajustar tema Fluent UI para contraste y foco visible en `MiKompri.Web/src/shared/ui/theme.ts`
+- [X] T084 [P] [US5] Implementar componentes globales `LoadingState`, `EmptyState`, `ErrorState`, `UnauthorizedState`, `ForbiddenState`, `ServiceUnavailableState` en `MiKompri.Web/src/shared/ui/states/`
+- [X] T085 [P] [US5] Implementar utilidades de accesibilidad (focus management, nombres accesibles) en `MiKompri.Web/src/shared/accessibility/a11y.ts`
+- [X] T086 [US5] Aplicar layout responsive base en `MiKompri.Web/src/app/layout/MainLayout.tsx`
+- [X] T087 [US5] Integrar estados UX globales en páginas de features en `MiKompri.Web/src/shared/ui/states/withViewState.tsx`
+- [X] T088 [US5] Ajustar tema Fluent UI para contraste y foco visible en `MiKompri.Web/src/shared/ui/theme.ts`
 
 **Checkpoint**: US5 funcional e independiente.
 
@@ -222,16 +222,16 @@
 
 **Purpose**: Cierre transversal de calidad, CI y preparación de despliegue.
 
-- [ ] T089 [P] Configurar workflow CI frontend (install + lint + typecheck + tests unit/component/integration + e2e smoke + build + `docker build`) en `.github/workflows/ci-mikompri-web.yml`
-- [ ] T104 [P] Crear Dockerfile del frontend para build reproducible en CI en `MiKompri.Web/Dockerfile`
-- [ ] T090 [P] Configurar estrategia de preparación Azure Static Web Apps (sin despliegue) en `MiKompri.Web/staticwebapp.config.json`
-- [ ] T091 [P] Documentar variables de entorno local/cloud y redirect URIs en `MiKompri.Web/.env.example`
-- [ ] T092 [P] Agregar guía de CORS para frontend y APIs en `docs/web-client-cors.md`
-- [ ] T093 Ejecutar regresión API de ShoppingList MVP-0/MVP-3 con `dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release` y registrar resultado en `specs/007-web-react-client/quickstart.md`
-- [ ] T094 Actualizar quickstart de validación cruzada frontend/backend en `specs/007-web-react-client/quickstart.md`
-- [ ] T100 Ejecutar regresión API de Users MVP-1 con `dotnet test test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj --configuration Release` y registrar resultado en `specs/007-web-react-client/quickstart.md`
-- [ ] T101 Ejecutar regresión API de ProductCatalog MVP-2 con `dotnet test test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj --configuration Release` y registrar resultado en `specs/007-web-react-client/quickstart.md`
-- [ ] T105 [P] Documentar matriz de alineación de contratos/identidad reutilizable para clientes Web/MAUI/iOS en `docs/client-contract-reuse-guidelines.md`
+- [X] T089 [P] Configurar workflow CI frontend (install + lint + typecheck + tests unit/component/integration + e2e smoke + build + `docker build`) en `.github/workflows/ci-mikompri-web.yml`
+- [X] T104 [P] Crear Dockerfile del frontend para build reproducible en CI en `MiKompri.Web/Dockerfile`
+- [X] T090 [P] Configurar estrategia de preparación Azure Static Web Apps (sin despliegue) en `MiKompri.Web/staticwebapp.config.json`
+- [X] T091 [P] Documentar variables de entorno local/cloud y redirect URIs en `MiKompri.Web/.env.example`
+- [X] T092 [P] Agregar guía de CORS para frontend y APIs en `docs/web-client-cors.md`
+- [X] T093 Ejecutar regresión API de ShoppingList MVP-0/MVP-3 con `dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release` y registrar resultado en `specs/007-web-react-client/quickstart.md`
+- [X] T094 Actualizar quickstart de validación cruzada frontend/backend en `specs/007-web-react-client/quickstart.md`
+- [X] T100 Ejecutar regresión API de Users MVP-1 con `dotnet test test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj --configuration Release` y registrar resultado en `specs/007-web-react-client/quickstart.md`
+- [X] T101 Ejecutar regresión API de ProductCatalog MVP-2 con `dotnet test test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj --configuration Release` y registrar resultado en `specs/007-web-react-client/quickstart.md`
+- [X] T105 [P] Documentar matriz de alineación de contratos/identidad reutilizable para clientes Web/MAUI/iOS en `docs/client-contract-reuse-guidelines.md`
 
 ---
 

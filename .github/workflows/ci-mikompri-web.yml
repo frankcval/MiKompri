@@ -1,0 +1,62 @@
+name: CI - MiKompri Web
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/*'
+      - 'hotfix/*'
+      - '007-web-react-client'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  web-build-test-and-docker:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: MiKompri.Web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: MiKompri.Web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npx vitest run tests/unit --passWithNoTests
+
+      - name: Component tests
+        run: npx vitest run tests/component --passWithNoTests
+
+      - name: Integration tests
+        run: npx vitest run tests/integration --passWithNoTests
+
+      - name: E2E smoke tests
+        run: npx playwright test --grep @smoke --pass-with-no-tests
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Docker build frontend (TP4)
+        run: docker build -t mikompri.web -f MiKompri.Web/Dockerfile .
+        working-directory: .

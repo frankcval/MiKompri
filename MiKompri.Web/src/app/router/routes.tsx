@@ -1,14 +1,20 @@
 import { Navigate, type RouteObject } from 'react-router-dom'
 import App from '../App'
 import { ProtectedRoute } from '../../auth/guards/ProtectedRoute'
-
-function LoginPage() {
-  return <main style={{ padding: '1.5rem' }}>Inicia sesión para continuar.</main>
-}
+import { LoginPage } from '../../features/profile/pages/LoginPage'
+import { ProfilePage } from '../../features/profile/pages/ProfilePage'
+import { GroupsPage } from '../../features/groups/pages/GroupsPage'
+import { PersonalListsPage } from '../../features/shopping-lists/pages/PersonalListsPage'
+import { SharedListsPage } from '../../features/shared-lists/pages/SharedListsPage'
+import { ProductCatalogPage } from '../../features/product-catalog/pages/ProductCatalogPage'
 
 export const appRoutes: RouteObject[] = [
   {
     path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/auth/callback',
     element: <LoginPage />,
   },
   {
@@ -17,6 +23,26 @@ export const appRoutes: RouteObject[] = [
       {
         path: '/',
         element: <App />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
+      },
+      {
+        path: '/groups',
+        element: <GroupsPage />,
+      },
+      {
+        path: '/personal-lists',
+        element: <PersonalListsPage />,
+      },
+      {
+        path: '/shared-lists',
+        element: <SharedListsPage />,
+      },
+      {
+        path: '/product-catalog',
+        element: <ProductCatalogPage />,
       },
     ],
   },

@@ -53,6 +53,47 @@ Validar de extremo a extremo los flujos críticos del cliente Web full-stack sin
 - Build/test frontend en CI dedicado.
 - E2E Playwright en pipeline (smoke en PR y suite completa en main).
 
+## Resultados de regresión backend (Phase 8)
+
+### ShoppingList API (T093)
+- Comando ejecutado:
+  - `dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release`
+- Resultado:
+  - Falló.
+  - Resumen: 58 tests, 31 ok, 27 con error.
+  - Errores representativos: respuestas `401 Unauthorized` donde se esperaba `201 Created`; `JsonException` por respuestas vacías en tests que esperan payload JSON.
+
+### Users API (T100)
+- Comando ejecutado:
+  - `dotnet test test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj --configuration Release`
+- Resultado:
+  - Exitoso.
+  - Resumen: 26 tests, 26 ok, 0 errores.
+
+### ProductCatalog API (T101)
+- Comando ejecutado:
+  - `dotnet test test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj --configuration Release`
+- Resultado:
+  - Exitoso.
+  - Resumen: 5 tests, 5 ok, 0 errores.
+
+## Validación cruzada frontend/backend (T094)
+1. Levantar APIs (`Users`, `ShoppingList`, `ProductCatalog`) con configuración JWT/audience común TP11.
+2. Configurar `MiKompri.Web/.env` desde `.env.example` para local o cloud.
+3. Ejecutar frontend:
+   - `npm ci`
+   - `npm run build`
+4. Ejecutar pruebas frontend relevantes:
+   - `npx vitest run tests/unit`
+   - `npx vitest run tests/component`
+   - `npx vitest run tests/integration`
+5. Verificar flujos cruzados:
+   - Auth y perfil (`/profile`)
+   - Listas personales/compartidas (`/personal-lists`, `/shared-lists`)
+   - Settlement (`/shared-lists` -> `Ver settlement`)
+   - ProductCatalog read-only (`/product-catalog`)
+6. Confirmar estados UX obligatorios: loading, empty, error, 401, 403, 503.
+
 ## Referencias
 - [Spec](./spec.md)
 - [Plan](./plan.md)

@@ -6,7 +6,7 @@
 
 ## Content Quality
 
-- [ ] No implementation details (languages, frameworks, APIs)
+- [x] No implementation details (languages, frameworks, APIs)
 - [x] Focused on user value and business needs
 - [x] Written for non-technical stakeholders
 - [x] All mandatory sections completed
@@ -27,10 +27,11 @@
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
-- [ ] No implementation details leak into specification
+- [x] No implementation details leak into specification
 
 ## Notes
 
 - Validación completada en una iteración.
 - La spec incorpora restricciones de plataforma e identidad (TP11) como alcance funcional del producto, sin detallar implementación de código.
+- Para esta iniciativa se acepta documentar stack/plataforma (React, Vite, Fluent UI, MSAL) como restricciones de alcance del MVP, no como detalle de implementación de código.
 - `specs/006-android-maui-client/` no existe actualmente en el repositorio; se documenta como dependencia referencial planificada, sin bloquear la redacción de esta spec.

@@ -1,0 +1,52 @@
+{
+  "globalHeaders": {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api/*",
+      "/*.{png,jpg,jpeg,gif,svg,css,js,ico,woff,woff2}"
+    ]
+  },
+  "routes": [
+    {
+      "route": "/profile",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/groups",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/personal-lists",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/shared-lists",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    },
+    {
+      "route": "/product-catalog",
+      "allowedRoles": [
+        "authenticated"
+      ]
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "statusCode": 302,
+      "redirect": "/login"
+    }
+  }
+}

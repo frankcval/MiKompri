@@ -1,9 +1,13 @@
+import { MainLayout } from './layout/MainLayout'
+
 function App() {
   return (
-    <main style={{ padding: '1.5rem' }}>
-      <h1>MiKompri Web</h1>
-      <p>Fundación transversal del cliente web inicializada.</p>
-    </main>
+    <MainLayout>
+      <section style={{ display: 'grid', gap: '0.75rem' }}>
+        <h2 style={{ margin: 0 }}>Inicio</h2>
+        <p>Fundación transversal del cliente web inicializada.</p>
+      </section>
+    </MainLayout>
   )
 }
 
