@@ -1,9 +1,13 @@
+using MiKompri.Users.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace MiKompri.Users.Infrastructure.Persistence.Migrations
 {
+    [DbContext(typeof(UsersDbContext))]
+    [Migration("20261023110000_AddCanonicalIdentityCorrelation")]
     public partial class AddCanonicalIdentityCorrelation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
