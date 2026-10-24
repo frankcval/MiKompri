@@ -107,7 +107,7 @@ describe('grupos propios por nombre en listas compartidas', () => {
 
   it('limpia settlement y borradores al cambiar de grupo; Atrás y Adelante restauran el grupo', async () => {
     mount(`?groupId=${first}`)
-    fireEvent.click(await screen.findByRole('button', { name: 'Ver settlement de Compra casa' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver reparto de gastos de Compra casa' }))
     await screen.findByRole('region', { name: 'Settlement list-family' })
     fireEvent.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
     fireEvent.change(await screen.findByRole('textbox', { name: 'Nombre de lista' }), { target: { value: 'Borrador' } })

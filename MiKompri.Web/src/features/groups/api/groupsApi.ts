@@ -6,6 +6,7 @@ export type GroupSummary = {
 export type GroupMember = {
   userId: string
   displayName?: string
+  email?: string | null
   role: 'Member' | 'Admin' | 'Owner' | string
 }
 

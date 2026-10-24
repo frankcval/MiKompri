@@ -137,12 +137,12 @@ function GroupLists({ group }: { group: GroupSummary }) {
       {listsQuery.data.map((list) => <Card key={list.id}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '0.75rem', alignItems: 'center' }}>
           <Text style={{ overflowWrap: 'anywhere', minWidth: 0 }}>{list.name}</Text>
-          <Button appearance="secondary" onClick={() => setSelectedListId(list.id)}>Ver settlement de {list.name}</Button>
+          <Button appearance="secondary" onClick={() => setSelectedListId(list.id)}>Ver reparto de gastos de {list.name}</Button>
         </div>
       </Card>)}
     </>}
     {selectedList ? <Card>
-      <CardHeader header={<Text weight="semibold">Settlement de {selectedList.name}</Text>} />
+      <CardHeader header={<Text weight="semibold">Reparto de gastos de {selectedList.name}</Text>} />
       <SettlementPage key={selectedList.id} sharedListId={selectedList.id} />
     </Card> : null}
   </section>

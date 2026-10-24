@@ -1,6 +1,9 @@
 export type ParticipantBalance = {
   userId: string
-  amount: number
+  totalPaid: number
+  totalOwed: number
+  netBalance: number
+  type: string
 }
 
 export type SettlementTransfer = {

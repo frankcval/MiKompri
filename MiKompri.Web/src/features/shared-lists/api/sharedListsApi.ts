@@ -5,6 +5,18 @@ export type SharedListSummary = {
   description?: string | null
 }
 
+export type SharedListDetail = SharedListSummary & {
+  items: { id: string; productName: string; quantity: number; isPurchased: boolean }[]
+}
+
+export async function getSharedListById(baseUrl: string, token: string, listId: string): Promise<SharedListDetail> {
+  const response = await fetch(`${baseUrl}/api/v1/shared-lists/${listId}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+  })
+  if (!response.ok) throw await parseError(response)
+  return await response.json() as SharedListDetail
+}
+
 export type CreateSharedListInput = {
   name: string
   groupId: string

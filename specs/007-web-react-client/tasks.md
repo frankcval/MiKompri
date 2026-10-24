@@ -10,6 +10,16 @@
 
 ## Format: `[ID] [P?] [Story] Description`
 
+## Reparto de gastos con personas por nombre — 2026-10-25
+
+- [X] Alinear con FR-012 y el plan: sustituir «Settlement» visible por **Reparto de gastos**, **Balance por persona** y pagos para saldar cuentas. Pagador/comprador por selector y participantes por casillas, con nombres de miembros de Users; no pedir UserIds ni mostrar UUIDs en balances/transferencias.
+- [X] Eliminar IDs de lista/ítem de ejemplo; cargar detalle autorizado, grupo, miembros y perfil del usuario. Elegir ítem real antes de registrar; sin ítems o membresía disponible no hay formulario operativo. Member solo puede escoger su propio pago; Owner/Admin pueden elegir pagador del grupo. Cambiar lista remonta el formulario.
+- [X] Corregir el contrato de registro a `paidBy`, `purchasedBy`, `realPaidPrice`, `currency`, `participants`; retirar nota no soportada. Corregir balance a `totalPaid/totalOwed/netBalance`. Validar, impedir envíos duplicados, conservar datos ante error y refrescar detalle/balance/propuesta tras éxito. No recalcular reglas financieras en frontend.
+- [X] `npx.cmd vitest run tests/component/features/settlements tests/component/features/shared-lists tests/integration/features/settlements.integration.spec.tsx tests/integration/auth/token-expiration-write.integration.spec.tsx`: **22 passed, 0 failed, 0 skipped**, con nueve casos nuevos en `ExpenseMembers.spec.tsx`. Typecheck/lint/build satisfactorios; continúa la advertencia de bundle >500 kB.
+- [X] MCP Playwright con APIs reales: lista/ítem dedicados de prueba, miembros con nombres, registro **201** de 12,50 EUR con un participante, balance actualizado, sin UUIDs ni «Settlement» visibles. Sin desbordamiento a 375/430/1280 px; capturas verificadas. Consola sin errores nuevos, advertencia conocida de React Router. Lista con su ítem/gasto de prueba eliminada (204), ausencia comprobada; producto existente solo leído, no modificado.
+
+Evidencia local `.playwright-mcp/expense-members-{375,430,1280}.png`, `expense-members-console.txt` y `expense-members-network.txt`; contrato sección 11 y FR-012 actualizados. Pendientes: prueba real con varios usuarios (los nombres/transferencias de dos usuarios sí se prueban con respuestas controladas), alta de ítems compartidos desde UI, RHF y cierre completo US3/T069/T071, resolución de nombres de antiguos miembros y soporte de otras divisas. No se marcan superados estos pendientes. Commit y push de esta corrección sin incorporar cambios previos de navegación.
+
 ## Grupos por nombre en listas compartidas — 2026-10-25
 
 - [X] Contrastar specs: FR-009/FR-011 de la 007 y FR-001/FR-003 de la 005 vinculan listas a grupos de Users con membresía; `plan.md`, «Pantallas del núcleo», ya exige selector por nombre y prohíbe GUID escrito por la persona. El campo GroupId era una desviación de implementación, no una necesidad del usuario. FR-011 y contrato sección 10 explicitan el criterio.
