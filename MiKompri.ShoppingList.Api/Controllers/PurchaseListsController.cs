@@ -203,6 +203,18 @@ namespace MiKompri.ShoppingList.Api.Controllers
             return NoContent();
         }
 
+        [Authorize]
+        [HttpGet("mine")]
+        [ProducesResponseType(typeof(IEnumerable<PurchaseListDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<IEnumerable<PurchaseListDTO>>> GetMine(CancellationToken cancellationToken)
+        {
+            // Resolve ownership on the server, never from a client-supplied ownerId.
+            var lists = await _mediator.Send(
+                new GetShoppingListsByOwnerQuery(_currentUser.UserId), cancellationToken);
+            return Ok(lists.Where(list => !list.GroupId.HasValue));
+        }
+
         //GET obtener lista de compras
         [Authorize]
         [HttpGet]

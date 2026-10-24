@@ -56,6 +56,8 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Preserve original Entra tid/oid claims for provisioning and UsersApi forwarding.
+        options.MapInboundClaims = false;
         options.Authority = builder.Configuration["Authentication:Authority"];
         options.Audience = builder.Configuration["Authentication:Audience"];
         options.TokenValidationParameters = ShoppingListJwtValidation.BuildTokenValidationParameters(
@@ -162,7 +164,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<UserProvisioningMiddleware>();
 
-app.UseHttpsRedirection();
+// Local Vite calls HTTP directly; redirecting to another port strips its Bearer header.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapControllers();
 

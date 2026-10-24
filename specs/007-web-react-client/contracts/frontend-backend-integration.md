@@ -44,3 +44,11 @@ Contrato de integración del cliente Web SPA con APIs existentes de MiKompri (`U
 - Redirect URIs separados para local y cloud.
 - Sin secretos en bundle.
 - Compatible con despliegue en Azure Static Web Apps (preferente) cuando se habilite la fase cloud.
+
+## 7. Personal Lists Read Contract (verified 2026-10-25)
+
+- `GET /api/v1/purchaselists/mine` requires the shared API Bearer token. ShoppingList preserves original Entra `tid`/`oid` claims (`MapInboundClaims = false`) and resolves the internal user through Users API.
+- Ownership comes from the resolved authenticated user, never a client-supplied `ownerId`. Only that user's personal lists (`groupId == null`) are returned; shared lists and other owners' lists are excluded.
+- Response: `200` with an array of `PurchaseListDTO` objects; `[]` is the successful empty state. Missing/invalid authentication or missing canonical identity returns `401`.
+- Local Development supports the configured HTTP base URL `http://localhost:8080` directly. Redirecting this request to HTTPS on port 8081 changes origin and strips the Bearer header in browsers. HTTPS redirection remains enabled outside Development.
+- Regression: `PersonalListsBearerTests` uses signed JWTs with the real Bearer handler, explicit HTTPS port, disabled automatic redirects, and allowed-origin CORS checks. Full ShoppingList API suite: 64 passed, 0 failed, 0 skipped. Browser: Vite + existing Entra session returns `200 []` at 375/430/1280 px with no new console errors or failed requests. Populated-list UI and mutations remain outside this verification.

@@ -10,6 +10,17 @@
 
 ## Format: `[ID] [P?] [Story] Description`
 
+## Corrección del 401 de listas personales — 2026-10-25
+
+- [X] Confirmar y corregir la identidad JWT en ShoppingList: `MapInboundClaims = false` conserva los claims Entra `tid`/`oid` usados por provisioning y por el adaptador de Users. Las pruebas con el manejador Bearer real reproducían 401 antes de la corrección.
+- [X] Implementar `GET /api/v1/purchaselists/mine` autenticado. Deriva el propietario del usuario resuelto en servidor y devuelve únicamente sus listas con `GroupId == null`, o `200 []` si no existen; ignora selectores ownerId/groupId del cliente.
+- [X] Corregir la redirección HTTP → HTTPS en Development: el cambio de puerto eliminaba Authorization y causaba otro 401/CORS. Se mantiene `UseHttpsRedirection` fuera de Development.
+- [X] Añadir cinco regresiones con JWT firmado y manejador Bearer real en `test/MiKompri.ShoppingList.Api.Tests/Security/PersonalListsBearerTests.cs`: aislamiento de propietario/listas compartidas, lista vacía, oid ausente, audiencia incorrecta y petición anónima. Simula puertos HTTP/HTTPS, no sigue redirecciones y comprueba CORS del origen Vite.
+- [X] Ejecutar `dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release --no-restore --logger "console;verbosity=minimal" --logger "trx;LogFileName=personal-lists-fix.trx" --results-directory .playwright-mcp/test-results`: **64 passed, 0 failed, 0 skipped**. Primer intento Debug bloqueado por permisos al copiar DLL; Release final satisfactorio. Persisten advertencias previas de nulabilidad en build Docker.
+- [X] Reconstruir y reiniciar únicamente ShoppingList con `docker compose up -d --build --no-deps mikomprishoppinglistapi`; verificar con MCP Playwright contra Vite y Entra reales: **200 []** a 375, 430 y 1280 px, estado «Sin listas personales todavía», cinco enlaces del menú y sin desbordamiento. En esta repetición: **0 errores de consola y 0 peticiones fallidas**; permanece la advertencia conocida de React Router. No fue necesario iniciar sesión de nuevo.
+
+Evidencia local: `.playwright-mcp/personal-lists-fixed-{375,430,1280}.png`, `personal-lists-fixed-console.txt`, `personal-lists-fixed-network.txt` y `test-results/personal-lists-fix.trx` (rutas desde la raíz). Contrato actualizado en [frontend-backend-integration.md](contracts/frontend-backend-integration.md). Los registros anteriores de fallo se conservan como histórico; este apartado resuelve el 401 observado, sin cerrar T106/T086 ni la feature completa. Pendiente: comprobar en navegador estados con listas pobladas y mutaciones; el aislamiento de usuarios sí queda cubierto por integración automatizada. Commit limitado a esta corrección, sin incluir cambios previos de navegación/diseño y sin push.
+
 ---
 
 ## Phase 1: Setup (Shared Infrastructure)
