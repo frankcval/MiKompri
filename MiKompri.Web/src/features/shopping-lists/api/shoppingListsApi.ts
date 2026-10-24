@@ -3,10 +3,11 @@ export type PersonalListSummary = {
   name: string
   ownerId?: string
   groupId?: string | null
+  items?: { id: string; productName: string; quantity: number; productPrice?: number | null; isPurchased: boolean }[]
 }
 
 export type ListItemInput = {
-  productId?: string | null
+  productId: string
   productName: string
   price: number
   quantity: number
@@ -18,7 +19,17 @@ export type CreatePersonalListInput = {
 }
 
 async function parseError(response: Response): Promise<Error & { status?: number }> {
-  const error = new Error(`shopping_lists_api_error_${response.status}`) as Error & { status?: number }
+  let message = 'No fue posible guardar los cambios. Inténtalo de nuevo.'
+  if (response.status === 401) message = 'Tu sesión no permite esta operación. Inicia sesión de nuevo.'
+  if (response.status === 403) message = 'No tienes permiso para modificar esta lista.'
+  if (response.status === 404) message = 'La lista ya no está disponible. Vuelve a tus listas.'
+  try {
+    const body = await response.json() as { errors?: Record<string, string[]>; error?: string }
+    if (response.status === 400) {
+      message = body.errors ? Object.values(body.errors).flat().join(' ') : body.error || 'Revisa los datos del ítem.'
+    }
+  } catch { /* Keep a useful message when the response has no JSON body. */ }
+  const error = new Error(message) as Error & { status?: number }
   error.status = response.status
   return error
 }

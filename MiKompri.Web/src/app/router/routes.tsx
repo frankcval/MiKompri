@@ -37,6 +37,10 @@ export const appRoutes: RouteObject[] = [
         element: <PersonalListsPage />,
       },
       {
+        path: '/personal-lists/:listId',
+        element: <PersonalListsPage />,
+      },
+      {
         path: '/shared-lists',
         element: <SharedListsPage />,
       },

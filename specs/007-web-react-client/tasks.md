@@ -10,6 +10,17 @@
 
 ## Format: `[ID] [P?] [Story] Description`
 
+## Selección de lista y alta de ítems — 2026-10-25
+
+- [X] Diagnosticar el 400: el formulario escribía en `lists[0]` sin selección y enviaba `productId: null`. Reproducido contra la API real: error de conversión `$.productId` a `System.Guid`; la ausencia de selección era un defecto de UX independiente.
+- [X] Incorporar `/personal-lists/:listId`, enlaces explícitos con selección visible, detalle con nombre/ítems y regreso al índice. Índice sin editor; ID no presente en las listas de la cuenta no habilita escrituras. Crear una lista abre su propio detalle. La recarga y el historial mantienen el ID.
+- [X] Sustituir producto de texto libre por selección de producto activo del catálogo; `ListItemInput.productId` obligatorio. Mostrar carga, error con reintento y catálogo vacío; nunca generar GUIDs ni enviar null para eludir el contrato.
+- [X] Validar cantidad entera positiva y precio no negativo, bloquear envíos pendientes/duplicados, preservar valores y mostrar validaciones HTTP ante errores, confirmar el alta y refrescar los ítems de la lista seleccionada. Cambiar lista reinicia el borrador.
+- [X] Pruebas: `npx.cmd vitest run tests/component/features/shopping-lists tests/component/auth tests/component/accessibility`: **30 passed, 0 failed, 0 skipped**, incluidos 13 escenarios nuevos en `PersonalListSelection.spec.tsx`. Integraciones de listas/grupos, expiración durante escritura y estados HTTP: **5 passed, 0 failed, 0 skipped**. Typecheck y lint satisfactorios. `npm.cmd run build` satisfactorio tras repetir con permisos para `.vite-temp`; advertencia de bundle >500 kB pendiente de optimización.
+- [X] MCP Playwright + Vite/APIs reales: crear lista y agregar producto con cantidad 2/precio 1.25 devuelve **201/201**; request incluye ID de catálogo real e ID de la lista abierta, y el ítem aparece en el detalle. Recarga, Atrás/Adelante, menú activo y ausencia de editor en índice comprobados. Sin desbordamiento a **375/430/1280 px**; teclado llega a Cantidad con foco visible. No hubo nuevos errores de consola ni peticiones fallidas durante el flujo válido; el 400 intencionado del diagnóstico se conserva como evidencia histórica.
+
+Evidencia local en `.playwright-mcp/`: `items-selection-empty-catalog.png`, `items-selection-fixed-{375,430,1280}.png`, `items-selection-keyboard.png`, `items-selection-console.txt` y `items-selection-network.txt`. Para probar el alta se creó un producto y una lista identificados como verificación: lista eliminada (204), producto desactivado (204), comprobada su ausencia del índice y del catálogo activo. El catálogo activo vuelve a estar vacío: para usar el alta normalmente necesita productos reales cargados; la UI lo comunica y bloquea el envío. No se modificaron las listas previas del usuario. Quedan pendientes las restantes operaciones CRUD, auditoría completa de accesibilidad y el cierre global de T107/T059/T060/T061; esta corrección no las certifica. Commit/push limitado al flujo de ítems y su documentación.
+
 ## Corrección del 401 de listas personales — 2026-10-25
 
 - [X] Confirmar y corregir la identidad JWT en ShoppingList: `MapInboundClaims = false` conserva los claims Entra `tid`/`oid` usados por provisioning y por el adaptador de Users. Las pruebas con el manejador Bearer real reproducían 401 antes de la corrección.
