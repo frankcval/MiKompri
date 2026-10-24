@@ -5,6 +5,31 @@ export type CatalogProduct = {
   isActive?: boolean
 }
 
+export type CreateCatalogProductInput = { name: string; purchaseUnit: string }
+
+export async function createCatalogProduct(baseUrl: string, token: string, input: CreateCatalogProductInput): Promise<CatalogProduct> {
+  const response = await fetch(`${baseUrl}/api/v1/catalog-products`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(input),
+  })
+  if (!response.ok) {
+    let message = response.status === 409
+      ? 'Ya existe un producto con ese nombre y unidad. Puedes seleccionarlo en tu lista.'
+      : 'No fue posible crear el producto. Inténtalo de nuevo.'
+    if (response.status === 403) message = 'No tienes permiso para crear productos.'
+    if (response.status === 400) {
+      try {
+        const body = await response.json() as { error?: string; errors?: { message: string }[] | Record<string, string[]> }
+        const messages = Array.isArray(body.errors) ? body.errors.map((error) => error.message) : Object.values(body.errors ?? {}).flat()
+        message = messages.join(' ') || body.error || 'Revisa el nombre y la unidad de compra.'
+      } catch { /* Keep the fallback when the server does not return JSON. */ }
+    }
+    throw Object.assign(new Error(message), { status: response.status })
+  }
+  return await response.json() as CatalogProduct
+}
+
 export type Market = {
   id: string
   name: string

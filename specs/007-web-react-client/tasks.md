@@ -10,6 +10,16 @@
 
 ## Format: `[ID] [P?] [Story] Description`
 
+## Acceso para crear productos — 2026-10-25
+
+- [X] Confirmar la carencia: existía POST de ProductCatalog, pero el cliente web solo consultaba productos. La restricción inicial de solo lectura dejaba sin recorrido el alta de ítems con catálogo vacío. Ampliación solicitada registrada en `spec.md` y contrato, sección 9.
+- [X] Añadir formulario visible **Catálogo → Crear producto**, nombre y unidad de compra, límites 120/30, campos obligatorios, trimming, bloqueo de duplicados pendientes, validaciones 400, conflicto 409, errores conservando valores y confirmación accesible.
+- [X] Añadir **Crear producto en el catálogo** al detalle de la lista y **Volver a la lista** al catálogo, conservando el ID con `returnTo` restringido a rutas internas. Refrescar la query compartida para que el producto creado aparezca al volver en el selector de ítems. Crear producto no agrega automáticamente un ítem.
+- [X] Verificar `npx.cmd vitest run tests/component/features/product-catalog tests/component/features/shopping-lists tests/integration/features/product-catalog.integration.spec.tsx`: **24 passed, 0 failed, 0 skipped**, incluidos siete casos nuevos de creación/retorno, campos obligatorios, errores, reintento y envíos duplicados. Typecheck, lint y build satisfactorios; persiste la advertencia de bundle >500 kB.
+- [X] MCP Playwright con Vite/APIs reales: lista existente → enlace de creación → nombre/unidad → **201 Created** → regreso a la misma lista → nuevo producto seleccionable y botón Agregar ítem habilitado. Sin modificar los ítems de la lista existente. Sin desbordamiento a 375/430/1280 px. Consola sin errores nuevos; advertencia conocida de React Router.
+
+Capturas locales `.playwright-mcp/catalog-create-{375,430,1280}.png` y registros `catalog-create-console.txt`/`catalog-create-network.txt`. Producto de verificación desactivado después (204), comprobada su ausencia del catálogo activo; el formulario permanece visible para que el usuario cree productos reales. Pendientes: administración de mercados/precios, edición/desactivación desde UI y restantes criterios globales de US4; no se cierran por este alta acotada. Commit y push de esta corrección sin incluir cambios previos de navegación.
+
 ## Selección de lista y alta de ítems — 2026-10-25
 
 - [X] Diagnosticar el 400: el formulario escribía en `lists[0]` sin selección y enviaba `productId: null`. Reproducido contra la API real: error de conversión `$.productId` a `System.Guid`; la ausencia de selección era un defecto de UX independiente.

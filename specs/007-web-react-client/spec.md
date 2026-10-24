@@ -6,6 +6,8 @@
 
 **Status**: Draft
 
+**Actualización de alcance — 2026-10-25**: el usuario solicita completar el acceso para agregar productos al catálogo desde la web, necesario para poder agregar ítems a sus listas. Se incorpora creación de producto con nombre y unidad de compra mediante el contrato backend existente, validación y errores, refresco del catálogo y regreso a la lista de origen. Esta decisión posterior sustituye la restricción histórica de «solo lectura» exclusivamente para el alta de productos; no incorpora edición/desactivación de productos ni administración de mercados o precios. Las menciones originales de solo lectura que siguen se conservan como contexto de la definición inicial.
+
 **Input**: User description: "Crear la especificación 007-web-react-client como nuevo cliente Web full-stack de MiKompri, priorizado antes de MAUI, cumpliendo TP11 y reutilizando contratos backend existentes."
 
 ## Clarifications

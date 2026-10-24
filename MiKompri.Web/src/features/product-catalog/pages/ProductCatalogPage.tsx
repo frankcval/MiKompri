@@ -1,17 +1,23 @@
 import { Button, Card, CardHeader, Field, Input, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import { loginRequest } from '../../../auth/msal/msalConfig'
-import { createAuthSessionService } from '../../../auth/session/authSessionService'
+import { createAuthSessionService, executeAuthenticatedWrite } from '../../../auth/session/authSessionService'
 import { env } from '../../../shared/config/env'
-import { getCatalogProducts, getMarkets, getProductPriceHistory } from '../api/productCatalogApi'
+import { createCatalogProduct, getCatalogProducts, getMarkets, getProductPriceHistory } from '../api/productCatalogApi'
+import { CreateCatalogProductForm } from '../components/CreateCatalogProductForm'
 import { PriceHistoryPanel } from '../components/PriceHistoryPanel'
 import { withViewState } from '../../../shared/ui/states/withViewState'
 
 export function ProductCatalogPage() {
   const { instance, accounts } = useMsal()
   const account = accounts[0]
+  const queryClient = useQueryClient()
+  const [searchParams] = useSearchParams()
+  const requestedReturn = searchParams.get('returnTo') ?? ''
+  const returnTo = /^\/personal-lists\/[0-9a-f-]{36}$/i.test(requestedReturn) ? requestedReturn : null
   const authSession = useMemo(() => createAuthSessionService(instance), [instance])
 
   const [selectedProductId, setSelectedProductId] = useState('')
@@ -76,7 +82,21 @@ export function ProductCatalogPage() {
     state: 'ready',
     content: (
       <main style={{ padding: '1.5rem', display: 'grid', gap: '1rem' }}>
-        <h1>ProductCatalog</h1>
+        <h1>Catálogo de productos</h1>
+        {returnTo ? <Link to={returnTo}>Volver a la lista</Link> : null}
+
+        <Card>
+          <CardHeader header={<h2 style={{ margin: 0 }}>Crear producto</h2>} />
+          <CreateCatalogProductForm key={account.homeAccountId} onCreate={async (input) => {
+            const product = await executeAuthenticatedWrite(
+              (token) => createCatalogProduct(env.productCatalogApiBaseUrl, token, input),
+              () => authSession.getAccessToken(loginRequest.scopes, account),
+              async () => authSession.login(loginRequest.scopes),
+            )
+            await queryClient.invalidateQueries({ queryKey: ['catalog-products', account.homeAccountId] })
+            return product
+          }} />
+        </Card>
 
         <Card>
           <CardHeader header={<Text weight="semibold">Productos</Text>} />
@@ -85,9 +105,9 @@ export function ProductCatalogPage() {
               {productsQuery.data.map((product) => (
                 <div
                   key={product.id}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}
+                  style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}
                 >
-                  <Text>
+                  <Text style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                     {product.name} ({product.purchaseUnit ?? 'N/A'})
                   </Text>
                   <Button appearance="secondary" onClick={() => setSelectedProductId(product.id)}>

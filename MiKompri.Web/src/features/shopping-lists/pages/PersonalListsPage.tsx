@@ -107,6 +107,7 @@ export function PersonalListsPage() {
           ) : <p>Esta lista todavía no tiene ítems.</p>}
           <Card>
             <CardHeader header={<h3 style={{ margin: 0, overflowWrap: 'anywhere' }}>Agregar ítem a {selectedList.name}</h3>} />
+            <Link to={`/product-catalog?returnTo=${encodeURIComponent(`/personal-lists/${selectedList.id}`)}`}>Crear producto en el catálogo</Link>
             {productsQuery.isPending ? <Spinner label="Cargando productos" /> : productsQuery.isError ? (
               <div role="alert">No fue posible cargar los productos del catálogo. <Button onClick={() => void productsQuery.refetch()}>Reintentar</Button></div>
             ) : productsQuery.data?.some((product) => product.isActive !== false) ? (

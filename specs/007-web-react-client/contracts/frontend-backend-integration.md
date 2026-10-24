@@ -59,3 +59,10 @@ Contrato de integración del cliente Web SPA con APIs existentes de MiKompri (`U
 - `POST /api/v1/purchaselists/{listId}/items` requires `{ productId, productName, quantity, price }`: `productId` is a non-empty catalog UUID, `productName` is the selected product's display name, quantity is a positive integer and price is non-negative. `productId: null` fails model binding with HTTP 400 even when the list ID is correct.
 - Products come from `GET /api/v1/catalog-products`. An empty/unavailable catalog must not offer an invalid write. The UI displays an explanation or retry, preserves values on write failure, prevents pending duplicates and refreshes the selected list after success.
 - Browser verification used a dedicated product/list fixture: real HTTP 201 for list and item, quantity 2 and price 1.25, item visible after refresh. The test list was deleted and product deactivated afterwards (204 each); pre-existing lists were not changed. Actual catalog provisioning remains necessary for normal use when no active products exist.
+
+## 9. Catalog Product Creation (scope extended 2026-10-25)
+
+- The Web catalog now includes a **Crear producto** form. `POST /api/v1/catalog-products` sends Bearer auth and `{ name, purchaseUnit }`; trimmed non-empty name (max 120) and unit (max 30) are required. The existing API returns the created product DTO with HTTP 201; duplicate active name/unit returns 409.
+- Creation invalidates the account's shared `catalog-products` query so the product appears both in the catalog and in item selectors. Errors preserve inputs, pending requests block duplicate submission, and success is announced.
+- A selected personal list links to `/product-catalog?returnTo=/personal-lists/{listId}`. Only internal personal-list destinations are accepted; **Volver a la lista** restores the selected list. No item is automatically added when a product is created.
+- This extends the original read-only catalog scope only to product creation, per the user's request. Markets, price history and existing catalog viewing remain unchanged. Product editing/deactivation UI is outside this change.
