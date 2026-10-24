@@ -10,6 +10,16 @@
 
 ## Format: `[ID] [P?] [Story] Description`
 
+## Grupos por nombre en listas compartidas — 2026-10-25
+
+- [X] Contrastar specs: FR-009/FR-011 de la 007 y FR-001/FR-003 de la 005 vinculan listas a grupos de Users con membresía; `plan.md`, «Pantallas del núcleo», ya exige selector por nombre y prohíbe GUID escrito por la persona. El campo GroupId era una desviación de implementación, no una necesidad del usuario. FR-011 y contrato sección 10 explicitan el criterio.
+- [X] Sustituir GroupId por selector de grupos propios desde Users, con carga/error/reintento y enlace Crear grupo si no hay membresías. Sin selección no se consultan listas ni se permite crear; grupo ajeno de URL no se envía a ShoppingList.
+- [X] Conservar grupo en `?groupId=` para recarga/Atrás/Adelante; limpiar lista/settlement/borrador al cambiar de grupo o cuenta. Creación en diálogo con nombre de grupo, validación, bloqueo de duplicados, errores conservando nombre e invalidación de la consulta del grupo correcto. Un 403 oculta datos y deshabilita creación.
+- [X] `npx.cmd vitest run tests/component/features/shared-lists tests/component/auth tests/integration/features/lists-and-groups.integration.spec.tsx`: **27 passed, 0 failed, 0 skipped**, incluidos nueve casos nuevos en `SharedGroupSelection.spec.tsx`. Typecheck, lint y build satisfactorios; permanece la advertencia de bundle >500 kB.
+- [X] MCP Playwright + APIs reales: tres grupos mostrados por nombre, consultas **200** para los tres; selección conservada al recargar y usar historial; creación en grupo seleccionado **201** y lista visible sin recarga manual. Diálogo lleva foco al campo, Escape cierra y devuelve foco al disparador. Sin desbordamiento a 375/430/1280 px tanto con diálogo abierto como cerrado. Sin nuevos errores de consola; advertencia conocida de React Router.
+
+Evidencia local `.playwright-mcp/shared-groups-{375,430,1280}.png`, `shared-groups-dialog-{375,430,1280}.png`, `shared-groups-console.txt` y `shared-groups-network.txt`. Lista de prueba eliminada (204) y ausencia comprobada; no se modificaron los grupos ni listas previos. No se cierra toda US2/US3 ni T107/T060: siguen pendientes detalle compartido/ítems, apertura del detalle tras crear y reconciliación completa de roles (el handler de creación actual comprueba `IsAuthorizedMember`, mientras la 005 diferencia Owner/Admin/Member). Esta corrección acotada al selector/contexto no certifica esos permisos. Commit y push limitados a la corrección y documentación.
+
 ## Acceso para crear productos — 2026-10-25
 
 - [X] Confirmar la carencia: existía POST de ProductCatalog, pero el cliente web solo consultaba productos. La restricción inicial de solo lectura dejaba sin recorrido el alta de ítems con catálogo vacío. Ampliación solicitada registrada en `spec.md` y contrato, sección 9.

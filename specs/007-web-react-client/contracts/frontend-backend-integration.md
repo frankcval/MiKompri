@@ -66,3 +66,10 @@ Contrato de integración del cliente Web SPA con APIs existentes de MiKompri (`U
 - Creation invalidates the account's shared `catalog-products` query so the product appears both in the catalog and in item selectors. Errors preserve inputs, pending requests block duplicate submission, and success is announced.
 - A selected personal list links to `/product-catalog?returnTo=/personal-lists/{listId}`. Only internal personal-list destinations are accepted; **Volver a la lista** restores the selected list. No item is automatically added when a product is created.
 - This extends the original read-only catalog scope only to product creation, per the user's request. Markets, price history and existing catalog viewing remain unchanged. Product editing/deactivation UI is outside this change.
+
+## 10. Shared List Group Context (aligned 2026-10-25)
+
+- Per FR-009/FR-011 and the plan's core-screen definition, the group picker displays names from authenticated `GET /api/v1/groups` (Users). The user never types a UUID. No selection means no ShoppingList query or creation action; no memberships offers a link to `/groups`.
+- `/shared-lists?groupId={id}` persists group context for reload and history. The URL value must resolve to a group returned for the current account before enabling `GET /api/v1/shared-lists?groupId={id}` or creation. This client check complements server membership enforcement and is not a replacement for it.
+- Creating uses a dialog labelled with the selected group name, posts `{ name, groupId }` to `/api/v1/shared-lists`, and refreshes only that group's/account's list query. The group ID comes from the resolved group object, never free text. Errors retain the draft; pending submissions are blocked. Changing group/account clears local list/settlement selection and creation draft.
+- Backend authorization remains authoritative; 403 shows a permission state and hides list/settlement data. This change does not certify the complete Owner/Admin/Member permission matrix or implement shared-item detail routes.

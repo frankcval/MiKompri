@@ -143,7 +143,7 @@ Como usuario de escritorio, tablet o móvil, quiero una navegación clara con es
 - **FR-008**: El sistema MUST mostrar y refrescar el perfil del usuario autenticado usando los contratos vigentes de Users.
 - **FR-009**: El sistema MUST permitir gestión mínima de grupos: crear grupo, listar grupos del usuario y ver membresías. La invitación de miembros MUST habilitarse únicamente cuando exista contrato backend público versionado para invitaciones; en ausencia de dicho contrato, la UI MUST ocultar/deshabilitar la acción de invitar sin error técnico.
 - **FR-010**: El sistema MUST permitir crear, consultar, actualizar y eliminar listas personales e ítems según reglas actuales de ShoppingList.
-- **FR-011**: El sistema MUST permitir crear y operar listas compartidas de grupo respetando autorización por rol/membresía.
+- **FR-011**: El sistema MUST permitir crear y operar listas compartidas de grupo respetando autorización por rol/membresía. El grupo MUST seleccionarse por nombre entre los grupos del usuario obtenidos de Users; `GroupId` es un dato interno del contrato, nunca un campo de texto que deba completar la persona. La selección se conserva en la URL para recarga e historial. Sin grupos se ofrece acceso a crear uno; un grupo ajeno/no disponible no habilita consultas ni creación desde la UI.
 - **FR-012**: El sistema MUST permitir registrar gastos colaborativos, consultar balances y consultar settlement según contratos actuales.
 - **FR-013**: El sistema MUST ofrecer ProductCatalog estrictamente en modo read-only (productos, mercados e historial de precios).
 - **FR-014**: El sistema MUST implementar navegación principal para perfil, grupos, listas personales, listas compartidas y catálogo.
