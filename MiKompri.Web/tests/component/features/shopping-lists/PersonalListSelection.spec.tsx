@@ -1,6 +1,10 @@
+import '../../../setup/jsdom-dialogs'
+import userEvent from '@testing-library/user-event'
+import { FluentProvider } from '@fluentui/react-components'
+import { appTheme } from '../../../../src/shared/ui/theme'
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PersonalListsPage } from '../../../../src/features/shopping-lists/pages/PersonalListsPage'
@@ -26,12 +30,14 @@ function Navigation() {
 
 function mount(path = '/personal-lists') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
-  render(<QueryClientProvider client={client}><MemoryRouter initialEntries={[path]}>
+  render(<FluentProvider theme={appTheme}><QueryClientProvider client={client}><MemoryRouter initialEntries={[path]}>
     <Navigation /><Routes><Route path="/personal-lists/:listId?" element={<PersonalListsPage />} /></Routes>
-  </MemoryRouter></QueryClientProvider>)
+  </MemoryRouter></QueryClientProvider></FluentProvider>)
 }
 
+let user: ReturnType<typeof userEvent.setup>
 beforeEach(() => {
+  user = userEvent.setup()
   lists = [{ id: firstId, name: 'Primera', items: [] }, { id: secondId, name: 'Segunda', items: [] }]
   products = [product]
   failure = false
@@ -54,75 +60,77 @@ beforeEach(() => {
 })
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
+async function openAdd() {
+  await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
+  await screen.findByRole('dialog')
+}
 async function chooseProduct() {
+  if (!screen.queryByRole('combobox', { name: /producto/i })) await openAdd()
   fireEvent.change(await screen.findByRole('combobox', { name: /producto/i }), { target: { value: productId } })
 }
 
-describe('selección explícita de listas personales', () => {
-  it('no muestra el formulario ni consulta productos sin seleccionar lista', async () => {
+describe('recorrido privado personal', () => {
+  it('prioriza el índice sin formulario ni consultas de productos', async () => {
     mount()
     await screen.findByRole('link', { name: 'Segunda' })
-    expect(screen.getByText(/Selecciona una lista para ver/)).toBeInTheDocument()
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Agregar ítem' })).not.toBeInTheDocument()
     expect(fetchMock.mock.calls.every(([url]) => !url.endsWith('/catalog-products'))).toBe(true)
   })
-
-  it('envía el ID del producto y el de la segunda lista, muestra el ítem y conserva selección en historial', async () => {
+  it('envía los IDs del producto y la segunda lista sin tocar la primera', async () => {
     mount()
-    fireEvent.click(await screen.findByRole('link', { name: 'Primera' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Primera' })
-    fireEvent.click(screen.getByRole('link', { name: 'Segunda' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Segunda' })
+    await user.click(await screen.findByRole('link', { name: 'Segunda' }))
+    await screen.findByRole('heading', { name: 'Segunda', exact: true })
     await chooseProduct()
     fireEvent.change(screen.getByRole('spinbutton', { name: /cantidad/i }), { target: { value: '2' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Agregar ítem' }))
+    await user.click(screen.getByRole('button', { name: 'Agregar ítem' }))
     await screen.findByText('Arroz se agregó a esta lista.')
     const writes = fetchMock.mock.calls.filter(([url]) => url.endsWith('/items'))
     expect(writes).toHaveLength(1)
     expect(writes[0][0]).toContain(`/purchaselists/${secondId}/items`)
     expect(JSON.parse(writes[0][1].body)).toEqual({ productId, productName: 'Arroz', quantity: 2, price: 0 })
     expect(lists[0].items).toEqual([])
-    expect(screen.getByText(/Arroz · Cantidad: 2/)).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Atrás' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Primera' })
-    fireEvent.click(screen.getByRole('button', { name: 'Adelante' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Segunda' })
+    await user.click(screen.getByRole('button', { name: 'Terminar' }))
+    await screen.findByRole('listitem')
+    expect(screen.getByRole('listitem')).toHaveTextContent(/Arroz.*Cantidad: 2/)
+    await user.click(screen.getByRole('button', { name: 'Atrás' }))
+    await screen.findByRole('link', { name: 'Segunda' })
+    await user.click(screen.getByRole('button', { name: 'Adelante' }))
+    await screen.findByRole('heading', { name: 'Segunda', exact: true })
   })
-
-  it('abre el detalle por URL y no elige la primera lista', async () => {
+  it('abre el detalle por URL sin crear una selección implícita', async () => {
     mount(`/personal-lists/${secondId}`)
-    await screen.findByRole('heading', { name: 'Agregar ítem a Segunda' })
-    expect(screen.getByRole('link', { name: /Segunda/ })).toHaveAttribute('aria-current', 'page')
+    await screen.findByRole('heading', { name: 'Segunda', exact: true })
+    expect(screen.getByTestId('path')).toHaveTextContent(`/personal-lists/${secondId}`)
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
   })
-
-  it('no permite escribir en un ID que no pertenece a las listas cargadas', async () => {
+  it('no permite escribir en un ID que no pertenece a la cuenta', async () => {
     mount('/personal-lists/unknown')
     await screen.findByRole('alert')
-    expect(screen.queryByRole('button', { name: 'Agregar ítem' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Añadir productos' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Volver a mis listas' })).toBeInTheDocument()
   })
-
-  it('explica el catálogo vacío sin ofrecer envíos nulos', async () => {
+  it('explica catálogo vacío y ofrece alta con retorno a la lista', async () => {
     products = []
     mount(`/personal-lists/${secondId}`)
+    await openAdd()
     await screen.findByText(/No hay productos disponibles en el catálogo/)
     expect(screen.queryByRole('button', { name: 'Agregar ítem' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Crear producto en el catálogo' })).toHaveAttribute('href', `/product-catalog?returnTo=${encodeURIComponent(`/personal-lists/${secondId}`)}`)
   })
-
   it('conserva producto y cantidades ante 400 y permite reintentar', async () => {
     failure = true
     mount(`/personal-lists/${secondId}`)
     await chooseProduct()
     fireEvent.change(screen.getByRole('spinbutton', { name: /cantidad/i }), { target: { value: '3' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Agregar ítem' }))
+    await user.click(screen.getByRole('button', { name: 'Agregar ítem' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('La cantidad no es válida.')
     expect(screen.getByRole('combobox', { name: /producto/i })).toHaveValue(productId)
     expect(screen.getByRole('spinbutton', { name: /cantidad/i })).toHaveValue(3)
     failure = false
-    fireEvent.click(screen.getByRole('button', { name: 'Agregar ítem' }))
+    await user.click(screen.getByRole('button', { name: 'Agregar ítem' }))
     await screen.findByText('Arroz se agregó a esta lista.')
   })
-
   it.each([['0', '0'], ['1.5', '0'], ['-1', '0'], ['1', '-1'], ['', '0']])('bloquea cantidad/precio inválidos %s/%s', async (quantity, price) => {
     mount(`/personal-lists/${secondId}`)
     await chooseProduct()
@@ -131,35 +139,58 @@ describe('selección explícita de listas personales', () => {
     expect(screen.getByRole('button', { name: 'Agregar ítem' })).toBeDisabled()
     expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/items'))).toHaveLength(0)
   })
-
-  it('abre la lista recién creada', async () => {
+  it('crea en diálogo y abre exclusivamente la lista devuelta', async () => {
     mount()
-    await screen.findByRole('link', { name: 'Primera' })
-    fireEvent.change(screen.getByRole('textbox', { name: /nombre de lista/i }), { target: { value: 'Nueva compra' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Nueva compra' })
+    await user.click(await screen.findByRole('button', { name: 'Crear lista' }))
+    fireEvent.change(await screen.findByRole('textbox', { name: /nombre de lista/i }), { target: { value: 'Nueva compra' } })
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Crear lista', exact: true }))
+    await screen.findByRole('heading', { name: 'Nueva compra', exact: true })
     expect(screen.getByTestId('path')).toHaveTextContent('/personal-lists/new-list')
   })
-
-  it('impide doble envío y borra el borrador al cambiar de lista', async () => {
+  it('impide doble envío y reinicia borrador al cambiar de lista', async () => {
     mount(`/personal-lists/${secondId}`)
     await chooseProduct()
     let release!: () => void
     const original = fetchMock.getMockImplementation()!
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
-      if (url.endsWith('/items')) await new Promise<void>((resolve) => { release = resolve })
+      if (url.endsWith('/items')) await new Promise<void>(resolve => { release = resolve })
       return original(url, init)
     })
     const button = screen.getByRole('button', { name: 'Agregar ítem' })
-    fireEvent.click(button)
+    await user.click(button)
     await waitFor(() => expect(screen.getByRole('button', { name: /Agregando ítem/ })).toBeDisabled())
     fireEvent.submit(button.closest('form')!)
     await waitFor(() => expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/items'))).toHaveLength(1))
     await act(async () => { release() })
     await screen.findByText('Arroz se agregó a esta lista.')
-    await chooseProduct()
-    fireEvent.click(screen.getByRole('link', { name: 'Primera' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Primera' })
-    expect(screen.getByRole('combobox', { name: /producto/i })).toHaveValue('')
+    await user.click(screen.getByRole('button', { name: 'Terminar' }))
+    await user.click(await screen.findByRole('link', { name: 'Volver a mis listas' }))
+    await user.click(await screen.findByRole('link', { name: 'Primera' }))
+    await openAdd()
+    expect(await screen.findByRole('combobox', { name: /producto/i })).toHaveValue('')
+  })
+  it('marca solo el ítem de la lista abierta sin ofrecer desmarcado', async () => {
+    lists[1].items.push({ id: 'item-1', productName: 'Arroz', quantity: 1, isPurchased: false })
+    const original = fetchMock.getMockImplementation()!
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/mark-as-purchased')) { lists[1].items[0].isPurchased = true; return new Response(null, { status: 204 }) }
+      return original(url, init)
+    })
+    mount(`/personal-lists/${secondId}`)
+    await user.click(await screen.findByRole('button', { name: 'Marcar comprado: Arroz' }))
+    await screen.findByText('Producto marcado como comprado.')
+    expect(screen.getByRole('button', { name: 'Comprado: Arroz' })).toHaveAttribute('aria-disabled', 'true')
+    expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/mark-as-purchased'))[0][0]).toContain(`/purchaselists/${secondId}/items/item-1/`)
+    expect(lists[0].items).toEqual([])
+  })
+  it.each([401, 403, 503])('conserva la compra sin fingir éxito ante %s', async status => {
+    lists[1].items.push({ id: 'item-1', productName: 'Arroz', quantity: 1, isPurchased: false })
+    const original = fetchMock.getMockImplementation()!
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => url.endsWith('/mark-as-purchased') ? Response.json({}, { status }) : original(url, init))
+    mount(`/personal-lists/${secondId}`)
+    await user.click(await screen.findByRole('button', { name: 'Marcar comprado: Arroz' }))
+    await screen.findByRole('alert')
+    expect(screen.queryByRole('button', { name: 'Comprado: Arroz' })).not.toBeInTheDocument()
+    expect(lists[1].items[0].isPurchased).toBe(false)
   })
 })

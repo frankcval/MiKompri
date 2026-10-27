@@ -6,6 +6,8 @@
 
 **Status**: Draft
 
+**Estado de entrega — 2026-10-27**: implementación parcial, sin cierre global ni autorización de despliegue. Portada y coherencia visual transversal implementadas; [design.md](design.md) es la referencia vigente. T120–T126 registran evidencia acotada; las verificaciones integradas y el backlog restante conservan su estado.
+
 **Actualización de alcance — 2026-10-25**: el usuario solicita completar el acceso para agregar productos al catálogo desde la web, necesario para poder agregar ítems a sus listas. Se incorpora creación de producto con nombre y unidad de compra mediante el contrato backend existente, validación y errores, refresco del catálogo y regreso a la lista de origen. Esta decisión posterior sustituye la restricción histórica de «solo lectura» exclusivamente para el alta de productos; no incorpora edición/desactivación de productos ni administración de mercados o precios. Las menciones originales de solo lectura que siguen se conservan como contexto de la definición inicial.
 
 **Input**: User description: "Crear la especificación 007-web-react-client como nuevo cliente Web full-stack de MiKompri, priorizado antes de MAUI, cumpliendo TP11 y reutilizando contratos backend existentes."
@@ -80,9 +82,9 @@ Como miembro de un grupo, quiero registrar gastos por ítem y consultar balances
 
 ---
 
-### User Story 4 - Consulta del ProductCatalog en modo read-only (Priority: P2)
+### User Story 4 - Consulta y alta de productos del catálogo (Priority: P2)
 
-Como usuario autenticado, quiero consultar productos, mercados e historial de precios para apoyar decisiones de compra sin editar el catálogo desde este MVP.
+Como usuario autenticado, quiero consultar productos, mercados e historial de precios y crear productos con nombre y unidad para poder agregarlos a mis listas. La edición/desactivación de productos y la gestión de mercados/precios quedan fuera de alcance.
 
 **Why this priority**: Permite validar consumo cross-context de ProductCatalog con autenticación real y UX de consulta.
 
@@ -113,6 +115,16 @@ Como usuario de escritorio, tablet o móvil, quiero una navegación clara con es
 4. **Given** ancho de pantalla móvil (<768px), tablet (768–1023px) o desktop (>=1024px), **When** se usan flujos clave, **Then** la interfaz mantiene legibilidad, navegación y acciones principales sin solapamientos ni pérdida de funcionalidad.
 
 ---
+
+### Aceptación de portada y coherencia visual (US1/US5)
+
+Los criterios siguientes complementan US1/US5 para FR-032/033:
+
+- Visitante en `/`: ve la portada y un ejemplo temporal identificado como ficticio; no se hacen escrituras reales desde el ejemplo.
+- Usuario autenticado en `/` o tras login/callback: llega a `/personal-lists`. Crear lista utiliza el formulario existente y exige sesión real; durante bootstrap se muestra carga.
+- Al recorrer acceso, perfil, grupos, listas, catálogo, historial y reparto, se mantienen el tema, la jerarquía y los controles definidos en [design.md](design.md), incluso en carga/vacío/error.
+- A 320/390/430/768/1280 px, contenido y acciones permanecen legibles sin scroll horizontal. Drawer, diálogo y formularios son operables por teclado con foco visible y retorno al disparador al cerrar.
+- El menú autenticado conserva los cinco destinos y la protección de rutas. No se exponen «Vista», invitaciones o pagos simulados como funciones del producto.
 
 ### Edge Cases
 
@@ -145,12 +157,15 @@ Como usuario de escritorio, tablet o móvil, quiero una navegación clara con es
 - **FR-010**: El sistema MUST permitir crear, consultar, actualizar y eliminar listas personales e ítems según reglas actuales de ShoppingList.
 - **FR-011**: El sistema MUST permitir crear y operar listas compartidas de grupo respetando autorización por rol/membresía. El grupo MUST seleccionarse por nombre entre los grupos del usuario obtenidos de Users; `GroupId` es un dato interno del contrato, nunca un campo de texto que deba completar la persona. La selección se conserva en la URL para recarga e historial. Sin grupos se ofrece acceso a crear uno; un grupo ajeno/no disponible no habilita consultas ni creación desde la UI.
 - **FR-012**: El sistema MUST permitir registrar gastos colaborativos, consultar balances y consultar settlement según contratos actuales. La interfaz denomina este flujo «Reparto de gastos»; pagador, comprador opcional y participantes se eligen por nombre desde miembros del grupo, sin introducir UserIds. El registro exige seleccionar un ítem real de la lista y conserva los datos ante errores; se prohíben IDs de ejemplo y campos ajenos al contrato backend.
-- **FR-013**: El sistema MUST ofrecer ProductCatalog estrictamente en modo read-only (productos, mercados e historial de precios).
+- **FR-013**: El sistema MUST permitir consultar productos, mercados e historial y crear productos con nombre/unidad mediante el contrato existente, según la ampliación del 2026-10-25. La UI MUST validar, conservar valores ante error, bloquear duplicados pendientes y refrescar catálogo/selectores tras el alta. Edición/desactivación de productos y gestión de mercados/precios quedan fuera de alcance.
 - **FR-014**: El sistema MUST implementar navegación principal para perfil, grupos, listas personales, listas compartidas y catálogo.
 - **FR-015**: El sistema MUST manejar explícitamente estados loading, empty, error general, 401, 403 y 503 en vistas principales.
 - **FR-016**: El sistema MUST manejar errores HTTP 400/401/403/404/409/503 con mensajes accionables y sin filtrar detalles sensibles.
 - **FR-017**: El sistema MUST soportar comportamiento responsive en mobile (<768px), tablet (768–1023px) y desktop (>=1024px), manteniendo operables los flujos P1.
 - **FR-018**: El sistema MUST cumplir accesibilidad básica verificable: navegación por teclado, foco visible y etiquetas/nombres accesibles en controles clave.
+- **FR-032**: La raíz MUST mostrar una portada pública a visitantes y conducir a usuarios autenticados al índice personal. Crear lista MUST usar el flujo real protegido; el ejemplo local MUST estar identificado y separado de datos reales. El selector «Vista» y las simulaciones de autenticación, invitación y pago MUST quedar fuera del producto.
+- **FR-033**: Todas las secciones web MUST compartir la dirección visual de portada: Source Sans 3, primario #006B68, superficies claras, espaciado base 4 px, objetivos táctiles mínimos 44 × 44 px, jerarquía y foco visible. La adaptación MUST preservar rutas, permisos, identidad, contratos y valores de formularios. [design.md](design.md) concreta la referencia visual vigente.
+- **FR-034**: Los índices MUST priorizar seleccionar o crear una lista mediante diálogo breve. El detalle MUST conservar nombre, contexto, progreso y acción contextual de añadir productos; la selección permanece en URL. Compartidas MUST mantener Compra/Gastos en el mismo detalle y la pestaña en query. Se usan contratos reales, sin marcado compartido mientras no se acredite su autorización específica (T132), ni simulación de éxitos, desmarcado, invitaciones o pagos.
 
 ### Requisitos de arquitectura, configuración y pruebas
 
@@ -181,7 +196,7 @@ Como usuario de escritorio, tablet o móvil, quiero una navegación clara con es
 - **GroupSummary**: Representación de grupos y membresías del usuario para autorización funcional en listas compartidas.
 - **PurchaseListView**: Proyección de lista personal o compartida con sus ítems, estado de compra y permisos disponibles.
 - **SharedExpenseView**: Representación de gasto colaborativo por ítem con pagador, participantes, balance y settlement.
-- **CatalogReadModel**: Proyección de productos, mercados e historial de precios en modo solo lectura.
+- **CatalogReadModel**: Proyección de consulta de productos, mercados e historial; el alta de producto usa un comando separado con nombre y unidad.
 - **UiFeedbackState**: Estado de interfaz estándar para loading, empty, error y unauthorized.
 
 ## Success Criteria *(mandatory)*
@@ -208,7 +223,7 @@ Como usuario de escritorio, tablet o móvil, quiero una navegación clara con es
 
 - `specs/001-project-baseline/spec.md` (prioridad de roadmap y orden de iniciativas).
 - `specs/003-users-authentication/spec.md` (identidad, perfil, grupos y autorización por membresía).
-- `specs/004-product-catalog/spec.md` (modelo de catálogo/mercados/historial para consumo read-only).
+- `specs/004-product-catalog/spec.md` (contratos de consulta y alta de productos; no se amplía el backend por el diseño web).
 - `specs/005-shared-lists-settlement/spec.md` (reglas funcionales de listas compartidas, gastos, balances y settlement).
 - `specs/006-android-maui-client/` (referencia funcional/arquitectónica cuando esté disponible; en este repositorio no existe aún artefacto consumible).
 - `README.md` (estado del proyecto y dirección estratégica vigente).
@@ -224,3 +239,14 @@ Como usuario de escritorio, tablet o móvil, quiero una navegación clara con es
 - Administración avanzada de usuarios más allá de contratos backend actuales.
 - Cambio de roles no soportado por backend actual.
 - Implementación real de infraestructura Azure en esta fase de especificación.
+
+## Referencias de diseño y evidencia
+
+- [Diseño vigente](design.md): dirección visual, composición por sección y límites de entrega.
+- [Plan](plan.md): decisiones técnicas e histórico separado.
+- [Tareas](tasks.md): trazabilidad T086/T106–T126 y pendientes de cierre.
+- [Quickstart](quickstart.md): validación visual controlada e integrada, con sus resultados separados.
+
+## UX privada por lista — 2026-10-27
+
+FR-034 amplía US2/US3. Aceptación: crear abre el ID devuelto; añadir conserva la lista elegida y los valores ante fallo; marcado personal solo cambia tras éxito y mantiene foco; gastos corresponde al mismo ID compartido; pestaña y grupo sobreviven a navegación por URL e historial; el regreso del catálogo conserva la lista y la pestaña permitida. El marcado compartido no se habilita mientras T132 esté pendiente. Composición y límites en [design.md](design.md).

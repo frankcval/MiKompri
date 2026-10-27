@@ -305,7 +305,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             // Arrange 2: add items and mark one as purchased
             var firstProductId = Guid.NewGuid();
             var secondProductId = Guid.NewGuid();
-            await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", new AddItemRequest
+            var firstItemResponse = await _client.PostAsJsonAsync($"/api/v1/purchaselists/{createdListId}/items", new AddItemRequest
             {
                 ProductId = firstProductId,
                 ProductName = "Manzanas",
@@ -317,7 +317,8 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
                 ProductName = "Peras",
                 Quantity = 1
             });
-            var markResponse = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{firstProductId}/mark-as-purchased", null);
+            var firstItemId = await firstItemResponse.Content.ReadFromJsonAsync<Guid>();
+            var markResponse = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{firstItemId}/mark-as-purchased", null);
             markResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             // Act 2
@@ -734,7 +735,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             putItemResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             // Act 3: Mark purchased
-            var markResponse = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{productId}/mark-as-purchased", null);
+            var markResponse = await _client.PostAsync($"/api/v1/purchaselists/{createdListId}/items/{createdItemId}/mark-as-purchased", null);
             markResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
             // Assert current state

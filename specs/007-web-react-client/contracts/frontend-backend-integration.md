@@ -29,7 +29,7 @@ Contrato de integración del cliente Web SPA con APIs existentes de MiKompri (`U
 ## 4. Bounded Context Separation
 - `Users`: identidad/perfil/grupos/membresías.
 - `ShoppingList`: listas personales/compartidas, ítems, gastos, balances, settlement.
-- `ProductCatalog`: consulta read-only de productos/mercados/historial.
+- `ProductCatalog`: consulta de productos/mercados/historial y alta de productos según sección 9; sin gestión de mercados/precios ni edición/desactivación desde UI.
 - El frontend no accede a bases de datos ni lógica interna cross-context.
 
 ## 5. Backend Prerequisites (Blocking)
@@ -44,6 +44,10 @@ Contrato de integración del cliente Web SPA con APIs existentes de MiKompri (`U
 - Redirect URIs separados para local y cloud.
 - Sin secretos en bundle.
 - Compatible con despliegue en Azure Static Web Apps (preferente) cuando se habilite la fase cloud.
+
+### Presentación web vigente (2026-10-27)
+
+[design.md](../design.md) gobierna la presentación y navegación. La portada pública no concede acceso a las APIs; las rutas de negocio conservan MSAL/ProtectedRoute. Los selectores muestran nombres de grupos, miembros, productos y mercados, mientras envían los IDs del contrato. Formatear fechas, importes y progreso no cambia payloads, roles ni cálculos de reparto. Los ejemplos de portada y el harness de pruebas nunca son respuestas backend reales. Esta alineación documental no modifica endpoints, scopes ni configuración Entra.
 
 ## 7. Personal Lists Read Contract (verified 2026-10-25)
 
@@ -82,3 +86,16 @@ Contrato de integración del cliente Web SPA con APIs existentes de MiKompri (`U
 - `POST /api/v1/shared-lists/{listId}/items/{itemId}/expenses` sends `{ paidBy, purchasedBy, realPaidPrice, currency: "EUR", participants }`, not the previous incompatible `amount/paidByUserId/participantUserIds/note`. Purchaser may be null. Require positive amount, real item, eligible payer and at least one member participant. Preserve values on failure; block duplicate pending requests.
 - Summary balances use the actual `totalPaid`, `totalOwed`, `netBalance`, `type` fields, not a nonexistent `amount`. Transfers use backend `fromUserId/toUserId/amount`, rendered with member names; unavailable historic members get a nontechnical fallback rather than raw UUIDs. React formats amounts and does not recompute shares or settlement rules.
 - Real-browser verification registered EUR 12.50 on a dedicated list/item with one member (201), then refreshed the balance. Multiple-person labels/transfers, Member restrictions and 403 failures were verified in component tests; a multi-user real-tenant flow remains pending. Shared-item creation UI, historic-member identity resolution and currencies other than EUR remain outside this correction.
+
+## 12. Private list workflow (2026-10-27)
+
+- Personal index `/personal-lists` opens a short creation dialog. POST `/api/v1/purchaselists` still sends `{ name }`; only the returned ID is opened. The detail resolves its write target exclusively from the account's `/mine` response. Item creation remains `{ productId, productName, quantity, price }` with a real active catalog product.
+- POST `/api/v1/purchaselists/{listId}/items/{itemId}/mark-as-purchased` has no body and returns 204. The client calls it only for a pending item in a selected personal list, blocks duplicate writes, refreshes that account's query after success and never offers unmarking. This client restriction is not server authorization: the current generic handler lacks ownership/membership/role checks. Backend hardening remains an explicit prerequisite; it is not modified or certified by this UX work.
+- Shared detail `/shared-lists/:listId` uses GET `/api/v1/shared-lists/{id}`. The server's read handler is authoritative for membership. The return link derives groupId from the returned detail, not from untrusted query data. `?tab=shopping|expenses` selects Compra/Gastos; both tabs retain the same list ID. Named group context comes from Users, never a typed UUID.
+- Shared item creation uses POST `/api/v1/shared-lists/{id}/items` with `{ productId, name, quantity, estimatedPrice }`. The public handler verifies membership and records AddedBy. It is not routed through personal item creation. The generic mark endpoint is deliberately not used for shared lists because its authorization is not verified for the roles required by spec 005 FR-004. The UI explains this limitation instead of simulating a checked item.
+- Gastos embeds the existing settlement flow for that shared-list ID and obtains real items/members. No financial computation, transfer, invitation or payment is added. The existing role and historical-member limitations remain.
+- Catalog return destinations accept only internal personal/shared detail paths with UUIDs. Returning restores the selected list; creating a catalog product does not silently add an item or replace the list context. Creation and item forms use RHF + Zod, preserve values on failure and are separate from prototype fixtures.
+
+### Identidad del ítem al marcar compra — corrección 2026-10-27
+
+El endpoint `/api/v1/purchaselists/{listId}/items/{itemId}/mark-as-purchased` recibe el `Id` del ítem devuelto al añadirlo o consultarlo, no su `ProductId` de catálogo. El agregado buscaba erróneamente por ProductId, provocando «El item no existe en la lista» pese a una selección correcta del cliente. Se corrige solo el marcado para buscar `ListItem.Id`; sin cambio de ruta/payload, workaround en React, migración ni ampliación de permisos. T132 sigue abierto. La regresión HTTP crea lista, añade producto, lee /mine, marca con el ID devuelto y vuelve a leer estado/progreso; se repite el marcado para comprobar idempotencia.

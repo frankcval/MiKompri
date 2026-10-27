@@ -1,3 +1,7 @@
+import '../../../setup/jsdom-dialogs'
+import userEvent from '@testing-library/user-event'
+import { FluentProvider } from '@fluentui/react-components'
+import { appTheme } from '../../../../src/shared/ui/theme'
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -15,7 +19,9 @@ let status: number
 let errorBody: object
 let fetchMock: ReturnType<typeof vi.fn>
 
+let user: ReturnType<typeof userEvent.setup>
 beforeEach(() => {
+  user = userEvent.setup()
   products = []
   status = 201
   errorBody = {}
@@ -39,10 +45,10 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
 function mount(path = '/product-catalog') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  render(<QueryClientProvider client={client}><MemoryRouter initialEntries={[path]}><Routes>
+  render(<FluentProvider theme={appTheme}><QueryClientProvider client={client}><MemoryRouter initialEntries={[path]}><Routes>
     <Route path="/product-catalog" element={<ProductCatalogPage />} />
     <Route path="/personal-lists/:listId" element={<PersonalListsPage />} />
-  </Routes></MemoryRouter></QueryClientProvider>)
+  </Routes></MemoryRouter></QueryClientProvider></FluentProvider>)
 }
 async function fill() {
   fireEvent.change(await screen.findByRole('textbox', { name: 'Nombre del producto' }), { target: { value: ' Arroz ' } })
@@ -52,17 +58,19 @@ async function fill() {
 describe('crear productos desde el catálogo', () => {
   it('cierra el circuito lista → catálogo → producto nuevo → lista con producto disponible', async () => {
     mount(`/personal-lists/${listId}`)
-    fireEvent.click(await screen.findByRole('link', { name: 'Crear producto en el catálogo' }))
+    await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
+    await user.click(await screen.findByRole('link', { name: 'Crear producto en el catálogo' }))
     await fill()
-    fireEvent.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
     await screen.findByText('Arroz se creó y ya está disponible para tus listas.')
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(writes).toHaveLength(1)
     expect(JSON.parse(writes[0][1].body)).toEqual({ name: 'Arroz', purchaseUnit: 'kg' })
     expect(writes[0][1].headers.Authorization).toBe('Bearer token')
     expect(screen.getByText('Arroz (kg)')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('link', { name: 'Volver a la lista' }))
-    await screen.findByRole('heading', { name: 'Agregar ítem a Compra semanal' })
+    await user.click(screen.getByRole('link', { name: 'Volver a la lista' }))
+    await screen.findByRole('heading', { name: 'Compra semanal', exact: true })
+    await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
     const selector = await screen.findByRole('combobox', { name: /producto/i })
     fireEvent.change(selector, { target: { value: productId } })
     expect(screen.getByRole('button', { name: 'Agregar ítem', exact: true })).toBeEnabled()
@@ -84,7 +92,7 @@ describe('crear productos desde el catálogo', () => {
     status = 409
     mount()
     await fill()
-    fireEvent.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/Ya existe un producto/)
     expect(screen.getByRole('textbox', { name: 'Nombre del producto' })).toHaveValue(' Arroz ')
     expect(screen.getByRole('textbox', { name: 'Unidad de compra' })).toHaveValue(' kg ')
@@ -98,10 +106,10 @@ describe('crear productos desde el catálogo', () => {
     errorBody = body
     mount()
     await fill()
-    fireEvent.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
     expect(await screen.findByRole('alert')).toHaveTextContent('El nombre no es válido.')
     status = 201
-    fireEvent.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
     await screen.findByText('Arroz se creó y ya está disponible para tus listas.')
   })
 
@@ -109,6 +117,12 @@ describe('crear productos desde el catálogo', () => {
     mount('/product-catalog?returnTo=https://example.com')
     await screen.findByRole('textbox', { name: 'Nombre del producto' })
     expect(screen.queryByRole('link', { name: 'Volver a la lista' })).not.toBeInTheDocument()
+  })
+
+  it('conserva la pestaña del detalle compartido en el regreso al catálogo', async () => {
+    const destination = `/shared-lists/${listId}?tab=expenses`
+    mount(`/product-catalog?returnTo=${encodeURIComponent(destination)}`)
+    expect(await screen.findByRole('link', { name: 'Volver a la lista' })).toHaveAttribute('href', destination)
   })
 
   it('impide envíos duplicados mientras se guarda', async () => {
@@ -121,7 +135,7 @@ describe('crear productos desde el catálogo', () => {
       return original(url, init)
     })
     const button = screen.getByRole('button', { name: 'Crear producto', exact: true })
-    fireEvent.click(button)
+    await user.click(button)
     await screen.findByRole('button', { name: 'Creando producto…' })
     fireEvent.submit(button.closest('form')!)
     await waitFor(() => expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1))

@@ -1,30 +1,29 @@
-import type { PropsWithChildren } from 'react'
-import { Link } from 'react-router-dom'
+﻿import { useState, type PropsWithChildren } from 'react'
+import { NavLink, Outlet } from 'react-router-dom'
+import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, useRestoreFocusTarget } from '@fluentui/react-components'
+import s from './MainLayout.module.css'
+
+const destinations = [
+  ['/profile', 'Perfil'], ['/groups', 'Grupos'], ['/personal-lists', 'Listas personales'],
+  ['/shared-lists', 'Listas compartidas'], ['/product-catalog', 'Catálogo'],
+]
 
 export function MainLayout({ children }: PropsWithChildren) {
-  return (
-    <div
-      style={{
-        margin: '0 auto',
-        maxWidth: '1200px',
-        padding: '1rem',
-        display: 'grid',
-        gap: '1rem',
-      }}
-    >
-      <header>
-        <h1 style={{ margin: 0 }}>MiKompri Web</h1>
-      </header>
-
-      <nav aria-label="Navegación principal" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <Link to="/profile">Perfil</Link>
-        <Link to="/groups">Grupos</Link>
-        <Link to="/personal-lists">Listas personales</Link>
-        <Link to="/shared-lists">Listas compartidas</Link>
-        <Link to="/product-catalog">ProductCatalog</Link>
-      </nav>
-
-      <main role="main">{children}</main>
+  const [open, setOpen] = useState(false)
+  const restoreFocus = useRestoreFocusTarget()
+  const links = destinations.map(([to, label]) => <NavLink key={to} to={to} onClick={() => setOpen(false)}>{label}</NavLink>)
+  return <div className={s.shell}>
+    <a className={s.skip} href="#main-content">Saltar al contenido</a>
+    <header className={s.header}><NavLink to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</NavLink>
+      <Button {...restoreFocus} className={s.menuButton} aria-label="Abrir menú" aria-expanded={open} onClick={() => setOpen(true)}>Menú ☰</Button>
+    </header>
+    <div className={s.body}>
+      <nav className={`${s.desktopNav} ${s.links}`} aria-label="Navegación principal">{links}</nav>
+      <main className={s.main} id="main-content" tabIndex={-1}>{children ?? <Outlet />}</main>
     </div>
-  )
+    <Drawer open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="small">
+      <DrawerHeader><DrawerHeaderTitle action={<Button className={s.closeButton} aria-label="Cerrar menú" onClick={() => setOpen(false)}>✕</Button>}>MiKompri</DrawerHeaderTitle></DrawerHeader>
+      <DrawerBody><nav className={s.links} aria-label="Navegación principal">{links}</nav></DrawerBody>
+    </Drawer>
+  </div>
 }

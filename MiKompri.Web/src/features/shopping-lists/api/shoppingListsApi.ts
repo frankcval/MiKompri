@@ -97,3 +97,12 @@ export async function addPersonalListItem(
 
   return (await response.json()) as string
 }
+
+// Only called for a list and item resolved from the authenticated /mine response.
+// The generic backend handler still requires ownership hardening; never reuse for shared lists.
+export async function markPersonalListItem(baseUrl: string, token: string, listId: string, itemId: string): Promise<void> {
+  const response = await fetch(`${baseUrl}/api/v1/purchaselists/${listId}/items/${itemId}/mark-as-purchased`, {
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+  })
+  if (!response.ok) throw await parseError(response)
+}

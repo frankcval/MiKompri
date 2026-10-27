@@ -1,3 +1,4 @@
+import ui from '../../../shared/ui/AppSurface.module.css'
 import { z } from 'zod'
 import { useRef, useState } from 'react'
 import { Button, Checkbox, Field, Input, Select } from '@fluentui/react-components'
@@ -38,7 +39,7 @@ export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormP
     && participants.every((id) => members.some((member) => member.userId === id))
     && (!purchasedBy || members.some((member) => member.userId === purchasedBy))
 
-  return <form style={{ display: 'grid', gap: '0.75rem', minWidth: 0 }} onSubmit={async (event) => {
+  return <form className={ui.form} onSubmit={async (event) => {
     event.preventDefault()
     if (!valid || !parsed.success || submitting.current) return
     submitting.current = true
@@ -80,7 +81,7 @@ export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormP
         {members.map((member) => <option key={member.userId} value={member.userId}>{memberName(members, member.userId)}</option>)}
       </Select>
     </Field>
-    <fieldset style={{ minWidth: 0, margin: 0, padding: '0.75rem' }}>
+    <fieldset className={ui.fieldset}>
       <legend>Participantes del gasto</legend>
       <p>Selecciona entre quiénes se reparte este importe.</p>
       {members.map((member) => <Checkbox key={member.userId} label={memberName(members, member.userId)}

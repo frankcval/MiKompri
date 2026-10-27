@@ -1,3 +1,4 @@
+import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Field, Input } from '@fluentui/react-components'
 import { useRef, useState } from 'react'
 import type { CatalogProduct, CreateCatalogProductInput } from '../api/productCatalogApi'
@@ -11,7 +12,7 @@ export function CreateCatalogProductForm({ onCreate }: { onCreate: (input: Creat
   const submitting = useRef(false)
   const valid = name.trim().length > 0 && name.trim().length <= 120 && unit.trim().length > 0 && unit.trim().length <= 30
 
-  return <form style={{ display: 'grid', gap: '0.75rem', minWidth: 0 }} onSubmit={async (event) => {
+  return <form className={ui.form} onSubmit={async (event) => {
     event.preventDefault()
     if (!valid || submitting.current) return
     submitting.current = true

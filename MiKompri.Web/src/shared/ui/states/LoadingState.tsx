@@ -1,3 +1,4 @@
+import ui from '../AppSurface.module.css'
 import { Spinner, Text } from '@fluentui/react-components'
 
 type LoadingStateProps = {
@@ -6,7 +7,7 @@ type LoadingStateProps = {
 
 export function LoadingState({ label = 'Cargando...' }: LoadingStateProps) {
   return (
-    <section aria-live="polite" style={{ display: 'grid', gap: '0.5rem' }}>
+    <section className={ui.feedback} aria-live="polite">
       <Spinner label={label} />
       <Text>{label}</Text>
     </section>

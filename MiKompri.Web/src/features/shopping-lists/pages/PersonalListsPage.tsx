@@ -1,130 +1,68 @@
-import { Button, Card, CardHeader, Field, Input, Spinner, Text } from '@fluentui/react-components'
-import { useMsal } from '@azure/msal-react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { Button, Spinner } from '@fluentui/react-components'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { loginRequest } from '../../../auth/msal/msalConfig'
-import { createAuthSessionService, executeAuthenticatedWrite } from '../../../auth/session/authSessionService'
 import { env } from '../../../shared/config/env'
-import { getCatalogProducts } from '../../product-catalog/api/productCatalogApi'
-import { ListItemsPanel } from '../components/ListItemsPanel'
-import { addPersonalListItem, createPersonalList, getMyPersonalLists } from '../api/shoppingListsApi'
+import { PageHeader } from '../../../shared/ui/PageHeader'
+import { addPersonalListItem, createPersonalList, getMyPersonalLists, markPersonalListItem } from '../api/shoppingListsApi'
+import { CreateListDialog } from '../components/CreateListDialog'
+import { AddProductsDialog } from '../components/AddProductsDialog'
+import { PurchaseItems } from '../components/PurchaseItems'
+import { useListSession } from '../hooks/useListSession'
+import ui from '../../../shared/ui/AppSurface.module.css'
 
 export function PersonalListsPage() {
-  const { instance, accounts } = useMsal()
-  const account = accounts[0]
-  const authSession = createAuthSessionService(instance)
-  const queryClient = useQueryClient()
+  const { listId } = useParams<{ listId: string }>()
+  const { account } = useListSession()
+  return <PersonalListScreen key={`${account?.homeAccountId}:${listId ?? 'index'}`} />
+}
+
+function PersonalListScreen() {
+  const { account, token, write } = useListSession()
+  const client = useQueryClient()
   const navigate = useNavigate()
   const { listId } = useParams<{ listId: string }>()
-  const [name, setName] = useState('')
-  const listQueryKey = ['personal-lists', account?.homeAccountId]
-
-  const listsQuery = useQuery({
-    queryKey: listQueryKey,
-    enabled: Boolean(account),
-    queryFn: async () => {
-      const token = await authSession.getAccessToken(loginRequest.scopes, account)
-      return getMyPersonalLists(env.shoppingListApiBaseUrl, token)
-    },
-  })
-  // Only a list returned for the current account can become a write target.
-  const selectedList = listsQuery.isSuccess ? listsQuery.data.find((list) => list.id === listId) : undefined
-  const productsQuery = useQuery({
-    queryKey: ['catalog-products', account?.homeAccountId],
-    enabled: Boolean(account && selectedList),
-    retry: false,
-    queryFn: async () => {
-      const token = await authSession.getAccessToken(loginRequest.scopes, account)
-      return getCatalogProducts(env.productCatalogApiBaseUrl, token)
-    },
-  })
-
-  const createListMutation = useMutation({
-    mutationFn: () => executeAuthenticatedWrite(
-      (token) => createPersonalList(env.shoppingListApiBaseUrl, token, { name: name.trim() }),
-      () => authSession.getAccessToken(loginRequest.scopes, account),
-      async () => authSession.login(loginRequest.scopes),
-    ),
-    onSuccess: async (createdId) => {
-      setName('')
-      await queryClient.invalidateQueries({ queryKey: listQueryKey })
-      navigate(`/personal-lists/${createdId}`)
-    },
-  })
-
-  if (!account) return <Text>No hay sesión activa.</Text>
-
-  return (
-    <section style={{ padding: '1.5rem', display: 'grid', gap: '1rem', minWidth: 0 }}>
-      <h1>Listas personales</h1>
-      <Card>
-        <CardHeader header={<Text weight="semibold">Crear lista personal</Text>} />
-        <form style={{ display: 'grid', gap: '0.75rem' }} onSubmit={(event) => {
-          event.preventDefault()
-          if (name.trim() && !createListMutation.isPending) createListMutation.mutate()
-        }}>
-          <Field label="Nombre de lista" required>
-            <Input required value={name} disabled={createListMutation.isPending} onChange={(_, data) => setName(data.value)} />
-          </Field>
-          <Button type="submit" appearance="primary" disabled={!name.trim() || createListMutation.isPending}>
-            {createListMutation.isPending ? 'Creando lista…' : 'Crear lista'}
-          </Button>
-          {createListMutation.isError ? <p role="alert">{createListMutation.error.message}</p> : null}
-        </form>
-      </Card>
-
-      {listsQuery.isLoading ? <Spinner label="Cargando listas" /> : listsQuery.isError ? (
-        <p role="alert">No fue posible cargar listas personales.</p>
-      ) : (
-        <section aria-label="Mis listas personales" style={{ display: 'grid', gap: '0.5rem', minWidth: 0 }}>
-          {listsQuery.data?.map((list) => (
-            <Card key={list.id}>
-              <Link to={`/personal-lists/${list.id}`} aria-current={list.id === listId ? 'page' : undefined}
-                style={{ padding: '0.5rem', overflowWrap: 'anywhere', fontWeight: list.id === listId ? 700 : 400 }}>
-                {list.name}{list.id === listId ? ' (seleccionada)' : ''}
-              </Link>
-            </Card>
-          ))}
-          {listsQuery.data?.length === 0 ? <Text>Sin listas personales todavía. Crea una lista para empezar.</Text> : null}
-        </section>
-      )}
-
-      {!listId ? <p>Selecciona una lista para ver sus ítems y agregar productos.</p> : null}
-      {listId && listsQuery.isSuccess && !selectedList ? (
-        <p role="alert">Esta lista no está disponible en tus listas personales. <Link to="/personal-lists">Volver a mis listas</Link></p>
-      ) : null}
-      {selectedList ? (
-        <section aria-label={`Detalle de ${selectedList.name}`} style={{ display: 'grid', gap: '1rem', minWidth: 0 }}>
-          <h2 style={{ overflowWrap: 'anywhere' }}>{selectedList.name}</h2>
-          <Link to="/personal-lists">Volver a mis listas</Link>
-          {selectedList.items?.length ? (
-            <ul style={{ paddingInlineStart: '1.25rem' }}>
-              {selectedList.items.map((item) => <li key={item.id} style={{ overflowWrap: 'anywhere' }}>
-                {item.productName} · Cantidad: {item.quantity} · {item.isPurchased ? 'Comprado' : 'Pendiente'}
-              </li>)}
-            </ul>
-          ) : <p>Esta lista todavía no tiene ítems.</p>}
-          <Card>
-            <CardHeader header={<h3 style={{ margin: 0, overflowWrap: 'anywhere' }}>Agregar ítem a {selectedList.name}</h3>} />
-            <Link to={`/product-catalog?returnTo=${encodeURIComponent(`/personal-lists/${selectedList.id}`)}`}>Crear producto en el catálogo</Link>
-            {productsQuery.isPending ? <Spinner label="Cargando productos" /> : productsQuery.isError ? (
-              <div role="alert">No fue posible cargar los productos del catálogo. <Button onClick={() => void productsQuery.refetch()}>Reintentar</Button></div>
-            ) : productsQuery.data?.some((product) => product.isActive !== false) ? (
-              <ListItemsPanel key={`${account.homeAccountId}:${selectedList.id}`} products={productsQuery.data}
-                onAddItem={async (item) => {
-                  await executeAuthenticatedWrite(
-                    (token) => addPersonalListItem(env.shoppingListApiBaseUrl, token, selectedList.id, item),
-                    () => authSession.getAccessToken(loginRequest.scopes, account),
-                    async () => authSession.login(loginRequest.scopes),
-                  )
-                  await queryClient.invalidateQueries({ queryKey: listQueryKey })
-                }}
-              />
-            ) : <p>No hay productos disponibles en el catálogo. Se necesita un producto del catálogo para agregar un ítem.</p>}
-          </Card>
-        </section>
-      ) : null}
-    </section>
-  )
+  const [pendingId, setPendingId] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const marking = useRef(false)
+  const key = ['personal-lists', account?.homeAccountId]
+  const lists = useQuery({ queryKey: key, enabled: Boolean(account), retry: false,
+    queryFn: async () => getMyPersonalLists(env.shoppingListApiBaseUrl, await token()) })
+  const selected = lists.isSuccess ? lists.data.find(list => list.id === listId) : undefined
+  if (!account) return <p>No hay sesión activa.</p>
+  const refresh = () => client.invalidateQueries({ queryKey: key })
+  return <section className={ui.page}>
+    {!listId ? <>
+      <div className={ui.detailHeader}><PageHeader title="Listas personales" description="Elige una lista o prepara tu próxima compra." />
+        <CreateListDialog title="Crear lista personal" onCreate={async name => {
+          const id = await write(token => createPersonalList(env.shoppingListApiBaseUrl, token, { name }))
+          await refresh(); navigate(`/personal-lists/${id}`)
+        }} />
+      </div>
+      {lists.isSuccess ? <section aria-label="Mis listas personales" className={ui.stack}>
+        {lists.data.map(list => <Link className={ui.listLink} key={list.id} to={`/personal-lists/${list.id}`}>{list.name}</Link>)}
+        {!lists.data.length ? <p>Sin listas personales todavía. Crea una lista para empezar.</p> : <p>Selecciona una lista para ver sus ítems y agregar productos.</p>}
+      </section> : null}
+    </> : <Link to="/personal-lists">Volver a mis listas</Link>}
+    {listId && (lists.isPending || lists.isError) ? <h1>Lista personal</h1> : null}
+    {lists.isPending ? <Spinner label="Cargando listas" /> : lists.isError ? <div role="alert">No fue posible cargar listas personales. <Button onClick={() => void lists.refetch()}>Reintentar</Button></div> : null}
+    {listId && lists.isSuccess && !selected ? <><h1>Lista no disponible</h1><p role="alert">Esta lista no está disponible en tus listas personales.</p></> : null}
+    {selected ? <section className={ui.panel} aria-label={`Detalle de ${selected.name}`}>
+      <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{selected.name}</h1><p>Lista personal</p></div>
+        <AddProductsDialog key={`${account.homeAccountId}:${selected.id}`} returnTo={`/personal-lists/${selected.id}`} onAdd={async item => {
+          await write(token => addPersonalListItem(env.shoppingListApiBaseUrl, token, selected.id, item)); await refresh()
+        }} />
+      </div>
+      {error ? <p role="alert">{error}</p> : null}{message ? <p role="status">{message}</p> : null}
+      <PurchaseItems items={selected.items ?? []} pendingId={pendingId} onMark={async itemId => {
+        if (marking.current || !selected.items?.some(item => item.id === itemId && !item.isPurchased)) return
+        marking.current = true
+        setPendingId(itemId); setError(''); setMessage('')
+        try { await write(token => markPersonalListItem(env.shoppingListApiBaseUrl, token, selected.id, itemId)); await refresh(); setMessage('Producto marcado como comprado.') }
+        catch (cause) { setError(cause instanceof Error ? cause.message : 'No fue posible marcar la compra. Inténtalo de nuevo.') }
+        finally { marking.current = false; setPendingId('') }
+      }} />
+    </section> : null}
+  </section>
 }

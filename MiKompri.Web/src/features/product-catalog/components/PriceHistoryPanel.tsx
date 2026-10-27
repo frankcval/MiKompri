@@ -1,17 +1,19 @@
+import ui from '../../../shared/ui/AppSurface.module.css'
 import { Card, CardHeader, Text } from '@fluentui/react-components'
-import type { ProductPriceHistory } from '../api/productCatalogApi'
+import type { Market, ProductPriceHistory } from '../api/productCatalogApi'
 
 type PriceHistoryPanelProps = {
   history: ProductPriceHistory | null
   isLoading?: boolean
   errorStatus?: number
+  markets?: Market[]
 }
 
-export function PriceHistoryPanel({ history, isLoading = false, errorStatus }: PriceHistoryPanelProps) {
+export function PriceHistoryPanel({ history, isLoading = false, errorStatus, markets = [] }: PriceHistoryPanelProps) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader header={<Text weight="semibold">Historial de precios</Text>} />
+      <Card className={ui.panel}>
+        <CardHeader header={<h2>Historial de precios</h2>} />
         <Text>Cargando historial...</Text>
       </Card>
     )
@@ -19,8 +21,8 @@ export function PriceHistoryPanel({ history, isLoading = false, errorStatus }: P
 
   if (errorStatus) {
     return (
-      <Card>
-        <CardHeader header={<Text weight="semibold">Historial de precios</Text>} />
+      <Card className={ui.panel}>
+        <CardHeader header={<h2>Historial de precios</h2>} />
         <Text>
           {errorStatus === 503
             ? 'ProductCatalog no disponible temporalmente.'
@@ -33,16 +35,17 @@ export function PriceHistoryPanel({ history, isLoading = false, errorStatus }: P
   const records = history?.records ?? []
 
   return (
-    <Card>
-      <CardHeader header={<Text weight="semibold">Historial de precios</Text>} />
+    <Card className={ui.panel}>
+      <CardHeader header={<h2>Historial de precios</h2>} />
       {records.length === 0 ? (
         <Text>Sin historial de precios para el filtro seleccionado.</Text>
       ) : (
-        <section style={{ display: 'grid', gap: '0.4rem' }}>
+        <section className={ui.rows}>
           {records.map((record) => (
-            <Text key={`${record.marketId}-${record.effectiveDate}-${record.priceAmount}`}>
-              {record.effectiveDate} · {record.marketId} · {record.priceAmount}
-            </Text>
+            <div className={ui.row} key={`${record.marketId}-${record.effectiveDate}-${record.priceAmount}`}>
+              <span>{Number.isNaN(Date.parse(record.effectiveDate)) ? record.effectiveDate : new Intl.DateTimeFormat('es-ES', { timeZone: 'UTC' }).format(new Date(record.effectiveDate))} · {markets.find(market => market.id === record.marketId)?.name ?? 'Mercado no disponible'}</span>
+              <strong>{new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(record.priceAmount)}</strong>
+            </div>
           ))}
         </section>
       )}

@@ -1,93 +1,61 @@
-// Plan detallado (pseudocódigo):
-// 1. Preparar mocks para IPurchaseListRepository e IUnitOfWork usando Moq.
-// 2. Crear un PurchaseList válido (usando el constructor público conocido).
-// 3. Crear un ListItem con el mismo productId que el itemId que vamos a marcar.
-// 4. Añadir el ListItem a la PurchaseList usando el método AddItem para que exista el ítem a marcar.
-// 5. Configurar el mock del repositorio para devolver la lista cuando se pida por Id.
-// 6. Configurar los mocks para verificar que se llaman UpdateAsync y SaveChangesAsync.
-// 7. Crear una instancia del handler con los mocks.
-// 8. Construir el comando MarkItemAsPurchasedCommand con listId e itemId.
-// 9. Llamar a handler.Handle(command, CancellationToken.None).
-// 10. Verificar que repo.UpdateAsync y unitOfWork.SaveChangesAsync se llamaron exactamente una vez.
-// 11. Verificar además que el item dentro de la lista quedó marcado (IsPurchased == true).
-// 12. Probar caso negativo: cuando GetByIdAsync devuelve null, el handler debe lanzar KeyNotFoundException.
-
-// Código de prueba unitaria
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Moq;
-using Xunit;
-using MiKompri.ShoppingList.Application.Commands.MarkItemAsPurchased;
+ï»¿using MiKompri.ShoppingList.Application.Commands.MarkItemAsPurchased;
 using MiKompri.ShoppingList.Application.Interfaces;
-using MiKompri.ShoppingList.Domain;
-using MiKompri.ShoppingList.Domain.Entities; // Ajustar según el namespace real del dominio si es necesario
+using MiKompri.ShoppingList.Domain.Entities;
+using Moq;
 
-namespace MiKompri.ShoppingList.Application.Tests.Commands.MarkItemAsPurchased
+namespace MiKompri.ShoppingList.Application.Tests.Commands.MarkItemAsPurchased;
+
+public class MarkItemAsPurchasedCommandHandlerTests
 {
-    public class MarkItemAsPurchasedCommandHandlerTests
+    [Fact]
+    public async Task Handle_Should_MarkItemAsPurchased_And_SaveChanges_When_ListFound()
     {
-        [Fact]
-        public async Task Handle_Should_MarkItemAsPurchased_And_SaveChanges_When_ListFound()
-        {
-            // Arrange
-            var repoMock = new Mock<IPurchaseListRepository>();
-            var uowMock = new Mock<IUnitOfWork>();
+        var repo = new Mock<IPurchaseListRepository>();
+        var uow = new Mock<IUnitOfWork>();
+        var list = new PurchaseList("Mi Lista", Guid.NewGuid());
+        var item = new ListItem(Guid.NewGuid(), "Producto", 9.99m, 1);
+        list.AddItem(item);
+        Assert.NotEqual(item.Id, item.ProductId);
+        repo.Setup(r => r.GetByIdAsync(list.Id)).ReturnsAsync(list);
+        repo.Setup(r => r.UpdateAsync(list)).Returns(Task.CompletedTask);
+        uow.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            var listId = Guid.NewGuid();
-            var itemId = Guid.NewGuid();
+        await new MarkItemAsPurchasedCommandHandler(repo.Object, uow.Object)
+            .Handle(new MarkItemAsPurchasedCommand(list.Id, item.Id), CancellationToken.None);
 
-            // Crear una instancia de PurchaseList usando el constructor conocido
-            var purchaseList = new PurchaseList("Mi Lista", Guid.NewGuid());
+        Assert.True(item.IsPurchased);
+        repo.Verify(r => r.UpdateAsync(list), Times.Once);
+        uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
 
+    [Fact]
+    public async Task Handle_RejectsCatalogId_WithoutSaving()
+    {
+        var repo = new Mock<IPurchaseListRepository>();
+        var uow = new Mock<IUnitOfWork>();
+        var list = new PurchaseList("Mi Lista", Guid.NewGuid());
+        var item = new ListItem(Guid.NewGuid(), "Producto", 9.99m, 1);
+        list.AddItem(item);
+        repo.Setup(r => r.GetByIdAsync(list.Id)).ReturnsAsync(list);
 
-            // Crear y añadir el ListItem que será marcado como comprado
-            var listItem = new ListItem(itemId, "Producto de prueba", 9.99m, 1);
-            purchaseList.AddItem(listItem);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            new MarkItemAsPurchasedCommandHandler(repo.Object, uow.Object)
+                .Handle(new MarkItemAsPurchasedCommand(list.Id, item.ProductId), CancellationToken.None));
 
-            repoMock.Setup(r => r.GetByIdAsync(listId)).ReturnsAsync(purchaseList);
-            repoMock.Setup(r => r.UpdateAsync(purchaseList)).Returns(Task.CompletedTask).Verifiable();
-            uowMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1).Verifiable();
+        Assert.False(item.IsPurchased);
+        repo.Verify(r => r.UpdateAsync(It.IsAny<PurchaseList>()), Times.Never);
+        uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
 
-            var handler = new MarkItemAsPurchasedCommandHandler(repoMock.Object, uowMock.Object);
-
-            var command = new MarkItemAsPurchasedCommand(listId, itemId);
-
-            // Act
-            await handler.Handle((dynamic)command, CancellationToken.None);
-
-            // Assert
-            repoMock.Verify(r => r.UpdateAsync(purchaseList), Times.Once);
-            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-
-            // Verificar que el item fue marcado como comprado
-            var savedItem = purchaseList.Items.Single(i => i.ProductId == itemId);
-            Assert.True(savedItem.IsPurchased);
-        }
-
-        [Fact]
-        public async Task Handle_TryMarkItemAsPurchasedInNullList_ThrowKeyNotFoundException_When_ListNotFound()
-        {
-            // Arrange
-            var repoMock = new Mock<IPurchaseListRepository>();
-            var uowMock = new Mock<IUnitOfWork>();
-
-            var listId = Guid.NewGuid();
-            var itemId = Guid.NewGuid();
-
-            repoMock.Setup(r => r.GetByIdAsync(listId)).ReturnsAsync((PurchaseList?)null);
-
-            var handler = new MarkItemAsPurchasedCommandHandler(repoMock.Object, uowMock.Object);
-
-            var command = new MarkItemAsPurchasedCommand(listId, itemId);
-            
-            // Act & Assert
-            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-            {
-                await handler.Handle((dynamic)command, CancellationToken.None);
-            });
-        }
+    [Fact]
+    public async Task Handle_TryMarkItemAsPurchasedInNullList_ThrowKeyNotFoundException_When_ListNotFound()
+    {
+        var repo = new Mock<IPurchaseListRepository>();
+        var uow = new Mock<IUnitOfWork>();
+        var listId = Guid.NewGuid();
+        repo.Setup(r => r.GetByIdAsync(listId)).ReturnsAsync((PurchaseList?)null);
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            new MarkItemAsPurchasedCommandHandler(repo.Object, uow.Object)
+                .Handle(new MarkItemAsPurchasedCommand(listId, Guid.NewGuid()), CancellationToken.None));
     }
 }

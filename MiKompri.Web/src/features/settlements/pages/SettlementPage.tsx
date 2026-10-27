@@ -1,3 +1,4 @@
+import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Card, CardHeader, Spinner, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -79,10 +80,10 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
   const payerIds = role === 'owner' || role === 'admin' ? members.map((member) => member.userId)
     : role === 'member' ? [currentMember.userId] : []
 
-  return <section aria-label="Reparto de gastos" style={{ display: 'grid', gap: '1rem', minWidth: 0 }}>
+  return <section aria-label="Reparto de gastos" className={ui.stack}>
     <h2>Reparto de gastos</h2>
     <p>Registra el importe pagado por un ítem y elige quiénes participan en el gasto.</p>
-    <Card>
+    <Card className={ui.panel}>
       <CardHeader header={<h3 style={{ margin: 0 }}>Registrar gasto compartido</h3>} />
       {detailQuery.data.items.length === 0 ? <p>Esta lista no tiene ítems. Añade un ítem a la lista antes de registrar un gasto.</p>
         : payerIds.length === 0 ? <p>No tienes permiso para registrar gastos con tu rol actual.</p>
@@ -101,17 +102,17 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
             ])
           }} />}
     </Card>
-    <Card>
+    <Card className={ui.panel}>
       <CardHeader header={<h3 style={{ margin: 0 }}>Balance por persona</h3>} />
       {summaryQuery.isPending ? <Spinner label="Cargando balance" /> : summaryQuery.isError ? <p role="alert">No fue posible cargar el balance.</p>
-        : summaryQuery.data.balances.length ? summaryQuery.data.balances.map((balance) => <p key={balance.userId} style={{ overflowWrap: 'anywhere' }}>
-          <strong>{memberName(members, balance.userId)}</strong>: Pagado {money(balance.totalPaid)} · Parte del gasto {money(balance.totalOwed)} · Saldo {money(balance.netBalance)}
+        : summaryQuery.data.balances.length ? summaryQuery.data.balances.map((balance) => <p className={ui.balanceRow} key={balance.userId}>
+          <strong>{memberName(members, balance.userId)}</strong><span>Pagado {money(balance.totalPaid)} · Parte del gasto {money(balance.totalOwed)} · Saldo {money(balance.netBalance)}</span>
         </p>) : <p>Todavía no hay gastos para repartir.</p>}
     </Card>
-    <Card>
+    <Card className={ui.panel}>
       <CardHeader header={<h3 style={{ margin: 0 }}>Pagos propuestos para saldar cuentas</h3>} />
       {proposalQuery.isPending ? <Spinner label="Cargando pagos propuestos" /> : proposalQuery.isError ? <p role="alert">No fue posible cargar los pagos propuestos.</p>
-        : proposalQuery.data.transfers.length ? proposalQuery.data.transfers.map((transfer, index) => <p key={index} style={{ overflowWrap: 'anywhere' }}>
+        : proposalQuery.data.transfers.length ? proposalQuery.data.transfers.map((transfer, index) => <p className={ui.row} key={index} style={{ overflowWrap: 'anywhere' }}>
           {memberName(members, transfer.fromUserId)} debe pagar {money(transfer.amount)} a {memberName(members, transfer.toUserId)}.
         </p>) : <p>No hay pagos pendientes entre participantes.</p>}
     </Card>

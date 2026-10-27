@@ -149,9 +149,9 @@ namespace MiKompri.ShoppingList.Domain.Entities
         }
 
 
-        public void MarkItemAsPurchased(Guid productId)
+        public void MarkItemAsPurchased(Guid itemId)
         {
-            var item = _items.FirstOrDefault(i => i.ProductId == productId)
+            var item = _items.FirstOrDefault(i => i.Id == itemId)
                         ?? throw new InvalidOperationException("El item no existe en la lista");
             if (item.MarkAsPurchased())
             {

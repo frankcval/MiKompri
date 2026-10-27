@@ -1,6 +1,10 @@
+import '../../../setup/jsdom-dialogs'
+import userEvent from '@testing-library/user-event'
+import { FluentProvider } from '@fluentui/react-components'
+import { appTheme } from '../../../../src/shared/ui/theme'
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within, waitFor } from '@testing-library/react'
 import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SharedListsPage } from '../../../../src/features/shared-lists/pages/SharedListsPage'
@@ -17,7 +21,9 @@ let forbidden: boolean
 let createError: boolean
 let fetchMock: ReturnType<typeof vi.fn>
 
+let user: ReturnType<typeof userEvent.setup>
 beforeEach(() => {
+  user = userEvent.setup()
   groups = [{ id: first, name: 'Familia' }, { id: second, name: 'Amigos' }]
   lists = { [first]: [{ id: 'list-family', name: 'Compra casa', groupId: first }], [second]: [] }
   groupsError = false
@@ -44,7 +50,7 @@ function Navigation() {
 }
 function mount(search = '') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  render(<QueryClientProvider client={client}><MemoryRouter initialEntries={['/shared-lists' + search]}><Navigation /><SharedListsPage /></MemoryRouter></QueryClientProvider>)
+  render(<FluentProvider theme={appTheme}><QueryClientProvider client={client}><MemoryRouter initialEntries={['/shared-lists' + search]}><Navigation /><SharedListsPage /></MemoryRouter></QueryClientProvider></FluentProvider>)
 }
 async function select(id: string) {
   fireEvent.change(await screen.findByRole('combobox', { name: 'Grupo' }), { target: { value: id } })
@@ -64,10 +70,10 @@ describe('grupos propios por nombre en listas compartidas', () => {
     await select(second)
     await screen.findByText('Este grupo todavía no tiene listas. Crea la primera lista compartida.')
     expect(screen.getByTestId('query')).toHaveTextContent(`groupId=${second}`)
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
+    await user.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
     expect(await screen.findByRole('dialog')).toHaveAccessibleName('Crear lista en Amigos')
     fireEvent.change(screen.getByRole('textbox', { name: 'Nombre de lista' }), { target: { value: ' Viaje ' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista', exact: true }))
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Crear lista', exact: true }))
     await screen.findByText('Viaje')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
@@ -101,26 +107,25 @@ describe('grupos propios por nombre en listas compartidas', () => {
     mount()
     await screen.findByRole('alert')
     groupsError = false
-    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+    await user.click(screen.getByRole('button', { name: 'Reintentar' }))
     await screen.findByRole('option', { name: 'Familia' })
   })
 
   it('limpia settlement y borradores al cambiar de grupo; Atrás y Adelante restauran el grupo', async () => {
     mount(`?groupId=${first}`)
-    fireEvent.click(await screen.findByRole('button', { name: 'Ver reparto de gastos de Compra casa' }))
-    await screen.findByRole('region', { name: 'Settlement list-family' })
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
+    expect(await screen.findByRole('link', { name: 'Ver reparto de gastos de Compra casa' })).toHaveAttribute('href', `/shared-lists/list-family?groupId=${first}&tab=expenses`)
+    await user.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
     fireEvent.change(await screen.findByRole('textbox', { name: 'Nombre de lista' }), { target: { value: 'Borrador' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
     await select(second)
     await screen.findByRole('heading', { name: 'Listas de Amigos' })
     expect(screen.queryByRole('region', { name: 'Settlement list-family' })).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Atrás' }))
+    await user.click(screen.getByRole('button', { name: 'Atrás' }))
     await screen.findByRole('heading', { name: 'Listas de Familia' })
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
+    await user.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
     expect(await screen.findByRole('textbox', { name: 'Nombre de lista' })).toHaveValue('')
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Adelante' }))
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+    await user.click(screen.getByRole('button', { name: 'Adelante' }))
     await screen.findByRole('heading', { name: 'Listas de Amigos' })
   })
 
@@ -136,9 +141,9 @@ describe('grupos propios por nombre en listas compartidas', () => {
     createError = true
     mount(`?groupId=${first}`)
     await screen.findByText('Compra casa')
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
+    await user.click(screen.getByRole('button', { name: 'Crear lista compartida' }))
     fireEvent.change(await screen.findByRole('textbox', { name: 'Nombre de lista' }), { target: { value: 'Mi lista' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Crear lista', exact: true }))
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Crear lista', exact: true }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/No tienes permiso para crear listas/)
     expect(screen.getByRole('textbox', { name: 'Nombre de lista' })).toHaveValue('Mi lista')
     await waitFor(() => expect(screen.getByRole('button', { name: 'Crear lista', exact: true })).toBeEnabled())

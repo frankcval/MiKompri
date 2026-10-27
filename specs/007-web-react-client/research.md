@@ -1,5 +1,12 @@
 # Research — 007-web-react-client
 
+## Decisión vigente de diseño web — 2026-10-27
+
+- **Decision**: extender la dirección de la portada a todas las secciones mediante Fluent UI v9, tema común y CSS Modules; [design.md](design.md) fija las medidas actuales y sustituye la propuesta visual del 2026-10-24.
+- **Rationale**: evitar una portada con apariencia separada del producto y conservar navegación, formularios y estados comprensibles en móvil.
+- **Tradeoffs**: fuentes TTF locales licenciadas en la entrega actual, conversión WOFF2 pendiente; harness visual solo en pruebas para separar revisión determinista de validación Entra/API real. No se introducen frameworks, permisos o contratos nuevos.
+- **Alcance**: portada pública para visitantes, índice personal para autenticados y sistema común interior; el catálogo incluye alta de productos desde el 2026-10-25, además de consulta. La coherencia visual no cierra CRUD, roles, RHF, contraste completo ni los E2E integrados pendientes.
+
 ## Decision 1: SPA con React + TypeScript strict + Vite + Fluent UI v9
 - **Decision**: Adoptar SPA en React con TypeScript strict y Vite; UI con Fluent UI v9.
 - **Rationale**: Alinea la spec aclarada, acelera ciclo de desarrollo, facilita modularidad por features y mantiene consistencia UX corporativa.
@@ -43,3 +50,9 @@
 - **Rationale**: Permite MVP local sin bloquear camino cloud y mantiene cero secretos en bundle.
 - **Alternatives considered**:
   - Despliegue cloud inmediato obligatorio: descartado, no requerido para este MVP de planificación.
+
+## Decisión de interacción privada — 2026-10-27
+
+Se reutilizan Dialog/TabList/ProgressBar de Fluent y RHF Controller + validación Zod, sin dependencias nuevas. Los controles Fluent requieren conectar explícitamente valor, onChange y ref del control nativo; no asumir que el ref del contenedor registra el input en RHF. Los patrones del prototipo orientan creación breve, incorporación contextual y compra/gastos, sin copiar listeners ni simulaciones.
+
+La auditoría del handler genérico MarkItemAsPurchased detecta ausencia de comprobaciones de propietario/membresía/rol. Se limita su uso desde UI a la selección personal existente de /mine y se registra T132 como hardening pendiente; no se habilita marcado compartido ni se amplían permisos para acomodar la demo. La UI no sustituye la autorización servidor. Los handlers compartidos de lectura/alta y el flujo de gastos conservan su validación actual.

@@ -1,14 +1,14 @@
-import { MainLayout } from './layout/MainLayout'
+import { InteractionStatus } from '@azure/msal-browser'
+import { useIsAuthenticated, useMsal } from '@azure/msal-react'
+import { Navigate } from 'react-router-dom'
+import { Spinner } from '@fluentui/react-components'
+import { HomePage } from '../features/home/HomePage'
 
 function App() {
-  return (
-    <MainLayout>
-      <section style={{ display: 'grid', gap: '0.75rem' }}>
-        <h2 style={{ margin: 0 }}>Inicio</h2>
-        <p>Fundación transversal del cliente web inicializada.</p>
-      </section>
-    </MainLayout>
-  )
+  const authenticated = useIsAuthenticated()
+  const { accounts, inProgress } = useMsal()
+  if (inProgress !== InteractionStatus.None) return <Spinner label="Cargando sesión" />
+  return authenticated || accounts.length > 0 ? <Navigate to="/personal-lists" replace /> : <HomePage />
 }
 
 export default App

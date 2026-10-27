@@ -1,4 +1,6 @@
-import { Button, Card, CardHeader, Field, Input, Text } from '@fluentui/react-components'
+import { PageHeader } from '../../../shared/ui/PageHeader'
+import ui from '../../../shared/ui/AppSurface.module.css'
+import { Button, Card, CardHeader, Field, Select, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -12,12 +14,16 @@ import { PriceHistoryPanel } from '../components/PriceHistoryPanel'
 import { withViewState } from '../../../shared/ui/states/withViewState'
 
 export function ProductCatalogPage() {
+  return <section className={ui.page}><PageHeader title="Catálogo de productos" description="Los productos de tus listas, sus unidades y el historial de precios." /><ProductCatalogContent /></section>
+}
+
+function ProductCatalogContent() {
   const { instance, accounts } = useMsal()
   const account = accounts[0]
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const requestedReturn = searchParams.get('returnTo') ?? ''
-  const returnTo = /^\/personal-lists\/[0-9a-f-]{36}$/i.test(requestedReturn) ? requestedReturn : null
+  const returnTo = /^\/(personal-lists|shared-lists)\/[0-9a-f-]{36}(\?tab=(shopping|expenses))?$/i.test(requestedReturn) ? requestedReturn : null
   const authSession = useMemo(() => createAuthSessionService(instance), [instance])
 
   const [selectedProductId, setSelectedProductId] = useState('')
@@ -81,11 +87,10 @@ export function ProductCatalogPage() {
   return withViewState({
     state: 'ready',
     content: (
-      <main style={{ padding: '1.5rem', display: 'grid', gap: '1rem' }}>
-        <h1>Catálogo de productos</h1>
+      <section className={ui.stack}>
         {returnTo ? <Link to={returnTo}>Volver a la lista</Link> : null}
 
-        <Card>
+        <Card className={ui.panel}>
           <CardHeader header={<h2 style={{ margin: 0 }}>Crear producto</h2>} />
           <CreateCatalogProductForm key={account.homeAccountId} onCreate={async (input) => {
             const product = await executeAuthenticatedWrite(
@@ -98,14 +103,14 @@ export function ProductCatalogPage() {
           }} />
         </Card>
 
-        <Card>
-          <CardHeader header={<Text weight="semibold">Productos</Text>} />
+        <Card className={ui.panel}>
+          <CardHeader header={<h2>Productos</h2>} />
           {productsQuery.data?.length ? (
-            <section style={{ display: 'grid', gap: '0.5rem' }}>
+            <section className={ui.stack}>
               {productsQuery.data.map((product) => (
                 <div
                   key={product.id}
-                  style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}
+                  className={ui.row}
                 >
                   <Text style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                     {product.name} ({product.purchaseUnit ?? 'N/A'})
@@ -126,17 +131,18 @@ export function ProductCatalogPage() {
           )}
         </Card>
 
-        <Card>
-          <CardHeader header={<Text weight="semibold">Mercados</Text>} />
-          <Field label="Filtrar por MarketId (opcional)">
-            <Input value={selectedMarketId} onChange={(_, data) => setSelectedMarketId(data.value)} />
+        <Card className={ui.panel}>
+          <CardHeader header={<h2>Mercados</h2>} />
+          <Field label="Filtrar por mercado (opcional)">
+            <Select value={selectedMarketId} onChange={(_, data) => setSelectedMarketId(data.value)}>
+              <option value="">Todos los mercados</option>
+              {marketsQuery.data?.map(market => <option key={market.id} value={market.id}>{market.name}</option>)}
+            </Select>
           </Field>
           {marketsQuery.data?.length ? (
-            <section style={{ display: 'grid', gap: '0.4rem' }}>
+            <section className={ui.stack}>
               {marketsQuery.data.map((market) => (
-                <Text key={market.id}>
-                  {market.name} ({market.id})
-                </Text>
+                <div className={ui.row} key={market.id}><Text>{market.name}</Text></div>
               ))}
             </section>
           ) : (
@@ -150,11 +156,12 @@ export function ProductCatalogPage() {
         </Card>
 
         <PriceHistoryPanel
+          markets={marketsQuery.data ?? []}
           history={historyQuery.data ?? null}
           isLoading={historyQuery.isLoading}
           errorStatus={(historyQuery.error as { status?: number } | undefined)?.status}
         />
-      </main>
+      </section>
     ),
   })
 }

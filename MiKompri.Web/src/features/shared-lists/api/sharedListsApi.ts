@@ -31,7 +31,15 @@ export type AddSharedListItemInput = {
 }
 
 async function parseError(response: Response): Promise<Error & { status?: number }> {
-  const error = new Error(`shared_lists_api_error_${response.status}`) as Error & { status?: number }
+  const messages: Record<number, string> = {
+    400: 'Revisa el nombre, la cantidad y el precio de los productos.',
+    401: 'Tu sesión ha caducado. Inicia sesión de nuevo.',
+    403: 'No tienes permiso para operar en esta lista compartida.',
+    404: 'Esta lista ya no está disponible. Vuelve a tus listas.',
+    409: 'Los datos han cambiado o el producto ya está en la lista. Revisa la compra e inténtalo de nuevo.',
+    503: 'El servicio no está disponible temporalmente. Inténtalo de nuevo.',
+  }
+  const error = new Error(messages[response.status] ?? 'No fue posible guardar los cambios. Inténtalo de nuevo.') as Error & { status?: number }
   error.status = response.status
   return error
 }

@@ -1,3 +1,5 @@
+import { PageHeader } from '../../../shared/ui/PageHeader'
+import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Card, CardHeader, Field, Input, Spinner, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -39,10 +41,11 @@ export function GroupsPage() {
   }
 
   return (
-    <main style={{ padding: '1.5rem', display: 'grid', gap: '1rem' }}>
-      <h1>Grupos</h1>
-      <Card>
-        <CardHeader header={<Text weight="semibold">Crear grupo</Text>} />
+    <section className={ui.page}>
+      <PageHeader title="Grupos" description="Para tu casa, tu piso y los planes que compartís. Organiza aquí tus grupos." />
+      <Card className={ui.panel}>
+        <CardHeader header={<h2>Crear grupo</h2>} />
+        <div className={ui.form}>
         <Field label="Nombre del grupo">
           <Input value={name} onChange={(_, data) => setName(data.value)} />
         </Field>
@@ -53,22 +56,25 @@ export function GroupsPage() {
         >
           Crear grupo
         </Button>
+        {createGroupMutation.isError ? <p role="alert">No fue posible crear el grupo. Revisa el nombre e inténtalo de nuevo.</p> : null}
+        </div>
       </Card>
 
       {groupsQuery.isLoading ? (
         <Spinner label="Cargando grupos" />
       ) : groupsQuery.isError ? (
-        <Text>No fue posible cargar grupos.</Text>
+        <p role="alert">No fue posible cargar grupos.</p>
       ) : (
-        <section style={{ display: 'grid', gap: '0.5rem' }}>
+        <section className={ui.panel} aria-label="Tus grupos">
+          <h2>Tus grupos</h2>
           {groupsQuery.data?.map((group) => (
-            <Card key={group.id}>
+            <div className={ui.row} key={group.id}>
               <Text>{group.name}</Text>
-            </Card>
+            </div>
           ))}
           {groupsQuery.data?.length === 0 ? <Text>Sin grupos todavía.</Text> : null}
         </section>
       )}
-    </main>
+    </section>
   )
 }

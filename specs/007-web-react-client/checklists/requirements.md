@@ -26,10 +26,12 @@
 
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
-- [x] Feature meets measurable outcomes defined in Success Criteria
+- [ ] Feature meets measurable outcomes defined in Success Criteria
 - [x] No implementation details leak into specification
 
 ## Notes
+
+- **Revisión 2026-10-27**: este checklist evalúa claridad documental; las casillas de contenido no certifican entrega. SC-001/002 requieren usuarios piloto y SC-006/007 conservan verificaciones pendientes. El diseño vigente está en [design.md](../design.md), con evidencia T120–T126 y límites en tasks/quickstart. No se cierra la feature por las pruebas visuales controladas.
 
 - Validación completada en una iteración.
 - La spec incorpora restricciones de plataforma e identidad (TP11) como alcance funcional del producto, sin detallar implementación de código.

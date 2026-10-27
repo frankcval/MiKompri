@@ -1,4 +1,6 @@
-import { Button, Card, CardHeader, Spinner, Text } from '@fluentui/react-components'
+﻿import ui from '../../../shared/ui/AppSurface.module.css'
+import { PageHeader } from '../../../shared/ui/PageHeader'
+import { Button, Card, Spinner, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
@@ -11,74 +13,36 @@ export function ProfilePage() {
   const { instance, accounts } = useMsal()
   const navigate = useNavigate()
   const authSessionService = createAuthSessionService(instance)
-
   const account = accounts[0]
-
   const profileQuery = useQuery({
     queryKey: ['profile', account?.homeAccountId],
-    queryFn: async () => {
-      const token = await authSessionService.getAccessToken(loginRequest.scopes, account)
-      return fetchMyProfile(env.usersApiBaseUrl, token)
-    },
+    queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await authSessionService.getAccessToken(loginRequest.scopes, account)),
     retry: false,
     enabled: Boolean(account),
   })
-
   const handleLogout = async () => {
     await authSessionService.logout(account)
     navigate('/login', { replace: true })
   }
-
-  if (!account) {
-    return (
-      <main style={{ padding: '1.5rem' }}>
-        <Text>No hay sesión activa.</Text>
-      </main>
-    )
-  }
-
-  if (profileQuery.isLoading) {
-    return (
-      <main style={{ padding: '1.5rem', display: 'grid', gap: '0.75rem' }}>
-        <Spinner label="Cargando perfil" />
-      </main>
-    )
-  }
-
-  if (profileQuery.isError) {
-    const status = (profileQuery.error as { status?: number })?.status
-    return (
-      <main style={{ padding: '1.5rem', display: 'grid', gap: '0.75rem' }}>
-        <Text>
-          {status === 401
-            ? 'Sesión iniciada. El perfil no está disponible aún en este entorno local.'
-            : 'Sesión iniciada. El perfil se habilitará cuando esté configurado el acceso al API.'}
-        </Text>
-        <Button appearance="secondary" onClick={handleLogout}>
-          Cerrar sesión
-        </Button>
-      </main>
-    )
-  }
-
-  if (!profileQuery.data) {
-    return (
-      <main style={{ padding: '1.5rem' }}>
-        <Text>Perfil vacío.</Text>
-      </main>
-    )
-  }
-
-  return (
-    <main style={{ padding: '1.5rem', display: 'grid', gap: '1rem' }}>
-      <Card>
-        <CardHeader header={<Text weight="semibold">Perfil</Text>} />
-        <Text>Nombre: {profileQuery.data.displayName}</Text>
-        <Text>Email: {profileQuery.data.email}</Text>
+  const status = (profileQuery.error as { status?: number } | null)?.status
+  return <section className={ui.page}>
+    <PageHeader title="Perfil" description="Tu cuenta de MiKompri. Consulta tus datos y gestiona tu sesión." />
+    {!account ? <Text>No hay sesión activa.</Text> : <>
+      <Card className={ui.panel}>
+        {profileQuery.isLoading ? <Spinner label="Cargando perfil" /> : profileQuery.isError ? <div role="alert">
+          <p>{status === 401 ? 'Tu sesión no permite consultar el perfil. Vuelve a iniciar sesión.'
+            : status === 403 ? 'No tienes permiso para consultar este perfil.'
+            : 'No fue posible cargar tu perfil. Inténtalo de nuevo.'}</p>
+          <Button onClick={() => void profileQuery.refetch()}>Reintentar</Button>
+        </div> : profileQuery.data ? <>
+          <h2>Tus datos</h2>
+          <dl className={ui.definition}>
+            <div><dt>Nombre</dt><dd>{profileQuery.data.displayName}</dd></div>
+            <div><dt>Email</dt><dd>{profileQuery.data.email || 'Sin indicar'}</dd></div>
+          </dl>
+        </> : <Text>Perfil vacío.</Text>}
       </Card>
-      <Button appearance="secondary" onClick={handleLogout}>
-        Cerrar sesión
-      </Button>
-    </main>
-  )
+      <div className={ui.actions}><Button appearance="secondary" onClick={handleLogout}>Cerrar sesión</Button></div>
+    </>}
+  </section>
 }

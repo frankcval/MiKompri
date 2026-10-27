@@ -1,8 +1,10 @@
+import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Text } from '@fluentui/react-components'
 import { InteractionStatus } from '@azure/msal-browser'
 import { useIsAuthenticated, useMsal } from '@azure/msal-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { PageHeader } from '../../../shared/ui/PageHeader'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
 import { loginRequest } from '../../../auth/msal/msalConfig'
 import { env } from '../../../shared/config/env'
@@ -23,7 +25,7 @@ export function LoginPage() {
     const isAuthPage = location.pathname === '/login' || location.pathname === '/auth/callback'
 
     if (isReady && hasMsalSession && isAuthPage) {
-      navigate('/profile', { replace: true })
+      navigate('/personal-lists', { replace: true })
     }
   }, [accounts.length, inProgress, isAuthenticated, location.pathname, navigate])
 
@@ -56,16 +58,22 @@ export function LoginPage() {
   }
 
   return (
-    <main style={{ padding: '1.5rem', display: 'grid', gap: '1rem' }}>
-      <h1>Inicio de sesión</h1>
-      <Text>{message}</Text>
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Button appearance="primary" onClick={handleLogin} disabled={isPlaceholderClientId}>
-          Iniciar sesión
-        </Button>
-        <Button appearance="secondary" onClick={handleLogout}>
-          Cerrar sesión
-        </Button>
+    <main className={ui.login}>
+      <div className={ui.loginInner}>
+        <Link className={ui.brand} to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</Link>
+        <section className={`${ui.page} ${ui.panel}`}>
+          <PageHeader title="Inicio de sesión" description="Tu próxima compra empieza aquí. Entra para guardar tus listas y organizarte con los tuyos." />
+          <Text role="status">{message}</Text>
+          <div className={ui.actions}>
+            <Button appearance="primary" onClick={handleLogin} disabled={isPlaceholderClientId || inProgress !== InteractionStatus.None}>
+              Iniciar sesión
+            </Button>
+            {account ? <Button appearance="secondary" onClick={handleLogout}>
+              Cerrar sesión
+            </Button> : null}
+          </div>
+          <Link to="/">Volver a la portada</Link>
+        </section>
       </div>
     </main>
   )
