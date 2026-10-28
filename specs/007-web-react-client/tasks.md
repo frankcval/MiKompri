@@ -558,3 +558,11 @@ dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests
 ### Actualización de ejecución 008 — 2026-10-28
 
 El endurecimiento backend de T132 ya está implementado y probado; las notas anteriores describen el estado histórico del 27 de octubre. 008 incorpora CRUD personal/compartido, gastos con RHF e historial, grupos/personas, recuperación y navegación nueva. Se conservan abiertas las tareas compuestas cuyo recorrido Entra, piloto o accesibilidad manual todavía no está acreditado. [Estado individual y evidencia](../008-web-ux-modernization/tasks.md). Ningún gate global se cierra por sustitución de documentación.
+
+### Auditoría del PR #56 — 2026-10-28
+
+[Informe sobre HEAD 07c07e1](../008-web-ux-modernization/evidence/pr-56-review.md): causa histórica de Users, reproducción local 12/32/31 sin fallos/omisiones, cinco workflows verdes y SonarCloud rojo. Sin cambios de casillas en esta revisión.
+
+T056/T057/T058/T060/T061/T069/T071 y T111–T115 tienen implementación posterior que las notas históricas no reflejan completamente: miembros, clientes/CRUD, detalle compartido, RHF en gastos, pestaña Gastos y permisos servidor. T059 conserva deuda RHF/Zod en edición. T089 tiene configuración/ejecución controlada acreditada; T093 tiene regresión posterior satisfactoria, por lo que su fallo antiguo no es un bloqueo vigente. Son candidatas a reconciliación individual según la matriz del informe, sin cerrar tareas compuestas por mera presencia de código.
+
+Los E2E integrados ya contienen aserciones en lugar de skips, pero faltan escenarios de aceptación además de ejecución Entra: CRUD personal completo/segunda lista, corrección de gastos/retirados, acceso denegado a settlement y login interactivo/recuperación. T043/T053/T054/T066/T075/T083/T102/T117/T118 y los gates de errores/accesibilidad/piloto conservan su aceptación pendiente. CI controlada verde no cierra 007 ni 008.
