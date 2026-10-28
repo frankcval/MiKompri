@@ -13,6 +13,7 @@ Reutilizar cliente/contextos actuales. Primero permisos/contratos; después comp
 **Primary Dependencies**: Vite, Fluent v9, Router, MSAL, React Query, RHF y Zod existentes; axe de desarrollo incorporado. Runtime/lockfile y actualizaciones acotadas documentados en research.
 **Storage**: PostgreSQL por contexto; sessionStorage por pestaña/cuenta/lista para borradores, sin tokens, TTL 24 h, limpiar logout/cambio cuenta.
 **Testing**: .NET dominio/aplicación/API, Vitest/RTL y Playwright separado en UI controlada e integración real.
+**Programación de aceptación**: cada push/PR ejecuta CI controlada. La suite Entra real se invoca en un workflow manual independiente con QA y sesiones preparadas; su éxito sigue siendo un gate de cierre. La ausencia de configuración falla al invocarla y no se registra como aceptación ni como test omitido aprobado.
 **Target Platform**: web móvil/tablet/escritorio; Chromium/Firefox/WebKit para críticos. Azure objetivo futuro, no despliegue.
 **Project Type**: SPA en monorepo y backend modular .NET.
 **Performance Goals**: SC-008 en portada, Mis listas y ambos detalles. Perfil 390×844, 4× CPU, 1,6 Mbps/150 ms, fixture 50 productos; 20 navegaciones sin caché por ruta y 20 interacciones por añadir/marcar/abrir gastos. Registrar hardware/versiones, percentiles y fallos. Es aceptación de laboratorio, no métricas de campo.

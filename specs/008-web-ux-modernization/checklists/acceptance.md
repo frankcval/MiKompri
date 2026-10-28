@@ -31,11 +31,14 @@ Estado: aceptación parcial a 2026-10-28. [Evidencia](../evidence/validation.md)
 
 ## P3 — Evidencia y cierre
 
-- [ ] A019 Cero skips obligatorios; selección smoke no vacía, runtime/navegadores preparados, informes/trazas y Docker en CI.
+- [x] A019 CI controlada con selección smoke no vacía, tres motores, informes/trazas y Docker satisfactorios. [Job verificado](https://github.com/frankcval/MiKompri/actions/runs/40758498760/job/123063736625). La aceptación Entra es independiente y continúa en A020.
 - [ ] A020 Harness e integración Entra/multiusuario separados; tests obligatorios ejecutados con persistencia/roles reales.
+
 - [ ] A021 Teclado/zoom/lector/contraste/táctil/teclado virtual/breakpoints y tres motores verificados, cero bloqueantes.
 - [ ] A022 SC-008 con perfil/muestras/percentiles y baseline publicados, sin atribuir datos de laboratorio a campo.
 - [ ] A023 Piloto ≥10 y SC-003/004/005/007 medidos con denominadores/ayudas/errores.
 - [x] A024 Defectos corregidos y verificación pertinente repetida, sin relajar criterio para aprobar. Retorno de foco, cuerpo booleano obligatorio y fixtures demorados; los veinte recorridos agregados de estado se separaron por pantalla conservando aserciones.
 - [ ] A025 FR/SC trazables, deuda 007 cerrada individualmente solo cuando corresponde y límites históricos conservados.
 - [ ] A026 Documentación describe capacidades reales; fuera de alcance sin simulaciones; constitución y gates verificados, sin despliegue implícito.
+
+La aceptación Entra se ejecuta explícitamente en `acceptance-mikompri-web-entra.yml` una vez configurados los recursos, o con la suite integrada local. Un CI de push verde no acredita A020; sigue pendiente una ejecución real satisfactoria sobre el commit de entrega.

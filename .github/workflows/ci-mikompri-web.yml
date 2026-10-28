@@ -26,6 +26,7 @@ jobs:
           cache: npm
           cache-dependency-path: MiKompri.Web/package-lock.json
       - run: npm ci
+      - run: npm run test:ci-config
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test -- --maxWorkers=2
@@ -44,50 +45,3 @@ jobs:
             MiKompri.Web/playwright-report/
             MiKompri.Web/test-results/
           retention-days: 7
-
-  real-auth-acceptance:
-    needs: web-build-test-and-docker
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: MiKompri.Web
-    env:
-      MIKOMPRI_INTEGRATED_URL: ${{ vars.MIKOMPRI_INTEGRATED_URL }}
-      MIKOMPRI_SHOPPING_API: ${{ vars.MIKOMPRI_SHOPPING_API }}
-      MIKOMPRI_USERS_API: ${{ vars.MIKOMPRI_USERS_API }}
-      MIKOMPRI_CATALOG_API: ${{ vars.MIKOMPRI_CATALOG_API }}
-      MIKOMPRI_OWNER_TOKEN: ${{ secrets.MIKOMPRI_OWNER_TOKEN }}
-      MIKOMPRI_MEMBER_TOKEN: ${{ secrets.MIKOMPRI_MEMBER_TOKEN }}
-      MIKOMPRI_OWNER_STATE: ${{ secrets.MIKOMPRI_OWNER_STATE }}
-      MIKOMPRI_MEMBER_STATE: ${{ secrets.MIKOMPRI_MEMBER_STATE }}
-      MIKOMPRI_OWNER_STORAGE: /tmp/mikompri-owner-${{ github.run_id }}.json
-      MIKOMPRI_MEMBER_STORAGE: /tmp/mikompri-member-${{ github.run_id }}.json
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - run: npm ci
-      - name: Materialize private real-login sessions without logging them
-        shell: bash
-        run: |
-          node --input-type=module <<'NODE'
-          import { writeFileSync } from 'node:fs';
-          for (const who of ['OWNER', 'MEMBER']) {
-            const value = process.env[`MIKOMPRI_${who}_STATE`];
-            if (value) writeFileSync(process.env[`MIKOMPRI_${who}_STORAGE`], value, { mode: 0o600 });
-          }
-          NODE
-      - name: Require real environment (never approve an absent or skipped suite)
-        run: node scripts/check-integrated-env.mjs
-      - run: npx playwright install --with-deps chromium
-      - name: Real authentication and service acceptance
-        run: npm run test:e2e:integrated -- --reporter=line
-      - name: Remove private session exports
-        if: always()
-        shell: bash
-        run: |
-          node --input-type=module <<'NODE'
-          import { rmSync } from 'node:fs';
-          for (const who of ['OWNER', 'MEMBER']) rmSync(process.env[`MIKOMPRI_${who}_STORAGE`], { force: true });
-          NODE

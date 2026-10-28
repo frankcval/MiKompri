@@ -67,7 +67,7 @@ La URL facilitada fue `http://localhost:5173/lists`. La herramienta de navegador
 ## Pendientes de aceptación
 
 - Ejecutar la configuración integrada con dos cuentas Entra de prueba y sesiones exportadas tras login real, en un entorno de datos desechables. No publicar sesiones ni tokens en Git, logs o trazas.
-- Ejecutar los workflows en GitHub; el build íntegro local de API y web ya pasa. La configuración CI escrita localmente no equivale a una ejecución remota ni resuelve los prerrequisitos Entra del job integrado.
+- La CI controlada de web y la de persistencia ya pasaron en GitHub. Ejecutar la aceptación Entra con QA y sesiones reales; el éxito del CI controlado no resuelve esos prerrequisitos ni acredita autenticación multiusuario.
 - Completar lectura de pantalla, zoom 200 %, teclado virtual, safe areas físicas y matriz ampliada de error/recuperación.
 - Acreditar los umbrales de rendimiento con las muestras de [performance](performance.md); una reducción del bundle no basta.
 - Ejecutar el [piloto](pilot.md) con al menos diez personas. No se han reclutado personas ni calculado satisfacción con pruebas técnicas.
@@ -75,6 +75,14 @@ La URL facilitada fue `http://localhost:5173/lists`. La herramienta de navegador
 No se declara cerrada 008 ni los gates completos de 007 por entregar código.
 
 Revisión de CI tras el primer push: GitHub rechazó el workflow web por usar `runner.temp` en `jobs.env`, donde ese contexto no está disponible. Se sustituyó por rutas temporales únicas con `github.run_id`. Los dos workflows modificados pasan actionlint 1.7.12 (binario oficial y SHA-256 verificado; instalado solo en carpeta QA ignorada). [Ejecución que detectó el error](https://github.com/frankcval/MiKompri/actions/runs/40757986924). El siguiente push vuelve a activar las comprobaciones; esto no elimina los prerrequisitos Entra del job integrado.
+
+## Separación de CI y aceptación Entra
+
+En el commit `671c775`, [el job web controlado pasó](https://github.com/frankcval/MiKompri/actions/runs/40758498760/job/123063736625) y el job Entra falló exclusivamente en preflight por URL, tokens y sesiones ausentes. El fallo de configuración se conserva como tal; no es una validación fallida de la autenticación de la aplicación porque los tests no llegaron a ejecutarse.
+
+Se corrige la programación: `ci-mikompri-web.yml` ejecuta siempre las comprobaciones controladas, y `acceptance-mikompri-web-entra.yml` se inicia manualmente con los recursos preparados. El preflight continúa estricto, exige URLs de APIs en CI y devuelve salida 1 con un mensaje breve cuando falta configuración. Se añaden seis pruebas de configuración con fixtures de presencia, que no autentican ni sustituyen Entra. El workflow manual debe existir en la rama predeterminada para iniciarse desde GitHub; la suite local sigue disponible en esta rama.
+
+Esta modificación no cierra A020, T031/T036/T048 ni SC-009: el cierre requiere éxito real sobre el commit de entrega. Las instrucciones de variables, secretos y sesiones están en el README web; no se han configurado credenciales ni desplegado un entorno QA.
 
 ## Revisión final antes de commit/push
 

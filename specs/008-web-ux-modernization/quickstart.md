@@ -39,7 +39,9 @@ npx playwright install
 npm run test:e2e
 ```
 
-`npm test` incluye unit/component/integration locales. Playwright por defecto selecciona portada, visual y modernización con fixtures; `PLAYWRIGHT_ALL_BROWSERS=1` añade Firefox/WebKit. Instalar los tres motores. En este equipo la caché está en `E:/Projects/MiKompri/.playwright-browsers`, mediante `PLAYWRIGHT_BROWSERS_PATH`. Evitar invocaciones simultáneas que compartan directorio de trazas. `npm run test:e2e:integrated` usa configuración separada y preflight obligatorio: no convierte ausencia de credenciales en un skip satisfactorio. Variables y formato de sesión en [README web](../../MiKompri.Web/README.md). CI está configurado, sin ejecución remota acreditada.
+`npm test` incluye unit/component/integration locales. Playwright por defecto selecciona portada, visual y modernización con fixtures; `PLAYWRIGHT_ALL_BROWSERS=1` añade Firefox/WebKit. Instalar los tres motores. En este equipo la caché está en `E:/Projects/MiKompri/.playwright-browsers`, mediante `PLAYWRIGHT_BROWSERS_PATH`. Evitar invocaciones simultáneas que compartan directorio de trazas. `npm run test:e2e:integrated` usa configuración separada y preflight obligatorio: no convierte ausencia de credenciales en un skip satisfactorio. Variables y formato de sesión en [README web](../../MiKompri.Web/README.md). El job controlado ya pasó en GitHub; la aceptación Entra no pasó por falta de entorno y sesiones.
+
+La CI de push/PR y la aceptación real se programan por separado. `acceptance-mikompri-web-entra.yml` se invoca manualmente cuando QA y credenciales están preparados; exige también URLs explícitas de las tres APIs. Sus prerrequisitos se comprueban antes de instalar dependencias. GitHub muestra el workflow manual una vez incorporado a la rama predeterminada; mientras tanto puede ejecutarse la suite local. Se exige resultado real satisfactorio del mismo commit antes de cerrar 008, independientemente de que la CI normal esté verde.
 
 Desde raíz:
 

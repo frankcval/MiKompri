@@ -15,7 +15,7 @@
 
 - [x] T004 Auditar rutas/DTO/respuestas/scopes/roles, concretar permiso Member sobre gasto propio y compatibilidad de estimación desconocida, en `specs/008-web-ux-modernization/contracts/api-and-permissions.md`; contrastar `MiKompri.ShoppingList.Api/Controllers/PurchaseListsController.cs` y contratos Users/ProductCatalog.
 - [x] T005 Preparar dos propietarios, Owner/Admin/Member, no miembro y miembro retirado con recursos aislados en `test/MiKompri.ShoppingList.Api.Tests/` y `MiKompri.Web/tests/e2e/fixtures/`; limpieza solo de fixtures creadas por la prueba, sin datos del usuario.
-- [x] T006 Definir escenarios obligatorios y separación UI controlada/integración en `MiKompri.Web/playwright.config.ts` y `specs/008-web-ux-modernization/checklists/acceptance.md`; fallar por ausencia de prerrequisitos en job integrado requerido, sin reemplazar Entra por harness.
+- [x] T006 Definir escenarios obligatorios y separación UI controlada/integración en `MiKompri.Web/playwright.config.ts` y `specs/008-web-ux-modernization/checklists/acceptance.md`; la aceptación Entra se inicia explícitamente y falla por ausencia de prerrequisitos, sin reemplazar Entra por harness ni cerrarla con la CI de push.
 
 **Checkpoint**: T001–T006 proporcionan entorno/contratos. US1 acredita permisos antes de nuevas escrituras. Prototipos sin escrituras y preparación de pruebas pueden avanzar aisladamente.
 
@@ -108,7 +108,7 @@
 
 - [x] T045 [US8] Evaluar versión/compatibilidad y añadir `@axe-core/playwright` en `MiKompri.Web/package.json`/lockfile, documentando decisión en `specs/008-web-ux-modernization/research.md`; Storybook/iconos solo si la evaluación demuestra necesidad, no requisito de cierre.
 - [ ] T046 [US8] Ejecutar axe y revisión manual de foco, lector, zoom 200%, contraste 4.5:1 texto/3:1 grandes y controles, movimiento reducido, teclado virtual y safe areas en `MiKompri.Web/tests/e2e/accessibility/`; matriz completa en `specs/008-web-ux-modernization/checklists/acceptance.md`.
-- [x] T047 [US8] Corregir runtime, navegadores, selección smoke obligatorio y publicación de informes/trazas en `.github/workflows/ci-mikompri-web.yml` y `MiKompri.Web/playwright.config.ts`; jobs separados controlado/integrado, cero skips obligatorios y Docker build, sin despliegue.
+- [x] T047 [US8] Corregir runtime, navegadores, selección smoke obligatorio y publicación de informes/trazas en `.github/workflows/ci-mikompri-web.yml` y `MiKompri.Web/playwright.config.ts`; CI de push separada del workflow manual `acceptance-mikompri-web-entra.yml`, cero skips como evidencia de aceptación y Docker build, sin despliegue.
 - [ ] T048 [US8] Ejecutar suites frontend, .NET afectadas y recorrido integrado de dos personas en `MiKompri.Web/tests/e2e/` con Docker/identidades de prueba; registrar comandos/revisión/entorno/resultados/límites en `specs/008-web-ux-modernization/quickstart.md`, sin secretos.
 - [x] T049 [US8] Medir SC-008 con perfil fijo y reportar 20 muestras por ruta/acción en `specs/008-web-ux-modernization/evidence/performance.md`; comparar baseline, rutas frías, interacción y fallos, sin presentarlo como p75 de campo.
 - [ ] T050 [US8] Ejecutar piloto de al menos 10 personas, tareas/tiempos/ayudas y cuestionario de reparto en `specs/008-web-ux-modernization/evidence/pilot.md`; medir SC-003/004/005/007 y criterios heredados 007, con datos anonimizados y sin grabación no consentida.
@@ -162,6 +162,8 @@ Las tareas cerradas de permisos/persistencia remiten a 40 pruebas de dominio, 33
 | T050 | Protocolo preparado | Piloto humano de diez personas; 0 participantes a la fecha |
 | T054 | Revisión documental y alcance conservados | Todos los gates de aceptación; no se cierra por documentación |
 
-T052 conserva las casillas históricas de 007 salvo T132, cerrada con evidencia específica del hardening. T053 describe capacidades locales reales y limitaciones de despliegue/aceptación. T047 acredita configuración CI y ejecución local; no una ejecución publicada en GitHub.
+T052 conserva las casillas históricas de 007 salvo T132, cerrada con evidencia específica del hardening. T053 describe capacidades locales reales y limitaciones de despliegue/aceptación. T047 cuenta con ejecución remota satisfactoria del job controlado; el job Entra de aquella ejecución falló por recursos ausentes y no acredita aceptación.
+
+Revisión de programación CI: Entra se mueve a un workflow manual independiente hasta disponer de QA y sesiones. Su ejecución real satisfactoria sigue siendo obligatoria para T031/T036/T048 y el cierre de la feature. La CI normal en verde no cierra esos gates. El preflight mantiene salida no cero ante configuración incompleta; seis pruebas de configuración cubren ausencia, ficheros, variables de APIs y recursos completos sin autenticar usuarios.
 
 T027 se completa con tests de destino permitido, consumo único/StrictMode, caducidad de 24 h, aislamiento de cuentas, limpieza al salir, token silencioso que requiere interacción y 401 sin repetición automática. T044/T051: 72 recorridos (24 por motor) satisfactorios y 15 casos de carga/vacío/errores (cinco por motor) tras separar el test agregado; los tres recorridos de gastos se repitieron tras el último ajuste de formulario. Total: 87 escenarios distintos cubiertos por ejecuciones complementarias, cero omitidos en esas selecciones.
