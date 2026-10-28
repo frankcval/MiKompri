@@ -60,8 +60,8 @@ jobs:
       MIKOMPRI_MEMBER_TOKEN: ${{ secrets.MIKOMPRI_MEMBER_TOKEN }}
       MIKOMPRI_OWNER_STATE: ${{ secrets.MIKOMPRI_OWNER_STATE }}
       MIKOMPRI_MEMBER_STATE: ${{ secrets.MIKOMPRI_MEMBER_STATE }}
-      MIKOMPRI_OWNER_STORAGE: ${{ runner.temp }}/mikompri-owner.json
-      MIKOMPRI_MEMBER_STORAGE: ${{ runner.temp }}/mikompri-member.json
+      MIKOMPRI_OWNER_STORAGE: /tmp/mikompri-owner-${{ github.run_id }}.json
+      MIKOMPRI_MEMBER_STORAGE: /tmp/mikompri-member-${{ github.run_id }}.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

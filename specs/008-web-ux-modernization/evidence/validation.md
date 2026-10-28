@@ -74,6 +74,8 @@ La URL facilitada fue `http://localhost:5173/lists`. La herramienta de navegador
 
 No se declara cerrada 008 ni los gates completos de 007 por entregar código.
 
+Revisión de CI tras el primer push: GitHub rechazó el workflow web por usar `runner.temp` en `jobs.env`, donde ese contexto no está disponible. Se sustituyó por rutas temporales únicas con `github.run_id`. Los dos workflows modificados pasan actionlint 1.7.12 (binario oficial y SHA-256 verificado; instalado solo en carpeta QA ignorada). [Ejecución que detectó el error](https://github.com/frankcval/MiKompri/actions/runs/40757986924). El siguiente push vuelve a activar las comprobaciones; esto no elimina los prerrequisitos Entra del job integrado.
+
 ## Revisión final antes de commit/push
 
 107 pruebas frontend, 40 de dominio, 33 de aplicación y 68 de API satisfactorias; las 68 también con PostgreSQL 16. Tras optimizar se repitieron 27 casos de modernización/axe en tres motores y 12 casos a 390 px. Las 87 pruebas distintas del inventario controlado se cubren con selecciones complementarias; los intentos fallidos se conservan como tales. Build/tipos y lint correctos; auditoría npm cero vulnerabilidades. El navegador de pruebas sin sesión redirige la URL real `/lists` a `/login`; no acredita dos identidades Entra.
