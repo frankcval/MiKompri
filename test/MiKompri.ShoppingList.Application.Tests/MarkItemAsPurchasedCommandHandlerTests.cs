@@ -38,7 +38,7 @@ public class MarkItemAsPurchasedCommandHandlerTests
         list.AddItem(item);
         repo.Setup(r => r.GetByIdAsync(list.Id)).ReturnsAsync(list);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             new MarkItemAsPurchasedCommandHandler(repo.Object, uow.Object)
                 .Handle(new MarkItemAsPurchasedCommand(list.Id, item.ProductId), CancellationToken.None));
 

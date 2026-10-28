@@ -26,6 +26,8 @@ beforeEach(() => {
   user = userEvent.setup()
   status = 200; items = []
   fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+    if (url.endsWith('/members')) return Response.json([])
+    if (url.endsWith('/users/me')) return Response.json({ id: '44444444-4444-4444-8444-444444444444' })
     if (url.endsWith('/groups')) return Response.json([{ id: groupId, name: 'Familia' }])
     if (url.endsWith('/catalog-products')) return Response.json([{ id: productId, name: 'Arroz', isActive: true }])
     if (url.endsWith('/items')) { const value = JSON.parse(String(init?.body)); items.push({ id: 'new-item', productName: value.name, quantity: value.quantity, isPurchased: false }); return Response.json('new-item', { status: 201 }) }
@@ -45,7 +47,7 @@ describe('detalle compartido con contexto', () => {
     await screen.findByRole('heading', { name: `Gastos de ${listId}` })
     expect(screen.getByRole('link', { name: 'Volver a listas compartidas' })).toHaveAttribute('href', `/shared-lists?groupId=${groupId}`)
   })
-  it('añade con el contrato compartido, actualiza la lista y no utiliza el marcado genérico', async () => {
+  it('añade con contrato compartido y ofrece estado de compra autorizado', async () => {
     mount()
     await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
     fireEvent.change(await screen.findByRole('combobox', { name: 'Producto' }), { target: { value: productId } })
@@ -54,11 +56,11 @@ describe('detalle compartido con contexto', () => {
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(writes).toHaveLength(1)
     expect(writes[0][0]).toContain(`/shared-lists/${listId}/items`)
-    expect(JSON.parse(writes[0][1].body)).toEqual({ productId, name: 'Arroz', quantity: 1, estimatedPrice: 0 })
+    expect(JSON.parse(writes[0][1].body)).toEqual({ productId, name: 'Arroz', quantity: 1, estimatedPrice: null })
     await user.click(screen.getByRole('button', { name: 'Terminar' }))
     await screen.findByText('Arroz')
-    expect(screen.queryByRole('button', { name: /Marcar comprado/ })).not.toBeInTheDocument()
-    expect(screen.getByText(/marcado de compra compartida aún no está disponible/)).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Marcar comprado: Arroz' })).not.toBeChecked()
+    expect(fetchMock.mock.calls.some(([url]) => url.endsWith('/mark-as-purchased'))).toBe(false)
   })
   it.each([401, 403, 404, 503])('no expone datos ni escrituras al recibir %s', async code => {
     status = code; mount()

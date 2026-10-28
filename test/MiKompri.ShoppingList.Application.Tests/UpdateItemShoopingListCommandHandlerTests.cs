@@ -28,7 +28,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.UpdateItemShoppingLis
             // Arrange
             var repoMock = new Mock<IPurchaseListRepository>(MockBehavior.Strict);
             repoMock
-                .Setup(r => r.UpdateItemAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<decimal?>(), It.IsAny<int?>()))
+                .Setup(r => r.UpdateItemAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<decimal?>(), It.IsAny<int?>(), It.IsAny<bool>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -50,7 +50,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.UpdateItemShoppingLis
 
             // Assert
             Assert.True(result);
-            repoMock.Verify(r => r.UpdateItemAsync(listId, prodId, "Manzanas", 1.5m, 3), Times.Once);
+            repoMock.Verify(r => r.UpdateItemAsync(listId, prodId, "Manzanas", 1.5m, 3, true), Times.Once);
             uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -60,7 +60,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.UpdateItemShoppingLis
             // Arrange
             var repoMock = new Mock<IPurchaseListRepository>(MockBehavior.Strict);
             repoMock
-                .Setup(r => r.UpdateItemAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<decimal?>(), It.IsAny<int?>()))
+                .Setup(r => r.UpdateItemAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<decimal?>(), It.IsAny<int?>(), It.IsAny<bool>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -79,7 +79,7 @@ namespace MiKompri.ShoppingList.Application.Tests.Commands.UpdateItemShoppingLis
 
             // Assert
             Assert.True(result);
-            repoMock.Verify(r => r.UpdateItemAsync(listId, prodId, "Manzanas", null, null), Times.Once);
+            repoMock.Verify(r => r.UpdateItemAsync(listId, prodId, "Manzanas", null, null, false), Times.Once);
             uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }

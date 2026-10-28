@@ -1,3 +1,6 @@
+import { responseError } from '../../../shared/api/request'
+import { request } from '../../../shared/api/request'
+
 export type PersonalListSummary = {
   id: string
   name: string
@@ -9,7 +12,7 @@ export type PersonalListSummary = {
 export type ListItemInput = {
   productId: string
   productName: string
-  price: number
+  price: number | null
   quantity: number
 }
 
@@ -19,19 +22,7 @@ export type CreatePersonalListInput = {
 }
 
 async function parseError(response: Response): Promise<Error & { status?: number }> {
-  let message = 'No fue posible guardar los cambios. Inténtalo de nuevo.'
-  if (response.status === 401) message = 'Tu sesión no permite esta operación. Inicia sesión de nuevo.'
-  if (response.status === 403) message = 'No tienes permiso para modificar esta lista.'
-  if (response.status === 404) message = 'La lista ya no está disponible. Vuelve a tus listas.'
-  try {
-    const body = await response.json() as { errors?: Record<string, string[]>; error?: string }
-    if (response.status === 400) {
-      message = body.errors ? Object.values(body.errors).flat().join(' ') : body.error || 'Revisa los datos del ítem.'
-    }
-  } catch { /* Keep a useful message when the response has no JSON body. */ }
-  const error = new Error(message) as Error & { status?: number }
-  error.status = response.status
-  return error
+  return responseError(response)
 }
 
 export async function getMyPersonalLists(
@@ -106,3 +97,9 @@ export async function markPersonalListItem(baseUrl: string, token: string, listI
   })
   if (!response.ok) throw await parseError(response)
 }
+
+export const setPurchaseState = (base: string, token: string, listId: string, itemId: string, isPurchased: boolean) => request<void>(`${base}/api/v1/purchaselists/${listId}/items/${itemId}/purchase-state`, token, 'PATCH', { isPurchased })
+export const renamePersonalList = (base: string, token: string, id: string, name: string) => request<void>(`${base}/api/v1/purchaselists/${id}`, token, 'PUT', { name })
+export const deletePersonalList = (base: string, token: string, id: string) => request<void>(`${base}/api/v1/purchaselists/${id}`, token, 'DELETE')
+export const editPersonalItem = (base: string, token: string, id: string, itemId: string, quantity: number, price: number | null) => request<void>(`${base}/api/v1/purchaselists/${id}/items/${itemId}`, token, 'PUT', { quantity, price })
+export const deletePersonalItem = (base: string, token: string, id: string, itemId: string) => request<void>(`${base}/api/v1/purchaselists/${id}/items/${itemId}`, token, 'DELETE')

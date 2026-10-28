@@ -35,6 +35,7 @@ beforeEach(() => {
     ] : [] })
     if (url.endsWith('/proposal')) return Response.json({ sharedListId: listId, transfers: recorded ? [{ fromUserId: luisId, toUserId: anaId, amount: 6 }] : [] })
     if (url.endsWith('/expenses')) {
+      if (!_init?.method || _init.method === 'GET') return Response.json([])
       if (expenseFailure) return Response.json({}, { status: 403 })
       recorded = true
       return Response.json('expense-id', { status: 201 })
@@ -63,7 +64,8 @@ describe('reparto de gastos con personas e ítems reales', () => {
     await fill()
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Registrar gasto', exact: true }))
-    await screen.findByText('Gasto registrado. El reparto se ha actualizado.')
+    await screen.findByText('Gasto registrado.')
+    await screen.findByText(/Luis debe pagar.*a Ana/)
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(writes).toHaveLength(1)
     expect(writes[0][0]).toContain(`/shared-lists/${listId}/items/${itemId}/expenses`)
@@ -80,6 +82,7 @@ describe('reparto de gastos con personas e ítems reales', () => {
     const payer = await screen.findByRole('combobox', { name: 'Pagado por' })
     expect(payer.querySelectorAll('option')).toHaveLength(2)
     expect(payer).not.toHaveTextContent('Luis')
+    expect(screen.getByRole('combobox', { name: 'Comprado por (opcional)' })).not.toHaveTextContent('Luis')
     expect(screen.getByRole('checkbox', { name: 'Luis' })).toBeInTheDocument()
   })
 
@@ -107,7 +110,7 @@ describe('reparto de gastos con personas e ítems reales', () => {
 
   it('bloquea el envío hasta elegir ítem, pagador, participantes e importe válido', async () => {
     mount()
-    await screen.findByRole('combobox', { name: 'Ítem de la lista' })
+    await screen.findByRole('spinbutton', { name: 'Importe pagado (EUR)' })
     expect(screen.getByRole('button', { name: 'Registrar gasto' })).toBeDisabled()
     await fill()
     fireEvent.change(screen.getByRole('spinbutton', { name: 'Importe pagado (EUR)' }), { target: { value: '-1' } })
@@ -126,7 +129,7 @@ describe('reparto de gastos con personas e ítems reales', () => {
     expect(screen.getByRole('spinbutton', { name: 'Importe pagado (EUR)' })).toHaveValue(12)
     expenseFailure = false
     fireEvent.click(screen.getByRole('button', { name: 'Registrar gasto' }))
-    await screen.findByText('Gasto registrado. El reparto se ha actualizado.')
+    await screen.findByText('Gasto registrado.')
   })
 
   it('reintenta detalle sin emitir peticiones con groupId indefinido', async () => {
@@ -145,15 +148,15 @@ describe('reparto de gastos con personas e ítems reales', () => {
     let release!: () => void
     const original = fetchMock.getMockImplementation()!
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
-      if (url.endsWith('/expenses')) await new Promise<void>((resolve) => { release = resolve })
+      if (url.endsWith('/expenses') && init?.method === 'POST') await new Promise<void>((resolve) => { release = resolve })
       return original(url, init)
     })
     const button = screen.getByRole('button', { name: 'Registrar gasto' })
     fireEvent.click(button)
-    await screen.findByRole('button', { name: 'Registrando gasto…' })
+    await screen.findByRole('button', { name: 'Guardando gasto…' })
     fireEvent.submit(button.closest('form')!)
     await waitFor(() => expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1))
     await act(async () => { release() })
-    await screen.findByText('Gasto registrado. El reparto se ha actualizado.')
+    await screen.findByText('Gasto registrado.')
   })
 })

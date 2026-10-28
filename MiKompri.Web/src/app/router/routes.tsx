@@ -1,14 +1,12 @@
 import { Navigate, type RouteObject } from 'react-router-dom'
+import { Suspense, type ReactNode } from 'react'
+import { Spinner } from '@fluentui/react-components'
 import App from '../App'
 import { MainLayout } from '../layout/MainLayout'
 import { ProtectedRoute } from '../../auth/guards/ProtectedRoute'
 import { LoginPage } from '../../features/profile/pages/LoginPage'
-import { ProfilePage } from '../../features/profile/pages/ProfilePage'
-import { GroupsPage } from '../../features/groups/pages/GroupsPage'
-import { PersonalListsPage } from '../../features/shopping-lists/pages/PersonalListsPage'
-import { SharedListsPage } from '../../features/shared-lists/pages/SharedListsPage'
-import { SharedListDetailPage } from '../../features/shared-lists/pages/SharedListDetailPage'
-import { ProductCatalogPage } from '../../features/product-catalog/pages/ProductCatalogPage'
+import { ProfilePage, GroupsPage, PersonalListsPage, SharedListsPage, SharedListDetailPage, ProductCatalogPage, ListsPage, GroupDetailPage } from './DeferredPages'
+const deferred = (element: ReactNode) => <Suspense fallback={<Spinner label="Cargando tu compra…" />}>{element}</Suspense>
 
 export const appRoutes: RouteObject[] = [
   { path: '/', element: <App /> },
@@ -25,30 +23,32 @@ export const appRoutes: RouteObject[] = [
     children: [{
       element: <MainLayout />,
       children: [
+      { path: '/lists', element: deferred(<ListsPage />) },
+      { path: '/groups/:groupId', element: deferred(<GroupDetailPage />) },
       {
         path: '/profile',
-        element: <ProfilePage />,
+        element: deferred(<ProfilePage />),
       },
       {
         path: '/groups',
-        element: <GroupsPage />,
+        element: deferred(<GroupsPage />),
       },
       {
         path: '/personal-lists',
-        element: <PersonalListsPage />,
+        element: deferred(<PersonalListsPage />),
       },
       {
         path: '/personal-lists/:listId',
-        element: <PersonalListsPage />,
+        element: deferred(<PersonalListsPage />),
       },
       {
         path: '/shared-lists',
-        element: <SharedListsPage />,
+        element: deferred(<SharedListsPage />),
       },
-      { path: '/shared-lists/:listId', element: <SharedListDetailPage /> },
+      { path: '/shared-lists/:listId', element: deferred(<SharedListDetailPage />) },
       {
         path: '/product-catalog',
-        element: <ProductCatalogPage />,
+        element: deferred(<ProductCatalogPage />),
       },
       ],
     }],

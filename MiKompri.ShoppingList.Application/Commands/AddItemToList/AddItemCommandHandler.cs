@@ -8,11 +8,13 @@ namespace MiKompri.ShoppingList.Application.Commands.AddItemToList
     {
         IPurchaseListRepository _repo;
         IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService? _user;
 
-        public AddItemCommandHandler(IPurchaseListRepository repo, IUnitOfWork unitOfWork)
+        public AddItemCommandHandler(IPurchaseListRepository repo, IUnitOfWork unitOfWork, ICurrentUserService? user = null)
         {
             _repo = repo;
             _unitOfWork = unitOfWork;
+            _user = user;
         }
 
         public async Task<Guid> Handle(AddItemCommand request, CancellationToken cancellationToken)
@@ -22,8 +24,10 @@ namespace MiKompri.ShoppingList.Application.Commands.AddItemToList
             request.ProductId,
             request.Name,
             request.Price ?? 0,
-            request.Quantity
+            request.Quantity,
+            _user?.UserId ?? Guid.Empty
         );
+            item.SetEstimatedPrice(request.Price, _user?.UserId ?? Guid.Empty);
             await _repo.AddItemAsync(request.ListId, item, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

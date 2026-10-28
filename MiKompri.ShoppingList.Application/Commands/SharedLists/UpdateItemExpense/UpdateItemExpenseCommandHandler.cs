@@ -11,17 +11,20 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpen
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
         private readonly IGroupAuthorizationService _groupAuthorization;
+        private readonly Services.ActiveMembershipPolicy? _activeMembership;
 
         public UpdateItemExpenseCommandHandler(
             IPurchaseListRepository repository,
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUser,
-            IGroupAuthorizationService groupAuthorization)
+            IGroupAuthorizationService groupAuthorization,
+            Services.ActiveMembershipPolicy? activeMembership = null)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
             _groupAuthorization = groupAuthorization;
+            _activeMembership = activeMembership;
         }
 
         public async Task Handle(UpdateItemExpenseCommand request, CancellationToken cancellationToken)
@@ -41,6 +44,13 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpen
 
             var item = list.Items.FirstOrDefault(x => x.Id == request.ItemId)
                 ?? throw new KeyNotFoundException("Ítem no encontrado.");
+
+            if (_activeMembership is not null)
+            {
+                await _activeMembership.EnsureActiveMemberAsync(list.GroupId.Value, request.PaidBy, "PaidBy", cancellationToken);
+                if (request.PurchasedBy.HasValue) await _activeMembership.EnsureActiveMemberAsync(list.GroupId.Value, request.PurchasedBy.Value, "PurchasedBy", cancellationToken);
+                await _activeMembership.EnsureActiveMembersAsync(list.GroupId.Value, request.Participants, "Participants", cancellationToken);
+            }
 
             item.UpdateExpense(request.ExpenseId, request.PaidBy, request.PurchasedBy, request.RealPaidPrice, request.Participants, request.Currency);
 

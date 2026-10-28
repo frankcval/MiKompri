@@ -8,6 +8,7 @@
         public Guid OwnerId { get; set; }
 
         public Guid? GroupId { get; set; }
+        public string Status { get; set; } = "Active";
         public int TotalItems { get; set; }
         public int PurchasedItems { get; set; }
         public int PendingItems { get; set; }

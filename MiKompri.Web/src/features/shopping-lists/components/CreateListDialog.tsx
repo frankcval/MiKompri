@@ -1,21 +1,29 @@
-import { useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react'
+import { Controller, useForm, useWatch } from 'react-hook-form'
+import { useMsal } from '@azure/msal-react'
+import { readDraft, writeDraft } from '../../../auth/session/draftStore'
 import { z } from 'zod'
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Field, Input } from '@fluentui/react-components'
 import ui from '../../../shared/ui/AppSurface.module.css'
 
 const schema = z.object({ name: z.string().trim().min(1, 'Escribe un nombre para tu lista.').max(120, 'Usa como máximo 120 caracteres.') })
-export function CreateListDialog({ title, onCreate, label = 'Crear lista', disabled = false }: {
-  title: string; label?: string; disabled?: boolean; onCreate: (name: string) => Promise<void>
+export function CreateListDialog({ title, onCreate, label = 'Crear lista', disabled = false, initialOpen = false, draftScope }: {
+  title: string; label?: string; disabled?: boolean; initialOpen?: boolean; draftScope?: string; onCreate: (name: string) => Promise<void>
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(initialOpen)
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
   const submitting = useRef(false)
-  const { control, handleSubmit, reset, setError: fieldError, formState: { errors } } = useForm<{ name: string }>({ defaultValues: { name: '' } })
-  const close = () => { if (!pending) { setOpen(false); reset(); setError('') } }
+  const trigger = useRef<HTMLButtonElement>(null)
+  const { accounts } = useMsal()
+  const account = accounts[0]?.homeAccountId
+  const scope = `create-list:${draftScope ?? title}`
+  const { control, handleSubmit, reset, setError: fieldError, formState: { errors } } = useForm<{ name: string }>({ defaultValues: account ? readDraft(account, scope, { name: '' }) : { name: '' } })
+  const draft = useWatch({ control })
+  useEffect(() => { if (account) writeDraft(account, scope, draft) }, [account, scope, draft])
+  const close = () => { if (!pending) { setOpen(false); reset({ name: '' }); setError(''); requestAnimationFrame(() => trigger.current?.focus()) } }
   return <Dialog open={open} onOpenChange={(_, data) => { if (!pending) { if (data.open) setOpen(true); else close() } }}>
-    <DialogTrigger disableButtonEnhancement><Button appearance="primary" disabled={disabled}>{label}</Button></DialogTrigger>
+    <DialogTrigger disableButtonEnhancement><Button ref={trigger} appearance="primary" disabled={disabled} onClick={event => event.currentTarget.focus()}>{label}</Button></DialogTrigger>
     <DialogSurface aria-label={title} className={`${ui.page} ${ui.panel}`}>
       <form className={ui.form} onSubmit={event => { void handleSubmit(async value => {
         if (submitting.current) return
@@ -24,7 +32,7 @@ export function CreateListDialog({ title, onCreate, label = 'Crear lista', disab
         setError('')
         submitting.current = true
         setPending(true)
-        try { await onCreate(parsed.data.name); setOpen(false); reset() }
+        try { await onCreate(parsed.data.name); setOpen(false); reset({ name: '' }) }
         catch (cause) { setError(cause instanceof Error ? cause.message : 'No fue posible crear la lista. Inténtalo de nuevo.') }
         finally { submitting.current = false; setPending(false) }
       })(event) }}>

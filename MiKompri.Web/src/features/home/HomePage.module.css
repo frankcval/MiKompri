@@ -1,4 +1,4 @@
-﻿.home { color: #172b3a; background: #fbfcf9; font-size: 16px; line-height: 1.5; }
+.home { color: #172b3a; background: #fbfcf9; font-size: 16px; line-height: 1.5; }
 .home h1,.home h2,.home h3,.home p { margin: 0; }
 .home h2 { font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -.8px; }
 .home h3 { font-size: 22px; font-weight: 600; }
@@ -17,7 +17,7 @@
 .desktopNav { display: none; }
 .mobileNav { display: grid; gap: 12px; }
 .closeMenu { min-width: 44px; min-height: 44px; }
-.mobileNav a { padding: 12px; color: #006b68; min-height: 44px; font: 600 18px 'Source Sans 3',sans-serif; }
+.mobileNav a { padding: 12px; color: #006b68; min-height: 44px; font: 600 18px 'MiKompri Sans',sans-serif; }
 .skip { position: absolute; left: 16px; top: -100px; z-index: 100; background: white; padding: 12px; }
 .skip:focus { top: 8px; }
 .hero { display: grid; gap: 40px; padding-block: 40px 48px; }

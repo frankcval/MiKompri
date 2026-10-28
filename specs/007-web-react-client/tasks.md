@@ -1,5 +1,7 @@
 # Tasks: 007-web-react-client
 
+**Coordinación — 2026-10-28**: [008/tasks](../008-web-ux-modernization/tasks.md) ejecutará el plan P0–P3, con correspondencia en [008/traceability](../008-web-ux-modernization/traceability.md). Las tareas pendientes aquí se conservan; se cerrarán individualmente con evidencia `008/Txxx` cuando cumplan su aceptación original. No repetir trabajos ya entregados ni confundir T133 (ItemId) con T132 (autorización). Crear estos documentos no marca ninguna tarea de implementación como completada.
+
 **Input**: Design documents from `/specs/007-web-react-client/`
 
 **Prerequisites**: plan.md (required), spec.md (required), research.md, data-model.md, contracts/frontend-backend-integration.md, quickstart.md
@@ -512,7 +514,7 @@ Se corrigen las referencias vigentes de catálogo estrictamente read-only para r
 - [X] T130 Implementar detalle compartido protegido, alta real y Compra/Gastos con tab/contexto en URL; retorno al detalle desde catálogo.
 - [X] T131 Validar formularios, errores, duplicados, foco, historial/recarga, navegación y cinco anchos; ejecutar controles y registrar límites.
 
-- [ ] T132 Prerrequisito backend identificado en T128: acreditar autenticación y autorización de propietario/membresía/rol en el endpoint genérico de marcado antes de habilitarlo para listas compartidas. Añadir pruebas negativas entre usuarios/grupos y reconciliar con 005 FR-004. Este cambio de UX no modifica el backend ni presenta su guard de selección como frontera de seguridad.
+- [X] T132 Autenticación y autorización por propietario/membresía/rol endurecidas en 008 mediante pipeline/política de aplicación. Evidencia: 008/T007–010, `ResourceAuthorizationTests`, 68/68 API también con PostgreSQL real. Anónimo, propietario/grupo ajeno, Member e inactivo verificados con identidad/Users controlados. El gate Entra multiusuario completo permanece abierto; T133 conserva su evidencia independiente.
 
 ### Evidencia T128–T131 — UX privada (2026-10-27)
 
@@ -552,3 +554,7 @@ dotnet test test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain
 dotnet test test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj --configuration Release --no-restore --logger 'console;verbosity=minimal'
 dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release --no-restore --logger 'console;verbosity=minimal' --logger 'trx;LogFileName=mark-item-regression.trx' --results-directory .playwright-mcp/test-results
 ```
+
+### Actualización de ejecución 008 — 2026-10-28
+
+El endurecimiento backend de T132 ya está implementado y probado; las notas anteriores describen el estado histórico del 27 de octubre. 008 incorpora CRUD personal/compartido, gastos con RHF e historial, grupos/personas, recuperación y navegación nueva. Se conservan abiertas las tareas compuestas cuyo recorrido Entra, piloto o accesibilidad manual todavía no está acreditado. [Estado individual y evidencia](../008-web-ux-modernization/tasks.md). Ningún gate global se cierra por sustitución de documentación.

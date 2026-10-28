@@ -1,6 +1,8 @@
+import { responseError } from '../../../shared/api/request'
 export type GroupSummary = {
   id: string
   name: string
+  myRole?: string
 }
 
 export type GroupMember = {
@@ -20,9 +22,7 @@ export type AddGroupMemberInput = {
 }
 
 async function parseError(response: Response): Promise<Error & { status?: number }> {
-  const error = new Error(`groups_api_error_${response.status}`) as Error & { status?: number }
-  error.status = response.status
-  return error
+  return responseError(response)
 }
 
 export async function getMyGroups(usersApiBaseUrl: string, accessToken: string): Promise<GroupSummary[]> {

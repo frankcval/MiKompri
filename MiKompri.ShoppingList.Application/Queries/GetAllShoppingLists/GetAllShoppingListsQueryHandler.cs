@@ -13,16 +13,18 @@ namespace MiKompri.ShoppingList.Application.Queries.GetAllShoppingLists
     public class GetAllShoppingListsQueryHandler : IRequestHandler<GetAllShoppingListsQuery, IEnumerable<PurchaseListDTO>>
     {
         IPurchaseListRepository _repo;
+        private readonly ICurrentUserService _user;
 
-        public GetAllShoppingListsQueryHandler(IPurchaseListRepository repo)
+        public GetAllShoppingListsQueryHandler(IPurchaseListRepository repo, ICurrentUserService user)
         {
             _repo = repo;
+            _user = user;
         }
         public async Task<IEnumerable<PurchaseListDTO>> Handle(GetAllShoppingListsQuery request, CancellationToken cancellationToken)
         {
-            var lists = await _repo.GetAllAsync() ?? Enumerable.Empty<PurchaseList>(); ;
+            var lists = await _repo.GetByOwnerAsync(_user.UserId) ?? Enumerable.Empty<PurchaseList>();
 
-            return lists.Select(pl => pl.ToDto());
+            return lists.Where(pl => !pl.IsShared).Select(pl => pl.ToDto());
         }
     }
 }

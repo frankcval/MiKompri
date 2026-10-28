@@ -4,7 +4,7 @@ namespace MiKompri.ShoppingList.Application.DTOs
     {
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
-        public SharedListStatusDto Status { get; set; } = SharedListStatusDto.Active;
+        public new SharedListStatusDto Status { get; set; } = SharedListStatusDto.Active;
     }
 
     public enum SharedListStatusDto

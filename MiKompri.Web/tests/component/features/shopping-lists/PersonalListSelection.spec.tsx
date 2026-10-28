@@ -8,6 +8,7 @@ import { act, cleanup, fireEvent, render, screen, within, waitFor } from '@testi
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PersonalListsPage } from '../../../../src/features/shopping-lists/pages/PersonalListsPage'
+import { ListsPage } from '../../../../src/features/shopping-lists/pages/ListsPage'
 
 const account = vi.hoisted(() => ({ homeAccountId: 'account-1' }))
 vi.mock('@azure/msal-react', () => ({
@@ -31,7 +32,7 @@ function Navigation() {
 function mount(path = '/personal-lists') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
   render(<FluentProvider theme={appTheme}><QueryClientProvider client={client}><MemoryRouter initialEntries={[path]}>
-    <Navigation /><Routes><Route path="/personal-lists/:listId?" element={<PersonalListsPage />} /></Routes>
+    <Navigation /><Routes><Route path="/lists" element={<ListsPage />} /><Route path="/personal-lists/:listId?" element={<PersonalListsPage />} /></Routes>
   </MemoryRouter></QueryClientProvider></FluentProvider>)
 }
 
@@ -42,6 +43,7 @@ beforeEach(() => {
   products = [product]
   failure = false
   fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+    if (url.endsWith('/groups')) return Response.json([])
     if (url.endsWith('/purchaselists/mine')) return Response.json(lists)
     if (url.endsWith('/catalog-products')) return Response.json(products)
     if (url.endsWith('/items')) {
@@ -88,7 +90,7 @@ describe('recorrido privado personal', () => {
     const writes = fetchMock.mock.calls.filter(([url]) => url.endsWith('/items'))
     expect(writes).toHaveLength(1)
     expect(writes[0][0]).toContain(`/purchaselists/${secondId}/items`)
-    expect(JSON.parse(writes[0][1].body)).toEqual({ productId, productName: 'Arroz', quantity: 2, price: 0 })
+    expect(JSON.parse(writes[0][1].body)).toEqual({ productId, productName: 'Arroz', quantity: 2, price: null })
     expect(lists[0].items).toEqual([])
     await user.click(screen.getByRole('button', { name: 'Terminar' }))
     await screen.findByRole('listitem')
@@ -135,7 +137,7 @@ describe('recorrido privado personal', () => {
     mount(`/personal-lists/${secondId}`)
     await chooseProduct()
     fireEvent.change(screen.getByRole('spinbutton', { name: /cantidad/i }), { target: { value: quantity } })
-    fireEvent.change(screen.getByRole('spinbutton', { name: /precio/i }), { target: { value: price } })
+    fireEvent.change(screen.getByRole('textbox', { name: /precio/i }), { target: { value: price } })
     expect(screen.getByRole('button', { name: 'Agregar ítem' })).toBeDisabled()
     expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/items'))).toHaveLength(0)
   })
@@ -165,32 +167,34 @@ describe('recorrido privado personal', () => {
     await screen.findByText('Arroz se agregó a esta lista.')
     await user.click(screen.getByRole('button', { name: 'Terminar' }))
     await user.click(await screen.findByRole('link', { name: 'Volver a mis listas' }))
-    await user.click(await screen.findByRole('link', { name: 'Primera' }))
+    await user.click(await screen.findByRole('link', { name: /Primera/ }))
     await openAdd()
     expect(await screen.findByRole('combobox', { name: /producto/i })).toHaveValue('')
   })
-  it('marca solo el ítem de la lista abierta sin ofrecer desmarcado', async () => {
+  it('marca y desmarca solo el ítem de la lista abierta', async () => {
     lists[1].items.push({ id: 'item-1', productName: 'Arroz', quantity: 1, isPurchased: false })
     const original = fetchMock.getMockImplementation()!
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
-      if (url.endsWith('/mark-as-purchased')) { lists[1].items[0].isPurchased = true; return new Response(null, { status: 204 }) }
+      if (url.endsWith('/purchase-state')) { lists[1].items[0].isPurchased = JSON.parse(String(init?.body)).isPurchased; return new Response(null, { status: 204 }) }
       return original(url, init)
     })
     mount(`/personal-lists/${secondId}`)
-    await user.click(await screen.findByRole('button', { name: 'Marcar comprado: Arroz' }))
+    await user.click(await screen.findByRole('checkbox', { name: 'Marcar comprado: Arroz' }))
     await screen.findByText('Producto marcado como comprado.')
-    expect(screen.getByRole('button', { name: 'Comprado: Arroz' })).toHaveAttribute('aria-disabled', 'true')
-    expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/mark-as-purchased'))[0][0]).toContain(`/purchaselists/${secondId}/items/item-1/`)
+    expect(screen.getByRole('checkbox', { name: 'Desmarcar comprado: Arroz' })).toBeChecked()
+    expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/purchase-state'))[0][0]).toContain(`/purchaselists/${secondId}/items/item-1/`)
+    await user.click(screen.getByRole('checkbox', { name: 'Desmarcar comprado: Arroz' }))
+    await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Marcar comprado: Arroz' })).not.toBeChecked())
     expect(lists[0].items).toEqual([])
   })
   it.each([401, 403, 503])('conserva la compra sin fingir éxito ante %s', async status => {
     lists[1].items.push({ id: 'item-1', productName: 'Arroz', quantity: 1, isPurchased: false })
     const original = fetchMock.getMockImplementation()!
-    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => url.endsWith('/mark-as-purchased') ? Response.json({}, { status }) : original(url, init))
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => url.endsWith('/purchase-state') ? Response.json({}, { status }) : original(url, init))
     mount(`/personal-lists/${secondId}`)
-    await user.click(await screen.findByRole('button', { name: 'Marcar comprado: Arroz' }))
+    await user.click(await screen.findByRole('checkbox', { name: 'Marcar comprado: Arroz' }))
     await screen.findByRole('alert')
-    expect(screen.queryByRole('button', { name: 'Comprado: Arroz' })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Marcar comprado: Arroz' })).not.toBeChecked()
     expect(lists[1].items[0].isPurchased).toBe(false)
   })
 })

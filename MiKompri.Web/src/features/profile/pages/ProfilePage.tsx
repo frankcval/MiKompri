@@ -7,13 +7,18 @@ import { useNavigate } from 'react-router-dom'
 import { loginRequest } from '../../../auth/msal/msalConfig'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
 import { env } from '../../../shared/config/env'
-import { fetchMyProfile } from '../api/profileApi'
+import { fetchMyProfile, syncMyProfile } from '../api/profileApi'
+import { useState } from 'react'
+import { describeError } from '../../../shared/api/request'
 
 export function ProfilePage() {
   const { instance, accounts } = useMsal()
   const navigate = useNavigate()
   const authSessionService = createAuthSessionService(instance)
   const account = accounts[0]
+  const [syncing, setSyncing] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
   const profileQuery = useQuery({
     queryKey: ['profile', account?.homeAccountId],
     queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await authSessionService.getAccessToken(loginRequest.scopes, account)),
@@ -42,7 +47,10 @@ export function ProfilePage() {
           </dl>
         </> : <Text>Perfil vacío.</Text>}
       </Card>
-      <div className={ui.actions}><Button appearance="secondary" onClick={handleLogout}>Cerrar sesión</Button></div>
+      {error ? <p role="alert">{error}</p> : null}{message ? <p role="status">{message}</p> : null}
+      <div className={ui.actions}><Button onClick={() => void profileQuery.refetch()}>Actualizar datos</Button>
+        <Button disabled={syncing} onClick={async () => { if (syncing) return; setSyncing(true); setError(''); setMessage(''); try { await syncMyProfile(env.usersApiBaseUrl, await authSessionService.getAccessToken(loginRequest.scopes, account)); await profileQuery.refetch(); setMessage('Datos sincronizados con Microsoft.') } catch (cause) { setError(describeError(cause)) } finally { setSyncing(false) } }}>{syncing ? 'Sincronizando…' : 'Sincronizar con Microsoft'}</Button>
+        <Button appearance="secondary" onClick={handleLogout}>Cerrar sesión</Button></div>
     </>}
   </section>
 }

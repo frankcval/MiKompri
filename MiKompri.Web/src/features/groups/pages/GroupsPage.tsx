@@ -4,6 +4,7 @@ import { Button, Card, CardHeader, Field, Input, Spinner, Text } from '@fluentui
 import { useMsal } from '@azure/msal-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { loginRequest } from '../../../auth/msal/msalConfig'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
 import { env } from '../../../shared/config/env'
@@ -69,7 +70,7 @@ export function GroupsPage() {
           <h2>Tus grupos</h2>
           {groupsQuery.data?.map((group) => (
             <div className={ui.row} key={group.id}>
-              <Text>{group.name}</Text>
+              <Link to={`/groups/${group.id}`}>{group.name}</Link>
             </div>
           ))}
           {groupsQuery.data?.length === 0 ? <Text>Sin grupos todavía.</Text> : null}

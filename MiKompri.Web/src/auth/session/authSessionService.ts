@@ -1,13 +1,14 @@
 import type { AccountInfo, IPublicClientApplication } from '@azure/msal-browser'
+import { clearDrafts } from './draftStore'
+import { clearReturnIntent, rememberReturnTo } from './returnIntent'
 
 export async function executeAuthenticatedWrite<T>(
   operation: (token: string) => Promise<T>,
   getAccessToken: () => Promise<string>,
   onUnauthorized: () => Promise<void>,
 ): Promise<T> {
-  const token = await getAccessToken()
-
   try {
+    const token = await getAccessToken()
     return await operation(token)
   } catch (error) {
     const status =
@@ -15,7 +16,8 @@ export async function executeAuthenticatedWrite<T>(
         ? Number((error as { status: number }).status)
         : undefined
 
-    if (status === 401) {
+    const requiresInteraction = error instanceof Error && (error.name === 'InteractionRequiredAuthError' || /interaction_required|login_required|no_tokens_found/.test(error.message))
+    if (status === 401 || requiresInteraction) {
       await onUnauthorized()
     }
 
@@ -26,10 +28,13 @@ export async function executeAuthenticatedWrite<T>(
 export function createAuthSessionService(msalInstance: IPublicClientApplication) {
   return {
     async login(scopes: string[]): Promise<void> {
+      if (typeof window !== 'undefined' && !['/login', '/auth/callback'].includes(window.location.pathname)) rememberReturnTo(window.location.pathname + window.location.search)
       await msalInstance.loginRedirect({ scopes })
     },
 
     async logout(account?: AccountInfo): Promise<void> {
+      clearDrafts()
+      clearReturnIntent()
       await msalInstance.logoutRedirect({ account })
     },
 

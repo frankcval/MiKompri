@@ -70,6 +70,8 @@ namespace MiKompri.ShoppingList.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        public void Touch() => UpdatedAt = DateTime.UtcNow;
+
         public void UpdateDescription(string? newDescription)
         {
             if (Description == newDescription)

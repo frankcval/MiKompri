@@ -1,7 +1,13 @@
+import { request, responseError } from '../../../shared/api/request'
+
 export type MyProfileDto = {
   id: string
   displayName: string
   email: string
+}
+
+export async function syncMyProfile(apiBaseUrl: string, token: string): Promise<MyProfileDto> {
+  return request<MyProfileDto>(`${apiBaseUrl}/api/v1/users/me/sync`, token, 'POST')
 }
 
 export async function fetchMyProfile(apiBaseUrl: string, accessToken: string): Promise<MyProfileDto> {
@@ -14,9 +20,7 @@ export async function fetchMyProfile(apiBaseUrl: string, accessToken: string): P
   })
 
   if (!response.ok) {
-    const error = new Error(`profile_request_failed_${response.status}`) as Error & { status?: number }
-    error.status = response.status
-    throw error
+    throw await responseError(response)
   }
 
   return (await response.json()) as MyProfileDto

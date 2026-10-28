@@ -41,6 +41,11 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
             }
         }
 
+        public void RemoveMembership(Guid groupId, Guid userId)
+        {
+            lock (_sync) { if (_membershipsByGroup.TryGetValue(groupId, out var members)) members.Remove(userId); }
+        }
+
         public bool TryGetMembers(Guid groupId, out IReadOnlyCollection<(Guid UserId, string Role)> members)
         {
             lock (_sync)

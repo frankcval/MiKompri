@@ -31,7 +31,7 @@ namespace MiKompri.ShoppingList.Application.Queries.GetShoppingListsByOwner
             var list = await _repo.GetByOwnerAsync(request.OwnerId)
                 ?? throw new KeyNotFoundException("No hay lista de compra para este owner");
 
-            return list.Select(lst => lst.ToDto());
+            return list.Where(lst => !lst.IsShared).Select(lst => lst.ToDto());
         }
     }
 }

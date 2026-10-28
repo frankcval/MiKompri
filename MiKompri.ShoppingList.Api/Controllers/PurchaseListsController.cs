@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MiKompri.ShoppingList.Application.Commands.ManagePurchase;
+using MiKompri.ShoppingList.Application.Queries.SharedLists.GetExpenses;
 using Microsoft.AspNetCore.Mvc;
 using MiKompri.ShoppingList.Api.Models;
 using MiKompri.ShoppingList.Api.Models.SharedLists;
@@ -34,11 +36,47 @@ namespace MiKompri.ShoppingList.Api.Controllers
 {
 
     [ApiController]
+    [Authorize]
     [Route("api/v1/[controller]")]
     public class PurchaseListsController : ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly ICurrentUserService _currentUser;
+
+        public sealed record PurchaseStateInput([property: System.Text.Json.Serialization.JsonRequired] bool IsPurchased);
+        public sealed record SharedItemInput(int Quantity, decimal? EstimatedPrice);
+
+        [HttpPatch("{listId:guid}/items/{itemId:guid}/purchase-state")]
+        public async Task<IActionResult> SetPurchaseState(Guid listId, Guid itemId, PurchaseStateInput input, CancellationToken ct)
+        {
+            await _mediator.Send(new SetPurchaseStateCommand(listId, itemId, input.IsPurchased), ct);
+            return NoContent();
+        }
+
+        [HttpPatch("/api/v1/shared-lists/{listId:guid}/items/{itemId:guid}")]
+        public async Task<IActionResult> EditSharedItem(Guid listId, Guid itemId, SharedItemInput input, CancellationToken ct)
+        {
+            await _mediator.Send(new EditSharedItemCommand(listId, itemId, input.Quantity, input.EstimatedPrice), ct);
+            return NoContent();
+        }
+
+        [HttpDelete("/api/v1/shared-lists/{listId:guid}/items/{itemId:guid}")]
+        public async Task<IActionResult> RemoveSharedItem(Guid listId, Guid itemId, CancellationToken ct)
+        {
+            await _mediator.Send(new RemoveSharedItemCommand(listId, itemId), ct);
+            return NoContent();
+        }
+
+        [HttpDelete("/api/v1/shared-lists/{listId:guid}")]
+        public async Task<IActionResult> RemoveSharedList(Guid listId, CancellationToken ct)
+        {
+            await _mediator.Send(new RemoveSharedListCommand(listId), ct);
+            return NoContent();
+        }
+
+        [HttpGet("/api/v1/shared-lists/{listId:guid}/expenses")]
+        public async Task<ActionResult<IReadOnlyList<ExpenseView>>> Expenses(Guid listId, CancellationToken ct)
+            => Ok(await _mediator.Send(new GetExpensesQuery(listId), ct));
 
         public PurchaseListsController(IMediator mediator, ICurrentUserService currentUser)
         {
@@ -296,7 +334,8 @@ namespace MiKompri.ShoppingList.Api.Controllers
                 itemId,
                 request.ProductName,
                 request.Price,
-                request.Quantity
+                request.Quantity,
+                request.PriceSpecified
             );
             await _mediator.Send(command, cancellationToken);
 

@@ -1,5 +1,7 @@
 # Diseño web vigente — MiKompri
 
+**Evolución planificada — 2026-10-28**: [008/design](../008-web-ux-modernization/design.md) propone modernización P0–P3. Este documento sigue siendo referencia de lo entregado; no se considera sustituido hasta implementación y evidencia. Las diferencias de navegación, intención de acceso y desmarcado se trazan en [008/traceability](../008-web-ux-modernization/traceability.md).
+
 **Revisión**: 2026-10-27. **Alcance**: FR-014/017/018/032/033 del [spec](spec.md). Esta referencia sustituye las medidas y decisiones visuales de la propuesta del 2026-10-24; no elimina sus requisitos funcionales pendientes.
 
 ## Dirección y sistema visual

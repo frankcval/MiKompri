@@ -23,7 +23,7 @@ function ProductCatalogContent() {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const requestedReturn = searchParams.get('returnTo') ?? ''
-  const returnTo = /^\/(personal-lists|shared-lists)\/[0-9a-f-]{36}(\?tab=(shopping|expenses))?$/i.test(requestedReturn) ? requestedReturn : null
+  const returnTo = /^\/(personal-lists|shared-lists)\/[0-9a-f-]{36}(\?tab=(shopping|expenses|people))?$/i.test(requestedReturn) ? requestedReturn : null
   const authSession = useMemo(() => createAuthSessionService(instance), [instance])
 
   const [selectedProductId, setSelectedProductId] = useState('')

@@ -8,7 +8,7 @@ function App() {
   const authenticated = useIsAuthenticated()
   const { accounts, inProgress } = useMsal()
   if (inProgress !== InteractionStatus.None) return <Spinner label="Cargando sesión" />
-  return authenticated || accounts.length > 0 ? <Navigate to="/personal-lists" replace /> : <HomePage />
+  return authenticated || accounts.length > 0 ? <Navigate to="/lists" replace /> : <HomePage />
 }
 
 export default App

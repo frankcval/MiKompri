@@ -46,6 +46,9 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
             if (membership.Role == GroupRole.Member && request.PaidBy != _currentUser.UserId)
                 throw new ForbiddenOperationException("Los miembros solo pueden registrar pagos propios.");
 
+            if (membership.Role == GroupRole.Member && request.PurchasedBy.HasValue && request.PurchasedBy != _currentUser.UserId)
+                throw new ForbiddenOperationException("Los miembros solo pueden registrar gastos de compras propias.");
+
             await _activeMembershipPolicy.EnsureActiveMemberAsync(list.GroupId.Value, request.PaidBy, "PaidBy", cancellationToken);
             if (request.PurchasedBy.HasValue)
             {

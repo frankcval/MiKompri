@@ -1,5 +1,7 @@
 # Implementation Plan: 007-web-react-client
 
+**Continuidad — 2026-10-28**: el [plan 008](../008-web-ux-modernization/plan.md) organiza la evolución P0–P3 sobre esta base. [Trazabilidad](../008-web-ux-modernization/traceability.md) asigna deuda pendiente y ampliaciones a tareas 008 sin duplicar implementación. Los cierres de esta feature exigen evidencia propia; el nuevo plan no altera retrospectivamente resultados ni autoriza despliegues.
+
 **Branch**: `007-web-react-client` | **Date**: 2026-10-23 | **Spec**: [`spec.md`](./spec.md)
 
 **Input**: Feature specification from `/specs/007-web-react-client/spec.md`

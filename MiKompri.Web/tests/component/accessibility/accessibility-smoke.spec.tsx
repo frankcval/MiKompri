@@ -15,6 +15,6 @@ describe('accessibility smoke', () => {
     )
 
     expect(screen.getByRole('main')).toBeInTheDocument()
-    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument()
   })
 })

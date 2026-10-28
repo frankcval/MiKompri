@@ -1,3 +1,4 @@
+import { responseError } from '../../../shared/api/request'
 export type ParticipantBalance = {
   userId: string
   totalPaid: number
@@ -24,9 +25,7 @@ export type SettlementProposal = {
 }
 
 async function parseSettlementError(response: Response): Promise<Error & { status?: number }> {
-  const error = new Error(`settlement_api_error_${response.status}`) as Error & { status?: number }
-  error.status = response.status
-  return error
+  return responseError(response)
 }
 
 export async function getSettlementSummary(

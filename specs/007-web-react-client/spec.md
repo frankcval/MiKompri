@@ -6,6 +6,8 @@
 
 **Status**: Draft
 
+**Continuidad — 2026-10-28**: [008-web-ux-modernization](../008-web-ux-modernization/spec.md) especifica la evolución P0–P3 y coordina el cierre pendiente de esta feature. La [matriz de trazabilidad](../008-web-ux-modernization/traceability.md) separa deuda, ampliaciones y evidencia. No se modifica retrospectivamente el alcance ni se cierra ningún requisito por crear 008. Mis listas/destino por intención y desmarcado son cambios prospectivos; el comportamiento vigente se conserva hasta su entrega acreditada.
+
 **Estado de entrega — 2026-10-27**: implementación parcial, sin cierre global ni autorización de despliegue. Portada y coherencia visual transversal implementadas; [design.md](design.md) es la referencia vigente. T120–T126 registran evidencia acotada; las verificaciones integradas y el backlog restante conservan su estado.
 
 **Actualización de alcance — 2026-10-25**: el usuario solicita completar el acceso para agregar productos al catálogo desde la web, necesario para poder agregar ítems a sus listas. Se incorpora creación de producto con nombre y unidad de compra mediante el contrato backend existente, validación y errores, refresco del catálogo y regreso a la lista de origen. Esta decisión posterior sustituye la restricción histórica de «solo lectura» exclusivamente para el alta de productos; no incorpora edición/desactivación de productos ni administración de mercados o precios. Las menciones originales de solo lectura que siguen se conservan como contexto de la definición inicial.

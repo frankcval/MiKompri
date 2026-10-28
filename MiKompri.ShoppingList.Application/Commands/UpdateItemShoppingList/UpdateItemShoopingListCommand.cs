@@ -2,7 +2,7 @@
 
 namespace MiKompri.ShoppingList.Application.Commands.UpdateItemShoppingList
 {
-    public record UpdateItemShoopingListCommand(Guid listId, Guid ProdId, string? ProductName, decimal? Price, int? Quantity) : IRequest<bool>
+    public record UpdateItemShoopingListCommand(Guid listId, Guid ProdId, string? ProductName, decimal? Price, int? Quantity, bool PriceSpecified = false) : IRequest<bool>
     {
     }
 }

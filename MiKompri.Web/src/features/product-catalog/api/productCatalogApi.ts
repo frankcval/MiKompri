@@ -1,3 +1,4 @@
+import { responseError } from '../../../shared/api/request'
 export type CatalogProduct = {
   id: string
   name: string
@@ -51,9 +52,7 @@ export type ProductPriceHistory = {
 }
 
 async function parseCatalogError(response: Response): Promise<Error & { status?: number }> {
-  const error = new Error(`product_catalog_api_error_${response.status}`) as Error & { status?: number }
-  error.status = response.status
-  return error
+  return responseError(response)
 }
 
 export async function getCatalogProducts(productCatalogApiBaseUrl: string, accessToken: string): Promise<CatalogProduct[]> {

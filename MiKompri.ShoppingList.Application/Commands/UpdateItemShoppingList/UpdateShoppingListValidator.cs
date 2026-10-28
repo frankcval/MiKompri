@@ -33,8 +33,8 @@ namespace MiKompri.ShoppingList.Application.Commands.UpdateItemShoppingList
                     .GreaterThan(0).WithMessage("La cantidad debe ser mayor a 0.");
             });
 
-            RuleFor(x => new { x.ProductName, x.Price, x.Quantity })
-                .Must(x => !string.IsNullOrWhiteSpace(x.ProductName) || x.Price.HasValue || x.Quantity.HasValue)
+            RuleFor(x => new { x.ProductName, x.Price, x.Quantity, x.PriceSpecified })
+                .Must(x => !string.IsNullOrWhiteSpace(x.ProductName) || x.Price.HasValue || x.Quantity.HasValue || x.PriceSpecified)
                 .WithMessage("Debe especificar al menos un campo a actualizar.");
 
 

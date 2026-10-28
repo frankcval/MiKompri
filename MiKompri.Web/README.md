@@ -4,8 +4,8 @@ Cliente Web SPA de MiKompri (MVP-4) construido con React + TypeScript + Vite.
 
 ## Requisitos
 
-- Node.js 20+
-- npm 10+
+- Node.js 24 LTS (entorno validado y CI)
+- npm 11
 
 ## Comandos principales
 
@@ -36,3 +36,17 @@ tests/
 ## Variables de entorno
 
 Usar `.env.example` como plantilla para variables locales/cloud del frontend.
+
+## Modernización 008
+
+La entrada autenticada es `/lists`, con filtros personales/compartidas; las rutas anteriores siguen disponibles. Compra reversible, edición, alta de producto dentro de la lista, personas/roles e historial de gastos comparten la navegación nueva. El backend actualizado es necesario: [contratos](../specs/008-web-ux-modernization/contracts/api-and-permissions.md).
+
+`npm test` ejecuta las pruebas locales; `npm run test:e2e` usa fixtures controlados y no certifica Entra. Para tres motores instalar `npx playwright install chromium firefox webkit` y definir `PLAYWRIGHT_ALL_BROWSERS=1`. Se ejecutan como máximo dos workers.
+
+`npm run test:e2e:integrated` exige un entorno real y falla si faltan URL, dos tokens y dos archivos de sesión. Variables: `MIKOMPRI_INTEGRATED_URL`, `MIKOMPRI_OWNER_TOKEN`, `MIKOMPRI_MEMBER_TOKEN`, `MIKOMPRI_OWNER_STORAGE`, `MIKOMPRI_MEMBER_STORAGE`; URLs API opcionales `MIKOMPRI_SHOPPING_API`, `MIKOMPRI_USERS_API`, `MIKOMPRI_CATALOG_API`. Los archivos privados contienen el storageState de Playwright y un objeto `sessionStorage` adicional exportado por la persona después de autenticarse con Entra, porque MSAL usa almacenamiento por pestaña. No guardar estos archivos en Git ni compartir tokens en el chat. Usar un tenant y datos desechables; los grupos creados por las pruebas quedan identificados como QA porque no existe API de borrado de grupos.
+
+Docker incluye fallback SPA, caché de assets, compresión y bloqueo de `/tests/`. El harness solo se usa en desarrollo/pruebas. [Plan P0–P3, evidencia y pendientes](../specs/008-web-ux-modernization/quickstart.md).
+
+Las fuentes web derivadas se denominan MiKompri Sans; conservan el diseño original de Source Sans 3, la atribución y la licencia OFL. Las variantes latinas pesan aproximadamente 76 kB en total; otros alfabetos usan las variantes completas por cobertura Unicode. El script opcional `python scripts/build-fonts.py` requiere `fonttools[woff]` solo para regenerarlas. Las licencias también se distribuyen en `public/fonts/`.
+
+El job integrado de CI requiere una URL y APIs accesibles desde su runner, además de sesiones vigentes de dos cuentas. `localhost` del equipo de desarrollo no es accesible desde un runner hospedado de GitHub; en ese caso preparar un entorno QA accesible o un runner propio con los servicios locales.

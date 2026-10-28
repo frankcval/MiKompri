@@ -6,6 +6,7 @@ import { afterEach, beforeEach, vi } from 'vitest'
 // trapping and responsiveness are covered separately by Playwright.
 let restoreBodyRect: (() => void) | undefined
 beforeEach(() => {
+  sessionStorage.clear()
   const rect = vi.spyOn(document.body, 'getBoundingClientRect').mockReturnValue({
     x: 0, y: 0, top: 0, left: 0, right: 1024, bottom: 768,
     width: 1024, height: 768, toJSON: () => ({}),

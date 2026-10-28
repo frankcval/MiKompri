@@ -1,12 +1,13 @@
 ﻿import { useState } from 'react'
 import { Link, useLinkClickHandler } from 'react-router-dom'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Button, Checkbox, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, ProgressBar, useRestoreFocusTarget } from '@fluentui/react-components'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, useRestoreFocusTarget } from '@fluentui/react-components'
 import { exampleList } from './exampleList'
 import s from './HomePage.module.css'
+import { ShoppingListView } from '../../shared/ui/ShoppingListView'
 
 function CreateListLink({ children = 'Crear mi primera lista' }: { children?: React.ReactNode }) {
-  const onClick = useLinkClickHandler<HTMLAnchorElement>('/personal-lists')
-  return <Button className={s.create} as="a" href="/personal-lists" onClick={onClick} appearance="primary" size="large">{children} <span aria-hidden="true">↗</span></Button>
+  const onClick = useLinkClickHandler<HTMLAnchorElement>('/personal-lists?create=1')
+  return <Button className={s.create} as="a" href="/personal-lists?create=1" onClick={onClick} appearance="primary" size="large">{children}</Button>
 }
 
 function HomeHeader() {
@@ -16,7 +17,7 @@ function HomeHeader() {
   return <header className={s.header}><div className={s.headerInner}>
     <Link className={s.brand} to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</Link>
     <nav className={s.desktopNav} aria-label="Navegación de portada">{links}</nav>
-    <div className={s.headerActions}><CreateListLink>Crear una lista</CreateListLink><Button {...restoreFocusTarget} className={s.menuButton} aria-label="Abrir menú" aria-expanded={open} onClick={() => setOpen(true)}>☰</Button></div>
+    <div className={s.headerActions}><CreateListLink>Crear una lista</CreateListLink><Button {...restoreFocusTarget} className={s.menuButton} aria-label="Abrir menú" aria-expanded={open} onClick={event => { event.currentTarget.focus(); setOpen(true) }}>☰</Button></div>
     <Drawer open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="small">
       <DrawerHeader><DrawerHeaderTitle action={<Button className={s.closeMenu} aria-label="Cerrar menú" onClick={() => setOpen(false)}>✕</Button>}>MiKompri</DrawerHeaderTitle></DrawerHeader>
       <DrawerBody><nav className={s.mobileNav} aria-label="Navegación móvil">{links}</nav></DrawerBody>
@@ -26,17 +27,13 @@ function HomeHeader() {
 
 export function ShoppingListPreview() {
   const [items, setItems] = useState(exampleList)
-  const count = items.filter(item => item.purchased).length
   return <div className={s.visual} id="ejemplo">
     <p className={s.caption}>Una lista. Todo el mundo al día.</p>
     <section className={s.preview} aria-label="Lista de ejemplo, datos ficticios">
       <div className={s.previewTop}><strong>✓ MiKompri</strong><span>Ejemplo interactivo</span></div>
       <div className={s.previewHeading}><span>Espacio · Casa</span><h2>Compra de la semana</h2><p className={s.members}>Tú, Ana y Dani · Personas ficticias</p></div>
-      <div className={s.groceries}>{items.map((item, index) => <div className={s.grocery} key={item.name}>
-        <Checkbox checked={item.purchased} label={<span><strong className={item.purchased ? s.purchased : undefined}>{item.name}</strong><small>{item.quantity}</small></span>} onChange={(_, data) => setItems(current => current.map((row, i) => i === index ? { ...row, purchased: data.checked === true } : row))} />
-        <span>{item.price}</span>
-      </div>)}</div>
-      <div className={s.progress}><p role="status">{count} de {items.length} en la cesta <span>{Math.round(count / items.length * 100)} %</span></p><ProgressBar value={count / items.length} aria-label="Progreso de la compra de ejemplo" /></div>
+      <div className={s.groceries}><ShoppingListView items={items.map((item, index) => ({ id: String(index), productName: item.name, quantity: 1, quantityLabel: item.quantity, productPrice: Number(item.price.replace(' €', '').replace(',', '.')), isPurchased: item.purchased }))}
+        onToggle={(id, purchased) => setItems(current => current.map((row, i) => i === Number(id) ? { ...row, purchased } : row))} /></div>
       <div className={s.previewBottom}><span>Total estimado<strong>24,80 €</strong></span><Button onClick={() => setItems(exampleList)}>Restablecer ejemplo</Button></div>
     </section>
     <div className={s.balanceNote}><span aria-hidden="true">✓</span><div><strong>Las cuentas, claras.</strong><small>Cada uno sabe cuánto le toca.</small></div><b aria-hidden="true">÷ 3</b></div>

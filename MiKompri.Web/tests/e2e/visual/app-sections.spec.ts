@@ -101,37 +101,37 @@ for (const width of [320, 390, 430, 768, 1280]) {
   })
 }
 
-test('@smoke estados de carga, vacío y errores en las secciones', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 900 })
-  const sections = [
+for (const section of [
     { path: '/profile', loading: 'Cargando perfil', empty: 'Perfil vacío.' },
     { path: '/groups', loading: 'Cargando grupos', empty: 'Sin grupos todavía.' },
-    { path: '/personal-lists', loading: 'Cargando listas', empty: 'Sin listas personales todavía. Crea una lista para empezar.' },
+    { path: '/personal-lists', loading: 'Cargando listas…', empty: 'Sin listas personales todavía. Crea una lista para empezar.' },
     { path: '/shared-lists', loading: 'Cargando tus grupos', empty: 'Todavía no perteneces a ningún grupo.' },
     { path: '/product-catalog', loading: 'Cargando...', empty: 'Sin productos' },
-  ]
-  for (const section of sections) {
-    const releases: (() => void)[] = []
+  ]) {
+  test(`@smoke estados de carga, vacío y errores ${section.path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 900 })
+    let release!: () => void
+    const responseReady = new Promise<void>(resolve => { release = resolve })
     await page.route('**/api/v1/**', async route => {
-      await new Promise<void>(resolve => releases.push(resolve))
+      await responseReady
       await route.fulfill({ json: section.path === '/profile' ? null : [] })
     })
     await open(page, section.path)
     await expect(page.getByText(section.loading, { exact: true }).first()).toBeVisible()
-    releases.forEach(resolve => resolve())
+    release()
     await expect(page.getByText(section.empty, { exact: false }).first()).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.unroute('**/api/v1/**')
     for (const status of [401, 403, 503]) {
       await page.route('**/api/v1/**', route => route.fulfill({ status, json: {} }))
       await open(page, section.path)
-      await expect(page.getByRole('alert').first()).toBeVisible()
+      await expect(page.getByRole('alert').first(), `${section.path}: HTTP ${status}`).toBeVisible()
       await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
       await page.unroute('**/api/v1/**')
     }
-  }
-})
+  })
+}
 
 for (const width of [320, 390, 430, 768, 1280]) {
   test(`@smoke preparar y comprar con contexto ${width}px`, async ({ page }) => {
@@ -142,7 +142,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await page.route('**/api/v1/purchaselists**', async route => {
       const path = new URL(route.request().url()).pathname
       if (route.request().method() === 'GET') return route.fulfill({ json: [personal] })
-      if (path.endsWith('/mark-as-purchased')) { personal.items[0].isPurchased = true; return route.fulfill({ status: 204 }) }
+      if (path.endsWith('/purchase-state')) { personal.items[0].isPurchased = route.request().postDataJSON().isPurchased; return route.fulfill({ status: 204 }) }
       if (path.endsWith('/items')) {
         const body = route.request().postDataJSON()
         expect(body.productId).toBe(productId)
@@ -166,11 +166,11 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(add.getByRole('status')).toContainText('se agregó a esta lista')
     await add.getByRole('button', { name: 'Terminar' }).click()
     await expect(page.getByRole('button', { name: 'Añadir productos' })).toBeFocused()
-    const mark = page.getByRole('button', { name: 'Marcar comprado: Tomates de temporada para ensalada y cocina' })
+    const mark = page.getByRole('checkbox', { name: 'Marcar comprado: Tomates de temporada para ensalada y cocina' })
     await mark.focus()
-    await page.keyboard.press('Enter')
-    const purchased = page.getByRole('button', { name: 'Comprado: Tomates de temporada para ensalada y cocina' })
-    await expect(purchased).toHaveAttribute('aria-disabled', 'true')
+    await page.keyboard.press('Space')
+    const purchased = page.getByRole('checkbox', { name: 'Desmarcar comprado: Tomates de temporada para ensalada y cocina' })
+    await expect(purchased).toBeChecked()
     await expect(purchased).toBeFocused()
     await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1')
     await check(page, 'private-shopping', width)
@@ -179,7 +179,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(page.getByRole('heading', { name: 'Balance por persona' })).toBeVisible()
     await page.getByRole('tab', { name: 'Compra', exact: true }).click()
     await expect(page.getByTestId('test-route')).toContainText('tab=shopping')
-    await expect(page.getByRole('button', { name: /Marcar comprado/ })).toHaveCount(0)
+    await expect(page.getByRole('checkbox', { name: 'Desmarcar comprado: Tomates', exact: true })).toBeChecked()
     await check(page, 'private-shared', width)
     await page.getByRole('link', { name: 'Volver a listas compartidas' }).click()
     await expect(page.getByRole('heading', { name: 'Listas de Casa y familia' })).toBeVisible()

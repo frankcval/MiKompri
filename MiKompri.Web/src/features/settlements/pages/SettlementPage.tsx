@@ -10,6 +10,7 @@ import { memberName } from '../../groups/memberName'
 import { fetchMyProfile } from '../../profile/api/profileApi'
 import { getSharedListById } from '../../shared-lists/api/sharedListsApi'
 import { ExpenseForm } from '../components/ExpenseForm'
+import { ExpenseHistoryPanel } from '../components/ExpenseHistoryPanel'
 import { registerItemExpense } from '../api/expensesApi'
 import { getSettlementProposal, getSettlementSummary } from '../api/settlementApi'
 
@@ -87,7 +88,8 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
       <CardHeader header={<h3 style={{ margin: 0 }}>Registrar gasto compartido</h3>} />
       {detailQuery.data.items.length === 0 ? <p>Esta lista no tiene ítems. Añade un ítem a la lista antes de registrar un gasto.</p>
         : payerIds.length === 0 ? <p>No tienes permiso para registrar gastos con tu rol actual.</p>
-        : <ExpenseForm key={`${account.homeAccountId}:${sharedListId}`} items={detailQuery.data.items} members={members} payerIds={payerIds}
+        : detailQuery.data.status && detailQuery.data.status !== 'Active' ? <p>La lista está cerrada. Puedes consultar sus gastos.</p>
+        : <ExpenseForm key={`${account.homeAccountId}:${sharedListId}`} items={detailQuery.data.items} members={members} payerIds={payerIds} accountKey={account.homeAccountId} scope={`expense:${sharedListId}`} defaultPayerId={payerIds.includes(currentMember.userId) ? currentMember.userId : ''}
           onSubmit={async ({ itemId, ...input }) => {
             if (!detailQuery.data.items.some((item) => item.id === itemId)) throw new Error('Selecciona un ítem de esta lista.')
             await executeAuthenticatedWrite(
@@ -99,22 +101,25 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
               queryClient.invalidateQueries({ queryKey: summaryKey }),
               queryClient.invalidateQueries({ queryKey: proposalKey }),
               queryClient.invalidateQueries({ queryKey: detailKey }),
+              queryClient.invalidateQueries({ queryKey: ['expenses', sharedListId] }),
             ])
           }} />}
     </Card>
     <Card className={ui.panel}>
       <CardHeader header={<h3 style={{ margin: 0 }}>Balance por persona</h3>} />
-      {summaryQuery.isPending ? <Spinner label="Cargando balance" /> : summaryQuery.isError ? <p role="alert">No fue posible cargar el balance.</p>
+      {summaryQuery.isPending ? <Spinner label="Cargando balance" /> : summaryQuery.isError ? <p role="alert">No fue posible cargar el balance. <Button onClick={() => void summaryQuery.refetch()}>Reintentar balance</Button></p>
         : summaryQuery.data.balances.length ? summaryQuery.data.balances.map((balance) => <p className={ui.balanceRow} key={balance.userId}>
-          <strong>{memberName(members, balance.userId)}</strong><span>Pagado {money(balance.totalPaid)} · Parte del gasto {money(balance.totalOwed)} · Saldo {money(balance.netBalance)}</span>
+          <strong>{memberName(members, balance.userId)}</strong><span>{balance.netBalance > 0 ? `Le deben ${money(balance.netBalance)}` : balance.netBalance < 0 ? `Debe ${money(Math.abs(balance.netBalance))}` : 'Cuentas equilibradas'}</span><small>Pagado {money(balance.totalPaid)} · Parte del gasto {money(balance.totalOwed)} · Saldo {money(balance.netBalance)}</small>
         </p>) : <p>Todavía no hay gastos para repartir.</p>}
     </Card>
     <Card className={ui.panel}>
       <CardHeader header={<h3 style={{ margin: 0 }}>Pagos propuestos para saldar cuentas</h3>} />
-      {proposalQuery.isPending ? <Spinner label="Cargando pagos propuestos" /> : proposalQuery.isError ? <p role="alert">No fue posible cargar los pagos propuestos.</p>
+      <p>Esta propuesta no realiza transferencias ni cobros.</p>
+      {proposalQuery.isPending ? <Spinner label="Cargando pagos propuestos" /> : proposalQuery.isError ? <p role="alert">No fue posible cargar los pagos propuestos. <Button onClick={() => void proposalQuery.refetch()}>Reintentar propuesta</Button></p>
         : proposalQuery.data.transfers.length ? proposalQuery.data.transfers.map((transfer, index) => <p className={ui.row} key={index} style={{ overflowWrap: 'anywhere' }}>
           {memberName(members, transfer.fromUserId)} debe pagar {money(transfer.amount)} a {memberName(members, transfer.toUserId)}.
         </p>) : <p>No hay pagos pendientes entre participantes.</p>}
     </Card>
+    <ExpenseHistoryPanel listId={sharedListId} items={detailQuery.data.items} members={members} canManage={(role === 'owner' || role === 'admin') && (!detailQuery.data.status || detailQuery.data.status === 'Active')} />
   </section>
 }

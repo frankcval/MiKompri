@@ -2,61 +2,92 @@ name: CI - MiKompri Web
 
 on:
   push:
-    branches:
-      - main
-      - develop
-      - 'feature/*'
-      - 'hotfix/*'
-      - '007-web-react-client'
+    branches: [main, develop, 'feature/*', 'hotfix/*', '007-web-react-client', '008-web-ux-modernization']
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main, develop]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   web-build-test-and-docker:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: MiKompri.Web
-
+    env:
+      PLAYWRIGHT_ALL_BROWSERS: '1'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: npm
           cache-dependency-path: MiKompri.Web/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests
-        run: npx vitest run tests/unit --passWithNoTests
-
-      - name: Component tests
-        run: npx vitest run tests/component --passWithNoTests
-
-      - name: Integration tests
-        run: npx vitest run tests/integration --passWithNoTests
-
-      - name: E2E smoke tests
-        run: npx playwright test --grep @smoke --pass-with-no-tests
-
-      - name: Build frontend
-        run: npm run build
-
-      - name: Docker build frontend (TP4)
-        run: docker build -t mikompri.web -f MiKompri.Web/Dockerfile .
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test -- --maxWorkers=2
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Mandatory controlled browser scenarios
+        run: npm run test:e2e:smoke -- --workers=2 --reporter=line,html
+      - run: npm run build
+      - name: Docker build (TP4)
+        run: docker build -t mikompri.web:ci -f MiKompri.Web/Dockerfile .
         working-directory: .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: controlled-browser-results
+          path: |
+            MiKompri.Web/playwright-report/
+            MiKompri.Web/test-results/
+          retention-days: 7
+
+  real-auth-acceptance:
+    needs: web-build-test-and-docker
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MiKompri.Web
+    env:
+      MIKOMPRI_INTEGRATED_URL: ${{ vars.MIKOMPRI_INTEGRATED_URL }}
+      MIKOMPRI_SHOPPING_API: ${{ vars.MIKOMPRI_SHOPPING_API }}
+      MIKOMPRI_USERS_API: ${{ vars.MIKOMPRI_USERS_API }}
+      MIKOMPRI_CATALOG_API: ${{ vars.MIKOMPRI_CATALOG_API }}
+      MIKOMPRI_OWNER_TOKEN: ${{ secrets.MIKOMPRI_OWNER_TOKEN }}
+      MIKOMPRI_MEMBER_TOKEN: ${{ secrets.MIKOMPRI_MEMBER_TOKEN }}
+      MIKOMPRI_OWNER_STATE: ${{ secrets.MIKOMPRI_OWNER_STATE }}
+      MIKOMPRI_MEMBER_STATE: ${{ secrets.MIKOMPRI_MEMBER_STATE }}
+      MIKOMPRI_OWNER_STORAGE: ${{ runner.temp }}/mikompri-owner.json
+      MIKOMPRI_MEMBER_STORAGE: ${{ runner.temp }}/mikompri-member.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+      - name: Materialize private real-login sessions without logging them
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          for (const who of ['OWNER', 'MEMBER']) {
+            const value = process.env[`MIKOMPRI_${who}_STATE`];
+            if (value) writeFileSync(process.env[`MIKOMPRI_${who}_STORAGE`], value, { mode: 0o600 });
+          }
+          NODE
+      - name: Require real environment (never approve an absent or skipped suite)
+        run: node scripts/check-integrated-env.mjs
+      - run: npx playwright install --with-deps chromium
+      - name: Real authentication and service acceptance
+        run: npm run test:e2e:integrated -- --reporter=line
+      - name: Remove private session exports
+        if: always()
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { rmSync } from 'node:fs';
+          for (const who of ['OWNER', 'MEMBER']) rmSync(process.env[`MIKOMPRI_${who}_STORAGE`], { force: true });
+          NODE

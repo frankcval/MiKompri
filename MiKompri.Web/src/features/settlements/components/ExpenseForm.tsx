@@ -1,6 +1,8 @@
 import ui from '../../../shared/ui/AppSurface.module.css'
 import { z } from 'zod'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
+import { readDraft, writeDraft } from '../../../auth/session/draftStore'
 import { Button, Checkbox, Field, Input, Select } from '@fluentui/react-components'
 import type { GroupMember } from '../../groups/api/groupsApi'
 import { memberName } from '../../groups/memberName'
@@ -22,14 +24,24 @@ type ExpenseFormProps = {
   members: GroupMember[]
   payerIds: string[]
   onSubmit: (value: ExpenseFormValue) => Promise<void>
+  accountKey?: string
+  scope?: string
+  initialValue?: ExpenseFormValue
+  defaultPayerId?: string
+  submitLabel?: string
 }
 
-export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormProps) {
-  const [itemId, setItemId] = useState('')
-  const [amount, setAmount] = useState('')
-  const [paidBy, setPaidBy] = useState('')
-  const [purchasedBy, setPurchasedBy] = useState('')
-  const [participants, setParticipants] = useState<string[]>([])
+export function ExpenseForm({ items, members, payerIds, onSubmit, accountKey = '', scope = 'expense', initialValue, defaultPayerId = '', submitLabel = 'Registrar gasto' }: ExpenseFormProps) {
+  const defaults = { itemId: initialValue?.itemId ?? '', amount: initialValue ? String(initialValue.realPaidPrice) : '', paidBy: initialValue?.paidBy ?? defaultPayerId, purchasedBy: initialValue?.purchasedBy ?? '', participants: initialValue?.participants ?? [] }
+  const { control, setValue } = useForm({ defaultValues: accountKey ? readDraft(accountKey, scope, defaults) : defaults })
+  const values = useWatch({ control })
+  const itemId = values.itemId ?? ''; const amount = values.amount ?? ''; const paidBy = values.paidBy ?? ''; const purchasedBy = values.purchasedBy ?? ''; const participants = values.participants ?? []
+  const setItemId = (v: string) => setValue('itemId', v)
+  const setAmount = (v: string) => setValue('amount', v)
+  const setPaidBy = (v: string) => setValue('paidBy', v)
+  const setPurchasedBy = (v: string) => setValue('purchasedBy', v)
+  const setParticipants = (v: string[] | ((current: string[]) => string[])) => setValue('participants', typeof v === 'function' ? v(participants) : v)
+  useEffect(() => { if (accountKey) writeDraft(accountKey, scope, values) }, [accountKey, scope, values])
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -37,7 +49,7 @@ export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormP
   const parsed = expenseSchema.safeParse({ itemId, realPaidPrice: Number(amount), paidBy, purchasedBy: purchasedBy || null, participants, currency: 'EUR' })
   const valid = parsed.success && items.some((item) => item.id === itemId) && payerIds.includes(paidBy)
     && participants.every((id) => members.some((member) => member.userId === id))
-    && (!purchasedBy || members.some((member) => member.userId === purchasedBy))
+    && (!purchasedBy || payerIds.includes(purchasedBy))
 
   return <form className={ui.form} onSubmit={async (event) => {
     event.preventDefault()
@@ -49,10 +61,10 @@ export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormP
     try {
       await onSubmit(parsed.data)
       setAmount('')
-      setPaidBy('')
+      setPaidBy(defaultPayerId)
       setPurchasedBy('')
       setParticipants([])
-      setSuccess('Gasto registrado. El reparto se ha actualizado.')
+      setSuccess(initialValue ? 'Gasto actualizado.' : 'Gasto registrado.')
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No fue posible registrar el gasto. Inténtalo de nuevo.')
     } finally {
@@ -62,7 +74,7 @@ export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormP
   }}>
     <Field label="Ítem de la lista" required>
       <Select value={itemId} required disabled={pending} onChange={(_, data) => { setItemId(data.value); setSuccess('') }}>
-        <option value="">Selecciona un ítem</option>
+        <option value="">Selecciona un producto</option>
         {items.map((item) => <option key={item.id} value={item.id}>{item.productName} · Cantidad: {item.quantity}</option>)}
       </Select>
     </Field>
@@ -78,19 +90,20 @@ export function ExpenseForm({ items, members, payerIds, onSubmit }: ExpenseFormP
     <Field label="Comprado por (opcional)">
       <Select value={purchasedBy} disabled={pending} onChange={(_, data) => setPurchasedBy(data.value)}>
         <option value="">Sin indicar</option>
-        {members.map((member) => <option key={member.userId} value={member.userId}>{memberName(members, member.userId)}</option>)}
+        {members.filter(member => payerIds.includes(member.userId)).map((member) => <option key={member.userId} value={member.userId}>{memberName(members, member.userId)}</option>)}
       </Select>
     </Field>
     <fieldset className={ui.fieldset}>
       <legend>Participantes del gasto</legend>
-      <p>Selecciona entre quiénes se reparte este importe.</p>
+      <p>Revisa entre quiénes se reparte este importe antes de guardar.</p>
       {members.map((member) => <Checkbox key={member.userId} label={memberName(members, member.userId)}
         disabled={pending} checked={participants.includes(member.userId)} onChange={(_, data) => {
           setParticipants((current) => data.checked === true ? [...new Set([...current, member.userId])] : current.filter((id) => id !== member.userId))
         }} />)}
     </fieldset>
+    {participants.some(id => !members.some(m => m.userId === id)) ? <p role="alert">Hay participantes del borrador que ya no están disponibles. <Button disabled={pending} onClick={() => setParticipants(participants.filter(id => members.some(m => m.userId === id)))}>Revisar participantes disponibles</Button></p> : null}
     {error ? <p role="alert">{error}</p> : null}
     {success ? <p role="status">{success}</p> : null}
-    <Button appearance="primary" type="submit" disabled={!valid || pending}>{pending ? 'Registrando gasto…' : 'Registrar gasto'}</Button>
+    <Button appearance="primary" type="submit" disabled={!valid || pending}>{pending ? 'Guardando gasto…' : submitLabel}</Button>
   </form>
 }

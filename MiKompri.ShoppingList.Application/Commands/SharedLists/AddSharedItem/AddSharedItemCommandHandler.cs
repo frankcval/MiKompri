@@ -46,6 +46,7 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.AddSharedItem
             await _activeMembershipPolicy.EnsureActiveMemberAsync(list.GroupId.Value, _currentUser.UserId, "AddedBy", cancellationToken);
 
             var item = new ListItem(request.ProductId, request.Name, request.EstimatedPrice ?? 0m, request.Quantity, _currentUser.UserId);
+            item.SetEstimatedPrice(request.EstimatedPrice, _currentUser.UserId);
             list.AddItem(item);
 
             await _repository.AddSharedListAuditEventAsync(new SharedListAuditEvent(list.Id, _currentUser.UserId, "ItemAdded", nameof(ListItem), item.Id));

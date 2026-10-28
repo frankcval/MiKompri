@@ -1,4 +1,4 @@
-﻿import { createLightTheme, type Theme } from '@fluentui/react-components'
+import { createLightTheme, type Theme } from '@fluentui/react-components'
 
 const brandColors = {
   10: '#001b1a', 20: '#00312f', 30: '#00423f', 40: '#00514e',
@@ -9,8 +9,8 @@ const brandColors = {
 
 export const appTheme: Theme = {
   ...createLightTheme(brandColors),
-  fontFamilyBase: "'Source Sans 3', 'Segoe UI', sans-serif",
-  fontFamilyNumeric: "'Source Sans 3', 'Segoe UI', sans-serif",
+  fontFamilyBase: "'MiKompri Sans', 'Segoe UI', sans-serif",
+  fontFamilyNumeric: "'MiKompri Sans', 'Segoe UI', sans-serif",
   colorNeutralForeground1: '#172B3A',
   colorNeutralForeground2: '#526575',
   colorNeutralBackground1: '#FFFFFF',

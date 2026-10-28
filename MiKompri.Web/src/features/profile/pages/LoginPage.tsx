@@ -2,18 +2,20 @@ import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Text } from '@fluentui/react-components'
 import { InteractionStatus } from '@azure/msal-browser'
 import { useIsAuthenticated, useMsal } from '@azure/msal-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
 import { loginRequest } from '../../../auth/msal/msalConfig'
 import { env } from '../../../shared/config/env'
+import { consumeReturnTo } from '../../../auth/session/returnIntent'
 
 export function LoginPage() {
   const { instance, accounts, inProgress } = useMsal()
   const isAuthenticated = useIsAuthenticated()
   const location = useLocation()
   const navigate = useNavigate()
+  const redirected = useRef(false)
   const [message, setMessage] = useState('Accede con tu cuenta de MiKompri para continuar.')
 
   const authSessionService = useMemo(() => createAuthSessionService(instance), [instance])
@@ -24,8 +26,9 @@ export function LoginPage() {
     const isReady = inProgress === InteractionStatus.None
     const isAuthPage = location.pathname === '/login' || location.pathname === '/auth/callback'
 
-    if (isReady && hasMsalSession && isAuthPage) {
-      navigate('/personal-lists', { replace: true })
+    if (isReady && hasMsalSession && isAuthPage && !redirected.current) {
+      redirected.current = true
+      navigate(consumeReturnTo(), { replace: true })
     }
   }, [accounts.length, inProgress, isAuthenticated, location.pathname, navigate])
 
@@ -66,7 +69,7 @@ export function LoginPage() {
           <Text role="status">{message}</Text>
           <div className={ui.actions}>
             <Button appearance="primary" onClick={handleLogin} disabled={isPlaceholderClientId || inProgress !== InteractionStatus.None}>
-              Iniciar sesión
+              Continuar con Microsoft
             </Button>
             {account ? <Button appearance="secondary" onClick={handleLogout}>
               Cerrar sesión

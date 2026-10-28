@@ -11,14 +11,14 @@ afterEach(cleanup)
 function renderEntry(authenticated: boolean, accounts: unknown[] = [], inProgress = InteractionStatus.None) {
   vi.mocked(useIsAuthenticated).mockReturnValue(authenticated)
   vi.mocked(useMsal).mockReturnValue({ accounts, inProgress } as never)
-  render(<MemoryRouter><Routes><Route path="/" element={<App />} /><Route path="/personal-lists" element={<h1>Mis listas reales</h1>} /></Routes></MemoryRouter>)
+  render(<MemoryRouter><Routes><Route path="/" element={<App />} /><Route path="/lists" element={<h1>Mis listas reales</h1>} /></Routes></MemoryRouter>)
 }
 describe('entrada de portada', () => {
   it('ofrece ejemplo público y creación en el flujo existente', () => {
     renderEntry(false)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('La compra, mejor')
     expect(screen.getByRole('region', { name: 'Lista de ejemplo, datos ficticios' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /Crear mi primera lista/ })[0]).toHaveAttribute('href', '/personal-lists')
+    expect(screen.getAllByRole('link', { name: /Crear mi primera lista/ })[0]).toHaveAttribute('href', '/personal-lists?create=1')
   })
   it.each([true, false])('abre listas con sesión o cuentas MSAL (%s)', authenticated => {
     renderEntry(authenticated, authenticated ? [] : [{ homeAccountId: 'account' }])

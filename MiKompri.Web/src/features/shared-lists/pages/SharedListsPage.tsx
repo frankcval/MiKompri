@@ -37,7 +37,7 @@ function GroupLists({ group }: { group: { id: string; name: string } }) {
     queryFn: async () => getSharedListsByGroup(env.shoppingListApiBaseUrl, await token(), group.id) })
   return <section className={ui.stack} aria-label={`Listas de ${group.name}`}>
     <div className={ui.detailHeader}><h2>Listas de {group.name}</h2>
-      <CreateListDialog label="Crear lista compartida" title={`Crear lista en ${group.name}`} disabled={!lists.isSuccess} onCreate={async name => {
+      <CreateListDialog label="Crear lista compartida" title={`Crear lista en ${group.name}`} draftScope={group.id} disabled={!lists.isSuccess} onCreate={async name => {
         try {
           const id = await write(token => createSharedList(env.shoppingListApiBaseUrl, token, { name, groupId: group.id }))
           await client.invalidateQueries({ queryKey: key }); navigate(`/shared-lists/${id}?groupId=${encodeURIComponent(group.id)}`)
