@@ -1,5 +1,7 @@
 # MiKompri
 
+> **Modernización web — 2026-10-28**: implementación local de [008 · UX/UI](specs/008-web-ux-modernization/spec.md), manteniendo Spec Kit. Incluye Mis listas, compra reversible, gestión personal/compartida, alta contextual, personas y gastos, con autorización por recurso. Consultar [evidencia](specs/008-web-ux-modernization/evidence/validation.md), [plan](specs/008-web-ux-modernization/plan.md), [tareas](specs/008-web-ux-modernization/tasks.md) y [aceptación](specs/008-web-ux-modernization/checklists/acceptance.md). Entra con dos cuentas, revisión manual ampliada y piloto conservan gates pendientes; 007/008 no se declaran cerradas globalmente.
+
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
 [![CI - MiKompri ProductCatalog](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml)
@@ -764,3 +766,7 @@ Para preguntas o sugerencias, por favor abrir un [issue](https://github.com/fran
 ---
 
 ⭐ Si este proyecto te resulta útil, considera darle una estrella en GitHub!
+
+### Estado de la modernización 008
+
+Implementación local de Mis listas, compra reversible, gestión personal/compartida, alta contextual, personas y gastos corregibles, con autorización por recurso. Se mantienen Spec Kit y los componentes existentes. [Evidencia y pendientes P0–P3](specs/008-web-ux-modernization/evidence/validation.md); [tareas](specs/008-web-ux-modernization/tasks.md). La entrega local no certifica aún Entra con dos personas ni el piloto humano.

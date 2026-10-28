@@ -1,0 +1,31 @@
+@font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-400.woff2') format('woff2'); font-weight: 400; font-display: swap; unicode-range: U+0250-1DFF,U+1F00-1FFF,U+2070-209F,U+20D0-20FF,U+2200-25FF,U+2800-10FFFF; }
+@font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-600.woff2') format('woff2'); font-weight: 600; font-display: swap; unicode-range: U+0250-1DFF,U+1F00-1FFF,U+2070-209F,U+20D0-20FF,U+2200-25FF,U+2800-10FFFF; }
+@font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-700.woff2') format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0250-1DFF,U+1F00-1FFF,U+2070-209F,U+20D0-20FF,U+2200-25FF,U+2800-10FFFF; }
+@font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-400-latin.woff2') format('woff2'); font-weight: 400; font-display: swap; unicode-range: U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-21FF,U+2600-27BF; }
+@font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-600-latin.woff2') format('woff2'); font-weight: 600; font-display: swap; unicode-range: U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-21FF,U+2600-27BF; }
+@font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-700-latin.woff2') format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-21FF,U+2600-27BF; }
+:root {
+  font-family: 'MiKompri Sans', 'Segoe UI', system-ui, sans-serif;
+  color: #1f2937;
+  background-color: #f8fafc;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}

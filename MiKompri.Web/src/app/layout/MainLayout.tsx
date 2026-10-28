@@ -1,0 +1,32 @@
+﻿import { useState, type PropsWithChildren } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, useRestoreFocusTarget } from '@fluentui/react-components'
+import s from './MainLayout.module.css'
+import { AccountMenu } from '../../shared/ui/AccountMenu'
+
+const destinations = [
+  ['/lists', 'Mis listas'], ['/groups', 'Grupos'], ['/product-catalog', 'Productos'],
+]
+
+export function MainLayout({ children }: PropsWithChildren) {
+  const [open, setOpen] = useState(false)
+  const location = useLocation()
+  const restoreFocus = useRestoreFocusTarget()
+  const links = destinations.map(([to, label]) => <NavLink key={to} to={to} aria-current={to === '/lists' && /\/(personal|shared)-lists/.test(location.pathname) ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</NavLink>)
+  return <div className={s.shell}>
+    <a className={s.skip} href="#main-content">Saltar al contenido</a>
+    <header className={s.header}><NavLink to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</NavLink>
+      <AccountMenu className={s.account} />
+      <Button {...restoreFocus} className={s.menuButton} aria-label="Abrir menú" aria-expanded={open} onClick={event => { event.currentTarget.focus(); setOpen(true) }}>☰</Button>
+    </header>
+    <div className={s.body}>
+      <nav className={`${s.desktopNav} ${s.links}`} aria-label="Navegación principal">{links}</nav>
+      <main className={s.main} id="main-content" tabIndex={-1}>{children ?? <Outlet />}</main>
+    </div>
+    <Drawer open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="small">
+      <DrawerHeader><DrawerHeaderTitle action={<Button className={s.closeButton} aria-label="Cerrar menú" onClick={() => setOpen(false)}>✕</Button>}>MiKompri</DrawerHeaderTitle></DrawerHeader>
+      <DrawerBody><nav className={s.links} aria-label="Navegación principal">{links}</nav></DrawerBody>
+    </Drawer>
+    <nav className={s.bottomNav} aria-label="Accesos rápidos">{links}</nav>
+  </div>
+}

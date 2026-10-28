@@ -9,6 +9,7 @@ namespace MiKompri.ShoppingList.Domain.Entities
         public Guid ProductId { get; private set; } // Referencia al ProductService
         public string Name { get; private set; } // Copia para visualización rápida
         public decimal Price { get; private set; } // Precio del momento
+        public bool IsPriceKnown { get; private set; } = true;
         public int Quantity { get; private set; }
         public bool IsPurchased { get; private set; }
 
@@ -136,16 +137,29 @@ namespace MiKompri.ShoppingList.Domain.Entities
 
         public bool MarkAsPurchased(Guid updatedBy)
         {
-            if (IsPurchased)
-            {
-                return false;
-            }
+            return SetPurchaseState(true, updatedBy);
+        }
 
-            IsPurchased = true;
+        public bool SetPurchaseState(bool purchased, Guid updatedBy)
+        {
+            if (IsPurchased == purchased) return false;
+            IsPurchased = purchased;
             UpdatedBy = updatedBy;
             UpdatedAt = DateTime.UtcNow;
             return true;
         }
+
+        public void SetEstimatedPrice(decimal? price, Guid actor)
+        {
+            var value = price.HasValue ? NormalizePrice(price.Value) : 0m;
+            if (Price == value && IsPriceKnown == price.HasValue) return;
+            Price = value;
+            IsPriceKnown = price.HasValue;
+            UpdatedBy = actor;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void RecordActor(Guid actor) => UpdatedBy = actor;
 
         public ItemExpenseRecord RegisterExpense(Guid paidBy, Guid? purchasedBy, decimal realPaidPrice, IEnumerable<Guid> participants, string? currency = null)
         {

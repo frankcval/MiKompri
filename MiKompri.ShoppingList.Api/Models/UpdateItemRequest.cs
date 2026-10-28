@@ -3,7 +3,10 @@
     public class UpdateItemRequest
     {
         public string? ProductName { get; set; }
-        public decimal? Price { get; set; }
+        private decimal? _price;
+        public decimal? Price { get => _price; set { _price = value; PriceSpecified = true; } }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public bool PriceSpecified { get; private set; }
         public int? Quantity { get; set; }
     }
 }

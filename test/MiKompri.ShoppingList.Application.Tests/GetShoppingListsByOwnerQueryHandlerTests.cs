@@ -22,7 +22,7 @@ namespace MiKompri.ShoppingList.Application.Tests
             var first = new PurchaseList("Compra 1", ownerId, null);
             first.AddItem(new ListItem(Guid.NewGuid(), "Leche", 1.5m, 2));
             first.AddItem(new ListItem(Guid.NewGuid(), "Pan", 1m, 1));
-            first.MarkItemAsPurchased(first.Items.First().ProductId);
+            first.MarkItemAsPurchased(first.Items.First().Id);
 
             var second = new PurchaseList("Compra 2", ownerId, null);
 
@@ -33,7 +33,11 @@ namespace MiKompri.ShoppingList.Application.Tests
                 .Setup(r => r.GetByOwnerAsync(ownerId))
                 .ReturnsAsync(lists);
 
-            var handler = new GetShoppingListsByOwnerQueryHandler(repoMock.Object);
+            var currentUserMock = new Mock<ICurrentUserService>();
+            currentUserMock.SetupGet(x => x.IsAuthenticated).Returns(true);
+            currentUserMock.SetupGet(x => x.UserId).Returns(ownerId);
+
+            var handler = new GetShoppingListsByOwnerQueryHandler(repoMock.Object, currentUserMock.Object);
 
             var query = new GetShoppingListsByOwnerQuery(ownerId);
 

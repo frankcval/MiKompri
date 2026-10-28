@@ -44,7 +44,9 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.CloseSharedList
                 throw new ForbiddenOperationException("No tienes permisos para cerrar esta lista compartida.");
             }
 
+            var wasActive = list.Status == Domain.Entities.SharedListStatus.Active;
             list.CloseSharedList();
+            if (wasActive) await _repository.AddSharedListAuditEventAsync(new Domain.Entities.SharedListAuditEvent(list.Id, _currentUser.UserId, "ListClosed", nameof(Domain.Entities.PurchaseList), list.Id));
 
             await _repository.UpdateAsync(list);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

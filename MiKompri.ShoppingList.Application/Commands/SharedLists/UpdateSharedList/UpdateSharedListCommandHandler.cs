@@ -51,6 +51,8 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateSharedLis
 
             list.UpdateDescription(request.Description);
 
+            await _repository.AddSharedListAuditEventAsync(new Domain.Entities.SharedListAuditEvent(list.Id, _currentUser.UserId, "ListUpdated", nameof(Domain.Entities.PurchaseList), list.Id));
+
             await _repository.UpdateAsync(list);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

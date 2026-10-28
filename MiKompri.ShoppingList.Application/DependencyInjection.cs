@@ -22,6 +22,8 @@ namespace MiKompri.ShoppingList.Application
             services.AddValidatorsFromAssembly(assembly);
 
             // Registro del pipeline behavior de logging
+            services.AddScoped<Policies.PurchaseAccessPolicy>();
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ResourceAuthorizationBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
             // Pipeline de validación

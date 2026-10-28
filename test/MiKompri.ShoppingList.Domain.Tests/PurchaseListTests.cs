@@ -167,7 +167,7 @@ namespace MiKompri.ShoppingList.Domain.Tests
             var item = new ListItem(Guid.NewGuid(), "Huevos", 1.75m, 12);
             list.AddItem(item);
 
-            list.MarkItemAsPurchased(item.ProductId);
+            list.MarkItemAsPurchased(item.Id);
 
             var updated = list.Items.First(i => i.ProductId == item.ProductId);
             Assert.True(updated.IsPurchased);
@@ -183,8 +183,8 @@ namespace MiKompri.ShoppingList.Domain.Tests
             var item = new ListItem(Guid.NewGuid(), "Huevos", 1.75m, 12);
             list.AddItem(item);
 
-            list.MarkItemAsPurchased(item.ProductId);
-            list.MarkItemAsPurchased(item.ProductId);
+            list.MarkItemAsPurchased(item.Id);
+            list.MarkItemAsPurchased(item.Id);
 
             var updated = list.Items.First(i => i.ProductId == item.ProductId);
             Assert.True(updated.IsPurchased);
@@ -212,7 +212,7 @@ namespace MiKompri.ShoppingList.Domain.Tests
             list.AddItem(item2);
 
             // Marcar uno como comprado -> 1/2 = 50%
-            list.MarkItemAsPurchased(item1.ProductId);
+            list.MarkItemAsPurchased(item1.Id);
 
             // Se espera 50.00 (redondeado a 2 decimales seg�n implementaci�n)
             Assert.Equal(50.00, list.Progress.Percentage, 2);

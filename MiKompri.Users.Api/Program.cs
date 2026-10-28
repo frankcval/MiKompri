@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MiKompri.Users.Api.Middleware;
+using MiKompri.Users.Api.Security;
 using MiKompri.Users.Api.Services;
 using MiKompri.Users.Application;
 using MiKompri.Users.Application.Abstractions;
@@ -30,12 +31,16 @@ builder.Host.UseSerilog((context, services, loggerConfig) =>
 
 const string CorsPolicy = "MiKompriCors";
 
+var allowedOrigins = configuration["Cors:AllowedOrigins"]?
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? new[] { "http://localhost:5173", "http://127.0.0.1:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicy, policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins(allowedOrigins)
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -51,25 +56,10 @@ builder.Services
     {
         options.Authority = configuration["Authentication:Authority"];
         options.Audience = configuration["Authentication:Audience"];
-
-        // Permite que ShoppingList reenvíe sus tokens (aud distinto) hacia Users.
-        // Configurar Authentication:ValidAudiences como lista separada por comas en
-        // docker-compose / env vars para aceptar múltiples audiences.
-        var validAudiencesRaw = configuration["Authentication:ValidAudiences"];
-        var validAudiences = validAudiencesRaw?
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .ToArray();
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidAudiences = validAudiences?.Length > 0
-                ? validAudiences
-                : new[] { configuration["Authentication:Audience"] ?? string.Empty }
-        };
+        options.TokenValidationParameters = UsersJwtValidation.BuildTokenValidationParameters(
+            issuer: configuration["Authentication:Authority"],
+            audience: configuration["Authentication:Audience"],
+            validAudiencesRaw: configuration["Authentication:ValidAudiences"]);
     });
 
 builder.Services.AddAuthorization();

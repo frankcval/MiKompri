@@ -55,7 +55,11 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
         [Fact]
         public async Task PersonalEndpoints_ShouldStillWork_AsRegression()
         {
-            _client.DefaultRequestHeaders.Authorization = null;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "personal-owner-sub");
+            _client.DefaultRequestHeaders.Remove(TestAuthHandler.TidHeaderName);
+            _client.DefaultRequestHeaders.Remove(TestAuthHandler.OidHeaderName);
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.TidHeaderName, "tenant-test");
+            _client.DefaultRequestHeaders.TryAddWithoutValidation(TestAuthHandler.OidHeaderName, "personal-owner-sub");
 
             var request = new CreatePurchaseListRequest
             {

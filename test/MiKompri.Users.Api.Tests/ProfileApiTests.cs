@@ -111,9 +111,9 @@ public class ProfileApiTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task PostSync_WithTokenWithoutSub_Returns401WithGenericBody()
+    public async Task PostSync_WithoutCanonicalClaims_Returns401WithGenericBody()
     {
-        var client = _factory.CreateAuthenticatedClient(sub: string.Empty, name: "NoSub", email: "nosub@demo.com");
+        var client = _factory.CreateAuthenticatedClientWithoutCanonicalClaims(sub: "legacy-sub", name: "NoCanonical", email: "nocanonical@demo.com");
 
         var response = await client.PostAsync("/api/v1/users/me/sync", new StringContent("{}", System.Text.Encoding.UTF8, "application/json"));
 

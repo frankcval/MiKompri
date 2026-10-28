@@ -9,6 +9,11 @@ namespace MiKompri.Users.Domain.Users
     public interface IUserRepository
     {
         Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<User?> GetByCanonicalIdentityAsync(
+            string identityProvider,
+            string tenantId,
+            string objectId,
+            CancellationToken cancellationToken = default);
         Task<User?> GetByExternalIdAsync(
             string identityProvider,
             string externalUserId,

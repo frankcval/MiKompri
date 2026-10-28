@@ -9,6 +9,8 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
     public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         public const string SchemeName = "Test";
+        public const string TidHeaderName = "X-Test-Tid";
+        public const string OidHeaderName = "X-Test-Oid";
 
         public TestAuthHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -33,11 +35,25 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
 
             var subValue = raw.Substring("Test ".Length).Trim();
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new Claim("sub", subValue),
-                new Claim(ClaimTypes.NameIdentifier, subValue)
+                new("sub", subValue),
+                new(ClaimTypes.NameIdentifier, subValue)
             };
+
+            var tid = Request.Headers.TryGetValue(TidHeaderName, out var tidValues) && !string.IsNullOrWhiteSpace(tidValues)
+                ? tidValues.ToString()
+                : "tenant-test";
+
+            var oid = Request.Headers.TryGetValue(OidHeaderName, out var oidValues) && !string.IsNullOrWhiteSpace(oidValues)
+                ? oidValues.ToString()
+                : subValue;
+
+            if (!string.IsNullOrWhiteSpace(tid))
+                claims.Add(new Claim("tid", tid));
+
+            if (!string.IsNullOrWhiteSpace(oid))
+                claims.Add(new Claim("oid", oid));
 
             var identity = new ClaimsIdentity(claims, SchemeName);
             var principal = new ClaimsPrincipal(identity);

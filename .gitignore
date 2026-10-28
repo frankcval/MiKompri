@@ -367,3 +367,10 @@ obj/
 .env*
 .DS_Store
 Thumbs.db
+.playwright-browsers/
+.playwright-mcp/
+MiKompri.Web/test-results/
+MiKompri.Web/test-results-*/
+MiKompri.Web/playwright-report/
+dist/
+*.swp

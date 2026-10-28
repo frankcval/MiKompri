@@ -8,14 +8,16 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
     public class PurchaseListRepository : IPurchaseListRepository
     {
         private readonly ShoppingListDbContext _context;
+        private readonly ICurrentUserService? _actor;
         private IQueryable<PurchaseList> PurchaseListsWithItems => _context.PurchaseList
             .Include(p => p.Items)
                 .ThenInclude(i => i.Expenses)
                     .ThenInclude(e => e.Participants);
 
-        public PurchaseListRepository(ShoppingListDbContext context)
+        public PurchaseListRepository(ShoppingListDbContext context, ICurrentUserService? actor = null)
         {
             _context = context;
+            _actor = actor;
         }
 
 
@@ -55,7 +57,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
             await Task.CompletedTask;
         }
 
-        public async Task UpdateItemAsync(Guid listId, Guid itemId, string? name, decimal? price, int? quantity)
+        public async Task UpdateItemAsync(Guid listId, Guid itemId, string? name, decimal? price, int? quantity, bool priceSpecified)
         {
             var list = await PurchaseListsWithItems
                 .FirstOrDefaultAsync(x => x.Id == listId);
@@ -63,11 +65,12 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
             if (list is null)
                 throw new KeyNotFoundException("Lista no encontrada.");
 
-            /*
-                // 2. Usar la lógica de dominio
-            list.UpdateItem(itemId, name, price, quantity);
-             */
-            list.UpdateItem(itemId, name, price, quantity);
+            var item = list.Items.SingleOrDefault(i => i.Id == itemId)
+                ?? throw new KeyNotFoundException("El producto no está disponible.");
+            list.UpdateItem(item.ProductId, name, price, quantity);
+            if (priceSpecified) item.SetEstimatedPrice(price, item.UpdatedBy);
+            list.Touch();
+            if (_actor is not null) item.RecordActor(_actor.UserId);
 
             _context.PurchaseList.Update(list);
 
@@ -80,7 +83,9 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Repositories
             if (list is null)
                 throw new KeyNotFoundException("Lista no encontrada.");
 
-            list.DeleteItem(itemId);
+            var item = list.Items.SingleOrDefault(i => i.Id == itemId)
+                ?? throw new KeyNotFoundException("El producto no está disponible.");
+            list.DeleteItem(item.ProductId);
 
             _context.PurchaseList.Update(list);
         }

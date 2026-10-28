@@ -35,6 +35,8 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations
             builder.Property(i => i.IsPurchased)
               .HasDefaultValue(false);
 
+            builder.Property(i => i.IsPriceKnown).HasDefaultValue(true);
+
             builder.Property(i => i.PurchaseListId)       // 👈 mapeo explícito
          .IsRequired();
 

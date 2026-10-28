@@ -8,36 +8,53 @@ namespace MiKompri.Users.Domain.Users
         public string? Email { get; private set; }
 
         // Enlace con el IdP OAuth/OIDC
-        public string IdentityProvider { get; private set; } = string.Empty; // "keycloak", "auth0", "entra", "mikompri-auth"
-        public string ExternalUserId { get; private set; } = string.Empty;   // normalmente el "sub" del token
+        public string IdentityProvider { get; private set; } = string.Empty;
+        public string? TenantId { get; private set; }
+        public string? ObjectId { get; private set; }
+        public string? ExternalUserId { get; private set; } // legado: sub
 
-        // Navegación a memberships (opcional para dominio, pero útil)
         private readonly List<GroupMembership> _memberships = new();
         public IReadOnlyCollection<GroupMembership> Memberships => _memberships.AsReadOnly();
 
-        // Constructor privado para EF
         private User() { }
 
         public User(
             string displayName,
             string? email,
             string identityProvider,
-            string externalUserId)
+            string? tenantId,
+            string? objectId,
+            string? externalUserId)
         {
             Id = Guid.NewGuid();
             DisplayName = displayName;
             Email = email;
             IdentityProvider = identityProvider;
-            ExternalUserId = externalUserId;
+            TenantId = string.IsNullOrWhiteSpace(tenantId) ? null : tenantId;
+            ObjectId = string.IsNullOrWhiteSpace(objectId) ? null : objectId;
+            ExternalUserId = string.IsNullOrWhiteSpace(externalUserId) ? null : externalUserId;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>
-        /// Sincroniza los claims del IdP con el perfil local.
-        /// Solo actualiza <see cref="UpdatedAt"/> si hubo al menos un cambio real,
-        /// garantizando idempotencia en llamadas consecutivas con los mismos datos.
-        /// </summary>
+        public User(string displayName, string? email, string identityProvider, string externalUserId)
+            : this(displayName, email, identityProvider, null, null, externalUserId)
+        {
+        }
+
+        public void AssignCanonicalIdentity(string tenantId, string objectId)
+        {
+            if (string.IsNullOrWhiteSpace(tenantId) || string.IsNullOrWhiteSpace(objectId))
+                throw new InvalidOperationException("La identidad canónica requiere tid y oid.");
+
+            if (TenantId == tenantId && ObjectId == objectId)
+                return;
+
+            TenantId = tenantId;
+            ObjectId = objectId;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public void SyncClaims(string? displayName, string? email)
         {
             bool changed = false;
@@ -58,10 +75,6 @@ namespace MiKompri.Users.Domain.Users
                 UpdatedAt = DateTime.UtcNow;
         }
 
-        /// <summary>
-        /// Actualiza el nombre visible por iniciativa del usuario (FR-004).
-        /// El email no es editable directamente por el usuario; se sincroniza vía <see cref="SyncClaims"/>.
-        /// </summary>
         public void UpdateProfile(string displayName)
         {
             if (string.IsNullOrWhiteSpace(displayName))

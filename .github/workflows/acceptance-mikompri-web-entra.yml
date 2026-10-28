@@ -1,0 +1,62 @@
+name: Acceptance - MiKompri Web with Entra
+
+# Required for product acceptance; run explicitly once real QA resources exist.
+# A green push CI does not certify this workflow or Entra authentication.
+on:
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'QA web URL accessible from the runner; empty uses MIKOMPRI_INTEGRATED_URL'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  real-auth-acceptance:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MiKompri.Web
+    env:
+      MIKOMPRI_INTEGRATED_URL: ${{ inputs.target_url || vars.MIKOMPRI_INTEGRATED_URL }}
+      MIKOMPRI_SHOPPING_API: ${{ vars.MIKOMPRI_SHOPPING_API }}
+      MIKOMPRI_USERS_API: ${{ vars.MIKOMPRI_USERS_API }}
+      MIKOMPRI_CATALOG_API: ${{ vars.MIKOMPRI_CATALOG_API }}
+      MIKOMPRI_REQUIRE_API_URLS: '1'
+      MIKOMPRI_OWNER_TOKEN: ${{ secrets.MIKOMPRI_OWNER_TOKEN }}
+      MIKOMPRI_MEMBER_TOKEN: ${{ secrets.MIKOMPRI_MEMBER_TOKEN }}
+      MIKOMPRI_OWNER_STATE: ${{ secrets.MIKOMPRI_OWNER_STATE }}
+      MIKOMPRI_MEMBER_STATE: ${{ secrets.MIKOMPRI_MEMBER_STATE }}
+      MIKOMPRI_OWNER_STORAGE: /tmp/mikompri-owner-${{ github.run_id }}.json
+      MIKOMPRI_MEMBER_STORAGE: /tmp/mikompri-member-${{ github.run_id }}.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Materialize private real-login sessions without logging them
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          for (const who of ['OWNER', 'MEMBER']) {
+            const value = process.env[`MIKOMPRI_${who}_STATE`];
+            if (value) writeFileSync(process.env[`MIKOMPRI_${who}_STORAGE`], value, { mode: 0o600 });
+          }
+          NODE
+      - name: Require real environment before installing test dependencies
+        run: node scripts/check-integrated-env.mjs
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Real authentication and service acceptance
+        run: npm run test:e2e:integrated -- --reporter=line
+      - name: Remove private session exports
+        if: always()
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { rmSync } from 'node:fs';
+          for (const who of ['OWNER', 'MEMBER']) rmSync(process.env[`MIKOMPRI_${who}_STORAGE`], { force: true });
+          NODE

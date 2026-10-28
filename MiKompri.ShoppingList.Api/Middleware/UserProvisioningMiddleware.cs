@@ -21,8 +21,9 @@ namespace MiKompri.ShoppingList.Api.Middleware
                 return;
             }
 
-            var sub = context.User.FindFirst("sub")?.Value;
-            if (string.IsNullOrWhiteSpace(sub))
+            var tid = context.User.FindFirst("tid")?.Value;
+            var oid = context.User.FindFirst("oid")?.Value;
+            if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
             {
                 await WriteUnauthorizedAsync(context);
                 return;

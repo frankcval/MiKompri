@@ -143,9 +143,18 @@ namespace MiKompri.ShoppingList.Infrastructure.Services
 
         private HttpRequestMessage? CreateRequest(HttpMethod method, string relativePath)
         {
-            var authorization = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString();
+            var httpContext = _httpContextAccessor.HttpContext;
+            var authorization = httpContext?.Request.Headers.Authorization.ToString();
             if (string.IsNullOrWhiteSpace(authorization))
             {
+                return null;
+            }
+
+            var tid = httpContext?.User.FindFirst("tid")?.Value;
+            var oid = httpContext?.User.FindFirst("oid")?.Value;
+            if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
+            {
+                _logger.LogWarning("Token sin correlación canónica tid/oid. Se omite llamada a Users API.");
                 return null;
             }
 

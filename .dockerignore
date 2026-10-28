@@ -17,6 +17,10 @@
 **/docker-compose*
 **/Dockerfile*
 **/node_modules
+.playwright-browsers/
+.playwright-mcp/
+**/test-results/
+**/playwright-report/
 **/npm-debug.log
 **/obj
 **/secrets.dev.yaml
@@ -31,3 +35,4 @@ README.md
 **/.env*
 **/*.log*
 **/coverage/
+**/test-results*/

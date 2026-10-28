@@ -41,6 +41,10 @@ namespace MiKompri.ShoppingList.Api.Middleware
 
                 switch (ex)
                 {
+                    case ResourceConflictException:
+                        statusCode = HttpStatusCode.Conflict;
+                        body = new { status = 409, error = ex.Message, traceId = correlationId };
+                        break;
                     case FluentValidation.ValidationException ve:
                         statusCode = HttpStatusCode.BadRequest;
 

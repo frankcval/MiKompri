@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Text.Json;
+using System.Security.Claims;
 using MediatR;
 using MiKompri.Users.Application.Commands.SyncProfile;
 
@@ -22,31 +21,23 @@ namespace MiKompri.Users.Api.Middleware
                 return;
             }
 
-            var sub = context.User.FindFirst("sub")?.Value;
-            if (string.IsNullOrWhiteSpace(sub))
+            var tid = FirstClaimValue(context.User, "tid", "http://schemas.microsoft.com/identity/claims/tenantid");
+            var oid = FirstClaimValue(
+                context.User,
+                "oid",
+                "http://schemas.microsoft.com/identity/claims/objectidentifier");
+            if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
             {
-                var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = "application/json";
-
-                var body = new
-                {
-                    status = StatusCodes.Status401Unauthorized,
-                    error = "Authentication failed.",
-                    traceId
-                };
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(body));
-                return;
+                throw new UnauthorizedAccessException("Authentication failed.");
             }
 
+            var sub = FirstClaimValue(context.User, "sub", ClaimTypes.NameIdentifier);
             var identityProvider = configuration["Authentication:IdentityProvider"] ?? "entra";
-            var name = context.User.FindFirst("name")?.Value;
-            var email = context.User.FindFirst("email")?.Value;
+            var name = FirstClaimValue(context.User, "name", ClaimTypes.Name);
+            var email = FirstClaimValue(context.User, "email", ClaimTypes.Email, "preferred_username", "upn");
 
             var result = await sender.Send(
-                new SyncProfileCommand(identityProvider, sub, name, email),
+                new SyncProfileCommand(identityProvider, tid, oid, sub, name, email),
                 context.RequestAborted);
 
             context.Items["UserId"] = result.UserId;
@@ -54,5 +45,20 @@ namespace MiKompri.Users.Api.Middleware
 
             await _next(context);
         }
+
+        private static string? FirstClaimValue(ClaimsPrincipal user, params string[] claimTypes)
+        {
+            foreach (var claimType in claimTypes)
+            {
+                var value = user.FindFirst(claimType)?.Value;
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
     }
 }

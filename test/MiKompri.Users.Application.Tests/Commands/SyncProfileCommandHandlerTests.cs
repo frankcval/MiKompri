@@ -13,11 +13,15 @@ public class SyncProfileCommandHandlerTests
     public async Task Handle_UserDoesNotExist_CreatesUserAndReturnsCreatedTrue()
     {
         _userRepository
-            .GetByExternalIdAsync("entra", "sub-1", Arg.Any<CancellationToken>())
+            .GetByCanonicalIdentityAsync("entra", "tenant-1", "object-1", Arg.Any<CancellationToken>())
+            .Returns((User?)null);
+
+        _userRepository
+            .GetByExternalIdAsync("entra", "legacy-sub-1", Arg.Any<CancellationToken>())
             .Returns((User?)null);
 
         var handler = new SyncProfileCommandHandler(_userRepository);
-        var command = new SyncProfileCommand("entra", "sub-1", "Ana", "ana@demo.com");
+        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana", "ana@demo.com");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -27,15 +31,15 @@ public class SyncProfileCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_UserExistsWithDifferentClaims_UpdatesAndReturnsCreatedFalse()
+    public async Task Handle_UserExistsByCanonicalIdentity_UpdatesAndReturnsCreatedFalse()
     {
-        var existing = new User("Ana", "ana@demo.com", "entra", "sub-1");
+        var existing = new User("Ana", "ana@demo.com", "entra", "tenant-1", "object-1", "legacy-sub-1");
         _userRepository
-            .GetByExternalIdAsync("entra", "sub-1", Arg.Any<CancellationToken>())
+            .GetByCanonicalIdentityAsync("entra", "tenant-1", "object-1", Arg.Any<CancellationToken>())
             .Returns(existing);
 
         var handler = new SyncProfileCommandHandler(_userRepository);
-        var command = new SyncProfileCommand("entra", "sub-1", "Ana Maria", "ana.maria@demo.com");
+        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana Maria", "ana.maria@demo.com");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -46,19 +50,26 @@ public class SyncProfileCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_UserExistsWithSameClaims_DoesNotSaveAndReturnsCreatedFalse()
+    public async Task Handle_UserFoundByLegacySub_AssignsCanonicalIdentity()
     {
-        var existing = new User("Ana", "ana@demo.com", "entra", "sub-1");
+        var existing = new User("Ana", "ana@demo.com", "entra", null, null, "legacy-sub-1");
+
         _userRepository
-            .GetByExternalIdAsync("entra", "sub-1", Arg.Any<CancellationToken>())
+            .GetByCanonicalIdentityAsync("entra", "tenant-1", "object-1", Arg.Any<CancellationToken>())
+            .Returns((User?)null);
+
+        _userRepository
+            .GetByExternalIdAsync("entra", "legacy-sub-1", Arg.Any<CancellationToken>())
             .Returns(existing);
 
         var handler = new SyncProfileCommandHandler(_userRepository);
-        var command = new SyncProfileCommand("entra", "sub-1", "Ana", "ana@demo.com");
+        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana", "ana@demo.com");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.Created.Should().BeFalse();
-        await _userRepository.DidNotReceive().UpdateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
+        existing.TenantId.Should().Be("tenant-1");
+        existing.ObjectId.Should().Be("object-1");
+        await _userRepository.Received(1).UpdateAsync(existing, Arg.Any<CancellationToken>());
     }
 }

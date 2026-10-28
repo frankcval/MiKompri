@@ -96,6 +96,11 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsPriceKnown")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<bool>("IsPurchased")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
