@@ -37,6 +37,16 @@ namespace MiKompri.Users.Api.Middleware
 
                 switch (ex)
                 {
+                    case UnauthorizedAccessException:
+                        statusCode = HttpStatusCode.Unauthorized;
+                        body = new
+                        {
+                            status = (int)statusCode,
+                            error = "Authentication failed.",
+                            traceId
+                        };
+                        break;
+
                     case ValidationException ve:
                         statusCode = HttpStatusCode.BadRequest;
                         body = new

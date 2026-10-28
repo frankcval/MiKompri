@@ -55,7 +55,7 @@ docker build -f MiKompri.Web/Dockerfile -t mikompri-web:ux-review .
 git diff --check
 ```
 
-Preparar entorno aislado/puertos antes de `compose up`; no resetear datos o volúmenes del usuario. La implementación autorizada recreó únicamente ShoppingList local con la imagen runtime actualizada; conserva copia etiquetada de la imagen anterior. La caché SDK predeterminada falló; el build íntegro en contenedor se completó con el argumento SDK_IMAGE apuntando al SDK oficial 8.0-noble. Ver evidencia. Users/ProductCatalog no se modificaron. Integración con PostgreSQL real no sustituye identidad Entra ni comunicación real Users con dos cuentas. No se desplegó ni publicó ninguna imagen.
+Preparar entorno aislado/puertos antes de `compose up`; no resetear datos o volúmenes del usuario. La implementación inicial recreó ShoppingList local y conserva copia etiquetada de la imagen anterior. La caché SDK predeterminada falló; el build íntegro en contenedor se completó con el argumento SDK_IMAGE apuntando al SDK oficial 8.0-noble. En la revisión posterior de CI se corrigió también el rechazo de identidad incompleta de Users API: 31 pruebas de API, 32 de aplicación y 12 de dominio pasan, sin cambios de esquema. ProductCatalog no se modificó. Integración con PostgreSQL real no sustituye identidad Entra ni comunicación real Users con dos cuentas. No se desplegó ni publicó ninguna imagen en remoto.
 
 ## Recorridos obligatorios
 

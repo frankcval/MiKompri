@@ -84,6 +84,16 @@ Se corrige la programación: `ci-mikompri-web.yml` ejecuta siempre las comprobac
 
 Esta modificación no cierra A020, T031/T036/T048 ni SC-009: el cierre requiere éxito real sobre el commit de entrega. Las instrucciones de variables, secretos y sesiones están en el README web; no se han configurado credenciales ni desplegado un entorno QA.
 
+## Regresión de identidad detectada en los checks de la PR
+
+Tras el commit `bd444ac`, la CI web controlada y las comprobaciones de ShoppingList/ProductCatalog/persistencia pasaron. Users API expuso una regresión previa: `GetMe_WithoutTidOidCorrelation_Returns401` recibía 404; ampliar el caso demostró además que `tid` junto con `sub`, o `iss` junto con `oid`, podía aprovisionar un usuario sin el par canónico de claims.
+
+Se exige ahora `tid` y `oid` (también se admiten sus nombres URI ya soportados). `sub` permanece como metadato y el issuer no sustituye `tid`. Una identidad autenticada incompleta se rechaza antes de aprovisionar; el middleware global devuelve 401 con error genérico y traceId. Se conserva la aserción 401 y se verifica que no se creen usuarios. Las variantes canónicas válidas y sus alias conservan el 200.
+
+Regresiones locales: Users API 31/31, aplicación 32/32, dominio 12/12 y ShoppingList API 68/68. Se verificaron primero cuatro fallos en los casos incompletos y después su corrección. Docker Users admite el mismo argumento opcional SDK_IMAGE que ShoppingList para la compilación con el SDK oficial 8.0-noble en este entorno. No hay cambios de esquema ni migración de identidades o datos del usuario. Esta prueba de API con autenticación controlada no sustituye la aceptación Entra pendiente.
+
+La imagen Users compiló íntegramente en Docker con el SDK 8.0-noble y se aplicó al servicio local, conservando configuración y volúmenes. Docker no pudo resolver el identificador de la imagen anterior para etiquetarlo; la versión anterior del código permanece en Git. El resto de servicios permanece sin recrear en esta corrección.
+
 ## Revisión final antes de commit/push
 
 107 pruebas frontend, 40 de dominio, 33 de aplicación y 68 de API satisfactorias; las 68 también con PostgreSQL 16. Tras optimizar se repitieron 27 casos de modernización/axe en tres motores y 12 casos a 390 px. Las 87 pruebas distintas del inventario controlado se cubren con selecciones complementarias; los intentos fallidos se conservan como tales. Build/tipos y lint correctos; auditoría npm cero vulnerabilidades. El navegador de pruebas sin sesión redirige la URL real `/lists` a `/login`; no acredita dos identidades Entra.

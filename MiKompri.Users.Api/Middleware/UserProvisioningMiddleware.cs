@@ -21,18 +21,14 @@ namespace MiKompri.Users.Api.Middleware
                 return;
             }
 
-            var tid = FirstClaimValue(context.User, "tid", "http://schemas.microsoft.com/identity/claims/tenantid")
-                ?? ExtractTenantIdFromIssuer(context.User.FindFirst("iss")?.Value);
+            var tid = FirstClaimValue(context.User, "tid", "http://schemas.microsoft.com/identity/claims/tenantid");
             var oid = FirstClaimValue(
                 context.User,
                 "oid",
-                "http://schemas.microsoft.com/identity/claims/objectidentifier",
-                "sub",
-                ClaimTypes.NameIdentifier);
+                "http://schemas.microsoft.com/identity/claims/objectidentifier");
             if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
             {
-                await _next(context);
-                return;
+                throw new UnauthorizedAccessException("Authentication failed.");
             }
 
             var sub = FirstClaimValue(context.User, "sub", ClaimTypes.NameIdentifier);
@@ -64,20 +60,5 @@ namespace MiKompri.Users.Api.Middleware
             return null;
         }
 
-        private static string? ExtractTenantIdFromIssuer(string? issuer)
-        {
-            if (string.IsNullOrWhiteSpace(issuer))
-            {
-                return null;
-            }
-
-            if (!Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
-            {
-                return null;
-            }
-
-            var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            return segments.Length > 0 ? segments[0] : null;
-        }
     }
 }

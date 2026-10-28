@@ -13,6 +13,9 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     public const string EmailHeaderName = "X-Test-Email";
     public const string TidHeaderName = "X-Test-Tid";
     public const string OidHeaderName = "X-Test-Oid";
+    public const string IssuerHeaderName = "X-Test-Issuer";
+    public const string MappedTidHeaderName = "X-Test-Mapped-Tid";
+    public const string MappedOidHeaderName = "X-Test-Mapped-Oid";
 
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -50,6 +53,13 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         if (Request.Headers.TryGetValue(OidHeaderName, out var oidValues) && !string.IsNullOrWhiteSpace(oidValues))
             claims.Add(new Claim("oid", oidValues.ToString()));
+
+        if (Request.Headers.TryGetValue(IssuerHeaderName, out var issuer) && !string.IsNullOrWhiteSpace(issuer))
+            claims.Add(new Claim("iss", issuer.ToString()));
+        if (Request.Headers.TryGetValue(MappedTidHeaderName, out var mappedTid) && !string.IsNullOrWhiteSpace(mappedTid))
+            claims.Add(new Claim("http://schemas.microsoft.com/identity/claims/tenantid", mappedTid.ToString()));
+        if (Request.Headers.TryGetValue(MappedOidHeaderName, out var mappedOid) && !string.IsNullOrWhiteSpace(mappedOid))
+            claims.Add(new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", mappedOid.ToString()));
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);
