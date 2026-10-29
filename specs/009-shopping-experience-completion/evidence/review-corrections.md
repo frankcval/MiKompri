@@ -67,3 +67,27 @@ Todos sobre 13d119f, evento `pull_request`, satisfactorios:
 T009 abierta hasta verificar el nuevo candidato. T010/T011 abiertas, sin cambio de criterios: última serie 13d119f con LCP personal/compartida 2556/2604ms frente a 2500ms; faltan aceptación Entra multiusuario y accesibilidad manual indicadas en tasks/spec. Esta revisión no los acredita ni incluye SonarCloud en su recomendación.
 
 Riesgo residual: consumidores que omiten el offset mantienen semántica UTC y deben enviarlo si sus fechas representan el día local. Offset es contexto declarado, acotado y no persistido; no prueba ubicación ni se usa como autorización.
+
+## Punto de reanudación — pausa solicitada el 29/10
+
+Cambios de aplicación publicados en `487f649e75f739365040fc89be59ef872bd02db6`; ajuste exclusivo del test y evidencia en `f8032ca5e4bd7ef669289a7ca5e99ea62b9871cf`. El usuario pide guardar y continuar mañana. No se cierra ninguna tarea durante esta pausa ni se modifica 010, aunque esté abierto en el IDE.
+
+Última consulta de CI de f8032ca:
+
+| Workflow | Estado al guardar | Ejecución |
+| --- | --- | --- |
+| Users | success | [40963003122](https://github.com/frankcval/MiKompri/actions/runs/40963003122) |
+| ShoppingList | success, incluida integración | [40963003044](https://github.com/frankcval/MiKompri/actions/runs/40963003044) |
+| ProductCatalog | success, Docker e integración | [40963003032](https://github.com/frankcval/MiKompri/actions/runs/40963003032) |
+| Resource authorization and persistence | success | [40963003029](https://github.com/frankcval/MiKompri/actions/runs/40963003029) |
+| Web | in_progress, escenarios de navegador | [40963002962](https://github.com/frankcval/MiKompri/actions/runs/40963002962) |
+
+Al reanudar:
+
+1. Consultar HEAD local/remoto y resultado final de Web indicado; no inferir éxito por tests existentes. Revisar también los cinco workflows del HEAD documental posterior a f8032ca.
+2. Si falla un workflow, diagnosticar su log; corregir únicamente problemas relacionados con 009 y repetir lo afectado. SonarCloud continúa fuera de alcance.
+3. Reconciliar T009: cerrar solo si todas sus condiciones se acreditan con resultados reproducibles, o dejar la comprobación exacta pendiente. Mantener T010/T011 abiertas.
+4. Actualizar evidencia/validation/tasks de forma coherente, commit/push y comprobar los cinco workflows del HEAD final. No volver a ejecutar suites locales por cambios exclusivamente documentales.
+5. Entregar causas/correcciones, archivos, pruebas, tareas, CI, riesgos y recomendación solicitada. No declarar cierre global: siguen gates de rendimiento, Entra multiusuario y accesibilidad manual.
+
+Contenedor PostgreSQL QA propio `mikompri-qa-009-review` retirado tras las pruebas; servicios de la aplicación conservados. Logs locales bajo `.playwright-mcp/009-review-*`, ignorados por Git. El estado guardado no depende de mantener ese contenedor.
