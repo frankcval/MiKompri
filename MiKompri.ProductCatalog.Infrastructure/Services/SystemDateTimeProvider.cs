@@ -2,9 +2,9 @@ using MiKompri.ProductCatalog.Application.Abstractions;
 
 namespace MiKompri.ProductCatalog.Infrastructure.Services;
 
-public sealed class SystemDateTimeProvider : IDateTimeProvider
+public sealed class SystemDateTimeProvider(TimeProvider? clock = null) : IDateTimeProvider
 {
-    public DateTime UtcNow => DateTime.UtcNow;
+    public DateTime UtcNow => (clock ?? TimeProvider.System).GetUtcNow().UtcDateTime;
 
-    public DateOnly UtcToday => DateOnly.FromDateTime(DateTime.UtcNow);
+    public DateOnly Today => DateOnly.FromDateTime((clock ?? TimeProvider.System).GetUtcNow().UtcDateTime);
 }

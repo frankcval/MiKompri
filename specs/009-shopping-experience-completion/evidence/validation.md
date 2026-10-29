@@ -1,6 +1,6 @@
 # Evidencia 009 — 2026-10-28/29
 
-Revisión más reciente: 274/274 .NET sin cambios backend posteriores; 113/113 componentes finales (`009-persistent-dialog-vitest.log`, 195.68s); 6/6 carga lenta/cancelación en tres motores (`009-persistent-dialog-cancel.log`). Matriz completa de 114 escenarios, Docker y rendimiento de este último candidato todavía en verificación. T009 se mantiene abierto hasta completarlos; T010/T011 conservan sus gates.
+Estado vigente: ver [correcciones de revisión y candidato](review-corrections.md). El historial siguiente corresponde a la implementación hasta 13d119f; sus frases de «pendiente» o «sin cambios posteriores» describen ese momento, no un HEAD posterior. La CI de 13d119f terminó con los cinco workflows solicitados satisfactorios, Web 113/113 y navegador 114/114. Las correcciones posteriores de fechas requieren evidencia propia antes de cerrar T009. T010/T011 permanecen abiertos.
 
 Base `main`/`origin/main` 77ddbfc (PR #56 integrado), rama `009-shopping-experience-completion`. El alcance y la implementación fueron autorizados en conversación; spec/plan/tasks/modelo/contratos se crearon antes de código. El usuario autoriza el 29 la verificación final, documentación, commit y push. No se modifican casillas de 002–008. 010/011 contienen solo alcance.
 

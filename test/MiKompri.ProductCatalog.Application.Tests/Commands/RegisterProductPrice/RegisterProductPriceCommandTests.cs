@@ -9,6 +9,19 @@ namespace MiKompri.ProductCatalog.Application.Tests.Commands.RegisterProductPric
 
 public class RegisterProductPriceCommandTests
 {
+    [Fact]
+    public async Task RejectsTomorrowRelativeToCallerDateBeforeWriting()
+    {
+        var dates = new Mock<Abstractions.IDateTimeProvider>();
+        dates.SetupGet(x => x.Today).Returns(new DateOnly(2030, 10, 29));
+        var products = new Mock<ICatalogProductRepository>(MockBehavior.Strict);
+        var unit = new Mock<IUnitOfWork>(MockBehavior.Strict);
+        var handler = new RegisterProductPriceCommandHandler(products.Object, Mock.Of<IMarketRepository>(), Mock.Of<IProductPriceRecordRepository>(), dates.Object, unit.Object, DefaultOptions());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(new RegisterProductPriceCommand(Guid.NewGuid(), Guid.NewGuid(), new DateOnly(2030, 10, 30), 1m), CancellationToken.None));
+        products.VerifyNoOtherCalls();
+        unit.VerifyNoOtherCalls();
+    }
+
     private static IOptions<ProductCatalogOptions> DefaultOptions() =>
         Microsoft.Extensions.Options.Options.Create(new ProductCatalogOptions { Currency = "EUR" });
 
@@ -33,12 +46,12 @@ public class RegisterProductPriceCommandTests
             .ReturnsAsync(market);
 
         productPriceRepositoryMock
-            .Setup(x => x.ExistsAsync(product.Id, market.Id, new DateOnly(2026, 8, 5), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ExistsAsync(product.Id, market.Id, new DateOnly(2030, 10, 30), It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         dateTimeProviderMock
-            .SetupGet(x => x.UtcToday)
-            .Returns(new DateOnly(2026, 8, 5));
+            .SetupGet(x => x.Today)
+            .Returns(new DateOnly(2030, 10, 30));
 
         unitOfWorkMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -52,7 +65,7 @@ public class RegisterProductPriceCommandTests
             unitOfWorkMock.Object,
             DefaultOptions());
 
-        var command = new RegisterProductPriceCommand(product.Id, market.Id, new DateOnly(2026, 8, 5), 1.45m);
+        var command = new RegisterProductPriceCommand(product.Id, market.Id, new DateOnly(2030, 10, 30), 1.45m);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -89,7 +102,7 @@ public class RegisterProductPriceCommandTests
             .ReturnsAsync(true);
 
         dateTimeProviderMock
-            .SetupGet(x => x.UtcToday)
+            .SetupGet(x => x.Today)
             .Returns(date);
 
         var handler = new RegisterProductPriceCommandHandler(

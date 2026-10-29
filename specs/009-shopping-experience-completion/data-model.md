@@ -8,3 +8,5 @@ ItemExpenseRecord es registro canónico para compras personales y gastos compart
 PurchaseOperation: OperationId GUID único, ActorId/ListId/ItemId GUID, RequestHash SHA256 canónico y ExpenseId. Recibo duradero sin cascade desde expense; replay tras borrado produce conflicto, nunca recrea gasto. Hash incluye payload normalizado, no versión posterior del registro. Operaciones distintas permiten compras distintas del mismo ítem.
 
 Migración aditiva sin inventar mercado/fecha histórica ni cambiar IDs. Version inicial de legado debe ser válida; snapshot EF se mantiene. Sin imágenes ni datos Users nuevos.
+
+Corrección de fechas: reloj/hoy y offset del cliente son contexto de validación, no atributos persistidos. Las fechas civiles se guardan sin convertirlas a UTC; CreatedAt/UpdatedAt/ExpenseDate conservan auditoría UTC. La huella de idempotencia sigue incluyendo la fecha elegida, no el offset ni el reloj. Esta revisión no cambia el modelo EF ni añade migración.

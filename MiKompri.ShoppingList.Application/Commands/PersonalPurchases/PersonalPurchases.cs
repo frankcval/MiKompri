@@ -10,9 +10,11 @@ public sealed record RegisterPersonalPurchase(Guid ListId, Guid ItemId, Guid Ope
 public sealed record UpdatePersonalPurchase(Guid ListId, Guid ItemId, Guid ExpenseId, Guid ExpectedVersion, decimal RealPaidPrice, string Currency, Guid? MarketId, DateOnly? PurchasedOn) : IRequest;
 public sealed record DeletePersonalPurchase(Guid ListId, Guid ItemId, Guid ExpenseId) : IRequest;
 
-public sealed class PersonalPurchaseHandler(PurchaseAccessPolicy access, IUnitOfWork unit, PurchaseOperationService operations)
+public sealed class PersonalPurchaseHandler(PurchaseAccessPolicy access, IUnitOfWork unit, PurchaseOperationService operations, ICurrentDateProvider? dates = null)
     : IRequestHandler<RegisterPersonalPurchase, Guid>, IRequestHandler<UpdatePersonalPurchase>, IRequestHandler<DeletePersonalPurchase>
 {
+    private readonly ICurrentDateProvider _dates = dates ?? new SystemCurrentDateProvider();
+
     private async Task<Domain.Entities.PurchaseList> List(Guid id, CancellationToken ct)
     {
         var list = await access.RequireList(id, true, false, null, ct);
@@ -31,7 +33,7 @@ public sealed class PersonalPurchaseHandler(PurchaseAccessPolicy access, IUnitOf
         var replay = await operations.ReplayAsync(request.OperationId, access.ActorId, list.Id, item.Id, hash, ct);
         if (replay.HasValue) return replay.Value;
         var expense = item.RegisterExpense(access.ActorId, access.ActorId, request.RealPaidPrice, participants, request.Currency);
-        expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn);
+        expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn, _dates.Today);
         list.Touch();
         await operations.RecordAsync(request.OperationId, access.ActorId, list.Id, item.Id, expense.Id, hash, ct);
         await unit.SaveChangesAsync(ct);
@@ -46,7 +48,7 @@ public sealed class PersonalPurchaseHandler(PurchaseAccessPolicy access, IUnitOf
         if (expense.Version != request.ExpectedVersion) throw new ResourceConflictException("La compra cambió. Actualiza los datos antes de corregirla.");
         PurchaseOperationService.Validate(request.RealPaidPrice, request.Currency);
         item.UpdateExpense(expense.Id, access.ActorId, access.ActorId, request.RealPaidPrice, new[] { access.ActorId }, request.Currency);
-        expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn);
+        expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn, _dates.Today);
         list.Touch();
         await unit.SaveChangesAsync(ct);
     }

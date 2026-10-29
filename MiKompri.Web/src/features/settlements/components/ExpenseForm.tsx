@@ -1,3 +1,4 @@
+import { useLocalToday } from '../../../shared/dates/useLocalToday'
 import ui from '../../../shared/ui/AppSurface.module.css'
 import { useQuery } from '@tanstack/react-query'
 import { useListSession } from '../../shopping-lists/hooks/useListSession'
@@ -42,7 +43,7 @@ type ExpenseFormProps = {
 }
 
 export function ExpenseForm({ items, members, payerIds, onSubmit, accountKey = '', scope = 'expense', initialValue, defaultPayerId = '', submitLabel = 'Registrar gasto', personal = false, defaultItemId = '', onPendingChange }: ExpenseFormProps) {
-  const [today] = useState(() => new Date().toISOString().slice(0, 10))
+  const today = useLocalToday()
   const { account, token } = useListSession()
   const markets = useQuery({ queryKey: ['catalog-markets', account?.homeAccountId, 'all'], enabled: Boolean(account), retry: false, queryFn: async () => getMarkets(env.productCatalogApiBaseUrl, await token(), true) })
   const defaults = { itemId: initialValue?.itemId ?? defaultItemId, amount: initialValue ? String(initialValue.realPaidPrice) : '', paidBy: initialValue?.paidBy ?? defaultPayerId, purchasedBy: initialValue?.purchasedBy ?? '', participants: personal ? [defaultPayerId] : initialValue?.participants ?? [], operationId: crypto.randomUUID(), marketId: initialValue?.marketId ?? '', purchasedOn: initialValue?.purchasedOn ?? '', uncertain: false }

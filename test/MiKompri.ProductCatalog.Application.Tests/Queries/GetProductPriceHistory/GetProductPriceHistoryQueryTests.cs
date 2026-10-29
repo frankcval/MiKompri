@@ -19,8 +19,8 @@ public class GetProductPriceHistoryQueryTests
         var product = new CatalogProduct(new ProductName("Leche Entera"), "l");
         var market = new Market("Mercado Central", null);
 
-        var first = new ProductPriceRecord(product.Id, market.Id, new DateOnly(2026, 8, 1), new Money(1.35m, "EUR"));
-        var second = new ProductPriceRecord(product.Id, market.Id, new DateOnly(2026, 8, 5), new Money(1.45m, "EUR"));
+        var first = new ProductPriceRecord(product.Id, market.Id, new DateOnly(2026, 8, 1), new Money(1.35m, "EUR"), new DateOnly(2026, 8, 6));
+        var second = new ProductPriceRecord(product.Id, market.Id, new DateOnly(2026, 8, 5), new Money(1.45m, "EUR"), new DateOnly(2026, 8, 6));
 
         catalogRepositoryMock
             .Setup(x => x.GetByIdAsync(product.Id, It.IsAny<CancellationToken>()))

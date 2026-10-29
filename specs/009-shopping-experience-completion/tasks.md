@@ -16,7 +16,7 @@ Estado al 2026-10-29: implementación funcional y verificaciones automatizadas s
 
 T010: mediciones completas publicadas en [performance](evidence/performance.md); pendientes presupuesto LCP/Añadir y revisión manual completa. T011: piloto personal con una cuenta real realizado; siguen pendientes segunda cuenta/roles, lector, zoom completo y dispositivo. El preflight de la suite integrada sigue sin todos sus recursos; no se presenta como test aprobado.
 
-Revisión final: T009 se reabre al ajustar la carga de diálogos; componentes finales 113/113 y regresiones de carga lenta 6/6 acreditados. Faltan la matriz completa de ese candidato y su empaquetado final; los runs anteriores permanecen documentados y no se reutilizan como si fueran del último cambio.
+Revisión de correcciones: el código 13d119f ya obtuvo cinco workflows satisfactorios por PR #57, incluida la matriz Web 114/114 y Docker; el texto anterior se había escrito antes de ese resultado. Las correcciones de fechas introducen otro candidato: T009 sigue abierta hasta acreditar sus tests afectados, lint/typecheck/build, EF sin cambios y los cinco workflows sobre el nuevo HEAD. Evidencia vigente y decisión en [review-corrections](evidence/review-corrections.md). No se exige cerrar T010/T011 para documentar la verificación técnica de T009, ni se presentan como satisfechas.
 
 Definition of Done: todos los FR/SC acreditados, migración compatible, autorización negativa probada, cero duplicación financiera por reintento, Gastos independiente, suites obligatorias satisfactorias y aceptación móvil/integrada completa. Documentar un gate pendiente no lo satisface. No afirmar cierre global mientras T010/T011 u otro criterio siga pendiente.
 

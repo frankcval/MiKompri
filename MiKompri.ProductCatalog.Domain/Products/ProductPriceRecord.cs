@@ -15,7 +15,7 @@ public class ProductPriceRecord : Entity
     {
     }
 
-    public ProductPriceRecord(Guid catalogProductId, Guid marketId, DateOnly effectiveDate, Money price)
+    public ProductPriceRecord(Guid catalogProductId, Guid marketId, DateOnly effectiveDate, Money price, DateOnly today)
     {
         if (catalogProductId == Guid.Empty)
         {
@@ -27,7 +27,6 @@ public class ProductPriceRecord : Entity
             throw new DomainValidationException("marketId es obligatorio.");
         }
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
         if (effectiveDate > today)
         {
             throw new DomainValidationException("effectiveDate no puede ser futura.");

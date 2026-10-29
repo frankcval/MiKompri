@@ -17,10 +17,10 @@ namespace MiKompri.ShoppingList.Domain.Entities
         public DateOnly? PurchasedOn { get; private set; }
         public Guid Version { get; private set; } = Guid.NewGuid();
 
-        public void SetPurchaseDetails(Guid? marketId, DateOnly? purchasedOn)
+        public void SetPurchaseDetails(Guid? marketId, DateOnly? purchasedOn, DateOnly today)
         {
             if (marketId == Guid.Empty) throw new InvalidOperationException("El mercado no es válido.");
-            if (purchasedOn > DateOnly.FromDateTime(DateTime.UtcNow)) throw new InvalidOperationException("La fecha de compra no puede ser futura.");
+            if (purchasedOn > today) throw new InvalidOperationException("La fecha de compra no puede ser futura.");
             MarketId = marketId;
             PurchasedOn = purchasedOn;
             Version = Guid.NewGuid();

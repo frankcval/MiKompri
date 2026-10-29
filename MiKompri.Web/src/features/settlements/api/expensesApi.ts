@@ -1,3 +1,4 @@
+import { localDateHeaders } from '../../../shared/dates/localDate'
 import { responseError } from '../../../shared/api/request'
 export type RegisterExpenseInput = {
   realPaidPrice: number
@@ -31,6 +32,7 @@ export async function registerItemExpense(
     {
       method: 'POST',
       headers: {
+        ...localDateHeaders(),
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',

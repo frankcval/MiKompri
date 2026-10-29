@@ -14,13 +14,14 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
         private readonly IGroupAuthorizationService _groupAuthorization;
         private readonly ActiveMembershipPolicy _activeMembershipPolicy;
         private readonly PurchaseOperationService? _operations;
+        private readonly ICurrentDateProvider _dates;
 
         public RegisterItemExpenseCommandHandler(
             IPurchaseListRepository repository,
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUser,
             IGroupAuthorizationService groupAuthorization,
-            ActiveMembershipPolicy activeMembershipPolicy, PurchaseOperationService? operations = null)
+            ActiveMembershipPolicy activeMembershipPolicy, PurchaseOperationService? operations = null, ICurrentDateProvider? dates = null)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
@@ -28,6 +29,7 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
             _groupAuthorization = groupAuthorization;
             _activeMembershipPolicy = activeMembershipPolicy;
             _operations = operations;
+            _dates = dates ?? new SystemCurrentDateProvider();
         }
 
         public async Task<Guid> Handle(RegisterItemExpenseCommand request, CancellationToken cancellationToken)
@@ -70,7 +72,7 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
             }
 
             var expense = item.RegisterExpense(request.PaidBy, request.PurchasedBy, request.RealPaidPrice, request.Participants, request.Currency);
-            expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn);
+            expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn, _dates.Today);
             list.Touch();
             if (_operations is not null) await _operations.RecordAsync(request.OperationId, _currentUser.UserId, list.Id, item.Id, expense.Id, hash, cancellationToken);
 

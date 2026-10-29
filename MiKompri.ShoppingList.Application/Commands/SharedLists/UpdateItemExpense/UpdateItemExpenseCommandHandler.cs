@@ -12,19 +12,21 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpen
         private readonly ICurrentUserService _currentUser;
         private readonly IGroupAuthorizationService _groupAuthorization;
         private readonly Services.ActiveMembershipPolicy? _activeMembership;
+        private readonly ICurrentDateProvider _dates;
 
         public UpdateItemExpenseCommandHandler(
             IPurchaseListRepository repository,
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUser,
             IGroupAuthorizationService groupAuthorization,
-            Services.ActiveMembershipPolicy? activeMembership = null)
+            Services.ActiveMembershipPolicy? activeMembership = null, ICurrentDateProvider? dates = null)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
             _groupAuthorization = groupAuthorization;
             _activeMembership = activeMembership;
+            _dates = dates ?? new Services.SystemCurrentDateProvider();
         }
 
         public async Task Handle(UpdateItemExpenseCommand request, CancellationToken cancellationToken)
@@ -57,7 +59,7 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpen
                 throw new ResourceConflictException("El gasto ha cambiado. Actualiza sus datos antes de corregirlo.");
             Services.PurchaseOperationService.Validate(request.RealPaidPrice, request.Currency);
             item.UpdateExpense(request.ExpenseId, request.PaidBy, request.PurchasedBy, request.RealPaidPrice, request.Participants, request.Currency);
-            if (request.MarketSpecified || request.PurchasedOnSpecified) expense.SetPurchaseDetails(request.MarketSpecified ? request.MarketId : expense.MarketId, request.PurchasedOnSpecified ? request.PurchasedOn : expense.PurchasedOn);
+            if (request.MarketSpecified || request.PurchasedOnSpecified) expense.SetPurchaseDetails(request.MarketSpecified ? request.MarketId : expense.MarketId, request.PurchasedOnSpecified ? request.PurchasedOn : expense.PurchasedOn, _dates.Today);
             list.Touch();
 
             await _repository.AddSharedListAuditEventAsync(new SharedListAuditEvent(list.Id, _currentUser.UserId, "ExpenseUpdated", nameof(ItemExpenseRecord), request.ExpenseId));

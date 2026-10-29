@@ -1,3 +1,4 @@
+import { useLocalToday } from '../../../shared/dates/useLocalToday'
 import { useState } from 'react'
 import { Button, Field, Input, Select } from '@fluentui/react-components'
 import { useQueryClient } from '@tanstack/react-query'
@@ -51,7 +52,7 @@ export function MarketManagement({ markets }: { markets: Market[] }) {
 
 export function RegisterPriceForm({ product, markets }: { product: CatalogProduct; markets: Market[] }) {
   const { write } = useListSession(); const client = useQueryClient()
-  const [today] = useState(() => new Date().toISOString().slice(0, 10))
+  const today = useLocalToday()
   const [marketId, setMarketId] = useState(''); const [amount, setAmount] = useState(''); const [date, setDate] = useState(today)
   const [pending, setPending] = useState(false); const [error, setError] = useState(''); const [success, setSuccess] = useState('')
   return <form className={ui.form} aria-label="Registrar precio de catálogo" onSubmit={async event => {

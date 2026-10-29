@@ -28,6 +28,7 @@ Completar preparación, compra y consulta posterior en listas personales y compa
 - FR-006 Unificar búsqueda/selección; alta contextual nombre/unidad, conservar producto creado si incorporación falla y no repetir alta confirmada.
 - FR-007 Marcar ofrece captura opcional sin obligar a Gastos; omitir/cancelar/error no desmarca ni pierde contexto al completar el último ítem.
 - FR-008 Un registro canónico de compra/gasto; precio real total positivo de hasta dos decimales, EUR, mercado opcional y fecha de compra opcional separada de auditoría.
+  PurchasedOn y EffectiveDate son fechas civiles del usuario. «Hoy» se calcula desde el reloj del servidor y el offset actual comunicado por el cliente; ausencia de contexto conserva UTC. El dominio recibe ese hoy explícito. Defaults/máximos de formularios usan fecha local, también al cambiar de día; auditoría permanece UTC. Detalle del header y límites en contratos/api.md.
 - FR-009 Personal: propietario/comprador/pagador resueltos por identidad, sin participantes colaborativos. Compartida: pagador obligatorio, comprador opcional, participantes activos elegidos explícitamente y permisos 005/008.
 - FR-010 Idempotencia persistente por operación: mismo payload devuelve mismo ID; cambio de payload con misma operación devuelve 409; compras distintas explícitas siguen permitidas.
 - FR-011 Gastos independiente: consulta/corrección/registro conservados; desmarcar no toca saldos. Corrección con versión evita sobrescritura silenciosa; clientes legacy siguen compatibles.
