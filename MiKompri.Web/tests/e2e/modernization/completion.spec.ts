@@ -111,6 +111,13 @@ test('@smoke 009 product search selects directly and creates only from explicit 
   await dialog.getByRole('button', { name: 'Crear producto aquí' }).click()
   await expect(dialog.getByLabel('Nombre del producto')).toHaveValue('Café')
   expect(fixture.calls.filter(c => c.method === 'POST')).toHaveLength(0)
+  // Fluent changes both buttons' colors when their appearance switches. Audit
+  // the settled state instead of sampling intermediate transition colors.
+  await dialog.evaluate(async element => {
+    await Promise.all(element.getAnimations({ subtree: true })
+      .filter(animation => animation.effect?.getComputedTiming().iterations !== Infinity)
+      .map(animation => animation.finished.catch(() => undefined)))
+  })
   const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()
   const violations = axe.violations.map(v => v.id === 'aria-hidden-focus' ? { ...v, nodes: v.nodes.filter(n => !/^<i\s[^>]*data-tabster-dummy=/.test(n.html)) } : v).filter(v => v.nodes.length)
   expect(violations).toEqual([])
