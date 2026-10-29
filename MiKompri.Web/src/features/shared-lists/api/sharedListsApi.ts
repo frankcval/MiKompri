@@ -4,11 +4,17 @@ export type SharedListSummary = {
   name: string
   groupId: string
   description?: string | null
+  createdAt?: string
+  updatedAt?: string | null
+  status?: string
+  items?: SharedListItem[]
 }
+
+export type SharedListItem = { id: string; productName: string; quantity: number; isPurchased: boolean; productPrice?: number | null; addedBy?: string }
 
 export type SharedListDetail = SharedListSummary & {
   status?: string
-  items: { id: string; productName: string; quantity: number; isPurchased: boolean; productPrice?: number | null; addedBy?: string }[]
+  items: SharedListItem[]
 }
 
 export async function getSharedListById(baseUrl: string, token: string, listId: string): Promise<SharedListDetail> {

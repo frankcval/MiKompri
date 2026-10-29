@@ -30,6 +30,7 @@ namespace MiKompri.ShoppingList.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             services.AddScoped<ActiveMembershipPolicy>();
+            services.AddScoped<PurchaseOperationService>();
 
             return services;
         }

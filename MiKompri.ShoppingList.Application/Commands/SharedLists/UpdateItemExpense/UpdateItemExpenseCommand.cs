@@ -10,5 +10,6 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpen
         Guid? PurchasedBy,
         decimal RealPaidPrice,
         string? Currency,
-        IReadOnlyCollection<Guid> Participants) : IRequest;
+        IReadOnlyCollection<Guid> Participants,
+        Guid? ExpectedVersion = null, Guid? MarketId = null, DateOnly? PurchasedOn = null, bool MarketSpecified = false, bool PurchasedOnSpecified = false) : IRequest;
 }

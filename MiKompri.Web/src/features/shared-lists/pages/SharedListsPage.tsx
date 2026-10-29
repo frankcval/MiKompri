@@ -8,6 +8,8 @@ import { CreateListDialog } from '../../shopping-lists/components/CreateListDial
 import { env } from '../../../shared/config/env'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import ui from '../../../shared/ui/AppSurface.module.css'
+import { visibleLists } from '../../shopping-lists/listPresentation'
+import { ListOverview, ListOverviewControls } from '../../shopping-lists/components/ListOverview'
 
 export function SharedListsPage() {
   const { account, token } = useListSession()
@@ -29,12 +31,14 @@ export function SharedListsPage() {
   </section>
 }
 function GroupLists({ group }: { group: { id: string; name: string } }) {
+  const [params] = useSearchParams()
   const { account, token, write } = useListSession()
   const client = useQueryClient()
   const navigate = useNavigate()
   const key = ['shared-lists', group.id, account?.homeAccountId]
   const lists = useQuery({ queryKey: key, enabled: Boolean(account), retry: false,
     queryFn: async () => getSharedListsByGroup(env.shoppingListApiBaseUrl, await token(), group.id) })
+  const visible = visibleLists(lists.data ?? [], params.get('view') === 'history', params.get('sort') ?? 'newest')
   return <section className={ui.stack} aria-label={`Listas de ${group.name}`}>
     <div className={ui.detailHeader}><h2>Listas de {group.name}</h2>
       <CreateListDialog label="Crear lista compartida" title={`Crear lista en ${group.name}`} draftScope={group.id} disabled={!lists.isSuccess} onCreate={async name => {
@@ -44,9 +48,12 @@ function GroupLists({ group }: { group: { id: string; name: string } }) {
         } catch (cause) { if ((cause as { status?: number }).status === 403) throw new Error('No tienes permiso para crear listas en este grupo.'); throw new Error('No fue posible crear la lista. Revisa el nombre e inténtalo de nuevo.') }
       }} />
     </div>
+    <ListOverviewControls />
     {lists.isPending ? <Spinner label="Cargando listas compartidas" /> : lists.isError ? <div role="alert">{(lists.error as { status?: number }).status === 403 ? 'No tienes permisos para consultar este grupo.' : 'No fue posible cargar las listas compartidas.'}<Button onClick={() => void lists.refetch()}>Reintentar</Button></div> : <>
       {!lists.data.length ? <p>Este grupo todavía no tiene listas. Crea la primera lista compartida.</p> : null}
-      {lists.data.map(list => <div key={list.id} className={ui.panel}><Link className={ui.listLink} to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(group.id)}`}>{list.name}</Link>
+      {lists.data.length > 0 && !visible.length ? <p>No hay listas compartidas en esta vista. Cambia entre Activas e Historial.</p> : null}
+      {visible.map(list => <div key={list.id} className={ui.panel}><Link className={ui.listLink} to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(group.id)}`}>{list.name}</Link>
+        <p><ListOverview list={list} /></p>
         <Link to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(group.id)}&tab=expenses`}>Ver reparto de gastos de {list.name}</Link>
       </div>)}
     </>}

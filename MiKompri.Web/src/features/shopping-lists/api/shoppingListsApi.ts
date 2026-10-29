@@ -6,6 +6,9 @@ export type PersonalListSummary = {
   name: string
   ownerId?: string
   groupId?: string | null
+  createdAt?: string
+  updatedAt?: string | null
+  status?: string
   items?: { id: string; productName: string; quantity: number; productPrice?: number | null; isPurchased: boolean }[]
 }
 

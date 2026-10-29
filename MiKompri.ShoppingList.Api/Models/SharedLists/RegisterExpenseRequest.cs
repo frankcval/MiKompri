@@ -7,5 +7,8 @@ namespace MiKompri.ShoppingList.Api.Models.SharedLists
         public decimal RealPaidPrice { get; set; }
         public string Currency { get; set; } = "EUR";
         public List<Guid> Participants { get; set; } = new();
+        public Guid? OperationId { get; set; }
+        public Guid? MarketId { get; set; }
+        public DateOnly? PurchasedOn { get; set; }
     }
 }

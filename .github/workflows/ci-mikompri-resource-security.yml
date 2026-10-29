@@ -1,7 +1,7 @@
 name: CI - Resource authorization and persistence
 on:
   push:
-    branches: [main, develop, 'feature/*', '007-web-react-client', '008-web-ux-modernization']
+    branches: [main, develop, 'feature/*', '007-web-react-client', '008-web-ux-modernization', '009-shopping-experience-completion']
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -25,6 +25,9 @@ jobs:
       - run: dotnet test test/MiKompri.ShoppingList.Domain.Tests/MiKompri.ShoppingList.Domain.Tests.csproj --configuration Release
       - run: dotnet test test/MiKompri.ShoppingList.Application.Tests/MiKompri.ShoppingList.Application.Tests.csproj --configuration Release
       - run: dotnet test test/MiKompri.ShoppingList.Api.Tests/MiKompri.ShoppingList.Api.Tests.csproj --configuration Release --logger "trx;LogFileName=relational.trx"
+        env:
+          MIKOMPRI_TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=ci-only-local;Pooling=false
+      - run: dotnet test test/MiKompri.ProductCatalog.Api.Tests/MiKompri.ProductCatalog.Api.Tests.csproj --configuration Release --logger "trx;LogFileName=catalog-relational.trx"
         env:
           MIKOMPRI_TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=ci-only-local;Pooling=false
       - run: docker build -f MiKompri.ShoppingList.Api/Dockerfile -t mikompri-shoppinglist:ci .

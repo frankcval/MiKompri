@@ -27,6 +27,7 @@ beforeEach(() => {
   detailFailure = false
   recorded = false
   fetchMock = vi.fn(async (url: string, _init?: RequestInit) => {
+    if (url.includes('/markets')) return Response.json([])
     if (url.endsWith('/users/me')) return Response.json({ id: anaId, displayName: 'Ana' })
     if (url.endsWith('/members')) return Response.json(forbidden ? {} : members, { status: forbidden ? 403 : 200 })
     if (url.endsWith('/summary')) return Response.json({ sharedListId: listId, balances: recorded ? [
@@ -69,7 +70,7 @@ describe('reparto de gastos con personas e ítems reales', () => {
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(writes).toHaveLength(1)
     expect(writes[0][0]).toContain(`/shared-lists/${listId}/items/${itemId}/expenses`)
-    expect(JSON.parse(writes[0][1].body)).toEqual({ realPaidPrice: 12, paidBy: anaId, purchasedBy: null, participants: [anaId, luisId], currency: 'EUR' })
+    expect(JSON.parse(writes[0][1].body)).toEqual({ realPaidPrice: 12, paidBy: anaId, purchasedBy: null, participants: [anaId, luisId], currency: 'EUR', operationId: expect.stringMatching(/^[0-9a-f-]{36}$/), marketId: null, purchasedOn: null })
     expect(screen.getByText(/Luis debe pagar.*a Ana/)).toBeInTheDocument()
     expect(document.body.textContent).not.toContain(anaId)
     expect(document.body.textContent).not.toContain(luisId)

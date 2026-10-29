@@ -41,6 +41,14 @@ Usar `.env.example` como plantilla para variables locales/cloud del frontend.
 
 La entrada autenticada es `/lists`, con filtros personales/compartidas; las rutas anteriores siguen disponibles. Compra reversible, edición, alta de producto dentro de la lista, personas/roles e historial de gastos comparten la navegación nueva. El backend actualizado es necesario: [contratos](../specs/008-web-ux-modernization/contracts/api-and-permissions.md).
 
+## Compra completa 009
+
+Mis listas, índice personal y listas de grupo ofrecen Activas/Historial y orden conservado en URL. El total estimado multiplica precio unitario por cantidad y avisa de precios desconocidos; una lista no vacía completada pasa al historial sin cerrarse. Desmarcar la devuelve a activas y conserva sus gastos.
+
+Añadir productos muestra resultados seleccionables y creación contextual con nombre precompletado. Catálogo permite buscar/editar productos, gestionar mercados y registrar precios manuales para consultar su historial. Esos precios no se crean automáticamente al registrar compras.
+
+Después de marcar se pueden omitir o registrar datos reales (importe total, mercado y fecha opcionales, pagador/comprador/participantes según contexto). Gastos permanece accesible por separado, también en personales; se utiliza el mismo registro y una operación persistente para reintentar sin duplicación. Requiere backend/migración 009; contratos shared legacy continúan compatibles. [Validación](../specs/009-shopping-experience-completion/evidence/validation.md) y [guía QA](../specs/009-shopping-experience-completion/quickstart.md).
+
 `npm test` ejecuta las pruebas locales; `npm run test:e2e` usa fixtures controlados y no certifica Entra. Para tres motores instalar `npx playwright install chromium firefox webkit` y definir `PLAYWRIGHT_ALL_BROWSERS=1`. Se ejecutan como máximo dos workers.
 
 `npm run test:e2e:integrated` exige un entorno real y falla si faltan URL, dos tokens y dos archivos de sesión. Variables: `MIKOMPRI_INTEGRATED_URL`, `MIKOMPRI_OWNER_TOKEN`, `MIKOMPRI_MEMBER_TOKEN`, `MIKOMPRI_OWNER_STORAGE`, `MIKOMPRI_MEMBER_STORAGE`; URLs API opcionales `MIKOMPRI_SHOPPING_API`, `MIKOMPRI_USERS_API`, `MIKOMPRI_CATALOG_API`. Los archivos privados contienen el storageState de Playwright y un objeto `sessionStorage` adicional exportado por la persona después de autenticarse con Entra, porque MSAL usa almacenamiento por pestaña. No guardar estos archivos en Git ni compartir tokens en el chat. Usar un tenant y datos desechables; los grupos creados por las pruebas quedan identificados como QA porque no existe API de borrado de grupos.

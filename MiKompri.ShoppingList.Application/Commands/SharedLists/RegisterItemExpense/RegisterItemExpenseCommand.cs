@@ -9,5 +9,6 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
         Guid? PurchasedBy,
         decimal RealPaidPrice,
         string? Currency,
-        IReadOnlyCollection<Guid> Participants) : IRequest<Guid>;
+        IReadOnlyCollection<Guid> Participants,
+        Guid? OperationId = null, Guid? MarketId = null, DateOnly? PurchasedOn = null) : IRequest<Guid>;
 }

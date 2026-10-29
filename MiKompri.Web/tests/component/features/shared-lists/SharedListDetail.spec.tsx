@@ -4,7 +4,7 @@ import { FluentProvider } from '@fluentui/react-components'
 import { appTheme } from '../../../../src/shared/ui/theme'
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SharedListDetailPage } from '../../../../src/features/shared-lists/pages/SharedListDetailPage'
@@ -50,7 +50,7 @@ describe('detalle compartido con contexto', () => {
   it('añade con contrato compartido y ofrece estado de compra autorizado', async () => {
     mount()
     await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
-    fireEvent.change(await screen.findByRole('combobox', { name: 'Producto' }), { target: { value: productId } })
+    await user.click(await screen.findByRole('button', { name: 'Arroz (unidad)' }))
     await user.click(screen.getByRole('button', { name: 'Agregar ítem' }))
     await screen.findByText('Arroz se agregó a esta lista.')
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')

@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - '009-shopping-experience-completion'
       - 'feature/*'
       - 'fix/*'
       - 'hotfix/*'

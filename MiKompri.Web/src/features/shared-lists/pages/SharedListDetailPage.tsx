@@ -17,6 +17,7 @@ import { fetchMyProfile } from '../../profile/api/profileApi'
 import { env } from '../../../shared/config/env'
 import { describeError } from '../../../shared/api/request'
 import ui from '../../../shared/ui/AppSurface.module.css'
+import { PurchaseCaptureDialog as PurchaseCapture } from '../../settlements/components/PurchaseCaptureDialog'
 
 const SettlementPage = lazy(() => import('../../settlements/pages/SettlementPage').then(module => ({ default: module.SettlementPage })))
 
@@ -30,6 +31,9 @@ export function SharedListDetailPage() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [pendingIds, setPendingIds] = useState<string[]>([])
+  const [capture, setCapture] = useState('')
+  const captureTrigger = useRef<HTMLElement | null>(null)
+  const closeCapture = () => { setCapture(''); requestAnimationFrame(() => { if (captureTrigger.current?.isConnected) captureTrigger.current.focus() }) }
   const pending = useRef(new Set<string>())
   const key = ['shared-list-detail', listId, account?.homeAccountId]
   const detail = useQuery({ queryKey: key, enabled: Boolean(account && listId), retry: false, queryFn: async () => getSharedListById(env.shoppingListApiBaseUrl, await token(), listId) })
@@ -51,13 +55,13 @@ export function SharedListDetailPage() {
   return <section className={ui.page}><Link to={back}>Volver a listas compartidas</Link>
     {detail.isPending ? <><h1>Lista compartida</h1><Spinner label="Cargando lista…" /></> : detail.isError ? <><h1>Lista no disponible</h1><p role="alert">{describeError(detail.error)}</p><Button onClick={() => void detail.refetch()}>Reintentar</Button></> : <section className={ui.shoppingDetail}>
       <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{detail.data.name}</h1><p>Lista compartida{group ? ` · ${group.name}` : ''}{!active ? ' · Cerrada' : ''}</p></div>
-        {active ? <AddProductsDialog key={`${account.homeAccountId}:${listId}`} returnTo={`/shared-lists/${listId}?tab=${tab}`} onAdd={async item => {
+        {active ? <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${account.homeAccountId}:${listId}`} returnTo={`/shared-lists/${listId}?tab=${tab}`} onAdd={async item => {
           await write(t => addSharedListItem(env.shoppingListApiBaseUrl, t, listId, { productId: item.productId, name: item.productName, quantity: item.quantity, estimatedPrice: item.price })); await refresh()
         }} /> : null}
       </div>
       {manager && active ? <div className={ui.actions}><RenameListAction name={detail.data.name} accountKey={account.homeAccountId} scope={listId} onRename={async name => { await write(t => updateSharedList(env.shoppingListApiBaseUrl, t, listId, name)); await refresh() }} />
         <ConfirmAction label="Cerrar lista" description="La lista quedará disponible para consulta. Sus gastos se conservarán." onConfirm={async () => { await write(t => closeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh() }} />
-        <ConfirmAction label="Eliminar lista" description="Solo se puede eliminar una lista sin gastos asociados. Si tiene gastos, ciérrala para conservar las cuentas." onConfirm={async () => { await write(t => removeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh(); navigate(back) }} />
+        <ConfirmAction label="Eliminar lista" description={`Se eliminará «${detail.data.name}» si no tiene gastos asociados. Si tiene gastos, ciérrala para conservar las cuentas.`} onConfirm={async () => { await write(t => removeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh(); navigate(back) }} />
       </div> : null}
       <TabList selectedValue={tab} aria-label="Vistas de la lista" onTabSelect={(_, data) => { const next = new URLSearchParams(params); next.set('tab', String(data.value)); setParams(next) }}>
         <Tab id="shopping-tab" value="shopping" aria-controls="shopping-panel">Compra</Tab><Tab id="expenses-tab" value="expenses" aria-controls="expenses-panel">Gastos</Tab><Tab id="people-tab" value="people" aria-controls="people-panel">Personas</Tab>
@@ -66,15 +70,20 @@ export function SharedListDetailPage() {
         {error ? <p role="alert">{error} <Button onClick={() => void detail.refetch()}>Actualizar lista</Button></p> : null}{message ? <p role="status">{message}</p> : null}
         <PurchaseItems items={detail.data.items} pendingIds={pendingIds} authorName={id => memberName(members.data ?? [], id)} onToggle={active ? async (id, value) => {
           if (pending.current.has(id)) return
+          if (value) captureTrigger.current = document.activeElement as HTMLElement | null
           pending.current.add(id); setPendingIds([...pending.current]); setError(''); setMessage('')
-          try { await write(t => setPurchaseState(env.shoppingListApiBaseUrl, t, listId, id, value)); await refresh(); setMessage(value ? 'Producto marcado como comprado.' : 'Producto pendiente de nuevo. Los gastos se conservan.') }
+          try { await write(t => setPurchaseState(env.shoppingListApiBaseUrl, t, listId, id, value)); if (value) setCapture(id); await refresh(); setMessage(value ? 'Producto marcado como comprado.' : 'Producto pendiente de nuevo. Los gastos se conservan.') }
           catch (cause) { setError(describeError(cause)) }
           finally { pending.current.delete(id); setPendingIds([...pending.current]) }
-        } : undefined} actions={active ? item => manager || item.addedBy === profile.data?.id ? <ProductOptions name={item.productName}>
+        } : undefined} actions={active ? item => <ProductOptions name={item.productName}>
+          <Button onClick={event => { captureTrigger.current = event.currentTarget; setCapture(item.id) }}>Datos de compra de {item.productName}</Button>
+          {manager || item.addedBy === profile.data?.id ? <>
           <EditItemAction item={item} accountKey={account.homeAccountId} onEdit={async (quantity, price) => { await write(t => updateSharedItem(env.shoppingListApiBaseUrl, t, listId, item.id, quantity, price)); await refresh() }} />
           <ConfirmAction label={`Eliminar ${item.productName}`} text="Eliminar" description="Se eliminará este producto si no tiene gastos asociados." onConfirm={async () => { await write(t => removeSharedItem(env.shoppingListApiBaseUrl, t, listId, item.id)); await refresh(); document.getElementById('main-content')?.focus() }} />
-        </ProductOptions> : null : undefined} />
+          </> : null}
+        </ProductOptions> : undefined} />
       </div> : tab === 'people' ? <div id="people-panel" role="tabpanel" aria-labelledby="people-tab"><GroupPeople groupId={groupId} /></div> : <div id="expenses-panel" role="tabpanel" aria-labelledby="expenses-tab"><Suspense fallback={<Spinner label="Cargando reparto…" />}><SettlementPage key={listId} sharedListId={listId} /></Suspense></div>}
+      {detail.data.items.find(item => item.id === capture) ? <PurchaseCapture key={`${account.homeAccountId}:${listId}:${capture}`} listId={listId} groupId={groupId} item={detail.data.items.find(item => item.id === capture)!} restoreFocusRef={captureTrigger} onClose={closeCapture} /> : null}
     </section>}
   </section>
 }

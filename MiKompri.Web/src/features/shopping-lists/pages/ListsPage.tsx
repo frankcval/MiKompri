@@ -10,6 +10,9 @@ import { env } from '../../../shared/config/env'
 import { describeError } from '../../../shared/api/request'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import ui from '../../../shared/ui/AppSurface.module.css'
+import { visibleLists } from '../listPresentation'
+import { ListOverview, ListOverviewControls } from '../components/ListOverview'
+import type { SharedListSummary } from '../../shared-lists/api/sharedListsApi'
 
 export function ListsPage() {
   const { account, token, write } = useListSession()
@@ -20,7 +23,7 @@ export function ListsPage() {
   const personal = useQuery({ queryKey: ['personal-lists', account?.homeAccountId], enabled: Boolean(account), retry: false, queryFn: async () => getMyPersonalLists(env.shoppingListApiBaseUrl, await token()) })
   const groups = useQuery({ queryKey: ['groups', account?.homeAccountId], enabled: Boolean(account), retry: false, queryFn: async () => getMyGroups(env.usersApiBaseUrl, await token()) })
   const shared = useQuery({ queryKey: ['all-lists', account?.homeAccountId, groups.data?.map(g => g.id)], enabled: Boolean(account && groups.isSuccess), retry: false, queryFn: async () => {
-    const entries: { id: string; name: string; groupId: string; groupName: string }[] = []
+    const entries: (SharedListSummary & { groupName: string })[] = []
     const failures: string[] = []
     const work = [...groups.data!]
     await Promise.all(Array.from({ length: Math.min(4, work.length) }, async () => {
@@ -33,21 +36,25 @@ export function ListsPage() {
   } })
   const showPersonal = filter !== 'shared'
   const showShared = filter !== 'personal'
-  const count = (showPersonal ? personal.data?.length ?? 0 : 0) + (showShared ? shared.data?.entries.length ?? 0 : 0)
+  const entries = visibleLists([
+    ...(showPersonal ? (personal.data ?? []).map(list => ({ ...list, context: 'Personal', to: `/personal-lists/${list.id}` })) : []),
+    ...(showShared ? (shared.data?.entries ?? []).map(list => ({ ...list, context: list.groupName, to: `/shared-lists/${list.id}?groupId=${encodeURIComponent(list.groupId)}` })) : []),
+  ], params.get('view') === 'history', params.get('sort') ?? 'newest')
+  const count = entries.length
   const complete = (!showPersonal || personal.isSuccess) && (!showShared || (groups.isSuccess && shared.isSuccess && !shared.data.failures.length))
   return <section className={ui.page}><div className={ui.detailHeader}><PageHeader title="Mis listas" description="Prepara tu próxima compra o retoma la que ya está en marcha." />
     <CreateListDialog title="Crear lista personal" initialOpen={params.get('create') === '1'} onCreate={async name => { const id = await write(t => createPersonalList(env.shoppingListApiBaseUrl, t, { name })); await client.invalidateQueries({ queryKey: ['personal-lists'] }); navigate(`/personal-lists/${id}`) }} />
   </div>
-    <nav className={ui.filters} aria-label="Filtrar listas">{[['all', 'Todas'], ['personal', 'Personales'], ['shared', 'Compartidas']].map(([value, label]) => <Link key={value} aria-current={filter === value ? 'page' : undefined} to={`/lists?filter=${value}`}>{label}</Link>)}</nav>
+    <nav className={ui.filters} aria-label="Filtrar listas">{[['all', 'Todas'], ['personal', 'Personales'], ['shared', 'Compartidas']].map(([value, label]) => { const next = new URLSearchParams(params); next.set('filter', value); return <Link key={value} aria-current={filter === value ? 'page' : undefined} to={`/lists?${next}`}>{label}</Link> })}</nav>
+    <ListOverviewControls />
     <div className={ui.actions}><Link to="/shared-lists">Crear una lista compartida</Link><Link to="/groups">Ver mis grupos</Link></div>
     {showPersonal && personal.isError ? <p role="alert">{describeError(personal.error)} <Button onClick={() => void personal.refetch()}>Reintentar personales</Button></p> : null}
     {showShared && groups.isError ? <p role="alert">No se pudieron cargar tus grupos. <Button onClick={() => void groups.refetch()}>Reintentar grupos</Button></p> : null}
     {showShared && (shared.isError || Boolean(shared.data?.failures.length)) ? <p role="alert">Algunas listas compartidas no se han podido cargar. Las listas que ves pueden estar incompletas. <Button onClick={() => void shared.refetch()}>Reintentar compartidas</Button></p> : null}
     {(showPersonal && personal.isPending) || (showShared && (groups.isPending || (groups.isSuccess && shared.isPending))) ? <Spinner label="Cargando tus listas…" /> : null}
     <div className={ui.listGrid}>
-      {showPersonal ? personal.data?.map(list => <Link className={ui.listCard} key={list.id} to={`/personal-lists/${list.id}`}><span className={ui.listContext}>Personal</span><strong>{list.name}</strong><span>{list.items?.length ?? 0} productos · {list.items?.filter(i => !i.isPurchased).length ?? 0} pendientes</span></Link>) : null}
-      {showShared ? shared.data?.entries.map(list => <Link className={ui.listCard} key={list.id} to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(list.groupId)}`}><span className={ui.listContext}>{list.groupName}</span><strong>{list.name}</strong><span>Compra compartida</span></Link>) : null}
+      {entries.map(list => <Link className={ui.listCard} key={list.id} to={list.to}><span className={ui.listContext}>{list.context}</span><strong>{list.name}</strong><ListOverview list={list} /></Link>)}
     </div>
-    {complete && !count ? <div className={ui.feedback}><h2>Tu próxima compra empieza aquí</h2><p>Crea una lista para añadir lo que necesitas.</p></div> : null}
+    {complete && !count ? <div className={ui.feedback}><h2>{params.get('view') === 'history' ? 'Sin listas en el historial' : 'Sin listas activas'}</h2><p>{params.get('view') === 'history' ? 'Aquí encontrarás tus compras completadas y listas cerradas.' : 'Crea una lista o consulta tus compras anteriores en Historial.'}</p></div> : null}
   </section>
 }

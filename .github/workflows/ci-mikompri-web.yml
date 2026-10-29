@@ -2,7 +2,7 @@ name: CI - MiKompri Web
 
 on:
   push:
-    branches: [main, develop, 'feature/*', 'hotfix/*', '007-web-react-client', '008-web-ux-modernization']
+    branches: [main, develop, 'feature/*', 'hotfix/*', '007-web-react-client', '008-web-ux-modernization', '009-shopping-experience-completion']
   pull_request:
     branches: [main, develop]
   workflow_dispatch:

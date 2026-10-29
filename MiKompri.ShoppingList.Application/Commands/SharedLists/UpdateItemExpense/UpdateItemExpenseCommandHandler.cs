@@ -52,7 +52,13 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.UpdateItemExpen
                 await _activeMembership.EnsureActiveMembersAsync(list.GroupId.Value, request.Participants, "Participants", cancellationToken);
             }
 
+            var expense = item.Expenses.SingleOrDefault(e => e.Id == request.ExpenseId) ?? throw new KeyNotFoundException("Gasto no encontrado.");
+            if (request.ExpectedVersion.HasValue && expense.Version != request.ExpectedVersion)
+                throw new ResourceConflictException("El gasto ha cambiado. Actualiza sus datos antes de corregirlo.");
+            Services.PurchaseOperationService.Validate(request.RealPaidPrice, request.Currency);
             item.UpdateExpense(request.ExpenseId, request.PaidBy, request.PurchasedBy, request.RealPaidPrice, request.Participants, request.Currency);
+            if (request.MarketSpecified || request.PurchasedOnSpecified) expense.SetPurchaseDetails(request.MarketSpecified ? request.MarketId : expense.MarketId, request.PurchasedOnSpecified ? request.PurchasedOn : expense.PurchasedOn);
+            list.Touch();
 
             await _repository.AddSharedListAuditEventAsync(new SharedListAuditEvent(list.Id, _currentUser.UserId, "ExpenseUpdated", nameof(ItemExpenseRecord), request.ExpenseId));
             await _unitOfWork.SaveChangesAsync(cancellationToken);

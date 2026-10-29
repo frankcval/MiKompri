@@ -17,6 +17,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Persistence.Configurations.Shared
             builder.Property(x => x.RealPaidPrice).HasColumnType("decimal(12,2)").IsRequired();
             builder.Property(x => x.Currency).HasMaxLength(3).IsRequired();
             builder.Property(x => x.CreatedAt).IsRequired();
+            builder.Property(x => x.Version).IsConcurrencyToken().HasDefaultValueSql("gen_random_uuid()");
 
             builder.HasOne<ListItem>()
                 .WithMany(x => x.Expenses)

@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - '009-shopping-experience-completion'
       - 'feature/*'
       - 'hotfix/*'
   pull_request:
@@ -45,7 +46,7 @@ jobs:
       - name: Add dotnet tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      # --- SONARCLOUD: comenzar an·lisis ---
+      # --- SONARCLOUD: comenzar an√°lisis ---
       - name: SonarCloud - Begin analysis
         if: ${{ env.SONAR_TOKEN != '' }}
         run: |
@@ -83,7 +84,7 @@ jobs:
                 /p:CoverletOutput=./TestResults/coverage.opencover.xml 
          
 
-      # --- SONARCLOUD: finalizar an·lisis (sube resultados) ---
+      # --- SONARCLOUD: finalizar an√°lisis (sube resultados) ---
       - name: SonarCloud - End analysis
         if: ${{ env.SONAR_TOKEN != '' }}
         run: |

@@ -1,4 +1,5 @@
 import { responseError } from '../../../shared/api/request'
+import { request } from '../../../shared/api/request'
 export type CatalogProduct = {
   id: string
   name: string
@@ -43,10 +44,13 @@ export type ProductPriceRecord = {
   marketId: string
   effectiveDate: string
   priceAmount: number
+  marketName?: string
+  currency?: string
 }
 
 export type ProductPriceHistory = {
   catalogProductId: string
+  catalogProductName?: string
   marketId?: string | null
   records: ProductPriceRecord[]
 }
@@ -55,8 +59,8 @@ async function parseCatalogError(response: Response): Promise<Error & { status?:
   return responseError(response)
 }
 
-export async function getCatalogProducts(productCatalogApiBaseUrl: string, accessToken: string): Promise<CatalogProduct[]> {
-  const response = await fetch(`${productCatalogApiBaseUrl}/api/v1/catalog-products`, {
+export async function getCatalogProducts(productCatalogApiBaseUrl: string, accessToken: string, search?: string): Promise<CatalogProduct[]> {
+  const response = await fetch(`${productCatalogApiBaseUrl}/api/v1/catalog-products${search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : ''}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -71,8 +75,8 @@ export async function getCatalogProducts(productCatalogApiBaseUrl: string, acces
   return (await response.json()) as CatalogProduct[]
 }
 
-export async function getMarkets(productCatalogApiBaseUrl: string, accessToken: string): Promise<Market[]> {
-  const response = await fetch(`${productCatalogApiBaseUrl}/api/v1/markets`, {
+export async function getMarkets(productCatalogApiBaseUrl: string, accessToken: string, includeInactive = false): Promise<Market[]> {
+  const response = await fetch(`${productCatalogApiBaseUrl}/api/v1/markets${includeInactive ? '?includeInactive=true' : ''}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -92,11 +96,15 @@ export async function getProductPriceHistory(
   accessToken: string,
   catalogProductId: string,
   marketId?: string,
+  from?: string,
+  to?: string,
 ): Promise<ProductPriceHistory> {
   const url = new URL(`${productCatalogApiBaseUrl}/api/v1/catalog-products/${catalogProductId}/price-history`)
   if (marketId) {
     url.searchParams.set('marketId', marketId)
   }
+  if (from) url.searchParams.set('from', from)
+  if (to) url.searchParams.set('to', to)
 
   const response = await fetch(url.toString(), {
     method: 'GET',
@@ -112,3 +120,8 @@ export async function getProductPriceHistory(
 
   return (await response.json()) as ProductPriceHistory
 }
+
+export const updateCatalogProduct = (base: string, token: string, id: string, input: CreateCatalogProductInput) => request<CatalogProduct>(`${base}/api/v1/catalog-products/${id}`, token, 'PUT', input)
+export const saveMarket = (base: string, token: string, input: { name: string; locationHint?: string | null }, id?: string) => request<Market>(`${base}/api/v1/markets${id ? `/${id}` : ''}`, token, id ? 'PUT' : 'POST', input)
+export const deactivateMarket = (base: string, token: string, id: string) => request<void>(`${base}/api/v1/markets/${id}/deactivate`, token, 'PATCH')
+export const registerProductPrice = (base: string, token: string, input: { catalogProductId: string; marketId: string; effectiveDate: string; priceAmount: number }) => request<string>(`${base}/api/v1/product-prices`, token, 'POST', input)

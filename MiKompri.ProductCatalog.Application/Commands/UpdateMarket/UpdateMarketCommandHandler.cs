@@ -22,7 +22,7 @@ public class UpdateMarketCommandHandler : IRequestHandler<UpdateMarketCommand>
         var exists = await _repository.ExistsActiveByNameAsync(request.Name.Trim(), request.MarketId, cancellationToken);
         if (exists)
         {
-            throw new InvalidOperationException("Ya existe un mercado activo con el mismo nombre.");
+            throw new MiKompri.ProductCatalog.Domain.Exceptions.ConflictException("Ya existe un mercado activo con el mismo nombre.");
         }
 
         market.UpdateDetails(request.Name, request.LocationHint);

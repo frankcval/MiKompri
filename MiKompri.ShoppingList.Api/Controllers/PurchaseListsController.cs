@@ -209,7 +209,7 @@ namespace MiKompri.ShoppingList.Api.Controllers
                 request.PurchasedBy,
                 request.RealPaidPrice,
                 request.Currency,
-                request.Participants);
+                request.Participants, request.OperationId, request.MarketId, request.PurchasedOn);
 
             var expenseId = await _mediator.Send(command, cancellationToken);
             return Created($"/api/v1/shared-lists/{sharedListId}/items/{itemId}/expenses/{expenseId}", expenseId);
@@ -227,7 +227,7 @@ namespace MiKompri.ShoppingList.Api.Controllers
                 request.PurchasedBy,
                 request.RealPaidPrice,
                 request.Currency,
-                request.Participants);
+                request.Participants, request.ExpectedVersion, request.MarketId, request.PurchasedOn, request.MarketSpecified, request.PurchasedOnSpecified);
 
             await _mediator.Send(command, cancellationToken);
             return NoContent();
