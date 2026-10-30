@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-30
 
-**Status**: Aprobada y actualizada tras el cierre de MVP-1
+**Status**: Baseline histórica; roadmap actualizado al 2026-10-30 tras integrar 008/009
 
 ---
 
@@ -12,6 +12,8 @@
 > Su objetivo es establecer el estado de partida del proyecto antes de iniciar el
 > desarrollo guiado por Spec Kit. No genera código nuevo; genera un registro de
 > referencia sobre lo que existe, lo que está pendiente y las restricciones vigentes.
+
+> **Lectura actual (30/10/2026):** el diagnóstico inicial y su deuda técnica conservan el contexto de la baseline; no son una auditoría nueva del código. La sección «MVPs Definidos» se actualiza para reflejar Web implementada en 007/008/009 y MAUI aplazado. Para capacidades, instalación y aceptación vigentes consultar el [README](../../README.md#-estado-actual-del-proyecto) y las tareas/evidencias de cada spec. Esta actualización documental no cambia casillas ni requisitos históricos.
 
 ---
 
@@ -290,7 +292,7 @@ Ningún bounded context puede acceder directamente a la base de datos de `Users`
 
 La autorización específica del dominio continúa siendo responsabilidad de cada bounded context.
 
-## Estado Actual del Proyecto por Bounded Context
+## Estado por Bounded Context en el corte histórico de baseline
 
 ### ShoppingList — Operacional ✅
 
@@ -316,7 +318,9 @@ La autorización específica del dominio continúa siendo responsabilidad de cad
 
 ---
 
-## Deuda Técnica Identificada
+## Deuda Técnica Identificada en la baseline
+
+Este inventario conserva el diagnóstico original y sus actualizaciones anteriores. No tratarlo como lista de incidencias vigentes sin contrastar las specs posteriores: 005/008 incorporan colaboración y autorización, y 009 añade compra personal/metadatos con migración. El [estado actual](../../README.md#-estado-actual-del-proyecto) distingue implementación y aceptación pendiente.
 
 | ID     | Descripción                                                                          | Prioridad | Tipo              |
 |--------|--------------------------------------------------------------------------------------|-----------|-------------------|
@@ -351,8 +355,8 @@ La autorización específica del dominio continúa siendo responsabilidad de cad
 | MVP-1  | Usuarios, autenticación e identidad                | ✅ Completado         | `003-users-authentication`                              |
 | MVP-2  | Catálogo de productos, mercados e historial de precios | ✅ Completado      | `004-product-catalog`                                   |
 | MVP-3  | Listas compartidas y reparto de gastos             | ✅ Completado         | `005-shared-lists-settlement`                           |
-| MVP-4  | Cliente Web full-stack (React SPA)                 | 🟩 Next / Active      | `007-web-react-client`                                  |
-| MVP-5  | Cliente Android con .NET MAUI                      | 🟨 Planned / Deferred | `006-android-maui-client` *(spec existente, diferida)* |
+| MVP-4  | Cliente Web full-stack (React SPA)                 | Implementado; aceptación global pendiente | [007](../007-web-react-client/spec.md), [008](../008-web-ux-modernization/spec.md), [009](../009-shopping-experience-completion/spec.md) |
+| MVP-5  | Cliente Android con .NET MAUI                      | 🟨 Planned / Deferred | `006-android-maui-client` reservado; sin artefactos ni proyecto MAUI al 30/10/2026 |
 | MVP-6  | Presupuesto y control de gasto                     | ⬜ Pendiente         | *(spec futura)*                                         |
 | MVP-7  | Sugerencias inteligentes                           | ⬜ Pendiente         | *(spec futura)*                                         |
 | MVP-8  | Tickets, fotos y OCR                               | ⬜ Pendiente         | *(spec futura)*                                         |
@@ -365,10 +369,10 @@ La autorización específica del dominio continúa siendo responsabilidad de cad
 - MVP-1 → ✅ Completed
 - MVP-2 → ✅ Completed
 - MVP-3 → ✅ Completed
-- MVP-4 (`007-web-react-client`) → 🟩 Next / Active
-- MVP-5 (`006-android-maui-client`) → 🟨 Planned / Deferred
+- MVP-4 (007/008/009) → Web implementada e integrada en `main`; aceptación y rendimiento pendientes.
+- MVP-5 (006 reservado) → Android/MAUI planificado y aplazado; sin fecha de inicio ni implementación.
 
-> El cliente Web se prioriza como primer consumidor full-stack de las APIs para validar autenticación, autorización, contratos, UX e integración cloud antes del cliente móvil. La Spec 006 permanece planificada y reutilizará posteriormente la arquitectura y contratos estabilizados por el cliente Web.
+> Web ya es el primer cliente full-stack implementado. Se prioriza su aceptación de identidad, autorización, contratos y UX antes de retomar Android/MAUI. `006-android-maui-client` es una iniciativa reservada: no existe todavía su carpeta de especificación. El futuro cliente MAUI reutilizará contratos HTTP e identidad, con implementación y UX propias; no se cancela ni se sustituye por otro framework móvil. TP6/TP11 permanecen vigentes.
 
 ---
 
@@ -429,7 +433,7 @@ restringido a sus miembros. Incluye reparto de gastos entre participantes.
 
 ---
 
-### MVP-4 — Cliente Web Full-Stack (Estado: 🟩 Next / Active)
+### MVP-4 — Cliente Web Full-Stack (Estado: implementado, aceptación pendiente)
 
 **Alcance**: SPA Web como primer cliente real de MiKompri para consumir de forma completa
 las APIs de Users, ShoppingList y ProductCatalog, validando identidad, autorización,
@@ -437,7 +441,13 @@ contratos, UX e integración cloud.
 
 **Prerequisito**: MVP-1, MVP-2 y MVP-3 completados.
 
-**Spec**: [`007-web-react-client`](../007-web-react-client/spec.md) — Draft
+**Specs y resultados**:
+
+- [007 — Cliente React](../007-web-react-client/spec.md): SPA, MSAL/PKCE, rutas protegidas, perfil/grupos, listas, gastos y catálogo. Las [tareas](../007-web-react-client/tasks.md) conservan aceptación y reconciliación individual pendientes.
+- [008 — Modernización UX](../008-web-ux-modernization/spec.md): Mis listas, compra reversible, gestión personal/compartida, personas, corrección de gastos y autorización por recurso; PR #56 integrado. [Tareas y límites](../008-web-ux-modernization/tasks.md).
+- [009 — Shopping Experience Completion](../009-shopping-experience-completion/spec.md): estimaciones, Activas/Historial, búsqueda/selección directa, gestión de catálogo/mercados/precios y captura opcional de compra con Gastos independiente; PR #57 integrado. [T009 cerrada con evidencia técnica](../009-shopping-experience-completion/evidence/review-corrections.md); T010/T011 abiertas por rendimiento, Entra multiusuario y comprobaciones manuales.
+
+No se declara cerrado el MVP-4 ni las specs 007/008/009 globalmente. [010 — Cuenta/social auth](../010-account-management-social-auth/scope.md) y [011 — Iconografía](../011-web-iconography/scope.md) contienen solo análisis de alcance, sin implementación. Su número de spec no redefine MVP-10 ni MVP-11.
 
 ---
 
@@ -446,9 +456,9 @@ contratos, UX e integración cloud.
 **Alcance**: Aplicación Android que permite gestionar listas de compra personales y
 grupales con UX móvil primera (PP5). Consume las APIs REST de MiKompri.
 
-**Prerequisito**: MVP-1 o MVP-3 completado.
+**Secuencia de entrega**: después de estabilizar y validar Web y sus contratos; requiere formalizar alcance, plan y tareas propios. No tiene fecha de ejecución comprometida.
 
-**Spec planificada (sin cambios de contenido)**: `006-android-maui-client`
+**Identificador reservado**: `006-android-maui-client`. Al 30/10/2026 no hay carpeta de spec 006 ni proyecto MAUI en la solución. Aplazarlo no cambia la tecnología Android prevista por TP6 ni la identidad canónica de TP11.
 
 ---
 
@@ -510,7 +520,7 @@ El flujo de trabajo estándar para cualquier nueva feature a partir de esta base
 6. /speckit.checklist → Valida cumplimiento antes de PR
 ```
 
-**Próximo paso activo**: Definir `007-web-react-client` como primer cliente real de MiKompri para validación end-to-end del backend. `006-android-maui-client` se mantiene planificada en estado deferred.
+**Próximo paso activo al 30/10/2026**: completar los gates pendientes de Web (007/008 y 009/T010–T011) con evidencia, no volver a iniciar 007 como borrador. Formalizar 010/011 antes de implementarlas. `006-android-maui-client` permanece reservada y aplazada. [Roadmap y fuentes vigentes](../../README.md#-próximos-pasos).
 La spec `003-users-authentication` ya está implementada y representa el cierre del MVP-1.
 El flujo recomendado para futuras specs sigue siendo:
 ```

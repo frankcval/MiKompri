@@ -1,13 +1,17 @@
 # MiKompri
 
-> **Modernización web — 2026-10-28**: implementación local de [008 · UX/UI](specs/008-web-ux-modernization/spec.md), manteniendo Spec Kit. Incluye Mis listas, compra reversible, gestión personal/compartida, alta contextual, personas y gastos, con autorización por recurso. Consultar [evidencia](specs/008-web-ux-modernization/evidence/validation.md), [plan](specs/008-web-ux-modernization/plan.md), [tareas](specs/008-web-ux-modernization/tasks.md) y [aceptación](specs/008-web-ux-modernization/checklists/acceptance.md). Entra con dos cuentas, revisión manual ampliada y piloto conservan gates pendientes; 007/008 no se declaran cerradas globalmente.
+> **Estado al 30/10/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
 
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
 [![CI - MiKompri ProductCatalog](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-productcatalog.yml)
+[![CI - MiKompri Web](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-web.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-web.yml)
+[![CI - Resource authorization and persistence](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-resource-security.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-resource-security.yml)
 [![CD - MiKompri ShoppingList API](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/cd-mikompri-shoppinglist.yml)
 
-**MiKompri** es una plataforma de gestión colaborativa diseñada para facilitar la organización de compras y usuarios en grupos. El proyecto implementa una arquitectura modular por bounded contexts, preparada para evolucionar hacia microservicios con Clean Architecture y Domain-Driven Design (DDD). Actualmente, los MVP-0, MVP-1, MVP-2 y MVP-3 están completados; `006-android-maui-client` permanece planificada en estado deferred y la siguiente iniciativa activa es `007-web-react-client`. ShoppingList ya se integra con Users.Api para identidad, membresía y roles, y ProductCatalog ya existe como bounded context completado.
+**MiKompri** permite organizar compras personales y compartidas, mantener un catálogo con precios por mercado y registrar gastos. Incluye tres APIs .NET (`ShoppingList`, `Users` y `ProductCatalog`) y una SPA React operativa en `MiKompri.Web`. La arquitectura modular utiliza Clean Architecture y Domain-Driven Design (DDD).
+
+Los MVP-0 a MVP-3 corresponden a las capacidades backend entregadas. El trabajo actual se concentra en completar la aceptación del MVP-4 Web, con implementación e historial de validación en 007/008/009. MVP-5 Android/MAUI sigue planificado y diferido, sin proyecto MAUI ni artefactos de spec 006 en el repositorio. Los identificadores de MVP y spec no son equivalentes; consultar la [trazabilidad](specs/001-project-baseline/spec.md#tabla-de-trazabilidad-mvp--specs).
 
 ## 📋 Tabla de Contenidos
 
@@ -34,7 +38,7 @@ MiKompri es una solución empresarial para la gestión colaborativa de listas de
 
 - **Gestión de Listas de Compras**: Creación, actualización, eliminación y consulta de listas
 - **Gestión de Ítems**: Agregar, modificar, marcar como comprados y eliminar ítems
-- **Gestión de Usuarios**: Registro, perfiles y autenticación con proveedores externos
+- **Identidad y Perfil**: Acceso con Microsoft Entra, aprovisionamiento del perfil local y gestión de grupos; account management y otros proveedores son alcance futuro de 010
 - **Gestión de Grupos**: Creación de grupos, membresías y roles (Owner, Admin, Member)
 - **Gestión de Catálogo de Productos**: Alta, actualización y desactivación de productos reutilizables
 - **Gestión de Mercados y Precios**: Registro de precios por mercado y consulta de historial
@@ -114,6 +118,15 @@ El proyecto implementa **Clean Architecture** dividida en capas:
 - **Serilog 10** - Logging estructurado
 - **Swashbuckle.AspNetCore** - Swagger/OpenAPI para documentación de endpoints
 
+### Cliente Web
+
+- **React 18 + TypeScript + Vite** - SPA con rutas protegidas
+- **Fluent UI v9** - Componentes y tema compartido
+- **MSAL** - Microsoft Entra mediante Authorization Code + PKCE
+- **TanStack Query** - Estado de servidor y recuperación de consultas
+- **React Hook Form + Zod** - Formularios en los flujos que los han adoptado
+- **Vitest + Testing Library + Playwright/axe** - Tests de componentes, integración y navegador; no sustituyen aceptación humana
+
 ### Testing
 
 - **xUnit** - Framework de testing
@@ -181,7 +194,12 @@ MiKompri/
 │       ├── Configurations/                # Mapeos EF Core
 │       └── Repositories/                  # Repositorios de catálogo/mercados/precios
 │
-├── test/                                   # Pruebas
+├── MiKompri.Web/                           # Cliente React, tests Web y Dockerfile
+├── specs/                                 # Specs, planes, tareas, contratos y evidencia
+├── docs/                                  # Guías transversales y ADRs
+├── design/prototypes/                     # Prototipos y evidencia de diseño
+│
+├── test/                                   # Pruebas backend
 │   ├── MiKompri.ShoppingList.Api.Tests/   # Tests de integración API
 │   ├── MiKompri.ShoppingList.Application.Tests/  # Tests unitarios de casos de uso
 │   ├── MiKompri.ShoppingList.Domain.Tests/       # Tests de dominio
@@ -216,12 +234,14 @@ DELETE /api/v1/PurchaseLists/{id}         # Eliminar lista
 POST   /api/v1/PurchaseLists/{id}/items   # Agregar ítem
 PUT    /api/v1/PurchaseLists/{listId}/items/{itemId}  # Actualizar ítem
 DELETE /api/v1/PurchaseLists/{listId}/items/{itemId}  # Eliminar ítem
-PATCH  /api/v1/PurchaseLists/{listId}/items/{itemId}/purchase  # Marcar como comprado
+PATCH  /api/v1/PurchaseLists/{listId}/items/{itemId}/purchase-state  # Marcar/desmarcar
 
 GET    /health                            # Health check
 ```
 
 #### Características
+
+Las rutas compartidas, Gastos y compras personales se detallan en los contratos [005](specs/005-shared-lists-settlement/contracts/shared-lists-settlement-api.md), [008](specs/008-web-ux-modernization/contracts/api-and-permissions.md) y [009](specs/009-shopping-experience-completion/contracts/api.md). OpenAPI es la referencia de endpoints y DTOs del backend ejecutado.
 
 - ✅ CQRS con MediatR
 - ✅ Validación con FluentValidation
@@ -384,6 +404,8 @@ GET    /swagger
 - **PostgreSQL 15** (opcional, si no usas Docker)
 - **Visual Studio 2022** o **Visual Studio Code** (recomendado)
 - **Git**
+- **Node.js 24 LTS y npm 11** para `MiKompri.Web` (versiones usadas por CI y la guía Web)
+- **Registro SPA de Microsoft Entra** con redirect URI y scope delegado del backend para usar la aplicación autenticada
 
 ## 🚀 Instalación y Configuración
 
@@ -398,7 +420,9 @@ cd MiKompri
 
 #### ShoppingList API
 
-Editar `MiKompri.ShoppingList.Api/appsettings.json`:
+Configurar la conexión mediante variables de entorno, User Secrets u override local. Los ejemplos corresponden a las claves de `appsettings.json`; no versionar credenciales reales.
+
+ShoppingList:
 
 ```json
 {
@@ -419,7 +443,7 @@ Editar `MiKompri.Users.Api/appsettings.json`:
   },
   "Authentication": {
 	"Authority": "https://login.microsoftonline.com/<tenant>/v2.0",
-	"Audience": "mikompri-users",
+	"Audience": "api://<backend-app-client-id>",
 	"IdentityProvider": "entra"
   }
 }
@@ -439,6 +463,12 @@ Editar `MiKompri.ProductCatalog.Api/appsettings.json`:
   }
 }
 ```
+
+Las tres APIs deben compartir la configuración de issuer/audience y scopes del recurso OAuth backend según TP11. La SPA tiene un registro de cliente separado; `Users` resuelve `(tid, oid)` a `UserId` interno. Ver [guía de contratos e identidad](docs/client-contract-reuse-guidelines.md).
+
+#### Cliente Web
+
+Copiar `MiKompri.Web/.env.example` a `.env.local` y configurar URLs de las tres APIs, registro SPA, tenant/authority, redirect URIs y `VITE_API_SCOPE`. Las variables `VITE_*` son públicas y se incorporan al bundle: no contienen secretos. Ver [configuración Web](MiKompri.Web/README.md) y [CORS](docs/web-client-cors.md).
 
 ### 3. Aplicar Migraciones
 
@@ -474,10 +504,21 @@ docker compose up -d
 ```
 
 Esto iniciará:
+
 - ShoppingList API en `http://localhost:8080`
 - Users API en `http://localhost:8082`
 - ProductCatalog API en `http://localhost:8083`
 - PostgreSQL en `localhost:5432`
+
+El Compose actual levanta backend y base de datos; **no incluye la SPA**. Iniciar Web en otra terminal, después de configurar `.env.local`:
+
+```powershell
+cd MiKompri.Web
+npm ci
+npm run dev
+```
+
+Abrir `http://localhost:5173`. La entrada autenticada es `/lists`. Cambiar variables `VITE_*` requiere reiniciar Vite; una imagen Web necesita reconstruirse con su configuración pública. El [README Web](MiKompri.Web/README.md) documenta scripts, Docker y aceptación Entra.
 
 **Swagger UI**:
 - ShoppingList: http://localhost:8080/swagger
@@ -574,6 +615,24 @@ El proyecto tiene una cobertura significativa de tests:
 - ✅ Validators
 - ✅ API Endpoints (Integration Tests)
 
+### Validación Web y persistencia
+
+Desde `MiKompri.Web`:
+
+```powershell
+npm run lint
+npm run typecheck
+npm test
+npx playwright install chromium firefox webkit
+$env:PLAYWRIGHT_ALL_BROWSERS = '1'
+npm run test:e2e:smoke
+npm run build
+```
+
+Los recorridos controlados ejecutan la UI con fixtures en tres motores; la aceptación con dos cuentas Entra usa una suite separada y recursos QA reales. Para las pruebas API relacionales, configurar `MIKOMPRI_TEST_POSTGRES` exclusivamente contra una instancia QA desechable según la [guía 009](specs/009-shopping-experience-completion/quickstart.md).
+
+La [revisión técnica 009](specs/009-shopping-experience-completion/evidence/review-corrections.md) registra 208 tests .NET afectados, 117 Web y 120 E2E satisfactorios en el candidato revisado. Son resultados de esa revisión, no una certificación automática de cualquier HEAD ni aceptación Entra/manual.
+
 ## 🔄 CI/CD
 
 ### Integración Continua (CI)
@@ -582,11 +641,17 @@ El proyecto tiene una cobertura significativa de tests:
 - `.github/workflows/ci-mikompri-shoppinglist.yml`
 - `.github/workflows/ci-mikompri-users.yml`
 - `.github/workflows/ci-mikompri-productcatalog.yml`
+- `.github/workflows/ci-mikompri-web.yml`
+- `.github/workflows/ci-mikompri-resource-security.yml`
 
 **Cobertura actual**:
 - **ShoppingList CI**: restore, build, tests con cobertura, SonarCloud y verificación de Docker Compose
 - **Users CI**: restore, build, tests de dominio/aplicación/API y build de `MiKompri.Users.Api/Dockerfile`
 - **ProductCatalog CI**: restore, build Release, tests de dominio/aplicación/API, validación de `docker compose config` y build de `MiKompri.ProductCatalog.Api/Dockerfile`
+- **Web CI**: configuración de aceptación, lint, typecheck, Vitest, escenarios controlados en Chromium/Firefox/WebKit, build y Docker
+- **Resource authorization and persistence**: suites ShoppingList y API ProductCatalog contra PostgreSQL 16, más build Docker
+
+La aceptación real está separada en [`acceptance-mikompri-web-entra.yml`](.github/workflows/acceptance-mikompri-web-entra.yml), de ejecución manual y con dos cuentas/sesiones QA. CI controlada verde no cierra ese gate. Azure Static Web Apps es el destino previsto del frontend; el repositorio no acredita por ello un despliegue productivo.
 
 ### Entrega Continua (CD)
 
@@ -611,111 +676,40 @@ git push origin v1.0.0
 
 ## 📊 Estado Actual del Proyecto
 
-El estado del proyecto se organiza por MVPs. Para la trazabilidad detallada entre MVPs y
-specs de GitHub Spec Kit, consultar [`specs/001-project-baseline/spec.md`](specs/001-project-baseline/spec.md).
+Estado al **30/10/2026**, con PR #56 (008) y PR #57 (009) integrados en `main`. «Implementado» y «aceptación completa» son estados distintos. El detalle de tareas y evidencia en cada spec prevalece sobre este resumen; no se cierran tareas por actualizar el roadmap.
 
-### MVP-0 — Listas de Compra Personales ✅ Completado
+| MVP | Capacidad | Estado actual | Specs / evidencia |
+| --- | --- | --- | --- |
+| MVP-0 | Listas personales y core ShoppingList | Base backend entregada | [001](specs/001-project-baseline/spec.md), [002](specs/002-shopping-list-core/spec.md) |
+| MVP-1 | Usuarios, identidad y grupos | Base backend entregada; TP11 vigente | [003](specs/003-users-authentication/spec.md) |
+| MVP-2 | Catálogo, mercados y precios | Backend entregado; gestión conectada en Web por 009 | [004](specs/004-product-catalog/spec.md), [contratos 009](specs/009-shopping-experience-completion/contracts/api.md) |
+| MVP-3 | Listas compartidas y reparto | Backend entregado y consumido por Web | [005](specs/005-shared-lists-settlement/spec.md) |
+| MVP-4 | Cliente Web full-stack | Implementado e integrado; aceptación global abierta | [007 tareas](specs/007-web-react-client/tasks.md), [008 tareas](specs/008-web-ux-modernization/tasks.md), [009 tareas](specs/009-shopping-experience-completion/tasks.md) |
+| MVP-5 | Android con .NET MAUI | Planificado y aplazado, sin fecha; identificador 006 reservado, sin artefactos ni proyecto | [Roadmap baseline](specs/001-project-baseline/spec.md#mvp-5--cliente-android-con-net-maui-estado--planned--deferred) |
 
-*(Specs: `001-project-baseline`, `002-shopping-list-core`)*
+La numeración de MVP no coincide con la de specs. 008 y 009 amplían el MVP-4 y reutilizan las capacidades backend; no son nuevos MVP-8/MVP-9. El roadmap de MVP-6 en adelante es futuro y no implica implementación ni un calendario comprometido.
 
-#### ShoppingList Microservice
-- ✅ Arquitectura Clean Architecture completa
-- ✅ CQRS con MediatR implementado
-- ✅ Todas las operaciones CRUD de listas e ítems
-- ✅ Validaciones con FluentValidation
-- ✅ Repositorio y Unit of Work
-- ✅ EF Core con PostgreSQL
-- ✅ Migraciones de base de datos
-- ✅ Logging con Serilog
-- ✅ Global exception handling
-- ✅ Health checks
-- ✅ Tests unitarios y de integración
-- ✅ Dockerización completa
-- ✅ CI/CD con GitHub Actions
-- ✅ Swagger/OpenAPI documentation
+### Trabajo Web ya realizado
 
-### MVP-1 — Usuarios, Autenticación e Identidad ✅ Completado
+- **007 — Cliente React:** SPA con MSAL, rutas protegidas, perfil, grupos, listas, gastos/reparto y catálogo; base de navegación y arquitectura por features. Conserva tareas compuestas y aceptación pendiente: [tareas](specs/007-web-react-client/tasks.md).
+- **008 — Modernización UX:** Mis listas, compra reversible, CRUD personal/compartido, personas/roles, corrección de gastos y autorización por recurso. [Validación](specs/008-web-ux-modernization/evidence/validation.md) y [aceptación](specs/008-web-ux-modernization/checklists/acceptance.md).
+- **009 — Experiencia de compra:** estimaciones con precios desconocidos, orden, Activas/Historial, selección directa/alta contextual, edición de productos, mercados e historial de precios. Captura opcional de importe real, mercado y fecha desde el marcado; Gastos conserva acceso independiente y el mismo registro financiero, con idempotencia y control de concurrencia. Fechas civiles con contexto local y auditoría UTC. [Spec](specs/009-shopping-experience-completion/spec.md), [contratos](specs/009-shopping-experience-completion/contracts/api.md) y [revisión técnica](specs/009-shopping-experience-completion/evidence/review-corrections.md).
 
-*(Spec: `003-users-authentication`)*
+### Qué sigue pendiente
 
-#### Users Microservice
-- ✅ Validación JWT Bearer de un proveedor OIDC externo
-- ✅ Perfil local del usuario y auto-provisioning por identidad canónica del proveedor externo
-- ✅ Sincronización explícita desde claims (`POST /api/v1/users/me/sync`)
-- ✅ Actualización de `DisplayName` y consulta de perfil propio
-- ✅ Grupos, membresías y roles `Owner`, `Admin`, `Member`
-- ✅ Endpoints, migraciones, pruebas, Docker y CI
-- ✅ Swagger/OpenAPI con configuración Bearer
+En **009**, T009 está cerrada con evidencia de tests, CI y Docker. **T010/T011 siguen abiertas**: la última medición documentada de LCP personal/compartida es 2556/2604 ms frente al límite de 2500 ms; faltan aceptación Entra con dos cuentas/roles y validación manual de lector, zoom, teclado/dispositivo. No se acredita cierre global de 007/008/009 ni despliegue productivo por haber integrado sus PRs.
 
-### MVP-2 — Catálogo de Productos y Precios ✅ Completado
-
-*(Spec: `004-product-catalog`)*
-
-#### ProductCatalog Microservice
-- ✅ Gestión de catálogo reutilizable (crear, editar, consultar y desactivar productos)
-- ✅ Gestión de mercados (crear, editar, desactivar)
-- ✅ Registro de precios por producto/mercado con validaciones de negocio
-- ✅ Consulta de historial de precios por producto, mercado y rango de fechas
-- ✅ Manejo de conflictos de duplicados con HTTP 409 (`ConflictException`)
-- ✅ Moneda configurable vía `ProductCatalog:Currency` (Options Pattern)
-- ✅ Migraciones, Docker Compose y health checks integrados
-- ✅ Tests de dominio, aplicación e integración API
-- ✅ Pipeline CI dedicado (`ci-mikompri-productcatalog.yml`)
-
-Ver detalle en [`specs/004-product-catalog/spec.md`](specs/004-product-catalog/spec.md).
-
----
+Las fuentes de verdad son [tasks 009](specs/009-shopping-experience-completion/tasks.md), [rendimiento](specs/009-shopping-experience-completion/evidence/performance.md), [aceptación](specs/009-shopping-experience-completion/evidence/acceptance.md) y [evidencia de revisión](specs/009-shopping-experience-completion/evidence/review-corrections.md). No cambiar umbrales ni sustituir gates humanos por fixtures.
 
 ## 🎯 Próximos Pasos
 
-El roadmap del proyecto se organiza por MVPs y prioridades de entrega. Estado conceptual actual:
+1. Completar los gates Web pendientes de rendimiento, aceptación integrada y accesibilidad con evidencia sobre el candidato validado.
+2. Reconciliar individualmente las tareas abiertas de 007/008 según sus criterios y evidencia, sin cerrarlas por la presencia de una implementación posterior.
+3. Formalizar, revisar y aprobar las próximas iniciativas antes de implementarlas: [010 — Account Management & Social Auth](specs/010-account-management-social-auth/scope.md) y [011 — Web Iconography](specs/011-web-iconography/scope.md). Hoy contienen solo análisis de alcance. 010 exige revisión TP11; no cambia todavía el proveedor de identidad. 011 no introduce aún un sistema nuevo de iconos.
+4. Retomar **MVP-5 Android/MAUI** después de estabilizar la experiencia Web y sus contratos, con alcance y plan propios. MAUI sigue siendo la tecnología prevista para Android; Web primero es una secuencia de entrega, no su cancelación ni sustitución por otro framework móvil.
+5. Mantener presupuesto, sugerencias, fotos/OCR, promociones y comunidad como [iniciativas futuras del roadmap](specs/001-project-baseline/spec.md#mvps-definidos), sin incorporarlas a 009/010/011 por defecto. Comentarios/chat también quedan para una feature posterior.
 
-- MVP-0 → ✅ Completed
-- MVP-1 → ✅ Completed
-- MVP-2 → ✅ Completed
-- MVP-3 → ✅ Completed
-- MVP-4 (`007-web-react-client`) → 🟩 Next / Active
-- MVP-5 (`006-android-maui-client`) → 🟨 Planned / Deferred
-
-> El cliente Web se prioriza como primer consumidor full-stack de las APIs para validar autenticación, autorización, contratos, UX e integración cloud antes del cliente móvil. La Spec 006 permanece planificada y reutilizará posteriormente la arquitectura y contratos estabilizados por el cliente Web.
-
-### MVP-3 — Listas Compartidas y Reparto de Gastos ✅ Completado
-
-- ✅ ShoppingList integra con Users.Api para identidad, membresía y roles
-
-5. **Listas Compartidas y Reparto de Gastos** *(MVP-3)*
-   - [x] Spec [`005-shared-lists-settlement`](specs/005-shared-lists-settlement/spec.md) implementada y cerrada
-   - [x] Listas compartidas por grupo con roles Owner/Admin/Member
-   - [x] Registro colaborativo de gastos por ítem con `PaidBy` + participantes
-   - [x] Cálculo de balances y liquidación determinista (D + A − 1 transferencias)
-   - [x] Trazabilidad de operaciones compartidas (`SharedListAuditEvent`)
-   - [x] Autorización por membresía delegada a Users.Api (sin acceso directo a su BD)
-   - [x] Fake Users API en tests + tests cross-service con Users.Api real
-   - [x] JWT/OIDC alineado: ambas APIs usan el mismo proveedor Entra + `ValidAudiences`
-
-### Prioridad Media — Cliente Web primero, MAUI diferido
-
-6. **Cliente Web con React** *(MVP-4 · siguiente iniciativa activa)*
-   - [x] Spec [`007-web-react-client`](specs/007-web-react-client/spec.md) creada (draft)
-   - [ ] Ejecutar `/speckit.clarify` y `/speckit.plan` para iniciar implementación
-
-7. **Cliente Android con .NET MAUI** *(MVP-5 · planificado / deferred)*
-   - [ ] Mantener `006-android-maui-client` para ejecución posterior
-
-### Prioridad Baja — Calidad y DevOps (Transversal)
-
-8. **Mejoras de Calidad**
-   - [ ] Aumentar cobertura de tests a >80%
-   - [ ] Implementar mutation testing (Stryker)
-   - [ ] Agregar tests de carga (k6 o JMeter)
-   - [ ] Documentación técnica detallada
-   - [ ] Agregar ejemplos de uso en README
-
-9. **DevOps**
-   - [ ] Configurar staging environment
-   - [ ] Implementar canary deployments
-   - [ ] Agregar rollback automático
-   - [ ] Crear Helm charts para Kubernetes
+El [análisis documental del 30/10](docs/documentation-review-2026-10-30.md) explica las discrepancias corregidas. Los análisis y planes fechados conservan su contexto histórico; para el estado actual usar esta sección y las tareas de cada spec.
 
 ## 🤝 Contribución
 
@@ -725,7 +719,7 @@ El roadmap del proyecto se organiza por MVPs y prioridades de entrega. Estado co
 2. Crear una rama feature: `git checkout -b feature/nueva-funcionalidad`
 3. Commit de cambios: `git commit -m 'feat: agregar nueva funcionalidad'`
 4. Push a la rama: `git push origin feature/nueva-funcionalidad`
-5. Crear un **Pull Request** hacia `develop`
+5. Crear un **Pull Request** hacia la rama base acordada para el cambio (esta actualización documental parte de `main`)
 
 ### Convenciones de Commits
 
@@ -766,11 +760,3 @@ Para preguntas o sugerencias, por favor abrir un [issue](https://github.com/fran
 ---
 
 ⭐ Si este proyecto te resulta útil, considera darle una estrella en GitHub!
-
-### Estado de la modernización 008
-
-Implementación local de Mis listas, compra reversible, gestión personal/compartida, alta contextual, personas y gastos corregibles, con autorización por recurso. Se mantienen Spec Kit y los componentes existentes. [Evidencia y pendientes P0–P3](specs/008-web-ux-modernization/evidence/validation.md); [tareas](specs/008-web-ux-modernization/tasks.md). La entrega local no certifica aún Entra con dos personas ni el piloto humano.
-
-### Shopping Experience Completion 009
-
-Estimaciones por lista, orden y separación Activas/Historial, selección directa de productos, edición de catálogo, mercados e historial de precios operativo. Captura opcional de compra desde el marcado, con Gastos independiente, registros canónicos e idempotencia; soporta listas personales y compartidas. Requiere la migración aditiva de detalles de compra/operaciones. [Spec y dependencias](specs/009-shopping-experience-completion/spec.md), [contratos](specs/009-shopping-experience-completion/contracts/api.md), [validación y límites](specs/009-shopping-experience-completion/evidence/validation.md). La aceptación completa sigue abierta; no cierra 007/008. [010](specs/010-account-management-social-auth/scope.md) y [011](specs/011-web-iconography/scope.md) son solo análisis de alcance.

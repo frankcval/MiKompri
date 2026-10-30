@@ -7,7 +7,8 @@ Alinear la SPA `MiKompri.Web` con las APIs `Users`, `ShoppingList` y `ProductCat
 
 ### Local
 - `http://localhost:5173`
-- `https://localhost:5173` (si se habilita TLS local)
+- `http://127.0.0.1:5173`
+- `https://localhost:5173` solo si se habilita TLS y se añade explícitamente a los orígenes; no es un default actual
 
 ### Cloud (Azure Static Web Apps)
 - `https://<tu-swa>.azurestaticapps.net`
@@ -19,6 +20,7 @@ Alinear la SPA `MiKompri.Web` con las APIs `Users`, `ShoppingList` y `ProductCat
   - `Authorization`
   - `Content-Type`
   - `Accept`
+  - `X-Client-Utc-Offset-Minutes` para fechas civiles de compra/precio de 009
 - Credenciales:
   - No usar cookies cross-site para auth de APIs.
   - Se usa `Bearer` token de Entra ID en header `Authorization`.
@@ -26,7 +28,7 @@ Alinear la SPA `MiKompri.Web` con las APIs `Users`, `ShoppingList` y `ProductCat
 ## Configuración recomendada en APIs .NET
 1. Definir política CORS explícita por ambiente.
 2. Permitir solo orígenes conocidos (no `AllowAnyOrigin` en producción).
-3. Permitir `Authorization` y `Content-Type`.
+3. Permitir los headers anteriores, incluido el contexto local de fecha de 009.
 4. Aplicar `UseCors(...)` antes de `UseAuthentication()`/`UseAuthorization()`.
 
 ## Checklist de verificación
@@ -34,6 +36,9 @@ Alinear la SPA `MiKompri.Web` con las APIs `Users`, `ShoppingList` y `ProductCat
 2. Requests autenticadas desde SPA retornan datos (sin error CORS).
 3. Error real de auth/permiso (401/403) no debe confundirse con CORS.
 4. En cloud, validar origen SWA real configurado en cada API.
+5. Verificar una escritura de precio/compra con `X-Client-Utc-Offset-Minutes` y su preflight, no solo una consulta GET.
+
+Las tres APIs actuales leen `Cors:AllowedOrigins` como lista separada por comas y usan `WithOrigins(...).AllowAnyMethod().AllowAnyHeader()`. Por defecto permiten los dos orígenes HTTP locales anteriores. Configurar `Cors__AllowedOrigins` por entorno; no dar por configurado un dominio cloud por aparecer en esta guía. El header de fecha no acredita identidad ni cambia permisos. [Contrato 009](../specs/009-shopping-experience-completion/contracts/api.md).
 
 ## Troubleshooting rápido
 - **Error CORS en navegador**: revisar `Access-Control-Allow-Origin` y `Access-Control-Allow-Headers`.

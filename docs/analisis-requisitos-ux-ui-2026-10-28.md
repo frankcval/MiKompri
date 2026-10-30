@@ -2,6 +2,8 @@
 
 Fecha: 28 de octubre de 2026.
 
+> Documento histórico del estado inspeccionado ese día. Las implementaciones posteriores de 008 y 009, integradas en main, resuelven parte de los gaps aquí descritos; no leer esta matriz como diagnóstico vigente. Consultar el [estado actual](../README.md#-estado-actual-del-proyecto), [tareas 008](../specs/008-web-ux-modernization/tasks.md) y [revisión 009](../specs/009-shopping-experience-completion/evidence/review-corrections.md). El historial no acredita por sí solo el cierre de aceptación pendiente.
+
 ## Alcance y evidencia
 
 Revisión del estado local de las especificaciones 002–005 y 007, README, diseño vigente, tareas, componentes, clientes HTTP y pruebas E2E. Inspección visual de las capturas existentes `home-1280.png` y `app-private-shopping-390.png`, generadas el día anterior. Las capturas no constituyen una nueva comprobación en navegador.
