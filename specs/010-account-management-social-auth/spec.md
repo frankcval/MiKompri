@@ -2,7 +2,7 @@
 
 **Feature Branch**: `010-account-management-social-auth`
 **Created / Revised**: 2026-10-30
-**Status**: Draft — alcance incremental revisado; ADR/TP11 pendientes de aprobación.
+**Status**: Approved 010-A — arquitectura y TP11 1.2.0 aprobadas; implementación en curso, aceptación pendiente.
 **Input**: conservar Microsoft existente y añadir Google sin cuenta Microsoft. Esta ejecución modifica documentación, sin implementar ni configurar servicios.
 
 ## Contexto, evidencia y alcance

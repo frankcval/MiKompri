@@ -19,6 +19,10 @@ description: "Task list template for feature implementation"
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
 
+## Identity work (TP11 v1.2.0)
+
+Separate resolve/provision/migrate; test immutable UserId and rollback before cutover. Preserve Microsoft legacy until its cohort is proven. Require strict JWT trust and D1 before protected production access. Optional email and deferred linking/G3/MAUI must not block a scoped Microsoft+Google MVP. Never mark acceptance from files alone.
+
 ## Path Conventions
 
 - **Single project**: `src/`, `tests/` at repository root

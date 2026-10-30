@@ -8,10 +8,10 @@
 
 - [ ] T001 [A] Ratificar auditoría/evidencia/fuentes y alcance Microsoft existente+Google en `current-state-audit.md`, `research.md` y `evidence/010-a-scope-review.md`; harness no equivale a aceptación productiva.
 - [ ] T006 [A] Aprobar coste/configuración mínima y minimización de perfil/recuperación en proveedor en `research.md` y `privacy-and-deletion.md`; sin SMS/trials/credenciales propios.
-- [ ] T007 [A] Revisar/aprobar `docs/adr/ADR-004-ciam-identity.md` incremental: CIAM para Google y transición Microsoft, sin exigir prueba de linking A ni elegir Alternative B.
-- [ ] T008 [A] Aprobar `constitution-amendment-proposal.md` por gobernanza; solo tras autorización explícita aplicar TP11/version/templates. No editar constitución por esta tarea documental.
-- [ ] T009 [A] Ratificar contrato JWT/tupla, perfil y D1/D2 en `data-model.md`, `contracts/account-and-identity.md`, `architecture-review.md`. D3/broker quedan B.
-- [ ] T010 [A][US2] Aprobar coexistencia/cohortes y prueba de origen Microsoft inmutable en `migration.md`; mismo UserId, reserva, rollback/no migrados. Sin linking general ni G3 como prerequisito.
+- [x] T007 [A] Revisar/aprobar `docs/adr/ADR-004-ciam-identity.md` incremental: CIAM para Google y transición Microsoft, sin exigir prueba de linking A ni elegir Alternative B.
+- [x] T008 [A] Aprobar `constitution-amendment-proposal.md` por gobernanza; solo tras autorización explícita aplicar TP11/version/templates. No editar constitución por esta tarea documental.
+- [x] T009 [A] Ratificar contrato JWT/tupla, perfil y D1/D2 en `data-model.md`, `contracts/account-and-identity.md`, `architecture-review.md`. D3/broker quedan B.
+- [x] T010 [A][US2] Aprobar coexistencia/cohortes y prueba de origen Microsoft inmutable en `migration.md`; mismo UserId, reserva, rollback/no migrados. Sin linking general ni G3 como prerequisito.
 - [ ] T011 [A] Revisar amenazas de login/provisión/migración/perfil/sesión en `threat-model.md`; takeover/linking/recovery por otro proveedor se revisarán en B antes de ofrecerlos.
 - [ ] T012 [A][US4] Ratificar perfil básico/username/idioma y preferencias tipadas con finalidad actual. Iniciales; sin foto/storage, DOB/teléfono/dirección ni UI de métodos.
 
@@ -103,3 +103,7 @@ B depende de nueva revisión y de sus propios G1/G3; A no depende de B. T056 pue
 - T040[Tarea futura] no elimina minimización A; T055 deja de exigir AC de B. T001–T055 siguen presentes una sola vez, sin marcar completitud.
 
 Evidencia anterior: acceso Google/email en harness, JWT/scopes y regresiones offline; G3 sin fiabilidad acreditada, c1 sin política no prueba MFA y restauración QA verificada. Nada de eso implementa el MVP. [Revisión de alcance](evidence/010-a-scope-review.md).
+
+## Evidencia de implementación
+
+T007/T008/T009/T010: aprobación explícita del titular y enmienda aplicada, [registro A0](evidence/implementation.md). No cierra implementación ni aceptación funcional.

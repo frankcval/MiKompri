@@ -1,6 +1,6 @@
 # ADR-004 — CIAM incremental, UserId y transición Microsoft
 
-**Estado:** Propuesto; pendiente de aprobación arquitectónica y enmienda TP11. No aceptado por ejecutar un spike.
+**Estado:** Aceptado para 010-A por aprobación explícita del titular el 2026-10-30; TP11 1.2.0 aplicada. 010-B/D3, despliegue y merge no autorizados por esta aprobación.
 **Fecha:** 2026-10-30. **Incremento:** [010-A](../../specs/010-account-management-social-auth/spec.md).
 [Research](../../specs/010-account-management-social-auth/research.md) · [Revisión de alcance](../../specs/010-account-management-social-auth/evidence/010-a-scope-review.md)
 
@@ -57,6 +57,6 @@ Dependencias/costes: operación CIAM y proveedor Google, configuración aprobada
 
 ## Aprobación y orden
 
-Ratificar este alcance, la transición acotada y la [propuesta TP11 1.2.0](../../specs/010-account-management-social-auth/constitution-amendment-proposal.md) conforme a gobernanza antes de implementación de identidad. No modificar todavía constitución. Después: login aislado Microsoft + Google; correlación/migración; validación APIs y D1 antes de negocio productivo; perfil/sesión; aceptación y rollout por cohortes. Email OTP opcional en paralelo tras QA.
+Alcance, transición acotada y TP11 1.2.0 aprobados expresamente el 2026-10-30; [registro A0](../../specs/010-account-management-social-auth/evidence/implementation.md). Orden autorizado: login aislado Microsoft + Google; correlación/migración; validación APIs y D1 antes de negocio productivo; perfil/sesión; aceptación y rollout por cohortes. Email OTP opcional en paralelo tras QA.
 
-G3, linking, recuperación entre proveedores y MAUI permanecen [010-B](../../specs/010-account-management-social-auth/010-b-deferred.md). Este ADR propuesto no autoriza cambios cloud, secretos o BD en la ejecución documental.
+G3, linking, recuperación entre proveedores y MAUI permanecen [010-B](../../specs/010-account-management-social-auth/010-b-deferred.md). El spike histórico no autoriza 010-B ni producción; esta implementación se limita a 010-A.

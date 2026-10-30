@@ -1,5 +1,7 @@
 # Revisión de alcance — 010-A Microsoft + Google
 
+> Actualización2026-10-30: aprobación explícita de010-A/ADR/TP11 y transición; TP11 **1.2.0 aplicada**. **010-A READY FOR IMPLEMENTATION**. El resto conserva la propuesta/revisión previa; [registro actual](implementation.md).
+
 **Fecha:** 2026-10-30. **Rama:** `010-account-management-social-auth`. **Base:** `010d298daae4815e6db00b88ab00e507b4c78b3e`. Revisión documental posterior al spike, sin implementar ni configurar recursos. Hay cambios del ensayo QA anterior en el árbol; se conservan, sin atribuirlos a esta ejecución.
 
 ## 1. Alcance obligatorio 010-A

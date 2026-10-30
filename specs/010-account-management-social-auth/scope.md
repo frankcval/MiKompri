@@ -11,3 +11,7 @@ Revisión30/10/2026, solo documentación. [Spec](spec.md), [plan](plan.md), [tas
 UserId Guid inmutable y Users dueño de correlación. No identidades Google/email/sub en ownership; no asociación por email. Perfil propio prevalece sobre claims. Avatar iniciales; foto/storage, DOB/teléfono/dirección y reimportación UI fuera del primer incremento.
 
 No se implementa ni configura nada por esta revisión. [Spikes](evidence/spike-summary.md) conservados, con G3 no demostrado; eso no bloquea el alcance A sin operaciones de métodos. [ADR](../../docs/adr/ADR-004-ciam-identity.md)/[TP11 propuesto](constitution-amendment-proposal.md) pendientes de aprobación; constitución vigente intacta.
+
+## Aprobación posterior
+
+El 2026-10-30 el titular aprueba ADR-004/transición/TP11 para 010-A y autoriza implementación. TP11 1.2.0 aplicada. **010-A READY FOR IMPLEMENTATION**. El texto previo describe la revisión documental histórica. Sin aprobación de010-B, merge o producción. [Registro](evidence/implementation.md).

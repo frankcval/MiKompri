@@ -760,3 +760,7 @@ Para preguntas o sugerencias, por favor abrir un [issue](https://github.com/fran
 ---
 
 ⭐ Si este proyecto te resulta útil, considera darle una estrella en GitHub!
+
+### Identidad010-A
+
+Arquitectura aprobada en [ADR-004](docs/adr/ADR-004-ciam-identity.md), [TP11 v1.2.0](.specify/memory/constitution.md). Implementación en curso: Microsoft existente + Google mediante External ID sin cuenta Microsoft, UserId inmutable y transición acotada. Email OTP opcional; linking/G3/MAUI diferidos. Aprobación no significa aceptación, merge ni despliegue.

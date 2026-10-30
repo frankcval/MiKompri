@@ -1,7 +1,7 @@
 # Implementation Plan: 010-A — Microsoft existente + Google
 
 **Branch**: `010-account-management-social-auth` | **Date**: 2026-10-30 | **Spec**: [spec.md](spec.md)
-**Estado**: propuesta revisada; documentación únicamente. ADR/enmienda aún no aprobados.
+**Estado**: arquitectura 010-A aprobada; implementación autorizada, sin deploy ni merge.
 
 ## Summary
 
@@ -26,7 +26,7 @@ Email OTP es un adicional elegible de A: login básico probado en harness y mism
 
 ## Constitution Check
 
-PASS documental por spec/plan/tasks y trazabilidad. **HOLD de cambio transversal** hasta ratificar ADR y propuesta TP11 conforme§4.1. La constitución1.1.0 permanece intacta.
+PASS de aprobación arquitectónica explícita del titular para 010-A; TP11 1.2.0 aplicada y templates propagados. La evidencia funcional sigue pendiente.
 
 | Principios | Aplicación |
 |---|---|
@@ -78,4 +78,4 @@ D1 y sus AR-01–03 son gate de acceso protegido, no de primer login aislado. G1
 
 [Tasks](tasks.md) distingue A obligatorio, A opcional y B diferido; conserva IDs anteriores. A termina con aceptación real, confianza aprobada, UserId/ownership preservados y D1 productivo, no con placeholders ni ocultando features pendientes. B permanece pendiente tras cerrar A.
 
-**Readiness documental actual:** `010-A NOT READY FOR IMPLEMENTATION` únicamente por aprobación pendiente de ADR-004/enmienda TP11 y de la transición acotada descrita en ellos. Código/QA planificados son trabajo posterior, no bloqueos previos adicionales; G3/CA del spike y email opcional no son bloqueos de Microsoft+Google.
+**Readiness documental actual:** **010-A READY FOR IMPLEMENTATION**. ADR/TP11/transición aprobados expresamente el 2026-10-30. No equivale a READY FOR PR: implementación/QA siguen pendientes. G3/CA/email opcional no bloquean.

@@ -1,5 +1,7 @@
 # Propuesta de enmienda constitucional — TP11
 
+> Actualización2026-10-30: aprobación explícita de010-A/ADR/TP11 y transición; TP11 **1.2.0 aplicada**. **010-A READY FOR IMPLEMENTATION**. El resto conserva la propuesta/revisión previa; [registro actual](evidence/implementation.md).
+
 **Estado:** propuesta para aprobación; la constitución vigente NO se modifica.
 **Versión vigente:** 1.1.0. **Propuesta:** **1.2.0 MINOR**: ampliar CIAM/Google y transición conservando garantías. No retirar invariantes ni introducir una ruptura que justifique MAJOR.
 

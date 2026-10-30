@@ -1,5 +1,7 @@
 # Specification Quality Checklist — 010-A
 
+> Actualización2026-10-30: aprobación explícita de010-A/ADR/TP11 y transición; TP11 **1.2.0 aplicada**. **010-A READY FOR IMPLEMENTATION**. El resto conserva la propuesta/revisión previa; [registro actual](../evidence/implementation.md).
+
 Fecha2026-10-30. Revisión de **documentación**, no cumplimiento funcional. [Spec](../spec.md), [plan](../plan.md), [aceptación](acceptance.md), [informe](../evidence/010-a-scope-review.md).
 
 ## Comprobaciones documentales
