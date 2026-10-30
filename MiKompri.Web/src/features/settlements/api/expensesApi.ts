@@ -1,3 +1,4 @@
+import { localDateHeaders } from '../../../shared/dates/localDate'
 import { responseError } from '../../../shared/api/request'
 export type RegisterExpenseInput = {
   realPaidPrice: number
@@ -5,6 +6,10 @@ export type RegisterExpenseInput = {
   purchasedBy?: string | null
   participants: string[]
   currency: 'EUR'
+  operationId?: string
+  marketId?: string | null
+  purchasedOn?: string | null
+  expectedVersion?: string
 }
 
 export type RegisteredExpense = {
@@ -27,6 +32,7 @@ export async function registerItemExpense(
     {
       method: 'POST',
       headers: {
+        ...localDateHeaders(),
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -37,6 +43,9 @@ export async function registerItemExpense(
         purchasedBy: input.purchasedBy ?? null,
         participants: input.participants,
         currency: input.currency,
+        operationId: input.operationId,
+        marketId: input.marketId ?? null,
+        purchasedOn: input.purchasedOn ?? null,
       }),
     },
   )

@@ -1,5 +1,6 @@
 # Consulte https://aka.ms/customizecontainer para aprender a personalizar su contenedor de depuración y cómo Visual Studio usa este Dockerfile para compilar sus imágenes para una depuración más rápida.
 
+ARG SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:8.0
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends curl \
@@ -7,7 +8,7 @@ RUN apt-get update \
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM ${SDK_IMAGE} AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["MiKompri.ProductCatalog.Api/MiKompri.ProductCatalog.Api.csproj", "MiKompri.ProductCatalog.Api/"]

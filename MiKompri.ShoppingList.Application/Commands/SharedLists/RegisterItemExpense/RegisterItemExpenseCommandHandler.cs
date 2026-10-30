@@ -13,19 +13,23 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
         private readonly ICurrentUserService _currentUser;
         private readonly IGroupAuthorizationService _groupAuthorization;
         private readonly ActiveMembershipPolicy _activeMembershipPolicy;
+        private readonly PurchaseOperationService? _operations;
+        private readonly ICurrentDateProvider _dates;
 
         public RegisterItemExpenseCommandHandler(
             IPurchaseListRepository repository,
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUser,
             IGroupAuthorizationService groupAuthorization,
-            ActiveMembershipPolicy activeMembershipPolicy)
+            ActiveMembershipPolicy activeMembershipPolicy, PurchaseOperationService? operations = null, ICurrentDateProvider? dates = null)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
             _groupAuthorization = groupAuthorization;
             _activeMembershipPolicy = activeMembershipPolicy;
+            _operations = operations;
+            _dates = dates ?? new SystemCurrentDateProvider();
         }
 
         public async Task<Guid> Handle(RegisterItemExpenseCommand request, CancellationToken cancellationToken)
@@ -59,7 +63,18 @@ namespace MiKompri.ShoppingList.Application.Commands.SharedLists.RegisterItemExp
             var item = list.Items.FirstOrDefault(x => x.Id == request.ItemId)
                 ?? throw new KeyNotFoundException("Ítem no encontrado.");
 
+            PurchaseOperationService.Validate(request.RealPaidPrice, request.Currency);
+            var hash = PurchaseOperationService.Fingerprint(request.PaidBy, request.PurchasedBy, request.RealPaidPrice, request.Currency, request.Participants, request.MarketId, request.PurchasedOn);
+            if (_operations is not null)
+            {
+                var replay = await _operations.ReplayAsync(request.OperationId, _currentUser.UserId, list.Id, item.Id, hash, cancellationToken);
+                if (replay.HasValue) return replay.Value;
+            }
+
             var expense = item.RegisterExpense(request.PaidBy, request.PurchasedBy, request.RealPaidPrice, request.Participants, request.Currency);
+            expense.SetPurchaseDetails(request.MarketId, request.PurchasedOn, _dates.Today);
+            list.Touch();
+            if (_operations is not null) await _operations.RecordAsync(request.OperationId, _currentUser.UserId, list.Id, item.Id, expense.Id, hash, cancellationToken);
 
             await _repository.AddSharedListAuditEventAsync(new SharedListAuditEvent(list.Id, _currentUser.UserId, "ExpenseRecorded", nameof(ItemExpenseRecord), expense.Id));
             await _unitOfWork.SaveChangesAsync(cancellationToken);

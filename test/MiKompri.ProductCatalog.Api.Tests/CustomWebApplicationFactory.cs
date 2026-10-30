@@ -11,6 +11,8 @@ namespace MiKompri.ProductCatalog.Api.Tests;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private readonly string _dbName = $"ProductCatalogApiTests-{Guid.NewGuid()}";
+    private string? _postgresAdmin;
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
@@ -39,15 +41,20 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(descriptor);
             }
 
-            var inMemoryServiceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
-
-            services.AddDbContext<ProductCatalogDbContext>(options =>
+            var postgres = Environment.GetEnvironmentVariable("MIKOMPRI_TEST_POSTGRES");
+            if (!string.IsNullOrWhiteSpace(postgres))
             {
-                options.UseInMemoryDatabase($"ProductCatalogApiTests-{Guid.NewGuid()}");
-                options.UseInternalServiceProvider(inMemoryServiceProvider);
-            });
+                _postgresAdmin = postgres;
+                using var admin = new Npgsql.NpgsqlConnection(postgres); admin.Open();
+                using var create = new Npgsql.NpgsqlCommand($"CREATE DATABASE \"{_dbName}\"", admin); create.ExecuteNonQuery();
+                var connection = new Npgsql.NpgsqlConnectionStringBuilder(postgres) { Database = _dbName }.ConnectionString;
+                services.AddDbContext<ProductCatalogDbContext>(options => options.UseNpgsql(connection));
+            }
+            else
+            {
+                var inMemoryServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
+                services.AddDbContext<ProductCatalogDbContext>(options => { options.UseInMemoryDatabase(_dbName); options.UseInternalServiceProvider(inMemoryServiceProvider); });
+            }
 
             services
                 .AddAuthentication(options =>
@@ -60,5 +67,16 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                     TestAuthHandler.SchemeName,
                     _ => { });
         });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (disposing && _postgresAdmin is not null)
+        {
+            using var admin = new Npgsql.NpgsqlConnection(_postgresAdmin); admin.Open();
+            using var drop = new Npgsql.NpgsqlCommand($"DROP DATABASE IF EXISTS \"{_dbName}\" WITH (FORCE)", admin); drop.ExecuteNonQuery();
+            _postgresAdmin = null;
+        }
     }
 }

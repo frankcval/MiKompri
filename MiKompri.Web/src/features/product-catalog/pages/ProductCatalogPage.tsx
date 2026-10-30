@@ -1,6 +1,6 @@
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import ui from '../../../shared/ui/AppSurface.module.css'
-import { Button, Card, CardHeader, Field, Select, Text } from '@fluentui/react-components'
+import { Button, Card, CardHeader, Field, Input, Select, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -11,6 +11,7 @@ import { env } from '../../../shared/config/env'
 import { createCatalogProduct, getCatalogProducts, getMarkets, getProductPriceHistory } from '../api/productCatalogApi'
 import { CreateCatalogProductForm } from '../components/CreateCatalogProductForm'
 import { PriceHistoryPanel } from '../components/PriceHistoryPanel'
+import { CatalogEditor, MarketManagement, RegisterPriceForm } from '../components/CatalogManagement'
 import { withViewState } from '../../../shared/ui/states/withViewState'
 
 export function ProductCatalogPage() {
@@ -28,30 +29,35 @@ function ProductCatalogContent() {
 
   const [selectedProductId, setSelectedProductId] = useState('')
   const [selectedMarketId, setSelectedMarketId] = useState('')
+  const [search, setSearch] = useState('')
+  const [editing, setEditing] = useState('')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
 
   const productsQuery = useQuery({
-    queryKey: ['catalog-products', account?.homeAccountId],
+    placeholderData: previous => previous,
+    queryKey: ['catalog-products', account?.homeAccountId, search],
     enabled: Boolean(account),
     retry: false,
     queryFn: async () => {
       const token = await authSession.getAccessToken(loginRequest.scopes, account)
-      return getCatalogProducts(env.productCatalogApiBaseUrl, token)
+      return getCatalogProducts(env.productCatalogApiBaseUrl, token, search)
     },
   })
 
   const marketsQuery = useQuery({
-    queryKey: ['catalog-markets', account?.homeAccountId],
+    queryKey: ['catalog-markets', account?.homeAccountId, 'all'],
     enabled: Boolean(account),
     retry: false,
     queryFn: async () => {
       const token = await authSession.getAccessToken(loginRequest.scopes, account)
-      return getMarkets(env.productCatalogApiBaseUrl, token)
+      return getMarkets(env.productCatalogApiBaseUrl, token, true)
     },
   })
 
   const historyQuery = useQuery({
-    queryKey: ['catalog-price-history', selectedProductId, selectedMarketId, account?.homeAccountId],
-    enabled: Boolean(account && selectedProductId),
+    queryKey: ['catalog-price-history', selectedProductId, selectedMarketId, account?.homeAccountId, from, to],
+    enabled: Boolean(account && selectedProductId && !(from && to && from > to)),
     retry: false,
     queryFn: async () => {
       const token = await authSession.getAccessToken(loginRequest.scopes, account)
@@ -60,6 +66,8 @@ function ProductCatalogContent() {
         token,
         selectedProductId,
         selectedMarketId || undefined,
+        from || undefined,
+        to || undefined,
       )
     },
   })
@@ -105,6 +113,7 @@ function ProductCatalogContent() {
 
         <Card className={ui.panel}>
           <CardHeader header={<h2>Productos</h2>} />
+          <Field label="Buscar en el catálogo"><Input type="search" value={search} onChange={(_, d) => setSearch(d.value)} /></Field>
           {productsQuery.data?.length ? (
             <section className={ui.stack}>
               {productsQuery.data.map((product) => (
@@ -118,6 +127,8 @@ function ProductCatalogContent() {
                   <Button appearance="secondary" onClick={() => setSelectedProductId(product.id)}>
                     Ver historial
                   </Button>
+                  <Button onClick={() => setEditing(editing === product.id ? '' : product.id)}>Editar producto {product.name}</Button>
+                  {editing === product.id ? <CatalogEditor key={product.id} product={product} onDone={() => setEditing('')} /> : null}
                 </div>
               ))}
             </section>
@@ -139,27 +150,21 @@ function ProductCatalogContent() {
               {marketsQuery.data?.map(market => <option key={market.id} value={market.id}>{market.name}</option>)}
             </Select>
           </Field>
-          {marketsQuery.data?.length ? (
-            <section className={ui.stack}>
-              {marketsQuery.data.map((market) => (
-                <div className={ui.row} key={market.id}><Text>{market.name}</Text></div>
-              ))}
-            </section>
-          ) : (
-            withViewState({
-              state: 'empty',
-              content: null,
-              emptyTitle: 'Sin mercados',
-              emptyDescription: 'No hay mercados disponibles.',
-            })
-          )}
+          <div className={ui.actions}><Field label="Desde"><Input type="date" value={from} onChange={(_, d) => setFrom(d.value)} /></Field><Field label="Hasta"><Input type="date" value={to} onChange={(_, d) => setTo(d.value)} /></Field></div>
+          {from && to && from > to ? <p role="alert">La fecha inicial debe ser anterior o igual a la final.</p> : null}
+          <MarketManagement markets={marketsQuery.data ?? []} />
         </Card>
+
+        {productsQuery.data?.find(p => p.id === selectedProductId) ? <RegisterPriceForm key={selectedProductId} product={productsQuery.data.find(p => p.id === selectedProductId)!} markets={marketsQuery.data ?? []} /> : null}
 
         <PriceHistoryPanel
           markets={marketsQuery.data ?? []}
           history={historyQuery.data ?? null}
           isLoading={historyQuery.isLoading}
           errorStatus={(historyQuery.error as { status?: number } | undefined)?.status}
+          hasError={historyQuery.isError}
+          selected={Boolean(selectedProductId)}
+          onRetry={() => { void historyQuery.refetch() }}
         />
       </section>
     ),

@@ -13,6 +13,18 @@ namespace MiKompri.ShoppingList.Domain.Entities
         public DateTime ExpenseDate { get; private set; } = DateTime.UtcNow;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; private set; }
+        public Guid? MarketId { get; private set; }
+        public DateOnly? PurchasedOn { get; private set; }
+        public Guid Version { get; private set; } = Guid.NewGuid();
+
+        public void SetPurchaseDetails(Guid? marketId, DateOnly? purchasedOn, DateOnly today)
+        {
+            if (marketId == Guid.Empty) throw new InvalidOperationException("El mercado no es válido.");
+            if (purchasedOn > today) throw new InvalidOperationException("La fecha de compra no puede ser futura.");
+            MarketId = marketId;
+            PurchasedOn = purchasedOn;
+            Version = Guid.NewGuid();
+        }
 
         public List<ExpenseParticipant> Participants { get; private set; } = new();
 
@@ -28,6 +40,7 @@ namespace MiKompri.ShoppingList.Domain.Entities
         {
             ApplyExpenseData(paidBy, purchasedBy, realPaidPrice, participantUserIds, currency);
             UpdatedAt = DateTime.UtcNow;
+            Version = Guid.NewGuid();
         }
 
         private void ApplyExpenseData(Guid paidBy, Guid? purchasedBy, decimal realPaidPrice, IEnumerable<Guid> participantUserIds, string? currency)

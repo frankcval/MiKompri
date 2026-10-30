@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
-import { Button, Field, Input, Select } from '@fluentui/react-components'
+import { Button, Field, Input } from '@fluentui/react-components'
 import type { CatalogProduct } from '../../product-catalog/api/productCatalogApi'
 import type { ListItemInput } from '../api/shoppingListsApi'
 import ui from '../../../shared/ui/AppSurface.module.css'
@@ -28,13 +28,14 @@ export function ListItemsPanel({ products, onAddItem, accountKey = '', draftScop
     catch (cause) { setError(cause instanceof Error ? cause.message : 'No fue posible agregar el ítem. Inténtalo de nuevo.') }
     finally { submitting.current = false; setPending(false) }
   })(event) }}>
-    <Field label="Producto" required><Controller control={control} name="productId" render={({ field }) => <Select select={{ ref: field.ref }} name={field.name} value={field.value} onBlur={field.onBlur} onChange={(_, data) => field.onChange(data.value)} required disabled={pending || !products.length}>
-      <option value="">Selecciona un producto</option>{products.filter(p => p.isActive !== false).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-    </Select>} /></Field>
+    <Field label="Producto" required><Controller control={control} name="productId" render={({ field }) => <div role="group" aria-label="Seleccionar producto" className={ui.stack}>
+      {products.filter(p => p.isActive !== false).map((p, index) => <Button key={p.id} ref={index === 0 ? field.ref : undefined} aria-pressed={field.value === p.id} disabled={pending} onBlur={field.onBlur} appearance={field.value === p.id ? 'primary' : 'secondary'} onClick={() => field.onChange(p.id)}>{p.name} ({p.purchaseUnit ?? 'unidad'})</Button>)}
+      {!products.length ? <p role="status">No hay productos que coincidan con la búsqueda.</p> : null}
+    </div>} /></Field>
     <Field label="Cantidad" required validationMessage={!validQuantity ? 'Introduce una cantidad entera mayor que cero.' : undefined}>
       <Controller control={control} name="quantity" render={({ field }) => <Input input={{ ref: field.ref }} name={field.name} value={field.value} onBlur={field.onBlur} onChange={(_, data) => field.onChange(data.value)} type="number" min={1} step={1} required disabled={pending} />} />
     </Field>
-    <Field label="Precio estimado" hint="Opcional. Déjalo vacío si todavía no lo sabes." validationMessage={!validPrice ? 'Introduce un precio igual o mayor que cero.' : undefined}>
+    <Field label="Precio estimado" hint="Precio por unidad, opcional. Déjalo vacío si todavía no lo sabes." validationMessage={!validPrice ? 'Introduce un precio igual o mayor que cero.' : undefined}>
       <Controller control={control} name="price" render={({ field }) => <Input input={{ ref: field.ref }} name={field.name} value={field.value} onBlur={field.onBlur} onChange={(_, data) => field.onChange(data.value)} inputMode="decimal" disabled={pending} />} />
     </Field>
     {error ? <p role="alert">{error}</p> : null}{success ? <p role="status">{success}</p> : null}

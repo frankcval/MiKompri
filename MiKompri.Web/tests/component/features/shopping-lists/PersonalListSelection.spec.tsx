@@ -67,21 +67,21 @@ async function openAdd() {
   await screen.findByRole('dialog')
 }
 async function chooseProduct() {
-  if (!screen.queryByRole('combobox', { name: /producto/i })) await openAdd()
-  fireEvent.change(await screen.findByRole('combobox', { name: /producto/i }), { target: { value: productId } })
+  if (!screen.queryByRole('group', { name: 'Seleccionar producto' })) await openAdd()
+  await user.click(await screen.findByRole('button', { name: 'Arroz (unidad)', exact: true }))
 }
 
 describe('recorrido privado personal', () => {
   it('prioriza el índice sin formulario ni consultas de productos', async () => {
     mount()
-    await screen.findByRole('link', { name: 'Segunda' })
+    await screen.findByRole('link', { name: /^Segunda/ })
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Agregar ítem' })).not.toBeInTheDocument()
     expect(fetchMock.mock.calls.every(([url]) => !url.endsWith('/catalog-products'))).toBe(true)
   })
   it('envía los IDs del producto y la segunda lista sin tocar la primera', async () => {
     mount()
-    await user.click(await screen.findByRole('link', { name: 'Segunda' }))
+    await user.click(await screen.findByRole('link', { name: /^Segunda/ }))
     await screen.findByRole('heading', { name: 'Segunda', exact: true })
     await chooseProduct()
     fireEvent.change(screen.getByRole('spinbutton', { name: /cantidad/i }), { target: { value: '2' } })
@@ -96,7 +96,7 @@ describe('recorrido privado personal', () => {
     await screen.findByRole('listitem')
     expect(screen.getByRole('listitem')).toHaveTextContent(/Arroz.*Cantidad: 2/)
     await user.click(screen.getByRole('button', { name: 'Atrás' }))
-    await screen.findByRole('link', { name: 'Segunda' })
+    await screen.findByRole('link', { name: /^Segunda/ })
     await user.click(screen.getByRole('button', { name: 'Adelante' }))
     await screen.findByRole('heading', { name: 'Segunda', exact: true })
   })
@@ -127,7 +127,7 @@ describe('recorrido privado personal', () => {
     fireEvent.change(screen.getByRole('spinbutton', { name: /cantidad/i }), { target: { value: '3' } })
     await user.click(screen.getByRole('button', { name: 'Agregar ítem' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('La cantidad no es válida.')
-    expect(screen.getByRole('combobox', { name: /producto/i })).toHaveValue(productId)
+    expect(screen.getByRole('button', { name: 'Arroz (unidad)' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('spinbutton', { name: /cantidad/i })).toHaveValue(3)
     failure = false
     await user.click(screen.getByRole('button', { name: 'Agregar ítem' }))
@@ -169,7 +169,7 @@ describe('recorrido privado personal', () => {
     await user.click(await screen.findByRole('link', { name: 'Volver a mis listas' }))
     await user.click(await screen.findByRole('link', { name: /Primera/ }))
     await openAdd()
-    expect(await screen.findByRole('combobox', { name: /producto/i })).toHaveValue('')
+    expect(await screen.findByRole('button', { name: 'Arroz (unidad)' })).toHaveAttribute('aria-pressed', 'false')
   })
   it('marca y desmarca solo el ítem de la lista abierta', async () => {
     lists[1].items.push({ id: 'item-1', productName: 'Arroz', quantity: 1, isPurchased: false })
@@ -180,6 +180,7 @@ describe('recorrido privado personal', () => {
     })
     mount(`/personal-lists/${secondId}`)
     await user.click(await screen.findByRole('checkbox', { name: 'Marcar comprado: Arroz' }))
+    await user.click(await screen.findByRole('button', { name: 'Ahora no' }))
     await screen.findByText('Producto marcado como comprado.')
     expect(screen.getByRole('checkbox', { name: 'Desmarcar comprado: Arroz' })).toBeChecked()
     expect(fetchMock.mock.calls.filter(([url]) => url.endsWith('/purchase-state'))[0][0]).toContain(`/purchaselists/${secondId}/items/item-1/`)

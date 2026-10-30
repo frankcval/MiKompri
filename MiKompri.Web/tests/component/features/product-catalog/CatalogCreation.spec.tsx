@@ -35,7 +35,7 @@ beforeEach(() => {
       }
       return Response.json(products)
     }
-    if (url.endsWith('/markets')) return Response.json([])
+    if (url.includes('/markets')) return Response.json([])
     if (url.endsWith('/purchaselists/mine')) return Response.json([{ id: listId, name: 'Compra semanal', items: [] }])
     throw new Error(`Unexpected request: ${url}`)
   })
@@ -71,8 +71,7 @@ describe('crear productos desde el catálogo', () => {
     await user.click(screen.getByRole('link', { name: 'Volver a la lista' }))
     await screen.findByRole('heading', { name: 'Compra semanal', exact: true })
     await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
-    const selector = await screen.findByRole('combobox', { name: /producto/i })
-    fireEvent.change(selector, { target: { value: productId } })
+    await user.click(await screen.findByRole('button', { name: 'Arroz (kg)' }))
     expect(screen.getByRole('button', { name: 'Agregar ítem', exact: true })).toBeEnabled()
   })
 

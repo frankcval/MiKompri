@@ -1,3 +1,4 @@
+import { localDateHeaders } from '../dates/localDate'
 export const errorMessages: Record<number, string> = {
   400: 'Revisa los datos indicados y vuelve a intentarlo.',
   401: 'Tu sesión ha caducado. Inicia sesión de nuevo para continuar.',
@@ -20,9 +21,10 @@ export async function responseError(response: Response): Promise<Error & { statu
 }
 
 export async function request<T>(url: string, token: string, method = 'GET', body?: unknown): Promise<T> {
+  const dates = body !== null && typeof body === 'object' && ('purchasedOn' in body || 'effectiveDate' in body) ? localDateHeaders() : {}
   let response: Response
   try {
-    response = await fetch(url, { method, headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
+    response = await fetch(url, { method, headers: { ...dates, Authorization: `Bearer ${token}`, Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
   } catch { throw new Error('No hay conexión con el servicio. Revisa tu conexión y actualiza antes de repetir una operación de guardado.') }
   if (!response.ok) throw await responseError(response)
   return response.status === 204 ? undefined as T : await response.json() as T

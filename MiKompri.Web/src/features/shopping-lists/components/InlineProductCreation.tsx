@@ -10,10 +10,10 @@ import type { ListItemInput } from '../api/shoppingListsApi'
 import ui from '../../../shared/ui/AppSurface.module.css'
 
 type Draft = { name: string; unit: string; quantity: string; price: string; createdId: string; createdName: string; uncertain: boolean }
-export function InlineProductCreation({ scope, onAdd, onPendingChange }: { scope: string; onAdd: (item: ListItemInput) => Promise<void>; onPendingChange?: (pending: boolean) => void }) {
+export function InlineProductCreation({ scope, onAdd, onPendingChange, initialName = '' }: { scope: string; onAdd: (item: ListItemInput) => Promise<void>; onPendingChange?: (pending: boolean) => void; initialName?: string }) {
   const { account, token, write } = useListSession()
   const client = useQueryClient()
-  const [draft, setDraft] = useDraft<Draft>(account?.homeAccountId ?? '', `new-product:${scope}`, { name: '', unit: 'unidad', quantity: '1', price: '', createdId: '', createdName: '', uncertain: false })
+  const [draft, setDraft] = useDraft<Draft>(account?.homeAccountId ?? '', `new-product:${scope}`, { name: initialName, unit: 'unidad', quantity: '1', price: '', createdId: '', createdName: '', uncertain: false })
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')

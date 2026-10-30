@@ -4,7 +4,7 @@
 .home h3 { font-size: 22px; font-weight: 600; }
 .home a { color: #006b68; }
 .home a.create { color: #fff; }
-.home button,.home a { min-height: 44px; min-width: 44px; }
+.home button,.home a { min-height: 45px; min-width: 45px; }
 .home button { font-family: inherit; font-size: 16px; }
 .home :focus-visible,.mobileNav a:focus-visible { outline: 3px solid #006b68; outline-offset: 4px; }
 .container,.headerInner { width: calc(100% - 32px); max-width: 1160px; margin-inline: auto; }

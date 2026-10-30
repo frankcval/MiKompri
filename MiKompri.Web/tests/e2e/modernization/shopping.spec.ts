@@ -11,6 +11,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(page.getByRole('heading', { name: 'Compra de la semana' })).toBeVisible()
     const item = page.getByRole('checkbox', { name: 'Marcar comprado: Tomates' })
     await item.focus(); await page.keyboard.press('Space')
+    await page.getByRole('button', { name: 'Ahora no' }).click()
     await expect(page.getByRole('checkbox', { name: 'Desmarcar comprado: Tomates' })).toBeFocused()
     await page.keyboard.press('Space')
     await expect(item).not.toBeChecked()

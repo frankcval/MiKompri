@@ -5,6 +5,8 @@ export async function modernFixtures(page: Page, itemCount = 1) {
   const shared = { id: ids.shared, name: 'Compra de casa', groupId: ids.group, status: 'Active', items: [{ id: ids.item, productName: 'Tomates', quantity: 1, productPrice: 2.8 as number | null, isPurchased: false, addedBy: ids.user }] }
   const products = [{ id: ids.product, name: 'Tomates', purchaseUnit: 'kg', isActive: true }]
   let expenses: unknown[] = []
+  let purchases: unknown[] = []
+  const operations = new Map<string, unknown>()
   const calls: { path: string; method: string; body: unknown }[] = []
   await page.route('**/api/v1/**', async route => {
     const path = new URL(route.request().url()).pathname
@@ -23,6 +25,7 @@ export async function modernFixtures(page: Page, itemCount = 1) {
       else if (path.endsWith('/summary')) data = { balances: [{ userId: ids.user, totalPaid: expenses.length ? 4 : 0, totalOwed: expenses.length ? 4 : 0, netBalance: 0 }] }
       else if (path.endsWith('/proposal')) data = { transfers: [] }
       else if (path.endsWith('/expenses')) data = expenses
+      else if (path.endsWith('/purchases')) data = purchases
       else if (path.endsWith('/markets')) data = []
       else return route.fulfill({ status: 404, json: {} })
       return route.fulfill({ json: data })
@@ -31,7 +34,11 @@ export async function modernFixtures(page: Page, itemCount = 1) {
     if (path.endsWith('/purchase-state')) list.items.find(i => path.includes(i.id))!.isPurchased = body.isPurchased
     else if (path.endsWith('/mark-as-purchased')) list.items.find(i => path.includes(i.id))!.isPurchased = true
     else if (path.endsWith('/catalog-products') && method === 'POST') { const product = { id: '88888888-8888-4888-8888-888888888888', ...body, isActive: true }; products.push(product); return route.fulfill({ status: 201, json: product }) }
-    else if (path.endsWith('/expenses') && method === 'POST') { expenses.push({ ...body, expenseId: ids.expense, itemId: ids.item, productName: 'Tomates', createdAt: new Date().toISOString() }); return route.fulfill({ status: 201, json: ids.expense }) }
+    else if (path.endsWith('/purchases') && method === 'POST') {
+      if (!operations.has(body.operationId)) { purchases.push({ ...body, paidBy: ids.user, participants: [], version: ids.expense, expenseId: ids.expense, itemId: ids.item, productName: 'Tomates', createdAt: new Date().toISOString() }); operations.set(body.operationId, ids.expense) }
+      return route.fulfill({ status: 201, json: ids.expense })
+    }
+    else if (path.endsWith('/expenses') && method === 'POST') { expenses.push({ ...body, version: ids.expense, expenseId: ids.expense, itemId: ids.item, productName: 'Tomates', createdAt: new Date().toISOString() }); return route.fulfill({ status: 201, json: ids.expense }) }
     else if (path.endsWith('/' + ids.expense)) { if (method === 'DELETE') expenses = []; else expenses = [{ ...body, expenseId: ids.expense, itemId: ids.item, productName: 'Tomates', createdAt: new Date().toISOString() }] }
     else if (path.endsWith('/items') && method === 'POST') { list.items.push({ id: '99999999-9999-4999-8999-999999999999', productName: body.productName ?? body.name, quantity: body.quantity, productPrice: body.price ?? body.estimatedPrice ?? null, isPurchased: false, addedBy: ids.user }); return route.fulfill({ status: 201, json: list.items.at(-1)!.id }) }
     else if (path.includes('/items/')) { const index = list.items.findIndex(i => path.endsWith(i.id)); if (method === 'DELETE') list.items.splice(index, 1); else Object.assign(list.items[index], { quantity: body.quantity, productPrice: body.price ?? body.estimatedPrice ?? null }) }

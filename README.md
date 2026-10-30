@@ -770,3 +770,7 @@ Para preguntas o sugerencias, por favor abrir un [issue](https://github.com/fran
 ### Estado de la modernización 008
 
 Implementación local de Mis listas, compra reversible, gestión personal/compartida, alta contextual, personas y gastos corregibles, con autorización por recurso. Se mantienen Spec Kit y los componentes existentes. [Evidencia y pendientes P0–P3](specs/008-web-ux-modernization/evidence/validation.md); [tareas](specs/008-web-ux-modernization/tasks.md). La entrega local no certifica aún Entra con dos personas ni el piloto humano.
+
+### Shopping Experience Completion 009
+
+Estimaciones por lista, orden y separación Activas/Historial, selección directa de productos, edición de catálogo, mercados e historial de precios operativo. Captura opcional de compra desde el marcado, con Gastos independiente, registros canónicos e idempotencia; soporta listas personales y compartidas. Requiere la migración aditiva de detalles de compra/operaciones. [Spec y dependencias](specs/009-shopping-experience-completion/spec.md), [contratos](specs/009-shopping-experience-completion/contracts/api.md), [validación y límites](specs/009-shopping-experience-completion/evidence/validation.md). La aceptación completa sigue abierta; no cierra 007/008. [010](specs/010-account-management-social-auth/scope.md) y [011](specs/011-web-iconography/scope.md) son solo análisis de alcance.

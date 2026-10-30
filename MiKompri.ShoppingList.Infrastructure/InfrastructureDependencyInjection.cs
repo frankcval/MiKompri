@@ -17,6 +17,7 @@ namespace MiKompri.ShoppingList.Infrastructure
 
             services.AddScoped<IPurchaseListRepository, PurchaseListRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPurchaseOperationStore, PurchaseOperationStore>();
 
             var usersApiBaseUrl = configuration["UsersApi:BaseUrl"];
             if (string.IsNullOrWhiteSpace(usersApiBaseUrl))

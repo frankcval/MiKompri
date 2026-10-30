@@ -26,7 +26,7 @@ public class UpdateCatalogProductCommandHandler : IRequestHandler<UpdateCatalogP
         var exists = await _repository.ExistsActiveWithNameAndUnitAsync(name.NormalizedValue, unit, request.CatalogProductId, cancellationToken);
         if (exists)
         {
-            throw new InvalidOperationException("Ya existe un producto activo con el mismo nombre y unidad.");
+            throw new MiKompri.ProductCatalog.Domain.Exceptions.ConflictException("Ya existe un producto activo con el mismo nombre y unidad.");
         }
 
         product.UpdateDetails(name, unit);

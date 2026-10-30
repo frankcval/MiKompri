@@ -63,11 +63,17 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                     b.Property<DateTime>("ExpenseDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("MarketId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("PaidBy")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("PurchasedBy")
                         .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("PurchasedOn")
+                        .HasColumnType("date");
 
                     b.Property<decimal>("RealPaidPrice")
                         .HasColumnType("decimal(12,2)");
@@ -77,6 +83,12 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.HasKey("Id");
 
@@ -171,6 +183,33 @@ namespace MiKompri.ShoppingList.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("purchase_lists", (string)null);
+                });
+
+            modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.PurchaseOperation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ExpenseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ListId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RequestHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("purchase_operations", (string)null);
                 });
 
             modelBuilder.Entity("MiKompri.ShoppingList.Domain.Entities.SharedListAuditEvent", b =>

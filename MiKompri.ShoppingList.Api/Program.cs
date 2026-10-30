@@ -51,6 +51,9 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentDateProvider, ClientCurrentDateProvider>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

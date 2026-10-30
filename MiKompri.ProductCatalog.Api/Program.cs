@@ -44,6 +44,9 @@ builder.Services.Configure<ProductCatalogOptions>(
     builder.Configuration.GetSection(ProductCatalogOptions.SectionName));
 builder.Services.AddProductCatalogApplication();
 builder.Services.AddProductCatalogInfrastructure(builder.Configuration);
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<MiKompri.ProductCatalog.Application.Abstractions.IDateTimeProvider, MiKompri.ProductCatalog.Api.Services.ClientDateTimeProvider>();
 builder.Services.AddMiKompriHealthChecks(builder.Configuration);
 
 builder.Services

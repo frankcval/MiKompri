@@ -38,8 +38,18 @@ try {
       await page.getByRole('checkbox', { name: 'Marcar comprado: Tomates' }).or(page.getByRole('button', { name: 'Marcar comprado: Tomates' })).click()
       await page.waitForTimeout(250)
       interactions.mark = await page.evaluate(() => Math.max(0, ...window.__lab.events.splice(0)))
+      // 009 offers optional capture after marking. Dismiss it explicitly before
+      // measuring the independent add-products action; keep legacy baselines.
+      const capture = page.getByRole('button', { name: 'Ahora no', exact: true })
+      if (label.startsWith('009')) await capture.waitFor()
+      if (await capture.isVisible()) {
+        await capture.click()
+        await page.getByRole('dialog', { name: 'Datos de compra de Tomates' }).waitFor({ state: 'hidden' })
+      }
+      await page.evaluate(() => window.__lab.events.splice(0))
       await page.getByRole('button', { name: 'Añadir productos', exact: true }).click()
-      await page.getByRole('dialog').waitFor()
+      await page.getByRole('dialog', { name: 'Añadir productos a la lista' }).waitFor()
+      if (label.startsWith('009')) await page.getByRole('group', { name: 'Seleccionar producto' }).waitFor()
       await page.waitForTimeout(250)
       interactions.add = await page.evaluate(() => Math.max(0, ...window.__lab.events.splice(0)))
     }

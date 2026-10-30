@@ -36,7 +36,8 @@ public class RegisterProductPriceCommandHandler : IRequestHandler<RegisterProduc
 
     public async Task<Guid> Handle(RegisterProductPriceCommand request, CancellationToken cancellationToken)
     {
-        if (request.EffectiveDate > _dateTimeProvider.UtcToday)
+        var today = _dateTimeProvider.Today;
+        if (request.EffectiveDate > today)
         {
             throw new InvalidOperationException("No se puede registrar precio con fecha futura.");
         }
@@ -69,7 +70,7 @@ public class RegisterProductPriceCommandHandler : IRequestHandler<RegisterProduc
         }
 
         var price = new Money(request.PriceAmount, _currency);
-        var record = new ProductPriceRecord(request.CatalogProductId, request.MarketId, request.EffectiveDate, price);
+        var record = new ProductPriceRecord(request.CatalogProductId, request.MarketId, request.EffectiveDate, price, today);
 
         await _productPriceRecordRepository.AddAsync(record, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
