@@ -6,8 +6,12 @@ import { MsalProvider } from '@azure/msal-react'
 import { RouterProvider } from 'react-router-dom'
 import { appTheme } from '../../shared/ui/theme'
 import { queryClient } from './queryClient'
+import { onSessionReset, resetPrivateSession } from '../../auth/session/sessionBoundary'
+import { clearDrafts } from '../../auth/session/draftStore'
 import { msalConfig } from '../../auth/msal/msalConfig'
 import { appRouter } from '../router'
+
+onSessionReset(() => { void queryClient.cancelQueries(); queryClient.clear(); clearDrafts() })
 
 const msalInstance = new PublicClientApplication(msalConfig)
 
@@ -15,6 +19,8 @@ msalInstance.addEventCallback((event) => {
   if (event.eventType === EventType.LOGIN_SUCCESS || event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS) {
     const result = event.payload as AuthenticationResult | null
     if (result?.account) {
+      const before = msalInstance.getActiveAccount()
+      if (before && before.homeAccountId !== result.account.homeAccountId) resetPrivateSession()
       msalInstance.setActiveAccount(result.account)
     }
   }

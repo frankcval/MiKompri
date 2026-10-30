@@ -1,3 +1,4 @@
+import { assertCurrentSession, sessionStamp, sessionSignal } from '../../auth/session/sessionBoundary'
 import { localDateHeaders } from '../dates/localDate'
 export const errorMessages: Record<number, string> = {
   400: 'Revisa los datos indicados y vuelve a intentarlo.',
@@ -21,13 +22,17 @@ export async function responseError(response: Response): Promise<Error & { statu
 }
 
 export async function request<T>(url: string, token: string, method = 'GET', body?: unknown): Promise<T> {
+  const stamp = sessionStamp()
   const dates = body !== null && typeof body === 'object' && ('purchasedOn' in body || 'effectiveDate' in body) ? localDateHeaders() : {}
   let response: Response
   try {
-    response = await fetch(url, { method, headers: { ...dates, Authorization: `Bearer ${token}`, Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
+    response = await fetch(url, { signal: sessionSignal(), method, headers: { ...dates, Authorization: `Bearer ${token}`, Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
   } catch { throw new Error('No hay conexión con el servicio. Revisa tu conexión y actualiza antes de repetir una operación de guardado.') }
+  assertCurrentSession(stamp)
   if (!response.ok) throw await responseError(response)
-  return response.status === 204 ? undefined as T : await response.json() as T
+  const value = response.status === 204 ? undefined as T : await response.json() as T
+  assertCurrentSession(stamp)
+  return value
 }
 
 export const describeError = (error: unknown) => error instanceof Error ? error.message : 'No se pudo completar la operación. Inténtalo de nuevo.'

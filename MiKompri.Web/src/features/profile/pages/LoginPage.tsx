@@ -7,6 +7,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
 import { loginRequest } from '../../../auth/msal/msalConfig'
+import { googleAvailable, type AuthProvider } from '../../../auth/msal/providerSettings'
 import { env } from '../../../shared/config/env'
 import { consumeReturnTo } from '../../../auth/session/returnIntent'
 
@@ -34,8 +35,8 @@ export function LoginPage() {
 
   const account = accounts[0]
 
-  const handleLogin = async () => {
-    if (isPlaceholderClientId) {
+  const handleLogin = async (provider: AuthProvider = 'microsoft') => {
+    if (provider === 'microsoft' && isPlaceholderClientId) {
       setMessage('Configura VITE_ENTRA_CLIENT_ID con el Application (client) ID real de Entra ID.')
       return
     }
@@ -45,9 +46,9 @@ export function LoginPage() {
     }
 
     try {
-      await authSessionService.login(loginRequest.scopes)
+      await authSessionService.login(loginRequest.scopes, provider)
     } catch {
-      setMessage('No se pudo iniciar sesión. Revisa la configuración de Entra ID y vuelve a intentarlo.')
+      setMessage('No se pudo iniciar sesión. Revisa el acceso del proveedor y vuelve a intentarlo.')
     }
   }
 
@@ -67,8 +68,10 @@ export function LoginPage() {
         <section className={`${ui.page} ${ui.panel}`}>
           <PageHeader title="Inicio de sesión" description="Tu próxima compra empieza aquí. Entra para guardar tus listas y organizarte con los tuyos." />
           <Text role="status">{message}</Text>
+          <p>Si ya utilizas MiKompri con Microsoft, continúa con Microsoft para acceder a tu cuenta. La recuperación del acceso se realiza con tu proveedor original.</p>
           <div className={ui.actions}>
-            <Button appearance="primary" onClick={handleLogin} disabled={isPlaceholderClientId || inProgress !== InteractionStatus.None}>
+            {googleAvailable() ? <Button appearance="primary" onClick={() => void handleLogin('google')} disabled={inProgress !== InteractionStatus.None}>Continuar con Google</Button> : null}
+            <Button appearance={googleAvailable() ? "secondary" : "primary"} onClick={() => void handleLogin('microsoft')} disabled={isPlaceholderClientId || inProgress !== InteractionStatus.None}>
               Continuar con Microsoft
             </Button>
             {account ? <Button appearance="secondary" onClick={handleLogout}>

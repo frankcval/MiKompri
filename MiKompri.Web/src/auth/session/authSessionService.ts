@@ -1,4 +1,7 @@
-import type { AccountInfo, IPublicClientApplication } from '@azure/msal-browser'
+import { PublicClientApplication, type AccountInfo, type IPublicClientApplication } from '@azure/msal-browser'
+import { configurationFor } from '../msal/msalConfig'
+import { getProviderSettings, selectedProvider, selectProvider, type AuthProvider } from '../msal/providerSettings'
+import { announceAccountBoundary, assertCurrentSession, sessionStamp } from './sessionBoundary'
 import { clearDrafts } from './draftStore'
 import { clearReturnIntent, rememberReturnTo } from './returnIntent'
 
@@ -27,12 +30,22 @@ export async function executeAuthenticatedWrite<T>(
 
 export function createAuthSessionService(msalInstance: IPublicClientApplication) {
   return {
-    async login(scopes: string[]): Promise<void> {
+    async login(scopes: string[], provider?: AuthProvider): Promise<void> {
       if (typeof window !== 'undefined' && !['/login', '/auth/callback'].includes(window.location.pathname)) rememberReturnTo(window.location.pathname + window.location.search)
-      await msalInstance.loginRedirect({ scopes })
+      const route = provider ?? selectedProvider()
+      const settings = getProviderSettings(route)
+      const changed = route !== selectedProvider()
+      announceAccountBoundary()
+      clearDrafts()
+      selectProvider(route)
+      const client = changed ? new PublicClientApplication(configurationFor(route)) : msalInstance
+      if (changed) { await client.initialize(); await client.handleRedirectPromise() }
+      await client.loginRedirect({ scopes: provider ? [settings.scope] : scopes,
+        ...(settings.domainHint ? { domainHint: settings.domainHint } : {}), prompt: 'select_account' })
     },
 
     async logout(account?: AccountInfo): Promise<void> {
+      announceAccountBoundary()
       clearDrafts()
       clearReturnIntent()
       await msalInstance.logoutRedirect({ account })
@@ -44,7 +57,9 @@ export function createAuthSessionService(msalInstance: IPublicClientApplication)
         throw new Error('No hay cuenta activa en MSAL para adquirir token.')
       }
 
+      const stamp = sessionStamp()
       const tokenResult = await msalInstance.acquireTokenSilent({ scopes, account: activeAccount })
+      assertCurrentSession(stamp)
       return tokenResult.accessToken
     },
   }

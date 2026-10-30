@@ -54,7 +54,7 @@ describe('authSessionService', () => {
     await service.login(['scope-a'])
     await service.logout(account)
 
-    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ['scope-a'] })
+    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ['scope-a'], prompt: 'select_account' })
     expect(logoutRedirect).toHaveBeenCalledWith({ account })
   })
 })
