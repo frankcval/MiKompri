@@ -21,5 +21,7 @@ namespace MiKompri.Users.Domain.Users
 
         Task AddAsync(User user, CancellationToken cancellationToken = default);
         Task UpdateAsync(User user, CancellationToken cancellationToken = default);
+        Task<bool> IsIdentityReservedAsync(string provider, string tenantId, string objectId, CancellationToken cancellationToken = default);
+        Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default);
     }
 }

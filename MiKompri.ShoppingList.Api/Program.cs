@@ -1,3 +1,4 @@
+using MiKompri.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -28,7 +29,7 @@ builder.Host.UseSerilog((context, services, loggerConfig) =>
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext();
-    // No hace falta añadir WriteTo aquí porque ya está en appsettings.json
+    // No hace falta aÃ±adir WriteTo aquÃ­ porque ya estÃ¡ en appsettings.json
 });
 // ----------------------
 //  CORS  reglas, por ahora abiertas
@@ -55,23 +56,11 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentDateProvider, ClientCurrentDateProvider>();
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        // Preserve original Entra tid/oid claims for provisioning and UsersApi forwarding.
-        options.MapInboundClaims = false;
-        options.Authority = builder.Configuration["Authentication:Authority"];
-        options.Audience = builder.Configuration["Authentication:Audience"];
-        options.TokenValidationParameters = ShoppingListJwtValidation.BuildTokenValidationParameters(
-            issuer: builder.Configuration["Authentication:Authority"],
-            audience: builder.Configuration["Authentication:Audience"],
-            validAudiencesRaw: builder.Configuration["Authentication:ValidAudiences"]);
-    });
+builder.Services.AddMiKompriJwt(builder.Configuration);
 
 builder.Services.AddAuthorization();
 
-// Capa de aplicación (MediatR, validadores, etc.)
+// Capa de aplicaciÃ³n (MediatR, validadores, etc.)
 builder.Services.AddAplicaction();
 
 // Capa de infraestructura (DbContext, repos, UnitOfWork)
@@ -165,6 +154,7 @@ app.UseCors(CorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<RemoteAccountStatusMiddleware>();
 app.UseMiddleware<UserProvisioningMiddleware>();
 
 // Local Vite calls HTTP directly; redirecting to another port strips its Bearer header.
@@ -177,14 +167,14 @@ app.MapControllers();
 
 app.MapMiKompriHealthChecks();
 
-// Ejecuta la app; al terminar continúa y cerramos Serilog
+// Ejecuta la app; al terminar continÃºa y cerramos Serilog
 app.Run();
 
 Log.CloseAndFlush();
 
 /// <summary>
-/// Marcador de entrada para WebApplicationFactory en tests de integración.
+/// Marcador de entrada para WebApplicationFactory en tests de integraciÃ³n.
 /// Usar <see cref="ShoppingListApiProgram"/> cuando el proyecto de test
-/// también referencie MiKompri.Users.Api para evitar ambigüedad con Program.
+/// tambiÃ©n referencie MiKompri.Users.Api para evitar ambigÃ¼edad con Program.
 /// </summary>
 public sealed class ShoppingListApiProgram { }

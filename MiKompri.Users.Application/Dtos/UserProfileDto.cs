@@ -9,5 +9,11 @@ namespace MiKompri.Users.Application.Dtos
         public string ExternalUserId { get; init; } = string.Empty;
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; init; }
+        public string? Username { get; init; }
+        public string? GivenName { get; init; }
+        public string? FamilyName { get; init; }
+        public string? PreferredLanguage { get; init; }
+        public string DefaultListSort { get; init; } = "newest";
+        public long ProfileVersion { get; init; }
     }
 }

@@ -37,6 +37,14 @@ namespace MiKompri.Users.Api.Middleware
 
                 switch (ex)
                 {
+                    case MiKompri.Users.Domain.Users.ProfileConflictException:
+                        statusCode = HttpStatusCode.PreconditionFailed;
+                        body = new { status = 412, error = ex.Message, traceId };
+                        break;
+                    case MiKompri.Users.Domain.Users.UserConflictException:
+                        statusCode = HttpStatusCode.Conflict;
+                        body = new { status = 409, error = ex.Message, traceId };
+                        break;
                     case UnauthorizedAccessException:
                         statusCode = HttpStatusCode.Unauthorized;
                         body = new

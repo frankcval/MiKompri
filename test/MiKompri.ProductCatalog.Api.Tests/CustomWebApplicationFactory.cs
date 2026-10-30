@@ -13,6 +13,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly string _dbName = $"ProductCatalogApiTests-{Guid.NewGuid()}";
     private string? _postgresAdmin;
+    public AccountStatusStub AccountStatus { get; } = new();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
@@ -32,6 +33,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureTestServices(services =>
         {
+            services.AddHttpClient("UsersApi").ConfigurePrimaryHttpMessageHandler(() => new AccountStatusStub.Handler(AccountStatus));
             var descriptors = services
                 .Where(d => d.ServiceType == typeof(DbContextOptions<ProductCatalogDbContext>))
                 .ToList();

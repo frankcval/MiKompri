@@ -1,3 +1,4 @@
+using MiKompri.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -50,17 +51,7 @@ builder.Services.AddControllers();
 builder.Services.AddUsersApplication();
 builder.Services.AddUsersInfrastructure(configuration);
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = configuration["Authentication:Authority"];
-        options.Audience = configuration["Authentication:Audience"];
-        options.TokenValidationParameters = UsersJwtValidation.BuildTokenValidationParameters(
-            issuer: configuration["Authentication:Authority"],
-            audience: configuration["Authentication:Audience"],
-            validAudiencesRaw: configuration["Authentication:ValidAudiences"]);
-    });
+builder.Services.AddMiKompriJwt(builder.Configuration);
 
 builder.Services.AddAuthorization();
 

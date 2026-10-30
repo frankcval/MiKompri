@@ -49,7 +49,7 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest.CrossService
             var syncOwnerResp = await ownerUsersClient.PostAsync(
                 "/api/v1/users/me/sync",
                 new System.Net.Http.StringContent("{}", System.Text.Encoding.UTF8, "application/json"));
-            syncOwnerResp.EnsureSuccessStatusCode();
+            Assert.True(syncOwnerResp.IsSuccessStatusCode, await syncOwnerResp.Content.ReadAsStringAsync());
 
             // ── 2. Crear grupo (el owner queda automáticamente como miembro Owner) ──
             var createGroupResp = await ownerUsersClient.PostAsJsonAsync(
@@ -142,6 +142,11 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest.CrossService
         [Fact]
         public async Task CrossService_NonMember_ShouldReturn403()
         {
+            // D1 status reads never create users. Bootstrap a known outsider explicitly
+            // before checking the independent group-membership authorization.
+            using var outsider = _usersFactory.CreateClient();
+            outsider.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", OutsiderSub);
+            (await outsider.PostAsync("/api/v1/users/me/sync", null)).EnsureSuccessStatusCode();
             // El owner crea la lista
             _shoppingClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Test", OwnerSub);

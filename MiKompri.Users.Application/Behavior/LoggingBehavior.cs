@@ -25,9 +25,8 @@ namespace MiKompri.Users.Application.Behavior
 
             // Log de entrada del comando/query
             _logger.LogInformation(
-                "Handling {RequestName} {@Request}",
-                requestName,
-                request);
+                "Handling {RequestName}",
+                requestName);
 
             var response = await next();
 

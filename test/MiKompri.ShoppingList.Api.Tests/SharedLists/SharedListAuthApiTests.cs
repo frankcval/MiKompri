@@ -51,7 +51,7 @@ namespace MiKompri.ShoppingList.Api.Tests.SharedLists
 
             Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
             var requests = _factory.UsersApiState.GetRequests();
-            Assert.Contains("/api/v1/users/me", requests);
+            Assert.Contains("/api/v1/users/me/access-status", requests);
             Assert.Contains($"/api/v1/groups/{groupId}/members", requests);
         }
 

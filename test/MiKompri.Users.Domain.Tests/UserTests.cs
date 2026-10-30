@@ -24,7 +24,7 @@ public class UserTests
     }
 
     [Fact]
-    public void SyncClaims_WithDifferentValues_UpdatesAndSetsUpdatedAt()
+    public void SyncClaims_WithDifferentValues_PreservesOwnedProfile()
     {
         var user = new User("Ana", "ana@demo.com", "entra", "sub-1");
         var before = user.UpdatedAt;
@@ -32,9 +32,9 @@ public class UserTests
         Thread.Sleep(5);
         user.SyncClaims("Ana María", "anita@demo.com");
 
-        user.DisplayName.Should().Be("Ana María");
-        user.Email.Should().Be("anita@demo.com");
-        user.UpdatedAt.Should().BeAfter(before);
+        user.DisplayName.Should().Be("Ana");
+        user.Email.Should().Be("ana@demo.com");
+        user.UpdatedAt.Should().Be(before);
     }
 
     [Fact]

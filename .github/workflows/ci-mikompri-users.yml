@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 003-users-authentication
+      - 010-account-management-social-auth
   pull_request:
     branches:
       - main
@@ -13,6 +14,14 @@ on:
 jobs:
   build-test-and-docker:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: qa
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U qa" --health-interval 5s --health-timeout 5s --health-retries 10
 
     steps:
       - name: Checkout repository
@@ -37,6 +46,12 @@ jobs:
 
       - name: Test Users.Api
         run: dotnet test test/MiKompri.Users.Api.Tests/MiKompri.Users.Api.Tests.csproj --configuration Release --no-build
+
+        env:
+          MIKOMPRI_TEST_POSTGRES: Host=localhost;Port=5432;Database=postgres;Username=qa;Pooling=false
+
+      - name: Build QA identity migration runner
+        run: dotnet build tools/identity-migration/IdentityMigration.csproj --configuration Release
 
       - name: Docker build Users API (TP4)
         run: docker build -t mikompri.users.api -f MiKompri.Users.Api/Dockerfile .

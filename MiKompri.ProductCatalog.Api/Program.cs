@@ -1,3 +1,4 @@
+using MiKompri.Identity;
 using MiKompri.ProductCatalog.Api.Extensions;
 using MiKompri.ProductCatalog.Api.Middleware;
 using MiKompri.ProductCatalog.Api.Security;
@@ -49,19 +50,12 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<MiKompri.ProductCatalog.Application.Abstractions.IDateTimeProvider, MiKompri.ProductCatalog.Api.Services.ClientDateTimeProvider>();
 builder.Services.AddMiKompriHealthChecks(builder.Configuration);
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = builder.Configuration["Authentication:Authority"];
-        options.Audience = builder.Configuration["Authentication:Audience"];
-        options.TokenValidationParameters = ProductCatalogJwtValidation.BuildTokenValidationParameters(
-            issuer: builder.Configuration["Authentication:Authority"],
-            audience: builder.Configuration["Authentication:Audience"],
-            validAudiencesRaw: builder.Configuration["Authentication:ValidAudiences"]);
-    });
+builder.Services.AddMiKompriJwt(builder.Configuration);
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpClient("UsersApi", client => {
+    client.BaseAddress = new Uri(builder.Configuration["UsersApi:BaseUrl"] ?? "http://localhost:8082");
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -90,6 +84,7 @@ app.UseCors(CorsPolicy);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<RemoteAccountStatusMiddleware>();
 app.MapControllers().RequireAuthorization();
 app.MapMiKompriHealthChecks();
 

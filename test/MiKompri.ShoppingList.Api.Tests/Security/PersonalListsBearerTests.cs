@@ -3,11 +3,12 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
-using System.Text;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using MiKompri.ShoppingList.Application.DTOs;
@@ -21,11 +22,17 @@ public class PersonalListsBearerTests
 {
     private const string Issuer = "https://sts.windows.net/a6b72a33-ade4-45d3-a2a7-52b88d96f5eb/";
     private const string Audience = "api://36adb79e-9563-4642-8bc9-455358d76273";
-    private static readonly SymmetricSecurityKey Key = new(Encoding.UTF8.GetBytes("personal-lists-regression-test-key-32-bytes"));
+    private static readonly RsaSecurityKey Key = new(RSA.Create(2048)) { KeyId = "bearer-test" };
+    private const string ClientId = "personal-lists-bearer-spa";
 
     private static WebApplicationFactory<ShoppingListApiProgram> WithBearer(
         CustomWebApplicationFactory<ShoppingListApiProgram> factory) => factory.WithWebHostBuilder(builder =>
-        builder.ConfigureServices(services =>
+        builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(new Dictionary<string, string?> {
+            ["Authentication:Authority"] = "https://login.microsoftonline.com/a6b72a33-ade4-45d3-a2a7-52b88d96f5eb/v2.0",
+            ["Authentication:TenantId"] = "a6b72a33-ade4-45d3-a2a7-52b88d96f5eb",
+            ["Authentication:Audience"] = Audience, ["Authentication:ValidAudiences"] = Audience,
+            ["Authentication:ClientIds"] = ClientId, ["Authentication:ExternalId:Enabled"] = "false"
+        })).ConfigureServices(services =>
         {
             // Match Docker's HTTP + HTTPS ports and catch cross-origin redirects that strip Bearer.
             services.Configure<Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionOptions>(options => options.HttpsPort = 8081);
@@ -35,7 +42,7 @@ public class PersonalListsBearerTests
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             });
-            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            services.Configure<JwtBearerOptions>("MiKompri-legacy", options =>
             {
                 options.Authority = string.Empty;
                 options.MetadataAddress = string.Empty;
@@ -47,11 +54,11 @@ public class PersonalListsBearerTests
 
     private static string Token(bool includeOid = true, string audience = Audience)
     {
-        var claims = new List<Claim> { new("sub", "caller"), new("tid", "tenant-test") };
-        if (includeOid) claims.Add(new("oid", "object-test"));
+        var claims = new List<Claim> { new("sub", "caller"), new("tid", "a6b72a33-ade4-45d3-a2a7-52b88d96f5eb"), new("scp", "access_as_user"), new("azp", ClientId) };
+        if (includeOid) claims.Add(new("oid", "11111111-1111-1111-1111-111111111111"));
         return new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
             Issuer, audience, claims, expires: DateTime.UtcNow.AddMinutes(5),
-            signingCredentials: new SigningCredentials(Key, SecurityAlgorithms.HmacSha256)));
+            signingCredentials: new SigningCredentials(Key, SecurityAlgorithms.RsaSha256)));
     }
 
     [Fact]
@@ -81,7 +88,7 @@ public class PersonalListsBearerTests
         Assert.Contains("http://localhost:5173", response.Headers.GetValues("Access-Control-Allow-Origin"));
         var lists = await response.Content.ReadFromJsonAsync<List<PurchaseListDTO>>();
         Assert.Equal(personal.Id, Assert.Single(lists!).Id);
-        Assert.Contains("/api/v1/users/me", factory.UsersApiState.GetRequests());
+        Assert.Contains("/api/v1/users/me/access-status", factory.UsersApiState.GetRequests());
     }
 
     [Fact]

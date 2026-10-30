@@ -17,6 +17,8 @@ COPY ["MiKompri.Users.Infrastructure/MiKompri.Users.Infrastructure.csproj", "MiK
 COPY ["MiKompri.ShoppingList.Application/MiKompri.ShoppingList.Application.csproj", "MiKompri.ShoppingList.Application/"]
 COPY ["MiKompri.ShoppingList.Domain/MiKompri.ShoppingList.Domain.csproj", "MiKompri.ShoppingList.Domain/"]
 
+COPY ["MiKompri.Identity/MiKompri.Identity.csproj", "MiKompri.Identity/"]
+
 RUN dotnet restore "./MiKompri.Users.Api/MiKompri.Users.Api.csproj"
 COPY . .
 WORKDIR "/src/MiKompri.Users.Api"

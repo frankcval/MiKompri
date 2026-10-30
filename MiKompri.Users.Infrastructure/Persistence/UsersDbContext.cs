@@ -19,6 +19,7 @@ namespace MiKompri.Users.Infrastructure.Persistence
         }
 
         public DbSet<User> Users => Set<User>();
+        public DbSet<IdentityMigration> IdentityMigrations => Set<IdentityMigration>();
         public DbSet<Group> Groups => Set<Group>();
         public DbSet<GroupMembership> GroupMemberships => Set<GroupMembership>();
 

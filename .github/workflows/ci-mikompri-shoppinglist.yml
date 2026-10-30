@@ -6,6 +6,7 @@ on:
       - main
       - develop
       - '009-shopping-experience-completion'
+      - '010-account-management-social-auth'
       - 'feature/*'
       - 'hotfix/*'
   pull_request:

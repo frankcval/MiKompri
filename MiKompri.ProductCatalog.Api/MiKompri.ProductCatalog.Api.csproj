@@ -31,4 +31,5 @@
     <ProjectReference Include="..\MiKompri.ProductCatalog.Infrastructure\MiKompri.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup><ProjectReference Include="..\MiKompri.Identity\MiKompri.Identity.csproj" /></ItemGroup>
 </Project>
