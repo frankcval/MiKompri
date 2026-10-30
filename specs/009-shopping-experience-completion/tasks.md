@@ -1,6 +1,6 @@
 # Tasks — 009
 
-Estado al 2026-10-29: implementación funcional y verificaciones automatizadas según [validation](evidence/validation.md); aceptación completa pendiente. No modificar completitud 002–008.
+Estado al 2026-10-30: implementación funcional y verificación técnica T009 acreditadas según [validation](evidence/validation.md); aceptación completa pendiente en T010/T011. No modificar completitud 002–008.
 
 - [x] T001 Formalizar spec/plan/modelo/contratos, auditoría y alcances futuros.
 - [x] T002 Probar e implementar estimaciones/orden/activas/historial en todos los índices y detalles.
@@ -10,13 +10,13 @@ Estado al 2026-10-29: implementación funcional y verificaciones automatizadas s
 - [x] T006 Tests dominio/backend para compra personal, mercado/fecha, idempotencia y concurrencia.
 - [x] T007 Implementar contratos backend aditivos, persistencia/migración y protección de historia.
 - [x] T008 Captura opcional desde marcado y acceso independiente de Gastos, mismos registros e idempotencia Web.
-- [ ] T009 Completar pruebas Web/API/Docker y regresión, documentar resultados y límites.
+- [x] T009 Completar pruebas Web/API/Docker y regresión, documentar resultados y límites. Evidencia: [cierre técnico del 30/10](evidence/review-corrections.md#verificación-y-reconciliación--2026-10-30).
 - [ ] T010 Validar móvil/teclado/errores/recarga/historial y rendimiento; registrar evidencia.
 - [ ] T011 Aceptación integrada Entra, lector/zoom/teclado físico y cierre FR/SC con evidencia; no sustituir por harness.
 
 T010: mediciones completas publicadas en [performance](evidence/performance.md); pendientes presupuesto LCP/Añadir y revisión manual completa. T011: piloto personal con una cuenta real realizado; siguen pendientes segunda cuenta/roles, lector, zoom completo y dispositivo. El preflight de la suite integrada sigue sin todos sus recursos; no se presenta como test aprobado.
 
-Revisión de correcciones, pausa solicitada el 29/10: las pruebas locales del código de fechas están acreditadas (208 .NET, 117 Web, 33 E2E, lint/typecheck/build y EF sin cambios). El candidato 487f649 dejó un fallo axe transitorio en WebKit; f8032ca espera las animaciones antes de la auditoría y pasa 33/33 E2E más 5/5 repeticiones WebKit. En f8032ca Users, ShoppingList, ProductCatalog y Resource ya están verdes; falta conocer el resultado final de Web (run 40963002962, en curso al guardar), reconciliar T009 con ese resultado y verificar los cinco workflows del HEAD final que incluya la documentación. T009 sigue abierta por esas comprobaciones concretas, no por ausencia de pruebas locales. Evidencia y reanudación en [review-corrections](evidence/review-corrections.md). T010/T011 siguen abiertas y no condicionan documentar la verificación técnica de T009.
+Reconciliación del 30/10: revisados resultados reales, no solo existencia de tests. Pruebas locales: 208 .NET, 117 Web, 33 E2E, lint/typecheck/build y ambos modelos EF sin cambios. El ajuste del test axe de f8032ca pasa además cinco repeticiones WebKit. Al reanudar, tanto f8032ca como el HEAD guardado f81b911 tienen los cinco workflows satisfactorios; los logs de f81b911 confirman Web 117/117 y 120/120 E2E, API relacionales 77/77 y 9/9, builds Docker e integración. T009 se cierra con [ejecuciones y comandos reproducibles](evidence/review-corrections.md#verificación-y-reconciliación--2026-10-30). El commit posterior de cierre solo cambia documentación y su CI se comprueba sobre su propio SHA. T010/T011 siguen abiertas; no se acredita aceptación global.
 
 Definition of Done: todos los FR/SC acreditados, migración compatible, autorización negativa probada, cero duplicación financiera por reintento, Gastos independiente, suites obligatorias satisfactorias y aceptación móvil/integrada completa. Documentar un gate pendiente no lo satisface. No afirmar cierre global mientras T010/T011 u otro criterio siga pendiente.
 

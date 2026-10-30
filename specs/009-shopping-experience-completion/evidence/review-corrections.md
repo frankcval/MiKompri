@@ -7,7 +7,7 @@ Rama `009-shopping-experience-completion`, base de revisión `13d119fd0e3d7f74fe
 1. Spec Kit: `feature_directory` seguía en 008. Se usa el mismo formato JSON que `Save-FeatureJson` en `.specify/scripts/powershell/common.ps1`, ruta relativa 009 y UTF-8 sin BOM. `check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` resuelve 009 y sus artefactos. No se modifica completitud 007/008.
 2. T009: la nota de verificación pendiente se redactó antes de la CI del push/PR. El candidato 13d119f ya acredita cinco workflows, incluyendo Users por `pull_request` a main (aunque no por push a 009). Las correcciones de fechas se validan como candidato posterior; no se hereda automáticamente el éxito previo.
 3. Fechas: formularios obtenían día UTC y el dominio consultaba directamente el reloj. ProductCatalog repetía validación UTC en aplicación y dominio, por lo que incluso un reloj de aplicación simulado no gobernaba toda la regla. Ahora dominio recibe hoy explícito; aplicación usa proveedor de fecha y API adapta reloj `TimeProvider` más offset del cliente. Web usa fecha local, actualiza hoy a medianoche/al recuperar foco y envía contexto tanto en compras personales como compartidas, correcciones y precios.
-4. CI: los cinco workflows se ejecutan por PR #57 sobre el mismo SHA. No es necesario modificar sus triggers ni permisos. Se verificará el nuevo HEAD tras publicar las correcciones.
+4. CI: los cinco workflows se ejecutan por PR #57 sobre el mismo SHA. No es necesario modificar sus triggers ni permisos. El resultado de las correcciones y la reconciliación se acreditan en la sección del 30/10.
 
 El primer candidato corregido `487f649` termina con Users, ShoppingList, ProductCatalog y Resource satisfactorios, pero Web deja 119/120 E2E (117/117 unitarios). En WebKit axe mide colores intermedios al alternar `appearance` de los dos botones de Añadir productos: contrastes 1.76/1.01 durante la transición Fluent de background/border/color. El test 009 ahora espera las animaciones finitas del diálogo mediante `Animation.finished` antes de auditar el estado estable. No cambia CSS, reglas axe, aserciones, retries ni timeouts. [Fallo reproducible](https://github.com/frankcval/MiKompri/actions/runs/40961462810), job `123755007517`; los seis escenarios nuevos de fecha sí pasaron.
 
@@ -62,9 +62,9 @@ Todos sobre 13d119f, evento `pull_request`, satisfactorios:
 | Web | [40934426493](https://github.com/frankcval/MiKompri/actions/runs/40934426493) |
 | Resource authorization and persistence | [40934426477](https://github.com/frankcval/MiKompri/actions/runs/40934426477) |
 
-## Estado de tareas durante la corrección
+## Estado vigente de tareas
 
-T009 abierta hasta verificar el nuevo candidato. T010/T011 abiertas, sin cambio de criterios: última serie 13d119f con LCP personal/compartida 2556/2604ms frente a 2500ms; faltan aceptación Entra multiusuario y accesibilidad manual indicadas en tasks/spec. Esta revisión no los acredita ni incluye SonarCloud en su recomendación.
+T009 cerrada el 30/10 tras verificar el candidato y sus logs, según la sección final. T010/T011 abiertas, sin cambio de criterios: última serie 13d119f con LCP personal/compartida 2556/2604ms frente a 2500ms; faltan aceptación Entra multiusuario y accesibilidad manual indicadas en tasks/spec. Esta revisión no los acredita ni incluye SonarCloud en su recomendación.
 
 Riesgo residual: consumidores que omiten el offset mantienen semántica UTC y deben enviarlo si sus fechas representan el día local. Offset es contexto declarado, acotado y no persistido; no prueba ubicación ni se usa como autorización.
 
@@ -91,3 +91,36 @@ Al reanudar:
 5. Entregar causas/correcciones, archivos, pruebas, tareas, CI, riesgos y recomendación solicitada. No declarar cierre global: siguen gates de rendimiento, Entra multiusuario y accesibilidad manual.
 
 Contenedor PostgreSQL QA propio `mikompri-qa-009-review` retirado tras las pruebas; servicios de la aplicación conservados. Logs locales bajo `.playwright-mcp/009-review-*`, ignorados por Git. El estado guardado no depende de mantener ese contenedor.
+
+## Verificación y reconciliación — 2026-10-30
+
+Al reanudar se confirma rama correcta, árbol limpio y HEAD local/remoto `f81b91148e6754bb0693150d03338194226b7e84`. Los cinco workflows de f8032ca terminaron satisfactoriamente, incluido Web run 40963002962. El punto de pausa anterior conserva su estado histórico; ya no representa una comprobación pendiente.
+
+También se verifican los cinco workflows de **f81b911**, todos `completed/success`, evento PR, con inspección de jobs y logs:
+
+| Workflow | Ejecución acreditada | Resultado relevante |
+| --- | --- | --- |
+| Users | [40963977585](https://github.com/frankcval/MiKompri/actions/runs/40963977585) | Domain 12/12, Application 32/32, API 31/31, build e imagen Docker |
+| ShoppingList | [40963977594](https://github.com/frankcval/MiKompri/actions/runs/40963977594) | Build/tests e integración Docker/health satisfactorios |
+| ProductCatalog | [40963977648](https://github.com/frankcval/MiKompri/actions/runs/40963977648) | Domain 22/22, Application 21/21, API 9/9; Docker e integración/health |
+| Web | [40963977608](https://github.com/frankcval/MiKompri/actions/runs/40963977608) | 117/117 unitarios, 120/120 E2E en tres motores (6.5m), CI-config/lint/typecheck/build/Docker |
+| Resource authorization and persistence | [40963977601](https://github.com/frankcval/MiKompri/actions/runs/40963977601) | ShoppingList 43/43 dominio, 36/36 aplicación, 77/77 API; ProductCatalog 9/9 API; PostgreSQL e imagen Docker |
+
+No hay omisiones en los recuentos .NET inspeccionados. Se vuelve a comprobar Spec Kit: `check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks` resuelve 009. El diff desde 13d119f no modifica workflows, migraciones/snapshots ni specs 007/008/010/011. Las pruebas EF guardadas de ambos contextos indican `No changes have been made to the model since the last migration.` Los commits posteriores a f8032ca solo documentan evidencia y tareas: no hay cambios de código que invaliden esas comprobaciones.
+
+**Decisión T009:** cerrar. Sus comprobaciones técnicas Web/API/Docker y regresión tienen resultados locales y remotos sobre el código actual, con fallos iniciales y correcciones conservados. No quedan comprobaciones funcionales de T009 pendientes; T010/T011 siguen abiertas. Hoy solo se actualizan tasks, validation y esta evidencia. No se repiten suites locales por cambios documentales; se verifica de nuevo la CI del SHA final publicado.
+
+Para comprobar el HEAD exacto después de cualquier commit documental (sin confundirlo con un resultado anterior):
+
+```powershell
+$reviewSha = git rev-parse HEAD
+$reviewHeaders = @{ 'User-Agent' = 'MiKompri-009-review' }
+$reviewRuns = Invoke-RestMethod -Headers $reviewHeaders -Uri 'https://api.github.com/repos/frankcval/MiKompri/actions/runs?branch=009-shopping-experience-completion&per_page=100'
+$reviewRuns.workflow_runs |
+  Where-Object { $_.head_sha -eq $reviewSha -and $_.event -eq 'pull_request' } |
+  Select-Object name, head_sha, status, conclusion, html_url
+```
+
+Deben aparecer los cinco workflows anteriores en `completed/success`. Revisar jobs/logs si alguno no lo está; no heredar el resultado de f81b911. Inventario completo de archivos de esta revisión: `git diff --name-only 13d119f..HEAD`; responsabilidades y comandos de tests arriba.
+
+**Recomendación para el cierre integral de 009: NOT READY FOR PR.** Bloqueos concretos conservados: LCP personal/compartida 2556/2604ms >2500ms; aceptación Entra con dos cuentas/roles; comprobaciones manuales de lector, zoom y dispositivo/teclado. Las correcciones acotadas y T009 están acreditadas; no se declara la feature globalmente terminada. Riesgo de compatibilidad de fechas: clientes sin header continúan usando hoy UTC.

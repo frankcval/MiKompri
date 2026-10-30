@@ -1,6 +1,6 @@
 # Evidencia 009 — 2026-10-28/29
 
-Estado vigente: ver [correcciones de revisión y candidato](review-corrections.md). El historial siguiente corresponde a la implementación hasta 13d119f; sus frases de «pendiente» o «sin cambios posteriores» describen ese momento, no un HEAD posterior. La CI de 13d119f terminó con los cinco workflows solicitados satisfactorios, Web 113/113 y navegador 114/114. Las correcciones posteriores de fechas requieren evidencia propia antes de cerrar T009. T010/T011 permanecen abiertos.
+Estado vigente al 30/10: T009 cerrada con [evidencia de correcciones y CI](review-corrections.md#verificación-y-reconciliación--2026-10-30): 208 tests .NET afectados, 117 Web y 120 E2E remotos, cinco workflows satisfactorios sobre f81b911. T010/T011 permanecen abiertas. El historial siguiente corresponde a la implementación hasta 13d119f; sus frases de «pendiente» o «sin cambios posteriores» describen ese momento, no un HEAD posterior. La CI de 13d119f terminó con los cinco workflows solicitados satisfactorios, Web 113/113 y navegador 114/114.
 
 Base `main`/`origin/main` 77ddbfc (PR #56 integrado), rama `009-shopping-experience-completion`. El alcance y la implementación fueron autorizados en conversación; spec/plan/tasks/modelo/contratos se crearon antes de código. El usuario autoriza el 29 la verificación final, documentación, commit y push. No se modifican casillas de 002–008. 010/011 contienen solo alcance.
 
