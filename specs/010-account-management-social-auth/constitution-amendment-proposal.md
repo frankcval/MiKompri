@@ -1,41 +1,41 @@
 # Propuesta de enmienda constitucional — TP11
 
-**Estado**: propuesta para revisión; `.specify/memory/constitution.md` NO se modifica.
+**Estado:** propuesta para aprobación; la constitución vigente NO se modifica.
+**Versión vigente:** 1.1.0. **Propuesta:** **1.2.0 MINOR**: ampliar CIAM/Google y transición conservando garantías. No retirar invariantes ni introducir una ruptura que justifique MAJOR.
 
-**Versión vigente**: 1.1.0. **Versión propuesta**: **1.2.0 (MINOR)**, por añadir reglas de CIAM/migración/linking manteniendo las garantías y el primer despliegue Entra. Si la revisión decide retirar garantías incompatiblemente en lugar de ampliarlas, deberá evaluar MAJOR; esta propuesta no lo hace.
+## Mapa de reglas TP11
 
-## Mapa exacto de TP11 vigente → propuesta
+Enumeración para trazabilidad de las reglas actuales, sin sustituir su texto normativo:
 
-Los números enumeran las 13 reglas en su orden actual, no líneas de código.
-
-| Regla TP11 actual | Resultado |
+| Regla vigente | Se conserva / evolución propuesta |
 | --- | --- |
-| 1 Entra ID oficial para primer despliegue | Conservar como hecho/política del primer despliegue; añadir que la evolución de consumidores usa External ID en external tenant, tras aprobación y transición |
-| 2 registro independiente por cliente | Conservar; distinguir SPA, futuro MAUI y componente servidor de pruebas si hace falta, por entorno |
-| 3 no correlacionar globalmente por sub | Conservar y reforzar: fallback legado no autoriza migración cross-tenant |
-| 4 tupla canónica Entra tid/oid | Conservar para identidad externa validada; precisar nuevo tenant/objeto y que varios métodos CIAM pueden compartirlo, sin exigir oid igual entre tenants |
-| 5 UserId Guid interno canónico | Conservar y explicitar inmutabilidad en migración/link/recovery |
-| 6 Users posee correlación | Conservar; añadir puente old/new autorizado y reglas para N:1 si una decisión B posterior lo requiere |
-| 7 referencias de dominio usan UserId | Conservar íntegramente, incluyendo historia financiera |
-| 8 sin acceso cross-DB | Conservar; cambios de esquema Users no se consumen directamente por otros contextos |
-| 9 audience backend común | Conservar. Coexistencia acotada liga issuer/tenant/audience, sin aceptar combinaciones cruzadas |
-| 10 validar issuer/audience/firma/exp/scopes | Conservar; incluir exclusión de tokens sociales/Graph/ID tokens SPA en APIs de negocio |
-| 11 autorización de negocio por contexto | Conservar, sin convertir roles/grupos CIAM en roles del dominio |
-| 12 clientes nuevos sin duplicados | Conservar; exigir migración/linking explícitos y bloqueo del auto-provisioning de candidatos |
-| 13 OBO si se separan audiences | Conservar SHOULD; 010 no separa recursos ni incorpora OBO |
+| 1. Microsoft Entra como proveedor oficial inicial | Conservar compatibilidad inicial; permitir External ID como CIAM para Google y otros métodos aprobados incrementalmente |
+| 2. Registro independiente por cliente | Conservar Web y futuro MAUI; configuración por entorno |
+| 3. sub no es identidad global | Conservar sin excepciones |
+| 4. Tupla tid/oid estable por tenant | Conservar con issuer/namespace de confianza explícito; cambio de tenant exige transición autorizada |
+| 5. UserId Guid canónico | Conservar inmutable, incluso al cambiar tupla externa |
+| 6. Users único correlador | Conservar; no resolver identidades sociales en cada bounded context |
+| 7. Referencias de dominio a UserId | Conservar ownership/membresías/AddedBy/PaidBy/PurchasedBy/historia |
+| 8. Sin dependencias cross-database | Conservar contratos entre contextos |
+| 9. Recurso/audience común para APIs | Conservar recurso lógico común; durante transición, matriz estricta por issuer con audience de ese emisor compartida por las tres APIs |
+| 10. Firma/issuer/audience/exp/scopes validados | Conservar; rechazar token de proveedor social directo |
+| 11. Permisos de negocio en cada contexto | Conservar; claims/roles CIAM no reemplazan memberships |
+| 12. Nuevos clientes no duplican usuarios | Conservar; migración origen/destino reservada y UserId inmutable |
+| 13. OBO si se separan audiences | Conservar condicional; 010-A no introduce separación entre las tres APIs |
 
-## Texto normativo adicional propuesto (no vigente)
+## Texto normativo propuesto para revisión
 
-> Tras el primer despliegue Entra ID, MiKompri DEBE evolucionar el acceso de consumidores mediante Microsoft Entra External ID en un external tenant aprobado. Google y email DEBEN permitir acceso sin cuenta Microsoft. Las APIs de negocio SOLO DEBEN aceptar access tokens destinados a MiKompri de emisores/tenants explícitamente confiables; no tokens de proveedores sociales directos.
->
-> Users DEBE conservar el UserId Guid existente y todas sus relaciones durante migración, linking y recuperación. `(tid, oid)` identifica una identidad externa del emisor validado, no una persona ni un UserId de dominio. El mapeo entre tenants requiere autorización y pruebas explícitas; MUST NOT deducirse de email, nombre, username, teléfono, avatar o sub global.
->
-> Se DEBE preferir CIAM como agregador de métodos. Si una decisión arquitectónica demuestra su insuficiencia, Users PUEDE relacionar varias identidades del mismo CIAM con un UserId mediante prueba segura y unicidad global. Esa opción requiere ADR aprobado y no autoriza múltiples CIAM permanentes.
->
-> Linking/unlinking DEBEN exigir consentimiento, prueba reciente de control, anti-replay y auditoría mínima. MUST NOT eliminarse el último método primario utilizable. Credenciales, reset y MFA pertenecen al IdP; personalizaciones del perfil pertenecen a Users y MUST NOT ser sobrescritas por sincronización automática.
->
-> La transición de emisores DEBE tener ventana, población, inventario, rollback y gates de retiro aprobados. No se cambian claves de ownership/historia ni se usa coexistencia como excepción indefinida de confianza.
+- MiKompri MUST conservar `UserId : Guid` como identidad canónica inmutable. Users MUST ser autoridad de correlación. Ninguna relación de dominio se migra a identificadores externos.
+- Microsoft/Entra existente MUST seguir disponible durante una transición controlada. Microsoft Entra External ID MAY actuar como CIAM central para usuarios Google sin cuenta Microsoft y métodos adicionales aprobados; las APIs MUST validar tokens MiKompri del emisor permitido, no tokens Google/Apple/etc. directos.
+- La primera entrega MAY conservar una única tupla canónica activa por UserId. NO se exige una colección genérica de múltiples identidades ni capacidades de linking/unlinking/recuperación entre proveedores para ofrecer login Microsoft + Google.
+- Cada emisor/tenant/audience/scope/cliente MUST pertenecer a una combinación de confianza explícita. La coexistencia legado/CIAM MUST ser acotada, inventariada y reversible; no confiar en combinaciones cruzadas de listas independientes.
+- Una transición de identidad MUST acreditar origen/destino por identificadores inmutables y autoridad confiable, reservar unicidad, preservar exactamente UserId y referencias, bloquear auto-provisión duplicada y ensayar rollback. Email, nombre, username, teléfono, avatar o sub global MUST NOT servir de vinculación automática.
+- Si una entrega posterior ofrece vincular/desvincular métodos o recuperar mediante otro proveedor, MUST acreditar control reciente aplicable, consentimiento, protección contra replay/carreras y no eliminar último acceso. Esas obligaciones condicionales NO obligan a incluir esa funcionalidad en el primer incremento.
+- Las credenciales MUST permanecer en el IdP cuando este pueda gestionarlas; MiKompri MUST NOT implementar contraseñas propias para este alcance. Claims externos MAY inicializar perfil; MUST NOT sobrescribir personalizaciones posteriores.
+- D1 de estado Users autoritativo MUST aplicarse antes de habilitar acceso productivo protegido. El primer ensayo aislado de login no equivale a aceptar negocio productivo ni exige completar de antemano toda esa infraestructura.
 
-## Proceso y propagación futura
+Email OTP es una decisión opcional de producto, no obligación constitucional. Native Authentication, CA/G3, MFA avanzada y Alternative B no se fijan como requisitos de 010-A.
 
-Maintainer/arquitectura revisan ADR-004 y esta propuesta conforme a gobernanza §4.1. Tras aprobación explícita, una ejecución posterior de `/speckit.constitution` actualizará versión/enmienda/sync report y templates spec/plan/tasks que citan TP11. Revisar contratos 003/007 y guías Web/MAUI con historial preservado. No cambiar ahora constitución/templates ni reclamar que el gate TP11 de implementación pasa por existir este archivo.
+## Aplicación posterior
+
+Aprobar [ADR-004](../../docs/adr/ADR-004-ciam-identity.md), esta propuesta y transición acotada según gobernanza §4.1. Una ejecución posterior autorizada actualizará constitución, versión, sync report y referencias pertinentes de Spec Kit. No aprobar esta enmienda implícitamente por existir documentación o QA. No modificar ahora constitución, registros, permisos, secretos o BD.

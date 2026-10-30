@@ -1,102 +1,105 @@
-# Tasks: 010 — Account Management & Social Auth
+# Tasks: 010 — MVP010-A y futuro010-B
 
-**Input**: [spec](spec.md), [plan](plan.md), [research](research.md), [modelo](data-model.md), [contratos](contracts/account-and-identity.md).
+**Input**: [spec](spec.md), [plan](plan.md), [modelo](data-model.md), [migración](migration.md), [contratos](contracts/account-and-identity.md).
+**Estado**: alcance revisado30/10/2026; implementación no iniciada por esta ejecución. Todas las tareas permanecen abiertas. Se conservan T001–T055; sus partes de gestión de métodos pasan a B, sin dar por completado nada.
+**Formato**: A=obligatorio para el MVP; A-OPT=opcional y no bloqueante; B=diferido. Tests antes de reglas según TP8; no ejecución paralela/delegación por una etiqueta.
 
-**Estado**: formalización y spike controlado autorizado el 30/10/2026. D1–D3 están aprobados **para el spike**, no para implementación completa. Se permiten únicamente recursos QA mínimos y harness aislado según [plan previo](evidence/spike-resource-plan.md); no código productivo, migraciones EF ni cambios de datos MiKompri. Todas las tareas siguientes permanecen abiertas hasta acreditar íntegramente sus condiciones; tener un artefacto no acredita aprobación ni test real.
+## 010-A — A0 aprobación y configuración del diseño
 
-**Tests**: TP8; dominio/caso de uso/API antes de modificar reglas, persistencia real para carreras/migración. [USx] remite a historias de spec. Paths de código nuevos son destinos planificados, no archivos existentes. No se delega ni ejecuta trabajo paralelo por marcar [P].
+- [ ] T001 [A] Ratificar auditoría/evidencia/fuentes y alcance Microsoft existente+Google en `current-state-audit.md`, `research.md` y `evidence/010-a-scope-review.md`; harness no equivale a aceptación productiva.
+- [ ] T006 [A] Aprobar coste/configuración mínima y minimización de perfil/recuperación en proveedor en `research.md` y `privacy-and-deletion.md`; sin SMS/trials/credenciales propios.
+- [ ] T007 [A] Revisar/aprobar `docs/adr/ADR-004-ciam-identity.md` incremental: CIAM para Google y transición Microsoft, sin exigir prueba de linking A ni elegir Alternative B.
+- [ ] T008 [A] Aprobar `constitution-amendment-proposal.md` por gobernanza; solo tras autorización explícita aplicar TP11/version/templates. No editar constitución por esta tarea documental.
+- [ ] T009 [A] Ratificar contrato JWT/tupla, perfil y D1/D2 en `data-model.md`, `contracts/account-and-identity.md`, `architecture-review.md`. D3/broker quedan B.
+- [ ] T010 [A][US2] Aprobar coexistencia/cohortes y prueba de origen Microsoft inmutable en `migration.md`; mismo UserId, reserva, rollback/no migrados. Sin linking general ni G3 como prerequisito.
+- [ ] T011 [A] Revisar amenazas de login/provisión/migración/perfil/sesión en `threat-model.md`; takeover/linking/recovery por otro proveedor se revisarán en B antes de ofrecerlos.
+- [ ] T012 [A][US4] Ratificar perfil básico/username/idioma y preferencias tipadas con finalidad actual. Iniciales; sin foto/storage, DOB/teléfono/dirección ni UI de métodos.
 
-## Phase 1 — Research (gate G1–G6)
+## 010-A — A1 login aislado (no habilita negocio protegido)
 
-- [ ] T001 Ratificar auditoría/fuentes/versiones y límites de documentación en `current-state-audit.md` y `research.md`; registrar nueva fecha antes del spike.
-- [ ] T002 [US1] Tras autorización QA, validar Google/email/Microsoft personal y Entra legado en `evidence/provider-capabilities.md`, sin secretos/PII.
-- [ ] T003 [US3] Probar matriz A Google-only→email/email→Google, identidades en objetos distintos, Graph permisos y unlink/último método en `evidence/aggregation-spike.md`; no asumir identities==linking completo.
-- [ ] T004 [US3] Acreditar G3 por método según D3/AR-05–06 en `architecture-review.md`: auth_time/max_age/challenge verificable, silent SSO Google/refresh, MFA histórica, OTP primario y límites passkey, timestamps/300s al confirmar, state/nonce/PKCE y recovery sin proveedor perdido; `evidence/assurance-spike.md`. Revisar/ensayar candidato de `evidence/g3-step-up-review.md`: contexto/política efectivos, discrepancia email MFA social+OTP, tolerancia5min, timestamp real del factor y bootstrap seguro. Sin garantía, no habilitar mutación ni rebajar D3.
-- [ ] T005 [US5] Revalidar SDK/metadata/claims/scopes: Web beta MSAL.js+Code/PKCE+browser-delegated; MAUI/MSAL.NET candidato browser sin fijar Native Auth antes de versión/SDK/redirect real. Registrar discrepancia oficial en `research.md`; AR-04, no crear app MAUI productiva.
-- [ ] T006 Aprobar coste/dependencias/región/operación y finalidad/retención de datos en `research.md` y `privacy-and-deletion.md`.
+- [ ] T002 [A][US1] Validar Microsoft existente y Google sin Microsoft con `evidence/provider-capabilities.md`, claims/token del recurso y diferencias de usuario nuevo/existente. Preservar tipos de cuenta ya admitidos; MSA adicional/email no son gate de este ítem.
+- [ ] T005 [A][US5] Verificar/pinar MSAL Web/metadata/Code+PKCE browser-delegated; conservar la auditoría Native Auth sin convertir SDK MAUI en bloqueo.
+- [ ] T020 [A][US5] Tests JWT firmados para pares issuer/tenant/audience/scope/clientes/tid/oid de tres APIs en `test/MiKompri.Users.Api.Tests/Security/ExternalIdValidationTests.cs` y equivalentes; negativos Google/Graph/ID/expired/cruces.
+- [ ] T022 [A][US1] Tras autorización pertinente preparar configuración CIAM/Google y confianza de QA según `quickstart.md`; conservar Microsoft actual. No activar Authentication Context/CA de linking ni modificar defaults para login.
+- [ ] T023 [A][US1] Tests Web de botones Google prioritario/Microsoft disponible, callback, cancelación, errores y aviso de cuenta Microsoft existente en `MiKompri.Web/tests/unit/auth/external-id.spec.ts` y componentes auth.
+- [ ] T024 [A][US1] Integrar Web MSAL/configuración conocida por ruta/proveedor en `MiKompri.Web/src/auth/msal/msalConfig.ts`, `src/shared/config/env.ts` y login; secrets fuera de SPA. No UI de vincular/desvincular. Proveedores opcionales no se muestran hasta QA.
 
-## Phase 2 — Architecture (bloqueante)
+## 010-A — A2 identidad y transición Microsoft
 
-- [ ] T007 Revisar `docs/adr/ADR-004-ciam-identity.md`; seleccionar A tras prueba positiva o B por insuficiencia documentada, sin mezclar modelos.
-- [ ] T008 Revisar/aprobar `constitution-amendment-proposal.md`; solo con autorización posterior actualizar constitución/version/templates mediante flujo constitucional.
-- [ ] T009 Ratificar `data-model.md`, `contracts/account-and-identity.md` y D1–D3 de `architecture-review.md`: opción 1 beta (estado autoritativo por request sin cache inter-request), dependencia/fail-closed ProductCatalog, cortes/versión, prueba por operación/300s y límites de SDK. Incluir errores, p95/disponibilidad y compatibilidad PUT/sync sin alterar budgets.
-- [ ] T010 [US2] Aprobar cohortes/ventana/no migrados/cutover/rollback en `migration.md` antes de alterar confianza.
-- [ ] T011 [US3] Revisión de seguridad del `threat-model.md` y procedimiento de recuperación sin métodos; no bypass por atributos.
-- [ ] T012 [US4] Aprobar perfil mínimo/username/avatar y publicación en `data-model.md`; mantener DOB/teléfono/dirección sin recogida inicial.
+- [ ] T013 [A][US2] Tests de UserId inmutable, canonical tuple única y traslado acotado en `test/MiKompri.Users.Domain.Tests/`; AccountOperation/ProofReceipt y pruebas de cambio de métodos se conservan en T027[B].
+- [ ] T014 [A][US2] Tests de traslado Microsoft administrado en `test/MiKompri.Users.Application.Tests/Commands/MigrateIdentityTests.cs`: origen federado acreditado, reserva, destino ocupado, idempotencia, email collision y fallback sub solo legado; sin doble prueba G3 genérica.
+- [ ] T015 [A][US2] Adaptar resolución/alta en `MiKompri.Users.Domain/Users/` y `MiKompri.Users.Application/Commands/SyncProfile/`: una canónica activa, namespace confiable y registro acotado de migración; no ExternalIdentities[] genérica.
+- [ ] T016 [A][US2/US4] Preparar únicamente schema aditivo necesario para perfil/estado y traslado en `MiKompri.Users.Infrastructure/Persistence/`; backfill fiable, perfiles previos personalizados, sin tablas de broker por anticipación.
+- [ ] T017 [A][US2] Tests PostgreSQL Docker de índices/provisión concurrente/reserva/cutover en `test/MiKompri.Users.Api.Tests/IdentityMigrationTests.cs`, manifiestos antes/después.
+- [ ] T018 [A][US2] Separar resolver/provisión/sync en `MiKompri.Users.Api/Middleware/UserProvisioningMiddleware.cs`; migración reservada/retirada no puede crear User sustituto ni reactivar origen por fallback.
+- [ ] T019 [A][US2] Ensayar reintento/timeout/no migrados/rollback de tráfico sin Down ni pérdida de nuevas compras en `evidence/migration-rehearsal.md`; detener cutover si origen no acreditado, conservar Microsoft.
+- [ ] T048 [A][US2] Acreditar cohorte Microsoft en QA que conserva exactamente UserId y referencias al pasar a CIAM y al revertir, A-AC06/07. Conservar acceso legado no acredita por sí solo migración terminada; no habilitar cambio de método autoservicio.
 
-## Phase 3 — Migration (US2, fundamento de identidad)
+## 010-A — A3 APIs protegidas y sesión
 
-- [ ] T013 [US2] Escribir tests invariantes de binding/operación en `test/MiKompri.Users.Domain.Tests/IdentityBindingTests.cs` y `AccountOperationTests.cs` antes del dominio.
-- [ ] T014 [US2] Escribir tests de migración/proof/provisioning en `test/MiKompri.Users.Application.Tests/Commands/MigrateIdentityTests.cs`, con email collision, fallback sub restringido y retries.
-- [ ] T015 [US2] Implementar modelo aprobado en `MiKompri.Users.Domain/Users/` y resolución explícita en `MiKompri.Users.Application/Commands/SyncProfile/SyncProfileCommandHandler.cs`; no reemplazar UserId.
-- [ ] T016 [US2] Preparar migración aditiva/índices/backfill reanudable en `MiKompri.Users.Infrastructure/Persistence/`, preservando columnas/tuplas y perfiles previos como personalizados.
-- [ ] T017 [US2] Crear pruebas PostgreSQL de migración/carreras/constraints en `test/MiKompri.Users.Api.Tests/IdentityMigrationTests.cs`; usar instancia QA Docker, comparar manifiestos antes/después.
-- [ ] T018 [US2] Separar resolver/alta/perfil y excluir candidates de auto-provisioning en `MiKompri.Users.Api/Middleware/UserProvisioningMiddleware.cs` y endpoints de operación aprobados.
-- [ ] T019 [US2] Ensayar fallos por frontera y rollback de tráfico sin Down en `evidence/migration-rehearsal.md`; incluir usuarios no migrados y registros sin tupla canónica.
+- [ ] T021 [A][US5] Adaptar `MiKompri.{Users,ShoppingList,ProductCatalog}.Api/Security/*JwtValidation.cs` y Program a confianza explícita por issuer y scopes; sin cambiar permisos de negocio ni aceptar Google directo.
+- [ ] T025 [A][US5] Tests y limpieza de sesión A→B en `MiKompri.Web/tests/unit/auth/session.spec.ts`, `src/auth/session/`; namespaces Microsoft/CIAM, TanStack/borradores y respuestas tardías.
+- [ ] T026 [A][US5] Tests primero e integración mínima D1 access-status: lectura Users local; consumidores por UsersApi/bearer, GET catálogo incluido, resultado solo dentro de request. No Graph/Redis/bus/cache inter-request. Gate antes de liberar negocio, no de primer login aislado.
+- [ ] T042 [A][US5] AR-01–03: JWT vigente→suspender→siguiente control de tres APIs deniega; Users caído503; carreras autorizadas en vuelo y cortes/reactivación no resucitan tokens. Probar canónica activa/traslado, sin exigir múltiples bindings B.
+- [ ] T043 [A][US2] Regresiones Groups/GroupMembership/Owner/Admin/Member, listas/gastos/participantes/compras/idempotencia005/008/009 y referencias UserId.
+- [ ] T051 [A][US5] A-AC03/04/05/09 y AR-01–03 en tres APIs/Web real: confianza, D1, logout/cambio y browser-delegated. AR-05–06/G3 no bloquean este ítem.
 
-## Phase 4 — Authentication (US1/US5)
+## 010-A — A4 perfil básico
 
-- [ ] T020 [US5] Tests firmados de issuer/tenant/audience/scope/cliente/claims en `test/MiKompri.Users.Api.Tests/Security/ExternalIdValidationTests.cs` y equivalentes ShoppingList/ProductCatalog; Google/Graph/ID tokens deben fallar.
-- [ ] T021 [US5] Adaptar `MiKompri.{Users,ShoppingList,ProductCatalog}.Api/Security/*JwtValidation.cs` y sus Program con confianza explícita por emisor y scopes, sin cambiar permisos de negocio.
-- [ ] T022 [US1] Tras autorización específica, preparar configuración CIAM/proveedores/cliente y recursos QA según `quickstart.md`; no versionar credenciales ni tocar registros productivos sin autorización.
-- [ ] T023 [US1] Escribir tests Web de inicio Google/email/Microsoft, cancelación y errores en `MiKompri.Web/tests/unit/auth/external-id.spec.ts` y `tests/component/profile/`.
-- [ ] T024 [US1] Adaptar `MiKompri.Web/src/auth/msal/msalConfig.ts`, `src/shared/config/env.ts` y entrada de login con MSAL/PKCE soportados, manteniendo secret-free SPA y opciones claras.
-- [ ] T025 [US5] Probar y adaptar aislamiento/limpieza A→B con requests pendientes en `MiKompri.Web/tests/unit/auth/session.spec.ts` y `src/auth/session/`, incluyendo caché TanStack y borradores.
-- [ ] T026 [US5] Tests primero y posterior integración del contrato mínimo Users access-status: lectura Users local, consumidores por bearer/UsersApi y reutilización solo request; ProductCatalog GET incluido, sin Graph ni loop/caché entre requests. AR-01–03 en `test/MiKompri.ShoppingList.Api.Tests/` y `test/MiKompri.ProductCatalog.Api.Tests/`; medir p95/SQL/RPC y fallos, sin accesos cross-DB.
+- [ ] T034 [A][US4] Tests de inicialización/autoridad, personalización/clear, username normalizado/único y edición por versión en `test/MiKompri.Users.Domain.Tests/ProfileAuthorityTests.cs` y `UsernameTests.cs`.
+- [ ] T035 [A][US4] Ampliar User/perfil mínimo en `MiKompri.Users.Domain/Users/User.cs` y Application/UpdateProfile; sin foto, datos personales futuros ni almacén genérico de preferencias.
+- [ ] T036 [A][US4] Tests de regresión login/GET/sync no sobrescribe DisplayName/nombres/idioma propios en `test/MiKompri.Users.Api.Tests/ProfileApiTests.cs` y Application/SyncProfile.
+- [ ] T037 [A][US4] Reutilizar GET/PUT/me y POST/me/sync en `MiKompri.Users.Api/Controllers/ProfileController.cs` y DTOs; compatibilidad legacy/If-Match documentada, sin aceptar IDs/verificationState del cliente.
+- [ ] T038 [A][US4] Tests/UI de perfil propio, username distinto de login e iniciales en `MiKompri.Web/tests/component/profile/` y `src/features/profile/`. Reimportación explícita futura T058[B].
+- [ ] T050 [A][US4] A-AC10 con proveedor real: personalizar nombre/campos A y repetir login/sync sin sobrescritura. Avatar personalizado solo cuando se implemente T039[B].
 
-## Phase 5 — Account linking, unlinking & recovery (US3)
+## 010-A — A5 validación y cierre
 
-- [ ] T027 [US3] Tests de pruebas por operación D3: origen+candidato link/migrate, alternativa superviviente unlink/recovery, sesión/propósito/expiry/replay/consentimiento/versión y edad al confirmar; `test/MiKompri.Users.Application.Tests/Commands/AccountOperationTests.cs` antes de handlers.
-- [ ] T028 [US3] Tests API de actor A/B, IDOR, último método, concurrencia/indisponibilidad y errores genéricos en `test/MiKompri.Users.Api.Tests/AccountMethodsTests.cs`.
-- [ ] T029 [US3] Implementar broker/adaptador de pruebas y handlers en `MiKompri.Users.Api/` y `MiKompri.Users.Application/Commands/AccountOperations/` según contrato aprobado, sin tokens en logs/body de negocio.
-- [ ] T030 [US3] Implementar adapter CIAM A o binding B elegido en `MiKompri.Users.Infrastructure/Identity/`, con permisos mínimos, locks, idempotencia y reconciliación; no implementar ambos preventivamente.
-- [ ] T031 [US3] Probar timeout antes/después de cada mutación CIAM/BD, identidad ocupada y colección Graph concurrente en `test/MiKompri.Users.Api.Tests/AccountOperationRecoveryTests.cs`.
-- [ ] T032 [US3] Tests y UI gestionar/vincular/probar alternativa/desvincular en `MiKompri.Web/tests/component/profile/AccountMethods.spec.tsx` y `src/features/profile/`, restauración de foco/errores sin cambiar cuenta activa.
-- [ ] T033 [US3] Implementar/ensayar recuperación con alternativa acreditada; negar sin pruebas conforme política aprobada, `evidence/recovery.md`. No crear un UserId nuevo al recuperar.
+- [ ] T041 [A] Evidencia negativa de amenazas aplicables A en `evidence/security.md`; matriz separada de métodos B y revisión de seguridad.
+- [ ] T044 [A] Suites Domain/Application/API/PostgreSQL, lint/typecheck/build/Web unit/component/integration/E2E directamente afectados; registrar SHA/comandos/resultados en `evidence/validation.md`.
+- [ ] T045 [A] Verificar modelo/migraciones EF, Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; no dar por verde CI de otro SHA.
+- [ ] T046 [A] Revisar issuer/audience/scopes/CORS/redirects/configuración por entorno, mínimo privilegio de transición y recuperación en proveedor; sin secretos/PII en evidencia ni Graph en negocio.
+- [ ] T047 [A][US1] Microsoft existente y Google nuevo sin Microsoft en aplicación normal, A-AC01/02/08, `evidence/real-provider-acceptance.md`. Harness es evidencia parcial; email no bloquea.
+- [ ] T053 [A] Web320/390/430, teclado/lector/zoom, errores/return intent y budgets existentes; evidencia manual real cuando corresponda.
+- [ ] T055 [A] Revisión final FR/SC y10 A-AC, aprobación ADR/TP11, coexistencia/migración/rollback y autorización de despliegue. A-AC11 solo si T056 se habilita. No exigir tareas B ni cerrar007/008/009.
 
-## Phase 6 — Profile (US4/US6)
+## 010-A — opcional, nunca bloquea Microsoft + Google
 
-- [ ] T034 [US4] Tests de autoridad/importación/personalización/clear/username único y normalizado en `test/MiKompri.Users.Domain.Tests/ProfileAuthorityTests.cs` y `UsernameTests.cs`.
-- [ ] T035 [US4] Ampliar `MiKompri.Users.Domain/Users/User.cs`, modelo/persistencia de perfil y `Commands/UpdateProfile`, preservando UserId y procedencia existente.
-- [ ] T036 [US4] Tests regresión login/GET/sync no sobrescribe DisplayName/email contacto/avatar propios en `test/MiKompri.Users.Api.Tests/ProfileApiTests.cs` y Application/SyncProfile tests.
-- [ ] T037 [US4] Adaptar GET/PUT/sync/DTOs en `MiKompri.Users.Api/Controllers/ProfileController.cs` y `MiKompri.Users.Application/Dtos/`, con versiones, campos permitidos y transición legacy aprobada.
-- [ ] T038 [US4] Tests/UI de perfil/username/login diferenciado, reimportación por campo y personalización en `MiKompri.Web/tests/component/profile/` y `src/features/profile/`.
-- [ ] T039 [US4] Si se aprueba avatar propio inicial, pruebas de ownership/formatos/límites/EXIF/SSRF antes de almacenamiento y pipeline de imágenes Users; registrar contrato y coste en `data-model.md`. Si se difiere, explicitar alcance sin fingir avatar propio implementado.
-- [ ] T040 [US6] Validar minimización y estados de eliminación/último Owner/historia en `privacy-and-deletion.md` y tests de política; no activar purga ni recolectar campos futuros.
+- [ ] T056 [A-OPT][US1] QA email OTP básico en mismo CIAM/contrato: nuevo usuario sin Microsoft, alta/login posterior, OTP incorrecto/expirado/reutilizado, tuple/UserId estable y sesión. Si pasa sin nuevo modelo/linking/G3 y se aprueba, habilitar opción email y A-AC11; si falla o retrasa el núcleo, dejar deshabilitado y trasladar entrega a B sin marcarla completa.
 
-## Phase 7 — Security & tests (transversal)
+## 010-B — diferidas; fuera del DoD de010-A
 
-- [ ] T041 Recorrer cada amenaza de `threat-model.md` y vincular evidencia negativa/test concreto en `evidence/security.md`; revisión independiente.
-- [ ] T042 Probar D1/AR-01–03: token emitido →commit suspensión →siguiente control rechazado en tres APIs, 503 sin Users, carrera de request en vuelo, binding alternativo y reactivación sin resucitar tokens anteriores/durante suspensión/mismo segundo. Añadir rates/anti-enumeración y logs sin secretos/PII; sin tests que supongan CAE o Graph por request.
-- [ ] T043 [US2] Ejecutar regresiones Groups/GroupMembership, Owner/Admin/Member, listas/gastos/participantes/idempotencia de 005/008/009 y verificar referencias UserId antes/después.
-- [ ] T044 Ejecutar suites Domain/Application/API con PostgreSQL, lint/typecheck/build/Web unit/component/integration y E2E controlados; registrar comandos/SHA/fallos en `evidence/validation.md`.
-- [ ] T045 Validar migraciones pendientes/modelos EF, imágenes Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; sin confundir CI de otro SHA.
-- [ ] T046 Revisar permisos/rotación de credenciales CIAM/proveedores, CORS/redirects exactos, privacidad/retención y runbooks sin secretos; no exceder alcance de token/backend común.
+No borrar ni cerrar por diferir. [Requisitos y gates](010-b-deferred.md). La clasificación A como correlación CIAM no certifica agregación de métodos. Toda reanudación sensible requiere revisión y autorización correspondiente.
 
-## Phase 8 — Acceptance (gates de cierre)
+- [ ] T003 [B][US3] Matriz completa Alternative A Google-only→email/email→Google, colisiones de objetos, permisos Graph y acceso real tras cambios en `evidence/aggregation-spike.md`.
+- [ ] T004 [B][US3] G3/D3/AR-05–06 por método y operación: control<=300s, TTL<=600s, state/nonce/PKCE, SSO/refresh/MFA histórica, bootstrap, contexto/política efectivos. Conservar `evidence/assurance-spike.md`, `g3-step-up-review.md` y `g3-email-mfa-qa.md`; no más transiciones CA por esta revisión.
+- [ ] T027 [B][US3] Tests AccountOperation/ProofReceipt para link/unlink/cambio de proveedor/migración autoservicio: partes requeridas, sesión/propósito/expiry/replay/consentimiento/versiones y edad al confirmar.
+- [ ] T028 [B][US3] Tests API de gestión de métodos A/B, IDOR, último método, concurrencia y errores genéricos en `test/MiKompri.Users.Api.Tests/AccountMethodsTests.cs`.
+- [ ] T029 [B][US3] Broker/adaptador de pruebas y handlers AccountOperations tras G3 y ADR; no construirlo para login/traslado Microsoft acotado A.
+- [ ] T030 [B][US3] Adapter de mutación CIAM A o múltiples bindings B solo si se elige por insuficiencia demostrada, con mínimo privilegio/serialización/reconciliación. Nunca ambos preventivamente.
+- [ ] T031 [B][US3] Timeout antes/después de mutación CIAM/BD, identidad ocupada y colección Graph concurrente en `test/MiKompri.Users.Api.Tests/AccountOperationRecoveryTests.cs`.
+- [ ] T032 [B][US3] Tests/UI de gestionar/vincular/probar alternativa/desvincular en `MiKompri.Web/tests/component/profile/AccountMethods.spec.tsx` y perfil.
+- [ ] T033 [B][US3] Recuperación con alternativa ya vinculada, mismo UserId; sin prueba no autoservicio, `evidence/recovery.md`.
+- [ ] T039 [B][US4] Avatar propio/proveedor si se aprueba: storage/ownership/formatos/EXIF/SSRF y fallback antes de activar. Iniciales A no acreditan avatar propio.
+- [ ] T040 [B][US6] Diseñar/probar eliminación y conservación/último Owner; endpoint/jobs solo con aprobación. Minimización A se mantiene en T006/T012/T046.
+- [ ] T049 [B][US3] Aceptación original AC-05/06/07/10: segundo método, linking explícito, email collision, último método y B→A con proveedor real.
+- [ ] T052 [B][US3] Aceptación original AC-12: recuperación mediante método alternativo conserva UserId, pérdida total sin bypass.
+- [ ] T054 [B/futuro006] MAUI: SDK/versión/deep links reales; sin extrapolar tutorial Kotlin/JS a MSAL.NET ni bloquear A Web.
+- [ ] T057 [B/opcional] Proveedores adicionales y tipos Microsoft no admitidos actualmente; Apple/Facebook/passkeys/SMS/MFA avanzada solo tras necesidad, QA y autorización nueva. Recuperación sigue en proveedor hasta diseñar alternativa segura.
+- [ ] T058 [B/opcional][US4] UI de reimportación explícita por campo/procedencia y personalizaciones de avatar, con versión/consentimiento. No necesaria para inicialización única A.
 
-- [ ] T047 [US1] Google real sin Microsoft y email real: AC-01/02; Microsoft adicional documentado, `evidence/real-provider-acceptance.md`.
-- [ ] T048 [US2] Entra existente migra al mismo UserId y conserva listas/grupos/gastos; AC-03/04 y rollback con evidencia de cohorte QA.
-- [ ] T049 [US3] Añadir método, email collision sin linking, último método y ataque B→A; AC-05/06/07/10 sobre proveedor/tenant reales además de negativos controlados.
-- [ ] T050 [US4] Login real tras personalizar nombre/avatar no sobrescribe; AC-08, incluyendo clear y reimportación explícita por versión.
-- [ ] T051 [US5] AC-09/11 y AR-01–04: tokens External ID/Google, suspensión/reactivación/fallo Users, ProductCatalog GET, cambio/logout y flujo Web browser-delegated, tres APIs y Web real.
-- [ ] T052 [US3] AC-12: recuperación conserva UserId y método alternativo; documentar pérdida total sin bypass.
-- [ ] T053 Validar 320/390/430, teclado/lector/zoom, errores/return intent y rendimiento sin modificar presupuestos existentes; evidencia humana independiente de mocks.
-- [ ] T054 Revalidar diseño/versión MSAL.NET/SDK/redirect/deep links MAUI cuando se formalice 006; no fijar Native Authentication desde tutorial Kotlin/JS ni presentar maqueta como aceptación productiva. MAUI sigue fuera del slice Web.
-- [ ] T055 Revisión de checklist, FR/SC, gates G1–G7, ADR/enmienda, costes y plan de retiro/no migrados. Autorizar despliegue/cutover por separado; no cerrar 007/008/009 por entregar 010.
+## Dependencies & Execution Order
 
-## Dependencias y Definition of Done
+A0 aprobación →tests de A1 →resolución/migración A2 y trust/API →D1 antes de negocio →perfil/sesión →regresiones/aceptación/cierre.
+Google puede desarrollarse sin esperar email/G3 y Microsoft conserva ruta anterior hasta cutover acreditado. No cerrar transición por haber creado un objeto CIAM.
 
-### Registro parcial del spike autorizado
+B depende de nueva revisión y de sus propios G1/G3; A no depende de B. T056 puede omitirse del release A sin bloquearlo. Los tests de cada slice preceden reglas y su evidencia debe corresponder al candidato.
 
-- T001/T005: fuentes oficiales reconsultadas, metadata real y MSAL Browser instalado3.30.0; Code+PKCE browser-delegated email ejecutado en harness. No MAUI/Native Auth aceptados.
-- T002: registro/retorno email OTP y acceso Google real sin Microsoft, access tokens CIAM validados e ID tokens rechazados como bearer; faltan negativos OTP y Microsoft. Sigue abierta.
-- T003: probes reales CIAM con fixtures ficticios (no login Google): colección, colisiones, Google-shaped↔mail-shaped, unlink, último método, concurrencia y cancelación/relectura; falta doble prueba y acceso real con ambos métodos. Sigue abierta.
-- T004: auth_time firmado, refresh y reauth observados por método. Titular confirma OTP nuevo para email; Google solo selección/consentimiento con auth_time nuevo: ruta ensayada NOT RELIABLE FOR G3. Faltan estrategia verificable Google y cierre de negativos/binding/expiración email; no autorizar mutaciones por timestamp solo. Sigue abierta.
-- T006/T009: benchmark local y costes condicionados documentados; no aceptación cloud, disponibilidad D1 ni ratificación completa del modelo/contratos.
+## Trazabilidad de trabajo conservado
 
-Fuentes y límites en [resumen del spike](evidence/spike-summary.md). No se inicia Phase3–8, no se cierra ninguna tarea por entregar estos probes y no se modifican gates anteriores.
+- T002/T023/T047 separan Microsoft+Google obligatorio de email T056 y proveedores adicionales T057.
+- Parte broker/proofs de T013/T014/T018 pasa a T027–033[B]; A mantiene canónica, provisión y traslado Microsoft con origen acreditado.
+- T038 conserva edición de perfil A; reimportación pasa a T058[B]. T050 prueba campos A y conserva avatar futuro en T039.
+- T040[Tarea futura] no elimina minimización A; T055 deja de exigir AC de B. T001–T055 siguen presentes una sola vez, sin marcar completitud.
 
-T001–006 → T007–012 → T013–019 → T020–026 → T027–033 → T034–040 → T041–046 → T047–055. Las historias tienen pruebas independientes en QA, pero comparten arquitectura/trust aprobados. No mutar esquemas ni registrar credenciales antes de los gates. Avatar, borrado operativo, PII adicional y MAUI no se convierten en trabajo obligatorio por figurar como análisis.
-
-Done de implementación futura: FR/SC acreditados, doce AC con evidencia real/negativa, migración/rollback sin cambio UserId ni duplicación financiera, ADR/enmienda aprobados, políticas de seguridad/privacidad operables y CI exacta verde. Done de esta ejecución: artefactos revisables y consistentes, research actual y gates explícitos; **ninguna tarea de implementación se marca completa**.
+Evidencia anterior: acceso Google/email en harness, JWT/scopes y regresiones offline; G3 sin fiabilidad acreditada, c1 sin política no prueba MFA y restauración QA verificada. Nada de eso implementa el MVP. [Revisión de alcance](evidence/010-a-scope-review.md).

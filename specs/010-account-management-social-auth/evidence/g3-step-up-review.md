@@ -2,6 +2,8 @@
 
 Fecha: 2026-10-30. Rama010, base `b02947f` más spike local. **Research y propuesta de ensayo; ninguna política, contexto, factor, app ni credencial creada/modificada en esta revisión.** No implementación. [Resultado real anterior](assurance-spike.md): Google funciona para login, pero la ruta ensayada es NOT RELIABLE FOR G3. Email OTP sigue INCONCLUSIVE. No se cambian D3, UserId, TP11 ni A/B.
 
+Continuación posterior autorizada y separada de esta revisión: [preparación/ensayo QA](g3-email-mfa-qa.md). Hay contexto/políticas propios deshabilitados y negativo real de c1 sin política efectiva; la transición de protección se revierte tras fallar activación. No es PASS del desafío email MFA social ni ratificación de este candidato.
+
 ## Fuentes oficiales revalidadas y discrepancias
 
 | Fuente | Capacidad/límite documental; no resultado QA |

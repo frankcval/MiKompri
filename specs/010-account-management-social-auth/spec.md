@@ -1,126 +1,127 @@
 # Feature Specification: 010 — Account Management & Social Auth
 
-Estado de verificación posterior a la formalización: [spike QA controlado](evidence/spike-summary.md), autorizado separadamente para D1–D3 y recursos QA mínimos. No implementación productiva ni aceptación de G1/G3 por existir artefactos. FR/SC de esta especificación no se rebajan; constitución y UserId canónico intactos.
-
 **Feature Branch**: `010-account-management-social-auth`
+**Created / Revised**: 2026-10-30
+**Status**: Draft — alcance incremental revisado; ADR/TP11 pendientes de aprobación.
+**Input**: conservar Microsoft existente y añadir Google sin cuenta Microsoft. Esta ejecución modifica documentación, sin implementar ni configurar servicios.
 
-**Created**: 2026-10-30
+## Contexto, evidencia y alcance
 
-**Status**: Draft — architecture review; implementación no autorizada
+[TP11 vigente](../../.specify/memory/constitution.md), [ADR propuesto](../../docs/adr/ADR-004-ciam-identity.md), [auditoría](current-state-audit.md), [research](research.md), [migración](migration.md).
 
-**Input**: CIAM para usuarios finales: Google/email/Microsoft, migración conservando UserId, métodos de acceso y perfil propio. Solo artefactos, sin código/Azure/credenciales/BD.
+**010-A** entrega login, identidad estable, perfil básico y sesión Web. **010-B** difiere gestión de métodos y sus gates; ver [alcance diferido](010-b-deferred.md). No son dos bounded contexts ni dos sistemas de autenticación.
 
-## Contexto y autoridad
+El [spike](evidence/spike-summary.md) acredita Google sin Microsoft, JWT CIAM, tid/oid y rechazo Google directo en harness; email OTP básico también funciona. No acredita provisión/ownership en la aplicación productiva ni G3/linking seguro. La [restauración QA](evidence/g3-restoration-verification.json) permanece como evidencia. G3 no bloquea010-A porque sus operaciones sensibles no se ofrecen; no se declara resuelto ni se rebaja.
 
-Base `origin/main` `1a05d8e`, PRs #57/#58 integrados. [TP11](../../.specify/memory/constitution.md) permanece vigente; su [enmienda propuesta](constitution-amendment-proposal.md) no se aplica todavía. [Auditoría](current-state-audit.md), [research oficial](research.md), [ADR propuesto](../../docs/adr/ADR-004-ciam-identity.md). Alta en el directorio CIAM y alta de usuario MiKompri son operaciones distintas.
+`UserId : Guid` es canónico e inmutable en OwnerId, GroupMembership.UserId, AddedBy, PaidBy, PurchasedBy, listas, gastos, compras, historial y auditoría. Users posee la correlación; cada contexto conserva autorización de negocio.
 
-`UserId : Guid` MUST ser canónico e inmutable para OwnerId, GroupMembership, AddedBy, PaidBy, PurchasedBy, auditoría, listas, gastos e historial. IdP autentica; Users correlaciona y posee perfil; cada bounded context autoriza. No sustituir esas referencias por identificadores externos.
+### Proveedores y producto
+
+| Prioridad | Decisión010-A |
+|---|---|
+| Microsoft/Entra existente | Obligatorio: mantener ruta/tipos de cuenta actualmente admitidos y mismo UserId durante transición |
+| Google | Obligatorio, opción prioritaria visible: Google → External ID → token MiKompri → (tid, oid) → Users → UserId |
+| Email OTP | Elegible como opción adicional del mismo010-A, no obligatorio. Mismo CIAM/contrato/alta simple; sin linking ni G3. T056 exige QA básico completo antes de habilitarlo. Si no pasa o retrasa Microsoft+Google, se difiere sin bloquearlos |
+| Otros | Diferidos. No prometer MSA personal adicional si el acceso actual no lo admite; no activar proveedores por disponibilidad teórica |
+
+Web muestra «Continuar con Google» primero y «Continuar con Microsoft» siempre disponible. «Continuar con email» solo tras aprobar T056; tampoco anunciar métodos no acreditados en el flujo del IdP. No hay botones de vincular/desvincular/cambiar proveedor. Un usuario existente debe continuar con Microsoft; no prometer deduplicación entre proveedores ni auto-link por email.
 
 ## User Scenarios & Testing *(mandatory)*
 
-### US1 — Entrar sin cuenta Microsoft (P1)
+### US1 — Entrar con Microsoft o Google (P1,010-A)
 
-Google y email eliminan la barrera de acceso actual. Microsoft es adicional; Apple/otros son evaluación futura.
+**Independent Test**: usuario Microsoft actual conserva acceso; Google nuevo sin Microsoft usa la Web y una lista propia con identidad de dominio.
 
-**Independent Test**: cuenta Google real sin Microsoft → autenticación → lista personal con access token final External ID para MiKompri.
+1. **Given** A solo tiene Google, **When** elige Google, **Then** External ID emite el access token MiKompri y Users crea/resuelve su UserId sin cuenta Microsoft.
+2. **Given** usuario Microsoft existente, **When** usa Microsoft, **Then** conserva acceso y exactamente su UserId y datos. El botón no lo redirige automáticamente a crear otra cuenta CIAM.
+3. **Given** email OTP aprobado y habilitado, **When** una persona nueva usa email, **Then** CIAM gestiona el OTP y se aplica la misma correlación; sin contraseña propia ni linking.
 
-**Acceptance Scenarios**:
+### US2 — Transición Microsoft conservando mi cuenta (P1,010-A)
 
-1. **Given** A solo tiene Google, **When** elige «Continuar con Google», **Then** Google autentica, External ID emite el token del backend y Users resuelve `(externalTid, externalOid)` a UserId; A utiliza MiKompri sin crear cuenta Microsoft.
-2. **Given** usuario nuevo, **When** completa registro/acceso por email, **Then** CIAM gestiona la prueba y credenciales; MiKompri no almacena contraseñas.
-3. **Given** Microsoft habilitado, **When** selecciona esa opción, **Then** el flujo distingue cuenta personal MSA de organización Entra; ninguna es obligatoria para Google/email.
+**Independent Test**: inventario A/ownership → transición controlada Microsoft → mismo A → rollback sin reescribir relaciones.
 
-### US2 — Migrar conservando mi cuenta (P1)
+1. **Given** (oldTid, oldOid) → A, **When** sigue usando la ruta actual, **Then** A no cambia.
+2. **Given** cohorte Microsoft autorizada y equivalencia de origen acreditada por identificadores inmutables del proveedor, **When** se cambia al objeto CIAM reservado, **Then** (externalTid, externalOid) → A, sin INSERT de otro User ni inferencias por email.
+3. **Given** prueba de origen insuficiente, identidad destino ocupada o reintento incierto, **When** se prepara el traslado, **Then** se detiene el cutover, conserva Microsoft existente y no aprovisiona un sustituto.
 
-Protege propiedad e historia. **Independent Test**: fixture UserId=A y relaciones conocidas; migrar y revertir verificando igualdad exacta de IDs/referencias.
+La transición administrada del mismo origen Microsoft no es linking general ni pantalla de cambio de proveedor. Su protocolo y ensayo son obligatorios antes de mover una cohorte; no dependen del broker G3 de010-B.
 
-1. **Given** `(oldTid, oldOid) → A`, **When** acredita recientemente ambas identidades y confirma migración, **Then** `(externalTid, externalOid) → A`, sin crear otro UserId ni reescribir relaciones de dominio.
-2. **Given** no ha migrado, **When** accede durante coexistencia aprobada, **Then** conserva su acceso legado y puede iniciar migración.
-3. **Given** mismo email sin prueba o identidad candidata ligada a otro usuario, **When** solicita vincular, **Then** no se relacionan cuentas ni se fusionan sus datos.
+### US3 — Gestionar métodos (P1 de010-B, diferida)
 
-### US3 — Añadir, quitar y recuperar métodos (P1)
+Añadir segundo método, link/unlink, último método, cambio de proveedor y recuperación por alternativa requieren la [especificación diferida](010-b-deferred.md). Sin UI/endpoints en010-A. Su aceptación no se marca completada por ocultarlos.
 
-Evita dependencia de un proveedor sin introducir takeover. **Independent Test**: Google → añadir email/otro método → probarlo → quitar Google; negativos concurrentes y de suplantación.
+### US4 — Perfil propio (P2,010-A)
 
-1. **Given** sesión A, **When** elige vincular, **Then** ambas identidades requieren prueba reciente, transacción ligada a sesión/propósito y consentimiento; resultado conserva UserId.
-2. **Given** último método válido, **When** intenta quitarlo —también concurrentemente—, **Then** se rechaza hasta probar otro método primario utilizable.
-3. **Given** pierde proveedor pero conserva un método aprobado, **When** recupera acceso, **Then** conserva UserId. Email/nombre por sí solos no recuperan una cuenta sin métodos.
+**Independent Test**: importar «Frank Carlos», editar a «Frank» y repetir login/sync conservando «Frank».
 
-### US4 — Perfil propio y username público (P2)
+Username opcional público, DisplayName, GivenName/FamilyName opcionales, PreferredLanguage y preferencias funcionales tipadas acordadas. Username no es login. Iniciales como avatar/fallback; foto propia, almacenamiento y reimportación explícita desde proveedor se difieren. Claims inicializan una vez campos permitidos; personalizaciones y borrados voluntarios prevalecen, incluidos perfiles anteriores tratados como propios.
 
-Separa identidad de acceso y presentación. **Independent Test**: importar «Frank Carlos», personalizar «Frank» y avatar, repetir login/sync.
+### US5 — Sesión y APIs (P1,010-A)
 
-1. **Given** primer registro, **When** hay claims permitidos, **Then** pueden inicializar perfil con procedencia; ausencia usa fallback neutro.
-2. **Given** `@frankcv`, **When** accede con Google/email, **Then** username público no es login ni clave de correlación.
-3. **Given** nombre/avatar personalizados, **When** cambian en el proveedor, **Then** no se sobrescriben; reimportar exige elección explícita por campo.
+**Independent Test**: JWT válido en tres APIs; Google/Graph/ID token y scope/issuer/audience incorrectos rechazados; logout/cambio A→B sin datos A.
 
-### US5 — Sesión y APIs seguras (P1)
+D1 aplica antes de liberar acceso productivo protegido. Un harness aislado de login puede ejecutarse antes de integrar D1; no equivale a habilitar negocio.
 
-Mantiene límites de dominio. **Independent Test**: matriz JWT en las tres APIs y cambio A→B con consultas pendientes.
+### US6 — Privacidad (010-A) y eliminación (010-B)
 
-1. **Given** access token CIAM para backend/scope correcto, **When** llama APIs, **Then** validan confianza y aplican los permisos existentes al mismo UserId.
-2. **Given** token Google directo, token Graph, ID token SPA, scope incorrecto o issuer/audience cruzados, **When** llama negocio, **Then** se rechaza.
-3. **Given** logout/cambio A→B, **When** terminan peticiones A pendientes, **Then** no aparecen datos, borradores, caché o tokens A en B.
-
-### US6 — Privacidad y salida de la cuenta (P2)
-
-**Independent Test**: usuario propietario de grupo con gastos compartidos solicita salida; verificar el plan de datos sin destruir historia ajena.
-
-1. **Given** datos opcionales, **When** usa la app, **Then** no necesita nacimiento, teléfono ni dirección para comprar.
-2. **Given** solicita eliminación, **When** existe historia/propiedad compartida, **Then** se distingue bloqueo, perfil/identidades y conservación/anonimización autorizada. Ejecución de borrado no se habilita en el primer incremento sin política aprobada.
+No solicitar nacimiento, teléfono/dirección ni crear columnas por utilidad futura. Recuperación de acceso se delega al proveedor original; si no se recupera allí, MiKompri no sustituye la identidad ni promete acceso por otro proveedor. Estrategia de eliminación conservada en [privacidad](privacy-and-deletion.md); endpoint/purga diferidos.
 
 ### Edge Cases
 
-Cancelación, timeout OAuth/Graph, consentimiento denegado, Google distinto al esperado, email cambiado/reciclado/ausente, Apple relay, candidato existente solo en CIAM, dos UserIds ya provisionados, carreras link/unlink/migración, token viejo, frescura no acreditada, legado sin tid/oid, pérdida de todos los métodos, MFA no equivalente a login primario y rollback con escrituras posteriores.
+Google cancelado/consentimiento denegado, primer registro concurrente, mismo email en cuentas distintas, claims ausentes/cambiados, usuario Microsoft con canonical tuple incompleta, fallback sub limitado al legado, destino reservado/ocupado, timeout/rollback con nuevas compras, issuer/cuenta cambiados y respuesta tardía de la sesión anterior. G3, último método y carreras de Graph identities pertenecen a010-B.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: MUST ofrecer Google y email sin cuenta Microsoft; Microsoft adicional. Apple/otros se investigan sin activación automática.
-- **FR-002**: MUST preferir External ID agregador (A), sujeto a prueba de métodos/linking; B solo se elige por insuficiencia demostrada de A y ADR revisado. Ambas opciones usan tokens CIAM en APIs.
-- **FR-003**: MUST preservar UserId y todas sus referencias. Users será propietario exclusivo del mapeo, sin acceso cruzado a su BD.
-- **FR-004**: MUST correlacionar tenant/object del emisor validado; MUST NOT usar email, username, teléfono, nombre, avatar o `sub` global para linking/correlación.
-- **FR-005**: MUST separar resolución, alta intencional y perfil. Linking/migración no pueden ejecutar aprovisionamiento genérico de la identidad candidata.
-- **FR-006**: MUST exigir consentimiento y control reciente verificable según [D3](architecture-review.md#d3--control-reciente-y-step-up-para-beta): origen+candidato para linking/migración; alternativa ya vinculada que permanece para unlink/recovery, sin exigir proveedor perdido. Cada prueba ligada a operación/sesión/propósito, de un solo uso y edad <=300s al confirmar; TTL de operación <=600s no amplía frescura. Sin evidencia CIAM fiable, mutación bloqueada. El servidor deriva el UserId destino; token nuevo/iat/prompt/MFA histórica no prueban reauth.
-- **FR-007**: MUST rechazar identidad asociada a otro UserId; fusionar usuarios existentes queda fuera de alcance.
-- **FR-008**: MUST bloquear último método y carreras; un estado desconocido CIAM impide unlink. Contar métodos primarios probados, no factores MFA ni un mero email de contacto.
-- **FR-009**: MUST registrar operaciones idempotentes, versionadas y auditadas, con reconciliación de fallos; no asumir transacción distribuida Graph/BD.
-- **FR-010**: MUST seguir migración expand/validate/cutover/retire y rollback de [migration.md](migration.md), sin cambiar relaciones financieras ni identidad por email.
-- **FR-011**: MUST mantener acceso legado restringido durante ventana aprobada; retirada exige plan para no migrados y recuperación. No múltiples CIAM permanentes.
-- **FR-012**: MUST delegar contraseñas/OTP de login/reset/MFA al CIAM. Se recomienda email OTP, condicionado al gate MFA/recuperación del research; no credenciales propias.
-- **FR-013**: MUST mantener username público normalizado/único y separado del login; DisplayName propio y soporte diseñado para nombres, avatar, idioma/preferencias.
-- **FR-014**: MUST conservar personalizaciones ante login/sync; importación inicial, snapshot y reimportación explícita por campo tienen precedencia diferenciada, también para avatar.
-- **FR-015**: MUST distinguir email de login/claim/contacto y autoridad/fecha de verificación. Contacto no verificado no recupera acceso; username no revela email.
-- **FR-016**: MUST minimizar PII; nacimiento, teléfono/dirección y verificación telefónica se diseñan como extensiones, sin recogerlos/persistirlos por anticipación.
-- **FR-017**: MUST autorizar perfil sobre usuario resuelto y versión vigente; no exponer bindings/pruebas/PII privada en DTOs de miembros.
-- **FR-018**: MUST usar para Web beta SPA pública MSAL.js Browser/React, Authorization Code + PKCE **browser-delegated**, redirects exactos y limpieza de sesión/caché/borradores; sin secretos SPA ni Native Auth JS SDK en esta entrega. [D2](architecture-review.md#d2--browser-delegated-y-native-authentication).
-- **FR-019**: MUST diseñar compatibilidad MAUI: registro propio, PKCE, deep links/redirects y storage seguro. Candidato futuro MSAL.NET con navegador del sistema; Native Authentication no se fija sin versión/SDK/flujo real acreditados. Social native JS/Android puede incluir tramo browser-delegated, sin inferir paridad MAUI. MAUI productivo sigue diferido.
-- **FR-020**: MUST validar firma/algoritmo/lifetime/issuer/tenant/audience y scope delegado en cada API; rechazar tokens sociales, Graph e ID tokens como bearer de negocio.
-- **FR-021**: MUST mantener audience lógica común. En coexistencia, cada issuer solo acepta su audience autorizada; no un producto cartesiano de listas ni tenants descubiertos desde claims sin validar.
-- **FR-022**: MUST conservar autorización Owner/Admin/Member y contratos financieros; grupos/roles CIAM no se convierten en roles del dominio.
-- **FR-023**: MUST aplicar [D1 opción 1 beta](architecture-review.md#d1--suspensión-y-access-token-ya-emitido): tras commit de suspensión en Users, el siguiente control autoritativo de cada API rechaza incluso JWT vigente anterior. Estado consultado por request autenticada, sin caché entre peticiones; fail-closed 503 si no disponible, 403 si suspendido. No promete cancelar requests ya autorizadas ni reflejar instantáneamente cambios solo en Azure. Reactivación no revive tokens anteriores al corte. Logout local no equivale a revocación global IdP.
-- **FR-024**: MUST proteger replay/CSRF/state/nonce/PKCE/redirects, limitar abuso y errores enumerables; sin tokens/códigos/PII innecesaria en logs.
-- **FR-025**: MUST contemplar eliminación, retención, anonimización y recuperación según [privacidad](privacy-and-deletion.md); no habilitar borrado sin política aprobada.
-- **FR-026**: MUST respetar TP11 hasta aprobación de ADR/enmienda. Esta formalización no autoriza cambios Azure, BD o producción ni cierra gates anteriores.
+Los IDs se conservan para trazabilidad; A/B indica aplicación efectiva actual.
+
+- **FR-001 [A]** MUST conservar Microsoft existente y ofrecer Google sin Microsoft; email opcional solo tras T056.
+- **FR-002 [A/B]** MUST usar un único External ID para nuevos accesos.010-A prefiere correlación simple por tupla, sin colección genérica ExternalIdentity. G1 de agregación/linking no bloquea A; B arquitectónica solo tras insuficiencia demostrada y otro ADR.
+- **FR-003 [A]** MUST preservar UserId y referencias de dominio; correlación exclusivamente en Users, sin cross-DB.
+- **FR-004 [A/B]** MUST usar issuer/tenant/oid validados; nunca email, nombre, username, teléfono, avatar o sub global para correlacionar personas.
+- **FR-005 [A]** MUST separar resolución, nueva alta intencional y perfil. Una migración Microsoft reservada no ejecuta auto-provisión genérica; una identidad desconocida no puede apropiarse de A.
+- **FR-006 [B]** Pruebas recientes D3 para linking/unlinking/cambio de método/migración autoservicio entre proveedores: <=300s al confirmar, operación<=600s, sesión/propósito/replay. Diferido; no prerrequisito de login A ni del traslado Microsoft administrado de FR-010.
+- **FR-007 [A/B]** MUST rechazar identidad destino ligada a otro UserId. No account merging.
+- **FR-008 [B]** MUST impedir unlink del último método y carreras antes de ofrecerlo.010-A no tiene unlink.
+- **FR-009 [A/B]** A: traslado por cohorte versionado/idempotente y auditado; B: broker/AccountOperation/ProofReceipt y reconciliación de cambios de métodos. No construir estos últimos para login.
+- **FR-010 [A]** MUST diseñar/ensayar [transición](migration.md) con origen Microsoft inmutable acreditado, reserva de destino, mismo UserId y rollback. Si falta equivalencia, conservar ruta actual; no automatizar traslado ni crear un nuevo User.
+- **FR-011 [A]** MUST mantener ruta legado durante coexistencia acotada y retirar solo cohortes aprobadas. Objetivo final Microsoft/Google → CIAM; excepción temporal de issuer legado explícita, no múltiples CIAM permanentes.
+- **FR-012 [A]** MUST delegar credenciales/reset/recuperación al proveedor/CIAM. Sin passwords ni MFA propios. Email OTP básico no necesita linking/G3 para nueva cuenta.
+- **FR-013 [A]** MUST soportar perfil básico propio, username separado de login, nombres opcionales, idioma soportado y preferencias tipadas con finalidad actual; iniciales, sin storage de avatar en A.
+- **FR-014 [A/B]** A: claims inicializan y no sobrescriben personalizaciones posteriores. B: avatar propio/proveedor y UI de reimportación explícita por campo, si se aprueban.
+- **FR-015 [A]** MUST distinguir email de login y dato de contacto existente/procedencia; no tomar claim email/upn como prueba de identidad/verificación ni como recovery propio.
+- **FR-016 [A]** MUST minimizar PII; sin nacimiento, teléfono/dirección o campos vacíos preventivos.
+- **FR-017 [A]** MUST autorizar perfil por UserId resuelto y versión; cuerpo no acepta IDs externos, autoridad/verificación ni permisos.
+- **FR-018 [A]** MUST usar Web MSAL + Authorization Code/PKCE browser-delegated, redirects exactos, SPA sin secretos y aislamiento de caché/token/requests por sesión/issuer.
+- **FR-019 [B/futuro]** MAUI conserva compatibilidad de dominio/contratos; SDK/native auth/deep links reales se validarán en006. No bloquea A Web.
+- **FR-020 [A]** MUST validar issuer, audience, firma/algoritmos, expiration, scope delegado, tid y oid en Users/ShoppingList/ProductCatalog. Google directo, Graph e ID tokens no son bearer de negocio.
+- **FR-021 [A]** MUST mantener recurso lógico backend común. Durante coexistencia: pares issuer→tenant→audience/scopes/clientes explícitos, nunca producto cartesiano ni tenant descubierto del JWT.
+- **FR-022 [A]** MUST preservar Owner/Admin/Member, membresías y contratos de compras/gastos; no roles sociales/directorio como permisos de negocio.
+- **FR-023 [A protegido]** MUST aplicar [D1](architecture-review.md#d1--suspensión-y-access-token-ya-emitido) al liberar negocio: estado Users autoritativo por request, sin cache inter-request, fallo503/denegación403 y cortes anti-resurrección. No bloquea primer login aislado. Sin Graph por request, Redis, bus o CAE.
+- **FR-024 [A/B]** A: PKCE/state/nonce/CSRF/callbacks y errores/logs seguros. B añade anti-replay y pruebas de operaciones sensibles.
+- **FR-025 [A/B]** A mantiene minimización/diseño de conservación; borrado operativo y recuperación avanzada diferidos.
+- **FR-026 [A]** MUST respetar TP11 y aprobación explícita de ADR/enmienda antes de cambiar identidad productiva. Esta revisión no modifica constitución, código, Azure o BD.
 
 ### Key Entities
 
-User/Profile, IdentityBinding, AccountOperation/ProofReceipt, MigrationRecord, SecurityAuditEvent, ProfileFieldAuthority y AvatarReference. El [modelo](data-model.md) diferencia esquema actual, A, transición acotada y B condicional.
+A: User/perfil y su tupla canónica actual, autoridad de campos y registro acotado de traslado Microsoft. D1 añade estado/cortes mínimos. B: AccountOperation/ProofReceipt, inventario de métodos y, solo con decisión nueva, múltiples bindings. [Modelo](data-model.md).
 
 ## Success Criteria *(mandatory)*
 
-- **SC-001**: los 12 casos de [aceptación](checklists/acceptance.md) tienen evidencia del candidato; Google/email reales para alta; ninguna omisión cuenta como éxito.
-- **SC-002**: migración autorizada/rollback conservan igualdad exacta de UserId y referencias de listas/grupos/gastos/auditoría, cero nuevos UserIds para migrados y cero huérfanos.
-- **SC-003**: todos los negativos de colisión/último método/concurrencia/replay/suplantación y frescura D3 rechazan sin alterar correlación ni perder acceso alternativo; pruebas ausentes/viejas/SSO no acreditado nunca habilitan una mutación.
-- **SC-004**: todos los campos personalizados probados conservan valor tras login/sync; reimportación exige selección y versión.
-- **SC-005**: tres APIs pasan matriz de confianza/scopes y regresiones Users/ShoppingList/ProductCatalog; ningún token Google directo se acepta. AR-01–03 acreditan suspensión con JWT ya emitido, 503 sin Users, reactivación sin resurrección y coste de ProductCatalog, conforme D1 y sin modificar budgets.
-- **SC-006**: logout/cambio A→B no expone datos A incluso con requests pendientes/recarga. Web se valida primero en 320/390/430px, teclado, lector y zoom, con evidencia manual propia.
-- **SC-007**: recuperación mantiene UserId; reconciliación probada en cada frontera de fallo CIAM/BD; sin bypass basado en perfil.
-- **SC-008**: acceso público requiere ADR/enmienda aprobados, prueba A o decisión B, política de frescura/recuperación, presupuesto operativo y ensayo de migración/rollback. Esta entrega prepara esa revisión, no acredita estos gates.
+### Measurable Outcomes
+
+- **SC-001 [A]** Diez [aceptaciones A obligatorias](checklists/acceptance.md) acreditadas en candidato real. A-AC11 solo si email se habilita; los AC diferidos no bloquean A ni se dan por completados.
+- **SC-002 [A]** Igualdad exacta de UserId/referencias Microsoft antes/después de transición/rollback; cero duplicados para una migración autorizada y cero ownership huérfano.
+- **SC-003 [A]** Negativos de identidad/issuer/audience/scope/cuenta ajena y conflictos de migración rechazan. Pruebas de último método/G3 quedan en B.
+- **SC-004 [A]** Campos propios e iniciales derivadas de DisplayName propio sobreviven login/sync sin sobrescritura externa.
+- **SC-005 [A protegido]** Tres APIs, D1 y regresiones pasan, manteniendo budgets existentes. El benchmark local no acredita cloud.
+- **SC-006 [A]** Logout/cambio con requests pendientes no mezcla tokens/datos; Web móvil primero, teclado/lector/zoom.
+- **SC-007 [A/B]** A comunica recuperación en proveedor original y no ofrece reasignación de identidad. Recuperación con alternativa es aceptación B.
+- **SC-008 [A]** ADR/TP11 y transición aprobados antes de nueva confianza; despliegue/cutover autorizados separadamente. No depende de G1 de linking ni G3.
 
 ## Assumptions, Dependencies & Out of Scope
 
-Depende de 003 (Users/correlación), 007 (MSAL/sesión), 008 (autorización) y 009 (UserId en compras/history). Sus pendientes permanecen abiertos. 006 no existe: MAUI no tiene implementación que certificar. Google requiere proyecto del proveedor y CIAM un tenant/suscripción administrables. El spike posterior autorizado ya dispone de recursos QA aislados y acceso Google/email real; esto no autoriza despliegue productivo ni cierra G1/G3. Véase [resumen](evidence/spike-summary.md).
+Depende de002/listas,003/correlación y perfil,004/catálogo,005/gastos,007/MSAL,008/autorización y009/compras con UserId. No cambia sus tareas ni gates.006/MAUI permanece diferida.
 
-Fuera: contraseñas propias, autenticación desde cero, APIs validando Google/Apple directamente, múltiples CIAM permanentes, ownership por identificadores externos, fusión de UserIds, chat, pagos, cambios funcionales ShoppingList/ProductCatalog, MAUI productivo, PII innecesaria, borrado productivo y activación Apple/otros sin decisión posterior. No se modifican presupuestos ni aceptación 007/008/009.
+Fuera de010-A: segundo método, link/unlink, cambio de proveedor, merging, recovery entre proveedores, G3/Authentication Context/CA de linking, SMS/passkeys/Apple/Facebook, Alternative B, passwords/MFA propios, almacenamiento/avatar, eliminación operativa, chat/pagos y funciones de ShoppingList/ProductCatalog. Investigación y tareas futuras se conservan. [Decisión incremental](evidence/010-a-scope-review.md).

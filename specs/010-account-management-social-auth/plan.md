@@ -1,95 +1,81 @@
-# Implementation Plan: 010 — Account Management & Social Auth
+# Implementation Plan: 010-A — Microsoft existente + Google
 
 **Branch**: `010-account-management-social-auth` | **Date**: 2026-10-30 | **Spec**: [spec.md](spec.md)
-
-**Estado**: plan propuesto para arquitectura; solo documentación en esta ejecución.
+**Estado**: propuesta revisada; documentación únicamente. ADR/enmienda aún no aprobados.
 
 ## Summary
 
-Acceso de consumidores sin cuenta Microsoft mediante External ID, Google/email y Microsoft adicional. Preferencia A (CIAM agrega métodos) con gate G1 antes de elegir esquema definitivo; B mínimo solo por insuficiencia acreditada. UserId Guid permanece inmutable. Users orquesta mapeo/perfil/consentimiento, CIAM credenciales y tokens; tres APIs conservan permisos existentes. [Research y decisiones](research.md), [ADR-004](../../docs/adr/ADR-004-ciam-identity.md).
+Microsoft actual sigue disponible; Google entra por un External ID y recibe token del backend. Users conserva UserId y una tupla canónica activa; perfil propio, sesión Web y confianza JWT comunes. [ADR-004](../../docs/adr/ADR-004-ciam-identity.md), [evidencia aplicada](evidence/010-a-scope-review.md).
 
-## Decisiones beta revisadas — D1/D2/D3
+Se elimina del camino crítico A el broker de métodos, G3, Authentication Context, CA de linking y la viabilidad de agregar métodos dentro de un objeto. Eso es [010-B](010-b-deferred.md). Ninguna evidencia anterior se borra ni se presenta como PASS distinto.
 
-[Comparación y contrato de garantías](architecture-review.md): **opción 1**, lookup autoritativo Users por cada request autenticada, sin caché de autorización entre peticiones; Users local y consumidores por contrato mínimo. ProductCatalog adquiere dependencia de red/estado Users, también en GET; no se cambia su autorización de catálogo global. Estado suspendido 403, no resuelto por fallo 503; sin retries/replay de escrituras. Cota de dependencia propuesta 1s máximo configurable, no un SLO nuevo: medir contra budgets existentes antes de habilitar. Si fallan, revisar explícitamente garantía vs híbrido, no esconder un TTL. No Graph por request, Redis, bus de revocación, nuevos claims dinámicos o CAE como requisito beta. Reutilizar resultado únicamente dentro de request y verificar cortes para no revivir JWT anteriores al reactivar.
-
-Web adopta **Code+PKCE+MSAL.js Browser/React+browser-delegated**; Native Auth JS no se implementa. MAUI futuro: candidato MSAL.NET/browser del sistema, sin fijar Native Auth hasta prueba de SDK/versión/redirects. D3 requiere evidencia CIAM fiable de control <=300s al confirmar; operación <=600s y matriz diferenciada por link/migrate/unlink/recovery. Solo abrir mutaciones cuyo G3 esté acreditado; OTP primario no es MFA, passkeys no son fallback universal y proveedor perdido no se exige como prueba en recovery. No se considera completada la aceptación de métodos por dejar sus mutaciones bloqueadas.
+Email OTP es un adicional elegible de A: login básico probado en harness y mismo contrato, sin modelo nuevo. Se habilita solo si T056 acredita alta/login/errores/expiración/replay/contrato/sesión sin retrasar el núcleo. En caso contrario permanece diferido y no anunciado; no se bloquea Google.
 
 ## Technical Context
 
-| Campo | Contexto y cambio propuesto |
-| --- | --- |
-| Language/Version | C#/.NET 8 y React 18/TypeScript actuales; no upgrade de runtime aprobado aquí |
-| Dependencies | ASP.NET JWT, EF/Npgsql, MediatR, MSAL Browser/React actuales; Graph adapter y MSAL compatible External ID a evaluar/pinar tras revisión, no instalados |
-| Storage | Users PostgreSQL propio; cambios aditivos de identidad/perfil, pruebas efímeras protegidas y journal. Avatar storage solo si se aprueba su entrega. No DB compartida entre contextos |
-| Testing | xUnit Domain/Application/API; JWT firmas/metadata controladas; PostgreSQL Docker para unicidad/migración; Vitest/RTL; Playwright controlado y separado de QA real CIAM |
-| Platform | Web móvil/escritorio primero; .NET MAUI futuro sin implementación 006 |
-| Performance | Mantener presupuestos existentes 003/007/008/009; no acreditar ni modificar sus gates. Medir coste de resolución de cuenta y dependencias antes de habilitar; no Graph por cada render |
-| Constraints | Sin nuevos secretos/clientes/registros/tenant/DB hoy; no passwords propios; no Google JWT en APIs; no cambio de ownership ni permisos de grupo |
-| Scope | Seis historias, 26 FR, ocho fases; gates G1–G7 abiertos y conocidos. Configuración/licencias/QA requieren autorización posterior |
+| Campo | Alcance mínimo |
+|---|---|
+| Stack | .NET8, React/TypeScript, EF/Npgsql y MSAL actuales; sin upgrade gratuito de stack |
+| Identidad | Tupla issuer confiable + tid/oid → User.Id. Reutilizar User/índices existentes y ampliar solo cuando tests de transición/perfil lo exijan |
+| Perfil | Username, DisplayName, nombres opcionales, PreferredLanguage/defaults y preferencias tipadas aprobadas; autoridad User prevalece. Iniciales; sin storage/fetch de foto |
+| Persistencia | Users PostgreSQL propio; registro de migración acotado, no ExternalIdentities[] genérica ni almacén ProofReceipt en A |
+| Clientes | Web Code+PKCE+MSAL browser-delegated. Mantener configuración Microsoft actual y CIAM conocida para Google; separar cachés/sesión. MAUI futuro, sin gate Native Auth para A |
+| Confianza APIs | Una matriz compartida por las tres APIs: issuer/tenant/audience/scopes/clientes fijados por entorno; forwarding ShoppingList→Users compatible |
+| Infraestructura | Reutilizar CIAM QA de spike; esta revisión no configura nada. Nuevas configuraciones/migración productivas requieren su autorización |
+| Rendimiento | Conservar budgets003/007/008/009; medir D1 para acceso protegido. Sin Graph en requests de negocio, Redis, bus ni CAE |
 
 ## Constitution Check
 
-**Antes y después del diseño:** PASS para formalización documental; **HOLD para implementar/cambiar identidad** hasta aprobar ADR/enmienda y resolver gates aplicables. No se afirma PASS operativo por una propuesta.
+PASS documental por spec/plan/tasks y trazabilidad. **HOLD de cambio transversal** hasta ratificar ADR y propuesta TP11 conforme§4.1. La constitución1.1.0 permanece intacta.
 
-| Principios | Evidencia / gate |
-| --- | --- |
-| PP1–3 | Acceso sin Microsoft y preservación de compras/historia, slices de usuario verificables |
-| PP4 | Actor UserId estable y auditoría mínima de linking/migración |
-| PP5/TP6 | Web responsive primero; MAUI sigue previsto para Android y diferido |
-| TP1–3 | Backend .NET, tres bounded contexts, Users por API, monorepo |
-| TP4/5 | Pruebas/imagenes Docker y Azure como destino, sin aprovisionamiento en formalización |
-| TP7/8 | Contratos propuestos/OpenAPI posterior, tests de dominio/caso de uso/API y negativos antes de reglas |
-| TP9/10 | ADR propuesto y spec/plan/tasks antes de código |
-| TP11 | [Mapa de 13 reglas y enmienda 1.2.0 propuesta](constitution-amendment-proposal.md). Identidad canónica/audience común intactas; nueva confianza/migración no autorizadas aún |
+| Principios | Aplicación |
+|---|---|
+| PP1/PP2 | MVP autónomo Microsoft+Google, sin espera por gestión de métodos B |
+| TP1/TP2/TP3 | Backend .NET, Users dueño de identidad, contratos entre contextos, monorepo |
+| TP4/TP5/TP7/TP8 | Docker/PostgreSQL, Azure, OpenAPI y tests antes de reglas, sin ejecución cloud por esta revisión |
+| PP5/TP6 | Web móvil primero según evolución actual; MAUI sigue previsto y aplazado |
+| TP9/TP10 | ADR/spec/plan/tasks antes de producción |
+| TP11 | UserId, tuplas, issuer/audience común y permisos intactos; [enmienda propuesta](constitution-amendment-proposal.md) permite evolución incremental sin obligar linking |
 
 ## Project Structure
 
-```text
-specs/010-account-management-social-auth/
-  scope.md, spec.md, plan.md, tasks.md
-  research.md, current-state-audit.md, data-model.md
-  migration.md, threat-model.md, privacy-and-deletion.md
-  constitution-amendment-proposal.md, quickstart.md
-  contracts/account-and-identity.md
-  checklists/requirements.md, checklists/acceptance.md
-  evidence/formalization-review.md
-  architecture-review.md
-docs/adr/ADR-004-ciam-identity.md        # Propuesto, no aceptado
-```
+Documentación: spec/plan/tasks, [modelo](data-model.md), [migración](migration.md), [contratos](contracts/account-and-identity.md), research/architecture-review, checklists y evidencia histórica; 010-b-deferred delimita futuro.
 
-Rutas futuras de implementación: Users Domain/Users (invariantes), Application/Commands (operaciones/perfil), Infrastructure/Persistence (migración), Infrastructure/Identity (adapter CIAM), Api/Security y Middleware (resolución/frescura); Web auth/session/msal y features/profile. `Security/*JwtValidation.cs`/Program en las tres APIs requieren revisión de trust/scope, sin cambiar negocio de ShoppingList/ProductCatalog. Son destinos propuestos, no archivos creados por esta ejecución.
+Código futuro A: Users Domain/Users, Application/Commands/SyncProfile, Infrastructure/Persistence y resolución/migración acotada; Users Api middleware/ProfileController; Security/Program de tres APIs; Web auth/msal/session y perfil. Ninguna de esas rutas se cambia ahora. Harness aislado previo no es implementación.
 
-## Fases, dependencia y entrega incremental
+## Entregas y orden
 
-1. **Research:** ratificar fuentes y ensayar en QA después de autorización separada. Matriz A: nuevos Google/email, añadir método, colisiones, unlink/último método, recuperación, Graph/consistencia; Microsoft personal y legado; auth_time/max_age frente a SSO/refresh, assurance, límites passkey/OTP; SDKs Web/MAUI. Validar impacto de D1, especialmente ProductCatalog. No crear tenant por esta fase documental.
-2. **Architecture:** aprobar enmienda/ADR, A o B tras G1, límites de perfil, TTL/frescura, política de recovery/PII/coste. Actualizar contratos y revisar amenazas. Base de dominio/test antes de persistencia y API.
-3. **Migration:** expandir/backfill Users, introducir resolución antes de provisioning, journal y bootstrap intencional. Ensayo legacy/CIAM preserva IDs, rollback de tráfico sin Down. Matriz exacta old/new en tres APIs debe estar lista antes de cohorte.
-4. **Authentication:** Google + email recomendados; Microsoft adicional, incluyendo legado. MSAL/PKCE, callbacks/return intent y sesión. Slice US1 verificable en QA sin activar migración masiva; usuarios nuevos y existentes tienen rutas separadas para evitar duplicación por operación.
-5. **Account linking:** broker con pruebas/consentimiento según operación D3, adapter A o bindings B aprobados, idempotencia y reconciliación. Añadir antes de permitir quitar; unlink usa alternativa que permanece y recovery no exige proveedor perdido. No habilitar mutación sin G3; no ampliar a merge de UserIds.
-6. **Profile:** ownership por campo, migrar perfiles anteriores a personalizados, username/nombres/idioma, contacto/procedencia y avatar seguro según alcance aprobado. Sin DOB/teléfono/dirección iniciales. PUT/sync existentes con transición de contrato documentada.
-7. **Security & tests:** contratos JWT/scope, revocación/estado, pruebas adversarias, carreras/replay y regresiones relacionales/permisos/finanzas; matriz de fallos Graph/BD. Sin relajar gates anteriores.
-8. **Acceptance:** QA real Google sin Microsoft, email, Microsoft y Entra legado, doce casos, accesibilidad/móvil, rollback, privacidad/operación. MAUI solo se verifica en la fase que le corresponda; no se fabrica aceptación productiva móvil para cerrar Web.
+1. **A0 — aprobación:** T001/006–012 revisan ADR, TP11, confianza temporal y protocolo de traslado Microsoft. No requieren G3, pruebas de unlink ni Graph write para identities.
+2. **A1 — login aislado:** T002/005/020/022–024. Microsoft actual + Google CIAM, token del recurso, sujeto estable y negativos. Puede comprobarse antes de integrar D1; no habilita listas privadas ni crea aceptación productiva.
+3. **A2 — identidad y preservación:** T013–019 y T043/048. Mantener ruta actual mientras se prepara traslado por cohorte; reconocer origen Microsoft por identificador inmutable acreditado, reservar tupla destino y cambiar canónica del mismo UserId. Sin linking general ni G3. Si no se acredita origen, no mover esa cohorte; Google puede desarrollarse en paralelo, sin afirmar migración terminada.
+4. **A3 — acceso protegido:** T021/026/041/042/051 aplican D1 antes de negocio: Users local autoritativo; ShoppingList/ProductCatalog por contrato mínimo, incluyendo GET. Sin allow cacheado, 403 suspendido/503 dependencia caída; conservar cortes y no resucitar tokens. No permitir producto protegido como una supuesta excepción de login.
+5. **A4 — perfil y sesión:** T025/034–038/050/053. Inicialización única, perfiles anteriores personalizados, actualización autorizada/versionada, username distinto de login; logout/cambio de issuer/cuenta con requests tardías.
+6. **A5 — aceptación/cierre:** T044–048/051/055, regresiones reales y CI del SHA candidato. Microsoft existente y Google nuevo en Web/APIs normales; traslado Microsoft y rollback acreditados antes de cerrar su cohorte. Email T056 solo si aprobado. No implementar B al cerrar A.
 
-No paralelizar mutaciones de confianza/esquema antes de elegir A/B. Dentro de slices, tests preceden reglas y se integran por PR revisable. Cualquier prueba de proveedores real exige entorno autorizado, configuración/credenciales fuera del repo y evidencia sin PII. No activar switches de exposición hasta aprobación de gates.
+## Transición de emisores
 
-## Regresiones y validación
+Objetivo convergente: Microsoft/Google → External ID → APIs. Inicio seguro: Microsoft conserva su issuer/ruta actual; Google usa CIAM. Excepción legacy temporal por población/cohorte, un solo CIAM. Configuración por emisor evita aceptar old issuer con new audience y viceversa.
 
-Preservar grupos/membresías/roles y relaciones en fixtures antes/después. Incluir CommonAudienceValidationTests (ahora insuficientes para CIAM), middleware/profile/SyncProfile tests y web session recovery. Añadir PostgreSQL para constraints/backfill y contaminación de cuenta A→B con requests pendientes. Validación real no puede sustituirse por TestAuthHandler.
+Una cuenta no tiene dos métodos de login gestionables en Users: su tupla canónica activa es única. El registro de traslado guarda origen/destino para validación/rollback, no autentica ambos indefinidamente ni crea catálogo de proveedores. Retiro legado solo tras criterios de [migración](migration.md).
 
-Build/lint/typecheck/suites, imágenes Docker y CI por SHA serán gates de implementación. La formalización actual se valida con prerrequisitos Spec Kit, enlaces, trazabilidad FR→tasks→aceptación y diff documental; no se ejecuta DB ni se reclama éxito de tests futuros. [Quickstart de revisión/QA](quickstart.md).
+## Tests y aceptación
 
-La revisión D1–D3 añade pruebas pendientes AR-01–06 al checklist: tokens emitidos antes/durante suspensión, reactivación/precisión de segundos, fallo Users, requests en vuelo, dos bindings, ProductCatalog GET y p95, fresh challenge vs silent SSO, pruebas expiradas a confirmación y proveedor perdido. No son tests ejecutados por editar documentación.
+Unitarios dominio/aplicación para correlación y perfil; JWT firmados en APIs; PostgreSQL para índices, provisión concurrente y reserva/cutover/rollback; regresiones propiedad/compras/gastos; Web MSAL/callback, aislamiento y móvil. Validar10 casos A y caso email solo si se habilita. No convertir evidencia harness en esos resultados.
+
+D1 y sus AR-01–03 son gate de acceso protegido, no de primer login aislado. G1 de agregación, G3/AR-05–06 y AC de segundo método/último método/recovery no bloquean A; siguen abiertos en B.
 
 ## Complexity Tracking
 
-### Spike QA autorizado, separado de implementación
+| Necesidad | Solución mínima | Diferido |
+|---|---|---|
+| Nuevas cuentas Google | Resolver tupla CIAM en User existente/nuevo | Colección genérica de identidades |
+| Microsoft existente | Ruta conservada + traslado por cohorte con origen acreditado y reserva | Broker autoservicio entre proveedores |
+| Suspensión productiva | D1 por request, estado/cortes de cuenta y canónica actual | Redis/bus/CAE y MFA propia |
+| Perfil | Campos propios, autoridad/versiones, iniciales | Avatar storage y reimportador UI |
+| Recuperación | Proveedor original; sin sustitución propia | Linking/unlinking/recovery avanzada |
 
-Se ha autorizado D1–D3 solo para el spike y preparación QA mínima, con [plan de recursos previo](evidence/spike-resource-plan.md) y [evidencia](evidence/spike-summary.md). Harness en `tools/spikes/010-external-id/`, fuera de solución/APIs/Web productivos; no migraciones EF ni escritura en BD MiKompri. Config pública local ignorada; secretos/tokens fuera de evidencia.
+## Dependencies & Definition of Done
 
-El adapter futuro debe distinguir email OTP observado como federated/mail de emailAddress/password; no fijar representación Graph a partir de etiquetas de UI. La colección permite ambos métodos ficticios bajo mismo oid, pero último método/concurrencia requieren guardia propia, y falta linking con Google real/G3. No pasar a Phase3–8 por tener fuentes/probes. D1 permanece hipótesis operativa apoyada por benchmark local, no garantía medida en cloud.
+[Tasks](tasks.md) distingue A obligatorio, A opcional y B diferido; conserva IDs anteriores. A termina con aceptación real, confianza aprobada, UserId/ownership preservados y D1 productivo, no con placeholders ni ocultando features pendientes. B permanece pendiente tras cerrar A.
 
-Continuación: Google sin Microsoft ya accede al harness con token CIAM validado; token Google directo rechazado401. La reautenticación Google ensayada emite auth_time nuevo tras solo selección/consentimiento, por lo que es NOT RELIABLE FOR G3. Priorizar revisión de desafío verificable CIAM, comportamiento login_hint y expiración del retorno antes de mutar/linkar objetos reales. Esta observación no autoriza políticas nuevas ni rebaja300/600s; no iniciar Phase3–8 ni B. [Evidencia](evidence/assurance-spike.md).
-
-Siguiente ensayo diseñado, no ejecutado: [contexto CA y desafío CIAM](evidence/g3-step-up-review.md), reutilizando QA/harness y como máximo un contexto/política propios tras autorizar configuración. Primero verificar compatibilidad email OTP secundario para Google sin reemplazar OTP primario; SMS requiere decisión aparte. Probar política ausente/deshabilitada, MFA previa bajo tolerancia5min, bootstrap seguro y tiempo firmado del factor ligado a operación. `acrs`+token reciente no son PASS. D3 se conserva; si la ruta no satisface su frescura, volver a arquitectura antes de implementar.
-
-La complejidad justificada es puente de migración y operaciones seguras; no una plataforma genérica de identidad. Adapter Graph/almacén efímero/filas nuevas se mantienen condicionados a pruebas A. B aumenta bindings permanentes solo si demuestra necesidad. Borrado productivo, verificaciones de contacto propias y recopilación PII adicional necesitan decisión posterior. No hay excepción constitucional aceptada por este plan.
+**Readiness documental actual:** `010-A NOT READY FOR IMPLEMENTATION` únicamente por aprobación pendiente de ADR-004/enmienda TP11 y de la transición acotada descrita en ellos. Código/QA planificados son trabajo posterior, no bloqueos previos adicionales; G3/CA del spike y email opcional no son bloqueos de Microsoft+Google.

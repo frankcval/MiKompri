@@ -20,6 +20,10 @@ internal static class AuthHarness
         var spa = Environment.GetEnvironmentVariable("MIKOMPRI_SPIKE_SPA");
         var diagnosticSpa = Environment.GetEnvironmentVariable("MIKOMPRI_SPIKE_NEGATIVE_SPA");
         var googleClient = Environment.GetEnvironmentVariable("MIKOMPRI_SPIKE_GOOGLE_CLIENT_ID");
+        var g3Context = Environment.GetEnvironmentVariable("MIKOMPRI_SPIKE_G3_CONTEXT");
+        if (g3Context is not null && (!g3Context.StartsWith('c') || !int.TryParse(g3Context[1..], out var contextNumber)
+            || contextNumber is < 1 or > 99))
+            throw new InvalidOperationException("Invalid isolated QA authentication context.");
         var msal = Environment.GetEnvironmentVariable("MIKOMPRI_SPIKE_MSAL_JS");
         if (!Guid.TryParse(tenant, out _) || !Guid.TryParse(api, out _) || !Guid.TryParse(spa, out _)
             || !File.Exists(msal) || Path.GetFileName(msal) != "msal-browser.min.js")
@@ -61,7 +65,7 @@ internal static class AuthHarness
         app.MapGet("/google-direct.html", () => Results.Content(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "google-direct.html")), "text/html"));
         app.MapGet("/spike/msal.js", () => Results.File(msal!, "application/javascript"));
         app.MapGet("/spike/config", () => Results.Json(new { clientId = spa, diagnosticClientId = diagnosticSpa,
-            googleClientId = googleClient, authority, scope = $"api://{api}/access_as_user" }));
+            googleClientId = googleClient, g3ContextId = g3Context, authority, scope = $"api://{api}/access_as_user" }));
         app.MapPost("/spike/start", () =>
         {
             var now = DateTimeOffset.UtcNow;
@@ -82,6 +86,11 @@ internal static class AuthHarness
                 issuerSha256 = Digest("iss"), tenantSha256 = Digest("tid"), objectSha256 = Digest("oid"),
                 subjectSha256 = Digest("sub"), audienceSha256 = Digest("aud"), requiredScopePresent = true,
                 authTime = authenticatedAt, issuedAt = Timestamp("iat"), expiresAt = Timestamp("exp"),
+                configuredContextId = g3Context,
+                contextClaimPresent = context.User.HasClaim(c => c.Type == "acrs"),
+                configuredContextClaimPresent = g3Context is not null && context.User.HasClaim("acrs", g3Context),
+                authenticationMethodClaimPresent = context.User.HasClaim(c => c.Type == "amr"),
+                mfaReferencePresent = context.User.HasClaim("amr", "mfa"),
                 challengeStartedAt = started, observedAt = now,
                 withinG3TimestampBounds = WithinTimestampBounds(authenticatedAt, started, now),
                 provesG3 = false }); // Timestamp bounds alone do not prove a fresh provider challenge.

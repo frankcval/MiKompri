@@ -1,65 +1,60 @@
-# Contratos propuestos — cuenta e identidad 010
+# Contratos mínimos — 010-A
 
-**No implementados.** Se reutilizan ProfileController GET/PUT `/api/v1/users/me`, POST `/me/sync`, grupos/membresías y resolución de Users consumida por ShoppingList. [Auditoría](../current-state-audit.md). No hay endpoint existente de account linking, migración, métodos o recuperación. Estos contratos requieren aprobación del ADR y OpenAPI antes de codificar; no implican nuevas rutas operativas hoy.
+Diseño, no endpoints implementados. [Auditoría](../current-state-audit.md), [migración](../migration.md). Reutilizar perfil/sync y grupos; las APIs no validan Google directamente.
 
 ## Contrato de token y confianza
 
-| Elemento | Regla propuesta |
-| --- | --- |
-| Emisor aceptado | External ID destino, configuración/metadata OIDC HTTPS fijada por entorno. Legado solo en ventana aprobada. No Google/Apple/Graph ni cualquier tenant derivado de un tid sin validar |
-| Audience | Recurso lógico común MiKompri. Tabla explícita por issuer: tenant permitido, JWKS, token version, audience GUID/URI realmente emitida, scope y clientes autorizados. No listas combinables libremente |
-| Scope | `access_as_user` delegado del backend (nombre actual a conservar si se registra igual), tokenizado por espacios; ausencia/scope distinto →403 después de autenticar. ID token o token app-only sin contrato →rechazo |
-| Claims de correlación | tid y oid completos, coherentes con issuer confiable; namespace server-side. El actor de dominio se obtiene de Users. sub/email/nombre no son claves |
-| Validación | Firma/algoritmos admitidos/kid metadata, issuer, audiencia, exp/nbf, skew acotado; no construir issuer sts.windows.net automáticamente para CIAM |
-| Aislamiento | Scope no sustituye permisos de recurso. Owner/Admin/Member siguen siendo datos de Users. Cuenta/binding suspendidos →403 en el siguiente control autoritativo tras commit, en tres APIs; 503 si estado inaccesible, sin caché entre requests, según D1 |
-| Tokens de prueba | Un ID token validado por el broker con su audience/nonce específicos puede acreditar una operación; nunca se acepta como bearer de las APIs de negocio |
+| Elemento | Regla A |
+|---|---|
+| Microsoft actual | Conservar issuer/tenant/audience/clientes legítimos durante transición aprobada |
+| Google | External ID emite access token para recurso MiKompri; tuple CIAM se resuelve en Users |
+| Validación | Firma/algoritmos/JWKS fijados, issuer, audience, exp/nbf/skew, scope delegado, tid y oid. No generar issuer sts para CIAM |
+| Audience/scopes | Recurso lógico común en tres APIs. Matriz por issuer: solo audience/scopes/clientes correspondientes; no combinaciones cruzadas |
+| Identidad | Namespace confiable+tid/oid → UserId; sin email/sub global ni identificador Google en relaciones |
+| Negativos | Google directo, Graph, ID bearer, wrong issuer/aud/scope/tenant, expirado, falta de tupla y actor B deben denegarse |
+| D1 | Estado local autoritativo antes de negocio, sin Graph ni caché inter-request; 401 JWT/corte, 403 scope/suspensión, 503 estado inaccesible |
+| G3 | Fuera del contrato login A: acrs/auth_time/MFA histórica no autorizan linking. No pedir c1 para entrar ni usar las políticas de spike |
 
-Casos mínimos en Users/ShoppingList/ProductCatalog: token destino válido; legado permitido/retiro; old issuer+new aud y viceversa; tenant no autorizado; firma/exp incorrectas; sin tid/oid; Google directo; Graph aud; SPA ID token; scope ausente/equivocado; cliente no autorizado; binding suspendido. 401 para autenticación inválida, 403 para scope/permisos insuficientes, 503 para resolución de estado obligatoria no disponible (fail closed).
+## APIs existentes de perfil y provisión
 
-## Estado de acceso — contrato mínimo beta propuesto
+- GET `/api/v1/users/me`: UserId/perfil propio. Compatibilidad de DTOs documentada; no filtrar subjects/identidades en miembros.
+- PUT `/api/v1/users/me`: ampliar capacidades existentes con whitelist de campos A. Mantener alcance de edición legacy; campos ausentes no se borran. Versión/If-Match para campos nuevos; 428 si requerida, 412 conflicto y 409 username ocupado. No aceptar UserId/tid/oid/autoridad/verificación.
+- POST `/api/v1/users/me/sync`: conservar integración de bootstrap/resolución, separando actualización de perfil. Alta nueva solo en modo autorizado; nunca crear candidato de migración. Claims no sobrescriben personalizaciones ni disparan traslado.
+- Grupos/membresías/roles y contratos de compras/gastos no cambian.
 
-**GET `/api/v1/users/me/access-status`**, bearer ya validado de audiencia común, sin UserId destino ni lectura de otro usuario. Users lee el estado autoritativo local sin auto-provisión, sincronización de perfil o llamada a Graph/otra API. Sin recursión HTTP al propio endpoint. Respuesta 200 mínima: UserId resuelto, account/binding activos, SecurityVersion/BindingVersion y corte de emisión aplicable; `Cache-Control: no-store`. No PII ni lista de métodos. Un JWT anterior/al corte se rechaza (401), suspendido conocido 403, backend estado no disponible 503. Unknown no permite negocio ni crea User.
+No añadir endpoint para cada proveedor. Username de perfil no es alias de login CIAM. Avatar iniciales; no contratos upload/storage ni métodos de cuenta A.
 
-Users aplica su lectura local a cada recurso protegido; ShoppingList y ProductCatalog llaman este contrato antes del handler (GET incluidos), validan/reutilizan resultado **solo dentro de request** y no sirven allow cacheado tras fallo. Validar estado y `iat > TokensValidFromExclusive` conforme [D1](../architecture-review.md#d1--suspensión-y-access-token-ya-emitido); iat aquí no es prueba de reauth. Deadline propuesto 1s máximo configurable y cero retries automáticos de mutaciones. Health/documentación pública y flujos de alta/proof expresamente aislados no abren recursos privados como excepción. Contrato nuevo justificado porque GET `/me` actual aprovisiona/sincroniza y devuelve perfil; no reutilizar esos efectos para autorizar cada request.
+## Estado de acceso D1
 
-ProductCatalog adquiere una dependencia operativa nueva de Users para todos sus endpoints protegidos; no cambia su política de catálogo global ni introduce roles de grupo. No CAE ni revocación Graph prometida; solicitudes ya autorizadas antes del commit no se cancelan por contrato. Al reactivar, cortes impiden resurrección de tokens anteriores/durante suspensión; pruebas AR-01–03 obligatorias antes de habilitar.
+GET propuesto `/api/v1/users/me/access-status`, bearer ya validado, lectura Users local sin aprovisionar/sync/Graph ni recursión. Respuesta mínima UserId, estado de cuenta/canónica, versión y corte aplicable, Cache-Control:no-store; sin PII/métodos.
 
-## Perfil existente ampliado
+ShoppingList/ProductCatalog lo consultan antes del handler protegido, GET incluido; solo reutilizan dentro de request. Users aplica lectura local. Deadline configurable propuesta1s y sin retries de escrituras; medir budgets existentes. API inaccesible→503, suspendido→403, JWT anterior/al corte→401. No resucitar tokens al reactivar. No volver catálogo público ni cambiar catálogo global/grupos para eludir dependencia.
 
-- **GET `/api/v1/users/me`**: conserva `id` como UserId, DisplayName/Email actuales según compatibilidad. Añadir perfil propio, procedencia/verificación de contacto, avatar seguro y `profileVersion`/ETag. No devolver sujetos de proveedor/pruebas en DTO público de miembro; deprecar ExternalUserId legado con política de clientes.
-- **PUT `/api/v1/users/me`**: reutilizar edición existente. Legacy solo DisplayName conserva su alcance; campos nuevos ausentes no borran datos. Para mutar nuevos campos/operaciones 010 exigir versión `If-Match` y validación de presencia; documentar retirada del contrato legacy sin versión antes de hacerlo obligatorio para todos. Nunca aceptar tid/oid/UserId/verificationState desde cuerpo.
-- **POST `/api/v1/users/me/sync`**: separar resolver identidad de importar perfil. Mantener compatibilidad de sync como lectura/actualización de snapshot; selección explícita de campos y versión para reemplazar personalizaciones. No usar sync para enlazar cuenta. Validar consumidores actuales antes del cambio de respuesta/semántica.
-- Contacto cambiado pasa a unverified. Verificación por autoridad demostrada, no booleano del cliente. Verificación propia de contacto/telefónica puede quedar futura; no presentarla como recovery disponible.
+Este contrato se justifica porque GET/me actual crea/sincroniza perfil; no puede usarse así para autorizar cada request. No bloquea primer token validado en harness, sí salida productiva protegida.
 
-Conflictos de username/perfil →409; cuerpo inválido →400; falta de versión cuando es requerida →428; versión antigua →412. Conservar formato de error actual `status/error/traceId/errors` y añadir `code` estable sin identificar a otro usuario.
+## Traslado Microsoft administrado
 
-## Operaciones nuevas mínimas (diseño)
+Contrato interno/runbook de cohorte, no nueva API pública de linking: fuente inmutable acreditada, UserId derivado por Users, destino reservado, versión/estado/idempotencia y rollback según migración. No cuerpo HTTP que elija UserId destino. Estado incierto o candidato desconocido bajo piloto→denegar negocio y no insertar otro User.
 
-| Ruta propuesta | Entrada / salida | Reglas |
-| --- | --- | --- |
-| GET `/api/v1/users/me/access-methods` | Inventario mínimo de métodos propios, estado, `canUnlink`, versión | Datos CIAM resueltos/confirmados; unknown no habilita unlink. Ocultar subjects/secretos y distinguir MFA de login |
-| POST `/api/v1/users/me/account-operations` | `purpose: Link/Migrate/Unlink/Recover`, proveedor/método elegido, expectedVersion, idempotency key →202 con operationId/status y acción permitida | Sesión propia y acceso actual para link/unlink/migrate; Recover requiere prueba alternativa/control aprobado, nunca email como bearer. Derivar destino en servidor |
-| GET `/api/v1/users/me/account-operations/{id}` | Estado propio sin pruebas/tokens | 404 genérico para operación ajena, expirada desconocida o inexistente según política anti-enumeración; no capability URL |
-| POST `/api/v1/users/me/account-operations/{id}/confirm` | Consentimiento/expectedVersion; no UserId ni tokens externos →resultado idempotente | Revalidar ProofReceipts exigidos por operación D3, edad <=300s y versiones actuales, estado, candidato/alternativa, último método e inventario antes de commit; 409 colisión, 410 proof expirada, 429 abuso |
+Antes de retirar legacy se verifican pares old/new en tres APIs y forwarding UsersApi, mismo UserId y cortes D1. El contrato no presume que dos objetos CIAM con mismo email sean la misma persona.
 
-Unlink utiliza el identificador opaco del método propio devuelto al usuario; validar ownership e inventario otra vez. No se añade DELETE User habilitado: [estrategia de eliminación](../privacy-and-deletion.md) tiene gate separado.
+## Sesión Web y configuración
 
-## Protocolo de doble prueba, no una nueva emisión de tokens MiKompri
+Google prioritario y Microsoft existente disponible; email solo si aprobado. Code+PKCE+MSAL browser-delegated; registro SPA público/redirect exacto y autoridad conocida por ruta. Separar tokens/caché según cliente/issuer/cuenta y generación de sesión; cancelar/ignorar respuestas tardías, limpiar drafts y return intent al cambiar. CORS no sustituye redirect/CSRF.
 
-1. Users inicia operación autenticada, fija iniciador/binding/propósito/versiones y crea state/nonce/verifier de un solo uso. UI abre la acción autorizada; no acepta redirect de vuelta arbitrario.
-2. Broker de prueba en Users (aplicación/redirect dedicados a definir tras aprobación) ejecuta Authorization Code + PKCE con emisores/retos pertinentes según D3 y sesiones de prueba aisladas: origen+candidato para vincular/migrar, alternativa que permanece para unlink/recovery. El callback verifica código, issuer, audience del broker, nonce/state, sesión iniciadora y evidencia de control reciente. Tokens/códigos no se transportan como parámetros de nuestros endpoints de negocio ni quedan en journal/logs. Si se usan cookies efímeras: HttpOnly/Secure/SameSite apropiado, anti-CSRF y origins exactos.
-3. Aplicar [D3 y su matriz por operación](../architecture-review.md#d3--control-reciente-y-step-up-para-beta): edad de cada prueba <=300s al confirmar, operación <=600s, no prueba de otra transacción. Solicitar reauth/max_age cuando se soporte y validar ID token del broker con auth_time firmado **y semántica acreditada en G3**, o desafío CIAM equivalente verificable aprobado. auth_time CIAM no implica nueva credencial Google; prompt/iat/selector/consentimiento/MFA histórica no bastan. Fuente de tiempo no es callback/UI. Si falta evidencia, mutación bloqueada. Skew propuesto 30s no amplía edad máxima. Sin Native Auth JS añadido solo para probarlo ni OTP propio.
-4. Target CIAM login dentro de operación no crea User nuevo ni sustituye cuenta A activa del SPA. ProofReceipt queda server-side; consentimiento final muestra método/cuenta a asociar sin exponer PII ajena.
-5. A: adaptador CIAM resuelve identidades de objetos acreditados y muta Graph solo si el gate de capacidad/propiedad es positivo. No aceptar un Google subject escrito por cliente ni verificar Google JWT en APIs de negocio. B: añade binding CIAM demostrado. Resultado publicado solo después de reconciliar; incertidumbre →Reconciling, sin nuevos permisos.
+Recuperación: enlace/ayuda hacia proveedor original, nunca endpoint MiKompri de «reemplazar identidad perdida». Logout local no promete revocación de todos los JWT del IdP.
 
-La recuperación sin sesión previa usa un desafío del mismo broker con método alternativo ya vinculado y respuesta genérica. La forma definitiva del endpoint de inicio anónimo se fija después de G1/G3/anti-abuso; no se diseña un «enviar email y obtener UserId». Cambios de sesión incluyen invalidar consultas/requests tardíos por generación de cuenta, limpiar borradores y caché privada, sin reintentar escrituras financieras automáticamente.
+## Contratos diferidos010-B
 
-Linking/migración prueban origen+candidato. Unlink exige control reciente mediante alternativa que permanece, consentimiento y checks de último método; no reautenticar obligatoriamente con el método comprometido que se retira. Recovery prueba alternativa ya vinculada y, si incorpora otro acceso, el candidato. Pérdida total sin prueba →sin autoservicio beta, nunca recovery por perfil. OTP primario no se etiqueta MFA; passkey actual no se presupone para OTP/social. No se cierran AC de linking/recovery por dejar el recorrido deshabilitado hasta G3.
+Se conserva el diseño, **no se implementa ni habilita en A**:
 
-**Candidato de prueba, no contrato aprobado:** [contexto CA+desafío CIAM](../evidence/g3-step-up-review.md). `acrs` solo se evalúa contra contexto/política efectiva fijados por entorno, nunca como permiso autosuficiente ni timestamp. El broker debe acreditar método/control reciente y tiempo real del factor; la tolerancia Every time no modifica300/600s ni permite usar iat/callback como AuthenticatedAt. Política inexistente/deshabilitada/report-only, tiempo incierto o bootstrap de factor no acreditado →sin ProofReceipt aceptable. No consulta Graph por request ni nuevos endpoints productivos por esta propuesta. Un factor MFA verificado tampoco añade automáticamente un método de login email o una nueva correlación UserId.
+| Diseño anterior | Situación |
+|---|---|
+| GET `/api/v1/users/me/access-methods` | Inventario y canUnlink futuros, no lista necesaria para login |
+| POST `/api/v1/users/me/account-operations` | Broker de link/unlink/cambio de proveedor/recovery autoservicio, diferido |
+| GET `/api/v1/users/me/account-operations/{id}` | Operación propia y estado, diferido |
+| POST `/api/v1/users/me/account-operations/{id}/confirm` | Doble prueba/último método/replay/versiones, diferido |
+| ProofReceipt/Authentication Context/CA de linking | Gate G3 y revisión futura; no en middleware de login A |
+| Reimportar perfil/foto/eliminar cuenta | Contratos futuros tras alcance/seguridad aprobados |
 
-## Integración y entornos
-
-Web y futuro MAUI tienen registros independientes. SPA: redirect exacto `/auth/callback`, logout exacto, registro público sin secreto, MSAL authority conocida del CIAM y scope backend. Broker de pruebas tiene callback distinto. MAUI: registro público/PKCE, redirects y firma/paquete Android/deep links probados en su fase; no wildcard ni secreto embebido.
-
-Local/cloud usan configuración separada; no copiar tenant IDs/redirects de producción a QA sin autorización. CORS solo orígenes Web conocidos; CORS no sustituye validación de redirect OAuth. IDs/scopes nuevos deben propagarse coordinadamente a tres APIs y forwarding UsersApi; no introducir OBO ni scopes Graph en tokens para MiKompri. No se modifica hoy ninguna configuración.
+[010-B](../010-b-deferred.md) conserva finalidad y reglas D3; [architecture-review](../architecture-review.md) y evidencias conservan investigación exacta. Un ID token de broker futuro no será bearer de negocio. No schema/broker provisional en A.

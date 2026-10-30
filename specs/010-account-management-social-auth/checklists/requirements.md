@@ -1,32 +1,28 @@
-# Specification Quality Checklist — 010
+# Specification Quality Checklist — 010-A
 
-Fecha: 2026-10-30. Estos checks evalúan **artefactos de diseño**, no la feature implementada. [Spec](../spec.md), [plan](../plan.md), [aceptación futura](acceptance.md).
+Fecha2026-10-30. Revisión de **documentación**, no cumplimiento funcional. [Spec](../spec.md), [plan](../plan.md), [aceptación](acceptance.md), [informe](../evidence/010-a-scope-review.md).
 
-## Completitud documental comprobada
+## Comprobaciones documentales
 
-- [x] Historias priorizadas con pruebas independientes, escenarios Given/When/Then, edge cases y criterios medibles.
-- [x] Objetivo Google sin Microsoft y email sin Microsoft explícitos; Microsoft adicional, Apple/otros investigados.
-- [x] Auditoría del código actual y separación de garantías existentes vs propuestas; 006 inexistente documentada.
-- [x] Research oficial vigente con fecha/fuentes y discrepancia native/social registrada; sin extrapolar Q&A/B2C a CIAM.
-- [x] A/B comparadas, A preferente condicionada a evidencia; B solo si A no satisface requisitos. No tomar recurso Graph como prueba operativa.
-- [x] UserId/ownership/grupos/gastos/historia inmutables; no linking por email/perfil/sub global.
-- [x] Migración autorizada, coexistencia/no migrados, carreras, rollback y anti-duplicación definidos.
-- [x] Pruebas recientes según operación D3, unlink último método, recovery con alternativa y seguridad del broker/Graph contemplados, sin exigir prueba del proveedor perdido.
-- [x] Perfil/username/login/autoridad/sync/avatar diferenciados, datos futuros minimizados y eliminación diseñada.
-- [x] JWT/issuer/audience/scopes/registros Web/MAUI y permisos de negocio separados.
-- [x] Mapa TP11 de 13 reglas, propuesta SemVer/enmienda y ADR con estado Propuesto, sin editar constitución.
-- [x] Ocho fases y tareas abiertas con rutas, tests antes de reglas y gates de QA real; doce casos obligatorios trazados.
-- [x] Límites de ejecución respetados: solo documentos/selección de feature Spec Kit; sin código, Azure, credenciales, BD ni cambios de tareas anteriores.
-- [x] Revisión D1 compara revocación por lookup/caché/claims/lifetime/CAE, define siguiente control tras commit y coste/fail-closed de ProductCatalog; sin suponer revocación IdP instantánea.
-- [x] Revisión D2 revalida documentación contradictoria browser/native y distingue React/MSAL.js, SDK Android y futuro MAUI/MSAL.NET, sin asumir paridad.
-- [x] Revisión D3 concreta evidencia/frescura y matriz por operación, OTP/MFA/passkeys/proveedor perdido y pruebas pendientes AR-01–06; no presenta G3 como probado.
+- [ ] Alcance obligatorio Microsoft existente+Google sin Microsoft, sin G3/linking como dependencia.
+- [ ] Email OTP elegible, QA previo y deshabilitado hasta aprobación; no bloquea núcleo.
+- [ ] IDs T001–T055 conservados, futuras tareas visibles, T056–058 añadidas y ninguna tarea de producto cerrada.
+- [ ] Historias, 26FR, ochoSC y diez A-AC obligatorios trazados; onceavo opcional y doce AC previos reconciliados.
+- [ ] UserId canónico, permisos/ownership íntegros, no correlación por email/perfil/sub global.
+- [ ] Transición Microsoft obligatoria diseñada con origen inmutable, reserva, cohortes, bloqueo de duplicados, no migrados y rollback; coexistencia no equivale a migración aceptada.
+- [ ] Alternativa A simple preferida; no colección de identidades/AccountOperation/ProofReceipt para login básico. B requiere insuficiencia demostrada y nueva revisión.
+- [ ] D1 autoritativo antes de negocio productivo; no exige completar D1 para primer login aislado. Sin Graph por request/Redis/bus/CAE.
+- [ ] Web MSAL.js/Code+PKCE browser-delegated; MAUI/Native Auth no se fijan ni bloquean A.
+- [ ] Perfil básico, autoridad propia y minimización; iniciales, no foto/storage/DOB/teléfono/dirección.
+- [ ] Recuperación original del proveedor, sin identidad sustituta desde soporte/email.
+- [ ] ADR propuesto y propuesta TP11 1.2.0; constitución vigente intacta.
+- [ ] Evidencia G3 preservada, sin convertir c1 en MFA ni resultados INCONCLUSIVE en PASS.
+- [ ] Enlaces/Spec Kit/formato y archivos protegidos verificados según informe; esta lista requiere revisión humana antes de marcarla.
 
-## Decisiones y aceptación pendientes (no bloquean revisar el diseño, sí ejecutarlo)
+## Decisión pendiente indispensable para iniciar identidad
 
-- [ ] Ratificar G1: A funciona con Google-only→email, métodos y colisiones; o elegir B mediante ADR revisado.
-- [ ] Ratificar G2/G3: login email OTP y evidencia reciente viable por método; no usar passkey para social/OTP hoy no soportado ni MFA histórica como frescura. Microsoft personal y recovery real pendientes.
-- [ ] Aprobar G4–G7: plan/cohortes/retirada, SDK/configuración, PII/retención/coste y ADR/enmienda.
-- [ ] Aprobar D1–D3 en ADR: lookup beta por request sin caché inter-request, latencia/disponibilidad ProductCatalog, flujo Web y método de prueba reciente demostrado; ejecutar AR-01–06 después de autorización QA.
-- [ ] Ejecutar todos los AC y negativos, migraciones/rollback y revisión de seguridad/privacidad.
+- [ ] Ratificar ADR-004 y propuesta TP11, incluyendo contrato de confianza/coexistencia y transición Microsoft acotada (T007/T008/T009/T010). Aplicación constitucional posterior autorizada conforme a gobernanza.
 
-**Dictamen documental:** `010 READY FOR ARCHITECTURE REVIEW`. No significa READY FOR IMPLEMENTATION ni habilitación de tenants/producto. No hay un vacío oculto que impida presentar alternativas: los gates abiertos tienen prueba/decisión, responsable de revisión y tareas identificadas.
+Las tareas de integración/QA/migración/D1/perfil son trabajo de implementación/entrega del MVP, no evidencia de que la documentación impida comenzar después de esa ratificación. G1/G3/linking, email, fotos, MAUI y recuperación entre proveedores no bloquean iniciar ni entregar el núcleo Microsoft + Google.
+
+**Dictamen de inicio:** ver informe de alcance. Esta checklist no marca ninguna aceptación productiva, tarea previa ni aprobación arquitectónica.

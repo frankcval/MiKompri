@@ -59,3 +59,9 @@ La preparación posterior ya crea el cliente Google y lo añade al flujo QA. Set
 ## Revisión siguiente completada solo como research
 
 [Alternativas de step-up y ensayo propuesto](g3-step-up-review.md): contexto CA+desafío CIAM es candidato; no hay nuevo PASS. Email MFA social requiere resolver discrepancia de configuración, Every time reutiliza MFA hasta5min y `acrs` puede aparecer sin política protectora. Preservar tiempo real del factor, bootstrap y D3; no usar esos indicadores solos ni activar SMS/password/passkey como salida automática. Google observado sigue NOT RELIABLE FOR G3, candidato nuevo INCONCLUSIVE y email INCONCLUSIVE.
+
+## Ensayo adicional autorizado posteriormente
+
+[Preparación, transición y estado QA](g3-email-mfa-qa.md), [registro estructurado](g3-email-mfa-qa.json). Se crean contexto y política Google específicos, más respaldo administrativo tras autorización adicional de transición de defaults. El [control con política deshabilitada](g3-context-with-disabled-policy.json) devuelve c1 firmado sin claim amr: contexto no prueba MFA/G3. Intento de transición rechazado al activar respaldo; reversión ejecutada, con throttling y relectura final por verificar. No OTP MFA social nuevo ni G3 fiable acreditados; las clasificaciones anteriores no cambian.
+
+Cierre posterior: [restauración verificada](g3-restoration-verification.json), defaults activo, ambas políticas deshabilitadas por GET nativo del portal200 y contexto sin publicar. Asignación revisada All/exclusiones conserva destinatarios efectivos, pero activación sigue limitada. Candidato email MFA social INCONCLUSIVE; no nuevo PASS/FAIL de fiabilidad del método por no llegar al desafío.

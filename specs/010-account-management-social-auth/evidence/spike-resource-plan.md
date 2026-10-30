@@ -51,6 +51,29 @@ Comprobar disponibilidad de nombre y API oficial; crear solo nombres nuevos y et
 
 ## Fuentes de coste/provisionamiento consultadas
 
+### Ampliación G3 autorizada expresamente — 2026-10-30
+
+Autorización del usuario: ensayo **Authentication Context + email OTP MFA para Google**, solo tenant/usuarios QA; SMS y demás opciones fuera. Base de ejecución `010d298`. No implica aprobación final de ADR ni producción. Antes de modificar se verifica tenant CIAM y estado existente; exportar solo configuración pública relevante a `.local/` ignorado, evidencia por hashes/flags.
+
+| Recurso/cambio previsto | Finalidad y aislamiento | Coste/credencial | Reversión y límite |
+|---|---|---|---|
+| Un contexto libre `c1`–`c99`, nombre `MiKompri010G3EmailOtpQA` | Exigirlo solo en solicitud diagnóstica del harness; elegir ID disponible, no reutilizar contextos ajenos | Sin secreto/hosting nuevo; comprobar entitlement sin compras ni trial | Retirar publicación/contexto al finalizar; guardar ID público en inventario local |
+| Una política `MiKompri010G3EmailOtpQA` | Target exclusivo del contexto; exigir MFA y ensayar Every time si se ofrece. Incluir únicamente consumidor Google QA, o excluir explícitamente los demás si UI limita selección. Administrador y consumidor OTP fuera. Crear deshabilitada, revisar y solo después habilitar para ensayo | Sesión administrativa existente; no ampliar grants CLI/APIs, no licencias nuevas | Deshabilitar primero y borrar solo esta política. No cambiar defaults, políticas existentes, all-resources, riesgo o permisos de negocio |
+| Email OTP como método MFA | Leer configuración, conservar snapshot y habilitar solo si necesario y compatible con flujo OTP actual; limitar a QA cuando la UI lo permita | Sin credenciales nuevas; OTP introducido por titular solo en CIAM. No SMS/teléfono | Restaurar configuración previa al acabar. Si exige password, factor distinto, compra o ampliar ámbito, detener esa rama y documentar |
+| Instrumentación local aislada, si es necesaria | Solicitar `acrs`, observar claims firmados/tiempos sin dar acceso de negocio ni declarar G3 por timestamp | Proceso loopback existente; sin app/secret nuevos por defecto | Conservar fuente/controles, parar proceso al retirar QA. No alterar APIs/Web/BD productivas |
+
+No inscribir factores del titular, introducir OTP ni autenticar por él. No vincular/desvincular identidades reales para demostrar éxito. Tiempos300/600s intactos. Si email no aplica, registrar FAIL/INCONCLUSIVE de ruta; no activar SMS como alternativa.
+
+### Ampliación de transición de protección QA autorizada posteriormente
+
+El titular responde **«Autorizar transición segura solo QA»** al requisito observado de Security defaults. Se autoriza preparar/aplicar sustitución temporal que conserve protección administrativa y reversión antes de activar G3. SMS, métodos nuevos, compras y producción siguen fuera. Primero leer estado efectivo y políticas/roles existentes; no inferir cobertura de una mera advertencia del portal.
+
+Recursos adicionales previstos, solo si necesarios tras lectura: políticas CA de protección de administradores QA con los métodos ya disponibles y bloqueo de clientes legacy cuando el tenant soporte la condición. Nombres con prefijo `MiKompri010G3BaselineQA`, creadas deshabilitadas y revisadas antes de transición; sin usuarios/roles/factores/secretos nuevos ni elevación de grants CLI. No sustituir controles que el external tenant no permita conservar: documentar y detener si no hay cobertura suficiente. Coste: sin licencias/trials/hosting/add-ons contratados; comprobar entitlement efectivo. Guardar configuración pública previa y nuevos IDs en `.local/` ignorado, evidencia minimizada.
+
+Reversión: deshabilitar primero políticas creadas para G3/transición, restaurar el valor original de Security defaults, verificar acceso administrativo y retirar únicamente objetos creados por este ensayo. No borrar ni modificar políticas ajenas. Si la coexistencia de estados no es admitida, ejecutar el orden compatible y reducir la ventana de cambio con sesión administrativa existente y configuración preparada. No deshabilitar defaults hasta haber preparado/verificado protección equivalente para los administradores y acceso de recuperación del titular. La autorización adicional no rebaja G3 ni demuestra que email MFA social funcione.
+
+Revisión de asignación, sin ampliar destinatarios: la [matriz CIAM](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-supported-features-customers) documenta incluir todos y excluir usuarios/grupos. Si se usa esa forma en las dos políticas propias, comprobar inventario exacto de tres cuentas QA: respaldo=All menos Google/OTP; G3=All menos administrador/OTP. Ambas se revisan deshabilitadas, conservando todos los demás controles, con snapshot previo. Antes de transición abortar si aparece otro usuario o cambia el inventario; no presentar selección explícita almacenada por el portal como prueba de compatibilidad al activar. La hipótesis de asignación no es causa demostrada del400 anterior.
+
 - [Precio core y extras](https://azure.microsoft.com/en-us/pricing/details/microsoft-entra-external-id/), consultado 2026-10-30: core gratuito hasta 50.000 MAU; extras fuera de ese tramo.
 - [Modelo de facturación agregado](https://learn.microsoft.com/en-us/entra/external-id/external-identities-pricing), consultado 2026-10-30.
 - [Crear tenant y roles](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-create-external-tenant-portal), consultado 2026-10-30.

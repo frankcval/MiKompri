@@ -1,5 +1,25 @@
 # Research — External ID y decisiones 010
 
+## Aplicabilidad actual: decisión de alcance 010-A / 010-B
+
+Revisión documental del 30/10/2026: [decisión completa](evidence/010-a-scope-review.md). La prioridad actual es **Microsoft existente + Google sin Microsoft**. Las recomendaciones originales de Google+email obligatorio, G1/G3 antes de implementar y broker de métodos corresponden al alcance completo anterior; no son gates del login básico 010-A. Se conservan como investigación para [010-B](010-b-deferred.md), sin alterar sus resultados.
+
+- **Alternativa A mínima:** CIAM emite token MiKompri; Users mantiene una tupla canónica activa→UserId. No colección propia de proveedores ni broker/ProofReceipt para login. La alternativa arquitectónica B solo se reconsidera por insuficiencia demostrada; no es el incremento de producto 010-B.
+- Google sin Microsoft, token CIAM estable y rechazo Google directo están acreditados en harness, no alta/ownership productivos. La agregación segura y G3 siguen sin cierre; no son necesarios mientras no se ofrezca gestionar métodos.
+- Email OTP básico funciona en el mismo CIAM/contrato y puede incluirse **opcionalmente** sin linking/G3/modelo adicional. T056 exige alta/login integrado, negativos OTP y sesión antes de habilitarlo. Si falla o retrasa, diferir sin bloquear Microsoft+Google; OTP primario no es MFA.
+- Microsoft conserva ruta actual inicialmente. Su traslado al CIAM sigue siendo obligatorio de diseñar/ensayar: origen federado inmutable, reserva, misma fila/UserId y manifiesto/rollback, no emparejamiento por email ni cambio arbitrario a Google. El guard de provisión impide duplicar candidatos no reconciliados.
+- D1 se conserva antes de negocio productivo protegido, sin exigir toda su implementación para primer login aislado. D2 Web MSAL/PKCE browser-delegated permanece. D3 y MAUI/Native Auth se difieren al incremento aplicable.
+- Recuperación A solo con proveedor original; perfil básico propio e iniciales. No fotos, DOB/teléfono/dirección ni métodos adicionales por conveniencia.
+
+### Reconsulta oficial para la transición acotada
+
+Se reconsultan [federación Entra organizacional](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-entra-id-federation-customers) y [métodos External ID](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-authentication-methods-customers) el 30/10/2026. La guía de federación describe precrear identidad federada con issuer e issuerAssignedId del objeto Microsoft de origen. Esto permite **proponer** equivalencia por origen inmutable; el formato de issuer/mapeo concreto debe verificarse en QA, no copiar literalmente ejemplos ni inferir que conserva UserId MiKompri. Es federación de tenant organizacional, no prueba de cualquier MSA personal. Email claim puede ser requisito técnico sin convertirse en clave de correlación.
+
+Estas consultas no configuran recursos, no completan migración ni hacen PASS ningún control G3. Los costes/permisos de futuras configuraciones se aprobarán según entorno; no se activan licencias/trials/SMS para conseguir login básico.
+
+## Investigación y evidencia anteriores (conservar con aplicabilidad anterior)
+
+
 Consulta oficial: **30/10/2026**. Solo documentación de producto Microsoft, Graph y SDKs; no usar respuestas Q&A, ejemplos Azure AD B2C ni guías B2B workforce como garantía de CIAM. La investigación inicial era documental; la sección final registra el spike QA posterior con tenant, Graph y proveedores reales. Hecho documental ≠ capacidad acreditada en nuestro entorno. [Auditoría del repositorio](current-state-audit.md).
 
 ## Evidencia actual y consecuencias

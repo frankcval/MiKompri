@@ -1,9 +1,13 @@
-# 010 — Account Management & Social Auth
+# 010 — Alcance incremental
 
-Formalización Spec Kit al 30/10/2026, sin implementación ni configuración Azure/BD. [Spec](spec.md), [plan](plan.md), [tasks](tasks.md), [research actual](research.md) y [checklist](checklists/requirements.md). Esta página reemplaza el alcance preliminar como índice; las decisiones siguen propuestas para architecture review.
+Revisión30/10/2026, solo documentación. [Spec](spec.md), [plan](plan.md), [tasks](tasks.md), [decisión y trazabilidad](evidence/010-a-scope-review.md).
 
-Objetivo: Google y email sin cuenta Microsoft, Microsoft adicional, External ID CIAM y UserId Guid interno inmutable. Preferir A (agregación de métodos en CIAM); B (varios bindings CIAM por UserId) solo por insuficiencia demostrada de A y ADR revisado. La antigua formulación «varias identidades externas» no impone B por anticipación. Nunca linking por email/perfil, nunca cambiar ownership o crear UserId nuevo en una migración autorizada.
+**010-A:** conservar Microsoft existente; Google prioritario sin cuenta Microsoft mediante External ID/token backend/tupla→Users→UserId; transición Microsoft controlada sin duplicados; Web MSAL/browser-delegated; perfil básico propio; logout/cambio de cuenta y regresiones de ownership. D1 antes de negocio productivo, sin exigirlo a primer login aislado.
 
-Perfil propio y personalizaciones prevalecen; [modelo](data-model.md), [migración](migration.md), [amenazas](threat-model.md), [privacidad/eliminación](privacy-and-deletion.md), [contratos](contracts/account-and-identity.md), [ADR](../../docs/adr/ADR-004-ciam-identity.md) y [enmienda TP11 propuesta](constitution-amendment-proposal.md) detallan los límites. Nacimiento/teléfono/dirección se diseñan como futuro sin recogida inicial. Web primero; MAUI compatible y diferido.
+**Email OTP:** elegible en el mismo A como opción no bloqueante, tras QA de T056 y aprobación; mismo CIAM/contrato/provisión. Login básico funciona en harness. Sin G3/linking ni modelo adicional. Si falla/retrasa Microsoft+Google, diferirlo y no mostrarlo.
 
-Corrección de investigación: native authentication actualmente puede integrar social mediante un tramo browser-delegated; no afirmar exclusión total ni paridad de SDKs MAUI. Fuentes, contradicciones oficiales y gates de prueba están registrados en research. Las [doce aceptaciones](checklists/acceptance.md) siguen pendientes; ningún artefacto equivale a una prueba real ni a aprobación de constitución.
+**010-B:** segundo método, link/unlink/cambio de proveedor, recovery con alternativa, G3, Authentication Context/CA de linking, posibles providers/MFA avanzados y B arquitectónica solo por insuficiencia demostrada. [Backlog conservado](010-b-deferred.md). Merging sigue fuera.
+
+UserId Guid inmutable y Users dueño de correlación. No identidades Google/email/sub en ownership; no asociación por email. Perfil propio prevalece sobre claims. Avatar iniciales; foto/storage, DOB/teléfono/dirección y reimportación UI fuera del primer incremento.
+
+No se implementa ni configura nada por esta revisión. [Spikes](evidence/spike-summary.md) conservados, con G3 no demostrado; eso no bloquea el alcance A sin operaciones de métodos. [ADR](../../docs/adr/ADR-004-ciam-identity.md)/[TP11 propuesto](constitution-amendment-proposal.md) pendientes de aprobación; constitución vigente intacta.

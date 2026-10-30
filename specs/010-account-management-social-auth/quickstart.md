@@ -1,18 +1,18 @@
-# Quickstart — revisión de arquitectura 010
+# Quickstart — revisión e implementación posterior de 010-A
 
-Esta ejecución solo formaliza. No ejecutar scripts de provisión, migraciones EF/database update, llamadas Graph mutadoras, nuevos registros, credenciales ni login/proveedores reales sin autorización posterior.
+Esta ejecución modifica documentación únicamente. No provisión cloud, migraciones EF, registros, secretos ni pruebas mutadoras.
 
-## Recorrido de revisión
+## Recorrido
 
-1. Leer [spec](spec.md), [auditoría actual](current-state-audit.md) y [research](research.md). Contrastar fecha y aplicabilidad external tenant, no B2B/B2C.
-2. Revisar [ADR-004](../../docs/adr/ADR-004-ciam-identity.md), A/B y G1–G7; aprobar por separado spike QA y decisión final.
-3. Revisar [TP11 propuesto](constitution-amendment-proposal.md) sin alterar la constitución vigente.
-4. Contrastar [modelo](data-model.md), [migración](migration.md), [contratos](contracts/account-and-identity.md), [amenazas](threat-model.md) y [privacidad/borrado](privacy-and-deletion.md).
-5. Usar [plan](plan.md), [tasks](tasks.md) y [doce casos de aceptación](checklists/acceptance.md). Ningún test de proveedor está ejecutado por existir estas listas.
+1. Revisar [alcance](scope.md), [spec](spec.md), [plan](plan.md), [tareas](tasks.md) y [decisión](evidence/010-a-scope-review.md).
+2. Ratificar [ADR-004](../../docs/adr/ADR-004-ciam-identity.md), [TP11 propuesto](constitution-amendment-proposal.md) y [transición Microsoft](migration.md). Constitución permanece intacta hasta aprobación explícita.
+3. Contrastar [auditoría](current-state-audit.md), [research](research.md), [modelo](data-model.md), [contratos](contracts/account-and-identity.md), [amenazas](threat-model.md) y [privacidad](privacy-and-deletion.md).
+4. Usar [aceptación](checklists/acceptance.md): diez casos A obligatorios, email opcional y trazabilidad de casos anteriores a [010-B](010-b-deferred.md).
+5. G1/G3 y linking se conservan como investigación B. No exigirlos para Microsoft + Google ni repetir transición CA en nombre del MVP.
 
-## Comprobación documental local
+## Verificación documental
 
-Desde la raíz, con PowerShell:
+Desde la raíz con PowerShell:
 
 ```powershell
 ./.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
@@ -21,10 +21,15 @@ git diff --check
 git status --short
 ```
 
-Deben resolver 010; verificar `.specify/feature.json` con `feature_directory: specs/010-account-management-social-auth`. Revisar enlaces locales/anchors y trazabilidad de 26 FR/ocho SC/doce AC. No ejecutar `setup-plan` sobre documentos ya formalizados para evitar sobrescribirlos con plantilla.
+Deben resolver010 y conservar los IDs originales de tareas/requisitos. No ejecutar setup-plan sobre documentos existentes. Estas comprobaciones no ejecutan aceptación funcional.
 
-## QA futuro, después de revisión y autorización
+## Orden posterior a aprobación
 
-Preparar tenant external separado, registro recurso backend común, clientes SPA/broker/MAUI cuando corresponda y proyectos de proveedor. Valores/secretos fuera de Git; no reutilizar sesiones/productivo. Capturar metadatos y claims **redactados** por emisor/cliente/scope. Probar G1/G2/G3 antes de fijar modelo A/B. Email y Google deben ser reales; Microsoft organizacional legado y MSA personal son pruebas distintas.
+- Primer login aislado: Microsoft existente + Google sin Microsoft, MSAL.js/PKCE, tokens saneados y rechazos de tokens incorrectos. No necesita broker/linking/G3 ni D1 completo para ese ensayo.
+- Users/JWT: tupla de confianza, unicidad y bootstrap seguro, perfil que no sobrescribe; probar transición Microsoft con manifiesto exacto UserId/ownership y rollback. Coexistir no basta como aceptación de migración.
+- Antes de acceso productivo protegido: D1 en las tres APIs, tests negativos de scope/issuer/audience/estado/Users caído y regresiones de negocio.
+- Web: Google prioritario y Microsoft visible; limpieza de caché/drafts/respuestas tardías en logout/cambio de cuenta; perfil con iniciales.
+- Email OTP solo si T056 pasa QA real del mismo CIAM/contrato sin ampliar arquitectura. Si falla, diferir sin bloquear core.
+- Ejecutar suites por capas, Web lint/typecheck/build, E2E y QA real con SHA/entorno/versiones/pasos/resultados sin PII ni tokens. MAUI, fotos y recuperación entre proveedores se difieren.
 
-Ensayar migración sobre PostgreSQL Docker con dataset desechable y manifiesto de referencias; después QA real autorizado. Evidencia: SHA, SDK/versiones, entorno, pasos/resultado, fallos y comparación de IDs, sin tokens/OTP/authorization codes/PII. Ejecutar suites por capas, Web lint/typecheck/build, E2E controlados y aceptación separada. No convertir falta de recursos en skip aprobado. MAUI sigue fuera de implementación inicial.
+Recuperación en A: proveedor original; ningún soporte MiKompri sustituye una identidad perdida mediante email coincidente. Los recursos QA existentes siguen sujetos al inventario y limpieza documentados; esta revisión no cambia su estado.

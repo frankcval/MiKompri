@@ -1,5 +1,22 @@
 # Revisión arquitectónica acotada — beta 010
 
+## Aplicabilidad actual tras separar 010-A / 010-B
+
+Revisión de alcance del 30/10/2026, [ADR actualizado](../../docs/adr/ADR-004-ciam-identity.md) y [decisión](evidence/010-a-scope-review.md). Se conserva a continuación la revisión original y sus comparaciones; sus gates del alcance completo no se convierten en dependencias de login básico.
+
+| Decisión | Aplicabilidad actual |
+| --- | --- |
+| D1 estado autoritativo | 010-A antes de acceso productivo protegido; no bloquea primer login aislado. Una canónica activa/estado de cuenta, no colección genérica de bindings |
+| D2 cliente | 010-A Web: MSAL.js + Code/PKCE browser-delegated. MAUI/Native Auth, versión/SDK/retorno se difieren |
+| D3 / G3 | 010-B para gestión sensible de métodos/recuperación alternativa; no se implementan ni ofrecen en A. Límites300/600s y negativos se conservan, sin aceptación |
+| Migración Microsoft | 010-A, traslado administrado del mismo origen federado acreditado y reservado; mismo UserId y rollback. No es linking autoservicio de proveedores arbitrarios ni requiere broker G3 genérico |
+| G1 agregación y alternativa B | Futuro 010-B. No asumir linking resuelto ni introducir múltiples identidades para login básico |
+
+El token c1 con política deshabilitada no prueba MFA; el candidato de desafío social queda INCONCLUSIVE, con restauración QA verificada. No repetir transiciones CA para implementar Microsoft+Google. La recuperación A se delega al proveedor original; no hay unlink, segundo método ni sustitución de identidad. Email OTP básico opcional tiene QA propio sin G3.
+
+## Revisión original y comparaciones conservadas
+
+
 Fecha **30/10/2026**, sobre `94d64eb`, rama `010-account-management-social-auth`. Solo decisiones propuestas sobre revocación, clientes y autenticación reciente; no cambia la elección provisional A/B ni autoriza implementación. Leídos artefactos 010, TP11 y Users/JWT/MSAL actuales. Fuentes revalidadas en [research](research.md), R20–R28. Las pruebas QA que se describen **no se han ejecutado**.
 
 ## D1 — Suspensión y access token ya emitido

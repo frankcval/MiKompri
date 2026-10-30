@@ -1,66 +1,82 @@
-# Checklist de aceptación — 010
+# Aceptación — 010-A y trazabilidad 010-B
 
-**Estado**: diseño de aceptación, **cero casos ejecutados/acreditados en esta formalización**. No marcar por presencia de un test/archivo. Evidencia futura incluye SHA, entorno, pasos, resultado, fallos y artefactos sin tokens/PII. «Real» exige CIAM/proveedor/sesiones de QA autorizadas; los negativos controlados complementan, no sustituyen.
+**Estado:** pendiente en aplicación integrada. Un PASS en harness no acredita alta Users, propiedad de negocio o migración. Todas las casillas permanecen abiertas. [Spec](../spec.md), [tareas](../tasks.md), [alcance](../evidence/010-a-scope-review.md).
 
-| Caso obligatorio | Resultado verificable | Referencias | Evidencia futura |
-| --- | --- | --- | --- |
-| AC-01 Google sin Microsoft | A solo tiene Google; botón Google → Google autentica → External ID emite token backend → UserId → uso normal. No crear cuenta Microsoft | US1; FR-001/020; T047 | Google real + manifest de UserId y acceso a lista |
-| AC-02 Email sin Microsoft | Registro/acceso email gestionado por CIAM; sin contraseña en MiKompri | US1; FR-012; T047 | Email real, caso OTP expirado/denegado y sesión válida |
-| AC-03 Entra existente | oldTid/oid → externalTid/oid mantiene exactamente UserId=A, sin INSERT de otro User en migración autorizada | US2; FR-003/010; T048 | Entra real + destino real + journal mínimo |
-| AC-04 Ownership/historia | Mismas listas, grupos, membresías, AddedBy/PaidBy/PurchasedBy/gastos/auditoría; sin FK huérfanas ni recalcular reparto | US2; FR-022; T043/048 | Manifiestos antes/después y rollback con escrituras |
-| AC-05 Añadir método desde Google | Prueba reciente de ambas partes, consentimiento, mismo UserId; segundo método permite login real | US3; FR-006/009; T049 | Google→email u otro método aprobado real; G1 acreditado |
-| AC-06 Mismo email no vincula | Dos accesos/proveedores con mismo email quedan independientes o conflicto, jamás linking automático | US2/3; FR-004/007; T049 | Negativos de email, nombre, username, teléfono/avatar y email cambiado |
-| AC-07 Último método | Solo Google no puede quitarse; con alternativa probada puede; dos unlink concurrentes no dejan cero | US3; FR-008; T028/049 | Prueba real e integración con carreras/Graph incierto |
-| AC-08 Personalizaciones | Cambios Google de nombre/avatar no sustituyen DisplayName/avatar MiKompri; clear sigue personalizado; reimportar es explícito | US4; FR-014; T036/050 | Login/sync real tras editar, versiones y snapshot separados |
-| AC-09 Token CIAM / no Google directo | Access token destino correcto aceptado en tres APIs; token Google directo, Graph, ID token SPA y scope/issuer/aud incorrectos rechazados | US5; FR-020/021; T020/051 | Matriz firmada y QA real, sin publicar JWTs |
-| AC-10 B no se vincula a A | Cambiar UserId/OperationId/state/nonce no da acceso A ni crea relación; candidato ocupado no se fusiona | US3; FR-006/007; T027/028/049 | Dos personas reales + ataques controlados y trazas minimizadas |
-| AC-11 Logout/cambio cuenta | B nunca ve datos/caché/borradores privados de A, incluso respuesta A tardía, recarga y cambio de issuer | US5; FR-018/023; T025/051 | Browser real y tests de requests pendientes |
-| AC-12 Recuperación | Alternativa probada o recovery aprobado recupera el mismo UserId; sin prueba se deniega, no se crea sustituto | US3; FR-008/010; T033/052 | Recovery real y pérdida total de factores documentada |
+## Diez casos obligatorios de 010-A
 
-## Gates de aceptación (todos pendientes)
+| Caso | Evidencia requerida sobre candidato | Requisitos / tareas |
+| --- | --- | --- |
+| A-AC01 Microsoft actual sigue entrando | Login real por ruta existente, sin redirección que cree otra cuenta; tipos actuales conservados | US1; FR-001/011; T002/023/047 |
+| A-AC02 Google nuevo sin Microsoft | Titular confirma que no necesita cuenta Microsoft; login Web normal mediante CIAM | US1; FR-001/018; T002/024/047 |
+| A-AC03 Access token válido MiKompri | Ambos recorridos aceptados por Users, ShoppingList y ProductCatalog bajo su matriz explícita; CIAM en Google y tras traslado Microsoft; excepción legado durante coexistencia | US5; FR-020/021; T020/021/051 |
+| A-AC04 Rechazo Google directo | Token Google directo401; añadir negativos Graph, ID token SPA, issuer/audience/tenant erróneos, exp y scope ausente/incorrecto | US5; FR-020/021; T020/051 |
+| A-AC05 Identidad resuelta a UserId | Tuple confiable se resuelve solo en Users; sin email/sub global ni targetUserId elegido por cliente; destino ocupado deniega | US2/5; FR-003/004/005/007; T013–018/051 |
+| A-AC06 Microsoft conserva exactamente UserId | Manifiesto antes/después de traslado a CIAM y rollback, igualdad exacta del Guid, no INSERT sustituto | US2; FR-003/010/011; T014/017/019/048 |
+| A-AC07 Datos conservan mismo propietario | Listas/grupos/memberships/gastos/compras/AddedBy/PaidBy/PurchasedBy/historial comparados antes/después y tras rollback, sin pérdida de compras posteriores | US2; FR-003/022; T019/043/048 |
+| A-AC08 Google nuevo obtiene nuevo UserId | Alta intencional única e idempotente/concurrente; no apropiación de cuenta Microsoft por email coincidente | US1/2; FR-004/005; T013/017/018/047 |
+| A-AC09 Logout/cambio no mezcla datos | A→B, respuesta tardía, multi-tab/recarga y cambio de issuer; limpiar tokens/caché/borradores y generación de sesión | US5; FR-018/023/024; T025/051 |
+| A-AC10 Perfil personalizado prevalece | Claims inicializan; cambiar DisplayName/nombres/idioma propios, repetir login/GET/sync, conservar personalizaciones y borrados voluntarios | US4; FR-013/014/017; T034/036/038/050 |
 
-- [ ] Google/email reales, Microsoft adicional y migración legacy validados; no solo TestAuthHandler/mocks.
-- [ ] A demostrado para casos obligatorios, o ADR revisado a B con evidencia y modelo/contratos coherentes.
-- [ ] Frescura/step-up por método y permisos Graph probados; no asumir auth_time/MFA ni garantías desde una configuración.
-- [ ] Negativos del threat model, idempotencia, carreras, reconciliación y último método acreditados.
-- [ ] Perfil/username/avatar y minimización aprobados; campos futuros no recogidos; recuperación y política de borrado/retención revisadas.
-- [ ] APIs, roles, grupos y referencias financieras sin regresión; PostgreSQL/Docker y rollback ensayados.
-- [ ] Web 320/390/430, teclado/lector/zoom, errores/cancelación/return intent y aislamiento de cuentas validados manualmente cuando corresponda.
-- [ ] CI y builds/imágenes del HEAD exacto; budgets 003/007/008/009 conservados sin darlos por satisfechos por este trabajo.
-- [ ] ADR/enmienda constitucional aprobados antes de activar confianza nueva; no eliminar soporte legado sin plan para no migrados.
-- [ ] MAUI: diseño/SDK/deep links revisados cuando corresponda a 006; no afirmar aceptación productiva de una app inexistente.
+- [ ] A-AC01
+- [ ] A-AC02
+- [ ] A-AC03
+- [ ] A-AC04
+- [ ] A-AC05
+- [ ] A-AC06
+- [ ] A-AC07
+- [ ] A-AC08
+- [ ] A-AC09
+- [ ] A-AC10
 
-## Complementos de revisión arquitectónica — pendientes, no ejecutados
+Google/token del harness aporta evidencia parcial a02/03/04, no sustituye estos recorridos ni permite marcar tareas. Mantener Microsoft legado no cierra06/07: deben ensayarse traslado y rollback.
 
-Los doce AC originales permanecen; [AR-01–06](../architecture-review.md#pruebas-de-decisión-pendientes) precisan seguridad/cliente de esos recorridos, no los sustituyen.
+## Email OTP opcional
 
-- [ ] AR-01: con JWT todavía vigente, tras commit de suspensión el siguiente control autoritativo de Users/ShoppingList/ProductCatalog rechaza, incluidos GET; otro binding activo sigue válido si solo se suspende uno.
-- [ ] AR-02: fallo/timeout Users o estado incierto →503 sin allow anterior. Petición autorizada antes de suspensión no se presenta como cancelada. Reactivación no revive tokens previos/durante suspensión; iat faltante/corte/mismo segundo cubiertos.
-- [ ] AR-03: ProductCatalog incorpora Users sin cambiar catálogo global; medir SQL/RPC/p95, timeout y disponibilidad, sin Graph por request ni modificar budgets.
-- [ ] AR-04: Web beta Code+PKCE+MSAL.js browser-delegated, social con paso navegador documentado. MAUI Native Auth no se fija por extrapolar Kotlin/JS; versión y retorno futuros pendientes.
-- [ ] AR-05: por método, verificar reauth CIAM/auth_time/challenge real vs SSO/refresh. Rechazar timestamp ausente/viejo/futuro, max_age ignorado, iat nuevo, prompt solo, selector/consentimiento y MFA histórica; comprobar ambas pruebas a <=300s al confirmar, reto ligado a operación y TTL <=600s.
-- [ ] AR-06: unlink prueba método que permanece; recuperación usa alternativa ya vinculada y no exige proveedor perdido. Sin alternativa no hay bypass beta; OTP primario no se cuenta como MFA ni passkey se ofrece a social/OTP no soportado.
+- [ ] **A-AC11:** si T056 se aprueba, una persona nueva sin Microsoft entra por email OTP en la aplicación; mismo CIAM/contrato y UserId estable entre accesos. Alta/login posterior, OTP inválido/expirado/reutilizado y aislamiento de sesión probados. Sin linking/G3.
+- [ ] Decisión explícita de habilitar tras QA o dejar deshabilitado/diferido. Ningún fallo de esta opción bloquea Microsoft + Google.
 
-Ampliación pendiente AR-05: [ensayo de step-up CIAM](../evidence/g3-step-up-review.md), investigación sin configuración ni ejecución nuevas.
+## Gates de entrega A
 
-- [ ] Confirmar compatibilidad real de email MFA para Google manteniendo el flujo OTP existente; conservar discrepancia entre guías, sin cambio silencioso a password ni SMS.
-- [ ] Contexto solicitado sin política o con política deshabilitada/report-only no acredita prueba; verificar configuración efectiva, no solo `acrs`.
-- [ ] MFA anterior0/240/301s, Every time, token renovado y retorno con auth_time nuevo no saltan frescura ligada a operación. Tiempo real del factor comprobado; límites300/301s y600/601s intactos.
-- [ ] Primer enrolamiento/cambio de factor no permite sesión social robada+factor elegido por atacante; factor MFA no crea método primario/login ni linking por email.
+- [ ] ADR/TP11 y transición ratificados; no retirar Microsoft a usuarios no migrados.
+- [ ] AR-01–03 D1 antes de negocio productivo: suspensión con JWT vigente, caída Users503 sin allow anterior, reactivación/corte anti-resurrección y métricas ProductCatalog con budgets vigentes. Única canónica A; pruebas de varios bindings solo si en el futuro existen.
+- [ ] AR-04 Web: Code+PKCE+MSAL.js browser-delegated. SDK/Native Auth/deep links MAUI se difieren.
+- [ ] Negativos de login/provisión/migración/perfil/sesión y seguridad/privacidad aplicables A; recuperación explícita en proveedor original.
+- [ ] Suites Domain/Application/API/PostgreSQL, Web unit/component/integration/E2E, lint/typecheck/build; CI del SHA exacto y modelo EF coherente.
+- [ ] QA móvil320/390/430, teclado/lector/zoom y errores/cancelación/return intent reales donde corresponda; no alterar budgets ni cerrar gates de otras features.
 
-AR-01–03 → FR-020/021/023, SC-005, T009/T026/T042/T051. AR-04 → FR-018/019, T005/T024/T054. AR-05–06 → FR-006/008/009/012, SC-003/007, T004/T027/T033/T049/T052. Sin G3 comprobado, un método puede tener login pero sus mutaciones bloqueadas: **eso no acredita AC-05/07/12 ni cierra la feature**.
+## Trazabilidad de los doce casos anteriores
 
-## Trazabilidad FR → trabajo
+Se conservan los requisitos futuros en [010-B](../010-b-deferred.md). Repartir no equivale a completar:
 
-| Requisitos | Tareas principales |
+| Caso original | Destino |
 | --- | --- |
-| FR-001, FR-012 | T002/006/020–024/047 |
-| FR-002, FR-026 | T001/003/007–012/055 |
-| FR-003, FR-004, FR-005, FR-010, FR-011 | T013–019/026/043/048 |
-| FR-006, FR-007, FR-008, FR-009 | T003/004/027–033/049/052 |
-| FR-013, FR-014, FR-015, FR-016, FR-017 | T012/034–040/050 |
-| FR-018, FR-019 | T005/023–025/051/053/054 |
-| FR-020, FR-021, FR-022, FR-023, FR-024 | T020/021/026/041–046/051 |
-| FR-025 | T006/040/046/055 |
+| AC-01 Google sin Microsoft | A-AC02/08 |
+| AC-02 Email sin Microsoft | A-AC11 opcional; deja de ser gate del núcleo |
+| AC-03 Migración conserva UserId | A-AC06 |
+| AC-04 Listas/grupos/gastos conservados | A-AC07 |
+| AC-05 Añadir otro método | B, T003/027–032/049 |
+| AC-06 Mismo email no hace linking | A-AC05/08 impiden correlación automática; pruebas del flujo linking en B/T049 |
+| AC-07 Último método no eliminable | B, T028/030/049 |
+| AC-08 Nombre/avatar propio prevalece | Campos A-AC10; foto propia/proveedor B/T039/058 |
+| AC-09 Token CIAM/no Google directo | A-AC03/04 |
+| AC-10 B no vincula identidad a A | Resolución/negativos A-AC05/08; operación de linking B/T027/028/049 |
+| AC-11 Logout/cambio cuenta | A-AC09 |
+| AC-12 Recuperación conserva UserId | B/T033/052; A solo delega recuperación al proveedor original |
 
-SC-001→AC-01–12; SC-002→AC-03/04; SC-003→AC-06/07/10; SC-004→AC-08; SC-005→AC-09 y regresiones; SC-006→AC-11 y gate manual; SC-007→AC-12 y fallos de operación; SC-008→gates/ADR/enmienda. El cierre documental para architecture review no marca esos resultados de implementación como alcanzados.
+AR-05–06 y ampliación G3 contexto/MFA quedan pendientes B/T004: prueba reciente <=300s, operación <=600s, bootstrap/factor/último método, replay y control alternativo. El [ensayo MFA](../evidence/g3-email-mfa-qa.md) queda INCONCLUSIVE y c1 con política deshabilitada no prueba MFA. No requieren repetirse para A.
+
+## Trazabilidad FR / SC
+
+| Requisitos | Trabajo |
+| --- | --- |
+| FR-001/012/018/020/021 | T002/005/020–024/047/051; email T056 opcional |
+| FR-002/026 | T001/007/008/055; agregación futura T003[B] |
+| FR-003/004/005/007/010/011/022 | T013–019/043/048 |
+| FR-006/008 y partes de009/024 | T004/027–033/049/052[B] |
+| FR-009 parte traslado | T014/017/019[A] |
+| FR-013/014/015/016/017 | T012/034–038/050[A]; fotos/reimportación T039/058[B] |
+| FR-019 | T054[futuro MAUI] |
+| FR-023/024 parte login | T020/025/026/041/042/046/051[A] |
+| FR-025 | Minimización T006/012/046[A]; eliminación T040[B] |
+
+SC-001→10 A-AC; SC-002→06/07; SC-003→04/05/08 y negativos; SC-004→10; SC-005→03/04+D1/regresiones; SC-006→09 y gate UX; SC-007→limitación de recovery en proveedor(A)/AC-12(B); SC-008→ADR/TP11/transición. Ninguna aceptación B condiciona cerrar A.

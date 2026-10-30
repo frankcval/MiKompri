@@ -45,11 +45,11 @@
     },
     {
       "Path": "tools/spikes/010-external-id/auth.html",
-      "Sha256": "c25850cdd229d5b81c67f2edb1f39eab9bf66e40926e3c25f081f7ce3d26cb5a"
+      "Sha256": "9121acc35e3eaa2321b7dae78d2152bf14f40cb0b5e0db638123e86421b5cd17"
     },
     {
       "Path": "tools/spikes/010-external-id/AuthHarness.cs",
-      "Sha256": "366e699aa74f3853623f2eda61abf4a3fc5b35d10b1a90b9cefe2152b047bb82"
+      "Sha256": "6de7be96a17faaec776d52a68e58be70a5b5a3e0e40a59834685e9ff0474399c"
     },
     {
       "Path": "tools/spikes/010-external-id/ExternalIdSpike.csproj",
@@ -73,11 +73,11 @@
     },
     {
       "Path": "tools/spikes/010-external-id/README.md",
-      "Sha256": "4bc4f0d3468170340c6c4bfb996d4c0d8f66d894a55bd7111c8dad54b258aefc"
+      "Sha256": "4f6c58338ddbdc8b9097fd0ba1948196f058604bae535d5be71faed3016674ee"
     },
     {
       "Path": "tools/spikes/010-external-id/run-auth-harness.ps1",
-      "Sha256": "5a8fb13a7f42d8f7bcd8cd7269427191ddf03082b3177836299656d8f6efafec"
+      "Sha256": "7ed8aca631e61e6406f0080fe7c3d8c60ee8fa5c24fb14faaf7b1997e30b4772"
     },
     {
       "Path": "tools/spikes/010-external-id/run-benchmark.ps1",
@@ -93,7 +93,7 @@
     }
   ],
   "kind": "ISOLATED_SPIKE_SOURCE_VALIDATION",
-  "changedFilesInScope": 54,
+  "changedFilesInScope": 17,
   "trailingWhitespaceIssues": [],
   "htmlJavaScriptFilesChecked": 2,
   "googleDirectNegative": "PASS_REAL_GOOGLE_ID_TOKEN_REJECTED_401",
@@ -125,5 +125,34 @@
     "localLinksChecked": 189,
     "unchangedHarnessSourceHashes": 13,
     "artifact": "g3-step-up-review.md"
+  },
+  "g3AdditionalQa": {
+    "isolatedHarnessChanged": true,
+    "activeEmailMfaStepUpExecuted": false,
+    "timingControls": "10/10",
+    "releaseBuild": "PASS_0_WARNINGS_0_ERRORS",
+    "configuredContextClaimObservedWithPolicyDisabled": true,
+    "baseCommit": "010d298daae4815e6db00b88ab00e507b4c78b3e",
+    "productionChanged": false,
+    "date": "2026-10-30",
+    "classification": "INCONCLUSIVE",
+    "runnerPowerShellSyntax": "PASS",
+    "smsEnabled": false,
+    "javascriptSyntax": "PASS",
+    "restorationFinalRead": "VERIFIED_DEFAULTS_ENABLED_POLICIES_DISABLED_CONTEXT_UNPUBLISHED",
+    "jwtControls": "12/12",
+    "finalValidation": {
+      "localLinksChecked": 210,
+      "sourceHashesUpdated": 13,
+      "jsonFilesParsed": 28,
+      "powerShellScriptsParsed": 6,
+      "uniqueTaskIds": 55,
+      "completedTasks": 0,
+      "sensitivePatternFiles": 0,
+      "temporaryAdministrativeReferenceCleared": true,
+      "brokenLinks": 0,
+      "htmlJavaScriptFilesParsed": 2,
+      "taskCount": 55
+    }
   }
 }

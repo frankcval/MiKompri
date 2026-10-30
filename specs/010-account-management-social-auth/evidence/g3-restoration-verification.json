@@ -1,0 +1,31 @@
+{
+  "kind": "AUTHENTICATED_QA_RESTORATION_READBACK",
+  "date": "2026-10-30",
+  "restorationVerified": true,
+  "defaultsStatus": 200,
+  "defaultsReadDate": "Fri, 30 Oct 2026 17:14:38 GMT",
+  "securityDefaultsEnabled": true,
+  "policiesStatus": 200,
+  "policiesReadDate": "Fri, 30 Oct 2026 17:16:15 GMT",
+  "policiesReadSource": "native_portal_graph_get",
+  "policies": [
+    {
+      "name": "MiKompri010G3EmailOtpQA",
+      "state": "disabled",
+      "includeAll": true,
+      "exclusions": 2
+    },
+    {
+      "name": "MiKompri010G3BaselineQA-AdminMfa",
+      "state": "disabled",
+      "includeAll": true,
+      "exclusions": 2
+    }
+  ],
+  "contextStatus": 201,
+  "contextPublished": false,
+  "contextHttpStatusAnomalyPreserved": true,
+  "administrativeReadSucceeded": true,
+  "inMemoryAdministrativeSessionCleared": true,
+  "noCloudMutationsBetweenFinalReadbacks": true
+}
