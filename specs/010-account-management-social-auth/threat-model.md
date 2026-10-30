@@ -12,7 +12,7 @@ Activos: UserId/ownership, métodos, perfil privado, pruebas, tokens, membresía
 | Replay de OAuth/prueba/confirmación | State/nonce/verifier un solo uso, TTL/reautenticación, purpose binding e idempotencia con fingerprint | Reusar prueba en otro User/propósito, expirada, payload distinto |
 | Login/link CSRF, sustitución de sesión | PKCE S256, state/nonce, callbacks fijados y sesión de operación, anti-CSRF de cookies | Token/code injection, callback iniciado por B, origen hostil |
 | PKCE o redirect URI abuse | SDK soportado, exact match por entorno/cliente, sin wildcards/open redirect; verificar deep links/firma MAUI futuro | Redirect externo, manipulación returnTo y callback duplicado |
-| Pérdida del proveedor y recovery débil | Método alternativo probado; soporte con criterios aprobados, sin recuperación automática por perfil/email | Perder Google con/sin alternativa, mismo UserId o denegación explícita |
+| Pérdida del proveedor y recovery débil | D3: alternativa ya vinculada y reciente; unlink prueba la que permanece, no obliga al proveedor perdido. Sin alternativa no hay recovery autoservicio beta ni bypass por perfil/email | Perder Google con/sin alternativa, mismo UserId o denegación explícita; AR-06 |
 | Duplicación de migración/auto-provisión | Rutas de proof excluidas de auto-provision; clave destino única, journal y commit atómico Users | Callbacks duplicados, migraciones cruzadas y candidato ya asignado |
 | Confusión tokens / tenant / audience | Validar tuple de confianza, algoritmo/lifetime/scope; ID token solo broker con audience propia | Token Google/Graph/SPA, old issuer+new aud, tenant inesperado, scope ausente |
 | Regresión autorización del dominio | Resolver UserId por Users, roles/membresías locales; no usar roles/grupos CIAM como dominio | Owner/Admin/Member, ajeno, retirado; balances/ownership idénticos tras migrar |
@@ -22,12 +22,14 @@ Activos: UserId/ownership, métodos, perfil privado, pruebas, tokens, membresía
 | Caché/token/draft A visible en B | Claves por identidad/tenant/cliente y generación de sesión; cancelar/ignorar requests A y limpiar logout | Respuesta tardía, sesión multi-tab, reload, cambio de issuer/método |
 | Enumeración/abuso OTP/link/support | Respuestas genéricas, rate limit por actor/origen con privacidad, cuotas/protección CIAM y alarmas de coste | Email existente/inexistente no revela cuenta; saturación sin mensajes sensibles |
 | Borrado destructivo de historia ajena | Proceso por fases, último Owner, tombstone/retención aprobados; ningún cascade genérico | Gastos compartidos/participantes e integridad con usuario eliminado |
+| JWT válido después de suspender o reactivar | D1 lookup autoritativo por request en tres APIs, sin allow cacheado. Cortes de emisión al suspender/reactivar evitan resurrección; SecurityVersion invalida proofs sin requerir claim nuevo | AR-01–03: exp futura, binding vs cuenta, token emitido durante suspensión/mismo segundo y Users caído; 403/401/503 según contrato |
+| Reauth aparente/assurance mal interpretada | D3: timestamp firmado con semántica de reto probada y nonce/operación; rechazar iat nuevo, cookies SSO/selector/consent o MFA histórica. OTP primario no es segundo factor; passkey no asumida para social/OTP | AR-05–06: auth_time ausente/viejo/futuro, max_age ignorado, envejecimiento entre pruebas/confirmación y método no soportado |
 
 ## Riesgos residuales y controles de salida
 
 - No puede probarse identidad humana si se pierden todos los factores: recuperación puede ser imposible. No prometer una garantía basada en email.
 - Un IdP comprometido puede autenticar indebidamente; doble prueba no sustituye la confianza del emisor. Operaciones sensibles necesitan control reciente y assurance admitida, no solo token válido.
-- JWT emitido puede seguir válido tras logout. Comprobar cuenta/binding y política de revocación en las tres APIs; si falla Users/Graph no conceder nuevas capacidades. No prometer revocación IdP instantánea.
+- JWT emitido puede seguir válido tras logout. [D1](architecture-review.md#d1--suspensión-y-access-token-ya-emitido) bloquea acceso local tras commit/siguiente control y falla 503 sin Users, pero no cancela requests ya autorizadas ni refleja automáticamente cambios solo en Azure. Graph no se consulta en requests de negocio; su caída bloquea mutaciones de métodos que lo necesitan, no añade un lookup Graph a cada GET. No prometer CAE/revocación IdP instantánea.
 - Locks locales no hacen Graph transaccional. La prueba A debe demostrar todas las fronteras y alternativa segura; si no, revisar B o bloquear habilitación.
 - Riesgos humanos (soporte, secretos, roles administradores) requieren responsables y runbook tras aprobación. No se han creado credenciales ni instalado controles en esta ejecución.
 

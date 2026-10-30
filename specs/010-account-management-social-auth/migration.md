@@ -26,7 +26,7 @@ Ventana temporal y calendario no fijados sin inventario/acceso QA. No se presume
 
 `Started → SourceProven → TargetProven → ConsentConfirmed → Prepared → Activated → LegacyRetired`. Terminales: Cancelled/Expired/Conflict; fallos inciertos: Reconciling/ManualReview. No activar derechos mientras está incierta una mutación CIAM.
 
-- Proof source/target están ligados a OperationId, propósito, iniciador y redirect permitido; control reciente <=5min, TTL operación <=10min propuestos, con reloj servidor. Tokens recién emitidos no sustituyen prueba de reautenticación.
+- Proof source/target están ligados a OperationId, propósito, iniciador y redirect permitido; control reciente <=300s **al confirmar** y TTL operación <=600s según [D3](architecture-review.md#d3--control-reciente-y-step-up-para-beta), con reloj servidor. Exigir auth_time/challenge CIAM acreditado por método; tokens nuevos, iat, SSO/selector Google o prompt solicitado no sustituyen prueba. Sin origen controlable, no saltar a migración por email: recovery con alternativa ya vinculada, o denegar. No inventar prueba del proveedor perdido.
 - Locks/constraints sobre User y clave destino previenen dos migraciones hacia usuarios distintos. Retry mismo OperationId devuelve el resultado; payload/versión divergentes 409.
 - Timeout después de crear objeto CIAM: no repetir alta a ciegas. Resolver por IDs persistidos/correlation del journal, sin buscar usuario MiKompri por email. CIAM puede tener un objeto pendiente sin User MiKompri; esto no autoriza acceso a datos.
 - Timeout después de guardar binding: consultar operación antes de reintentar. Si target ya fue provisionado a otro UserId, Conflict: no mover listas ni borrar al otro usuario. Soporte/manual con evidencia; fusión de cuentas fuera de alcance.
@@ -42,3 +42,5 @@ Recuperación normal sucede en CIAM o con otro método ya probado del mismo usua
 ## Ensayo reproducible requerido
 
 Fixture PostgreSQL con A/B, propietario y roles, listas personal/compartida, gastos/participantes, compradores/pagadores y auditoría; manifiesto inicial de IDs/referencias. Probar cada fase con nuevas escrituras, rollback de tráfico, no migrados, null claims, dos destinos, email collision, replay, caída Graph/Users, colisiones de índice y revocación. Comparar manifiesto final y registrar counts/digests, no exportar PII a evidencia pública. Repetir en QA con cuenta Entra existente y Google/email reales. Aún **pendiente**, sin conexión a BD real en esta ejecución.
+
+Durante coexistencia y rollback rige [D1](architecture-review.md#d1--suspensión-y-access-token-ya-emitido): lookup de estado autoritativo en cada API, sin reabrir el binding suspendido por cambiar tráfico a código viejo. El código/entorno de rollback debe conservar esta barrera; si no la soporta, no se habilita esa ruta. Reactivar requiere renovar cortes y no revivir JWT anteriores, incluso emitidos durante suspensión; no deshacer una revocación para recuperar disponibilidad.

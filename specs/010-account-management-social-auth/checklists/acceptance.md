@@ -30,6 +30,19 @@
 - [ ] ADR/enmienda constitucional aprobados antes de activar confianza nueva; no eliminar soporte legado sin plan para no migrados.
 - [ ] MAUI: diseño/SDK/deep links revisados cuando corresponda a 006; no afirmar aceptación productiva de una app inexistente.
 
+## Complementos de revisión arquitectónica — pendientes, no ejecutados
+
+Los doce AC originales permanecen; [AR-01–06](../architecture-review.md#pruebas-de-decisión-pendientes) precisan seguridad/cliente de esos recorridos, no los sustituyen.
+
+- [ ] AR-01: con JWT todavía vigente, tras commit de suspensión el siguiente control autoritativo de Users/ShoppingList/ProductCatalog rechaza, incluidos GET; otro binding activo sigue válido si solo se suspende uno.
+- [ ] AR-02: fallo/timeout Users o estado incierto →503 sin allow anterior. Petición autorizada antes de suspensión no se presenta como cancelada. Reactivación no revive tokens previos/durante suspensión; iat faltante/corte/mismo segundo cubiertos.
+- [ ] AR-03: ProductCatalog incorpora Users sin cambiar catálogo global; medir SQL/RPC/p95, timeout y disponibilidad, sin Graph por request ni modificar budgets.
+- [ ] AR-04: Web beta Code+PKCE+MSAL.js browser-delegated, social con paso navegador documentado. MAUI Native Auth no se fija por extrapolar Kotlin/JS; versión y retorno futuros pendientes.
+- [ ] AR-05: por método, verificar reauth CIAM/auth_time/challenge real vs SSO/refresh. Rechazar timestamp ausente/viejo/futuro, max_age ignorado, iat nuevo, prompt solo, selector/consentimiento y MFA histórica; comprobar ambas pruebas a <=300s al confirmar, reto ligado a operación y TTL <=600s.
+- [ ] AR-06: unlink prueba método que permanece; recuperación usa alternativa ya vinculada y no exige proveedor perdido. Sin alternativa no hay bypass beta; OTP primario no se cuenta como MFA ni passkey se ofrece a social/OTP no soportado.
+
+AR-01–03 → FR-020/021/023, SC-005, T009/T026/T042/T051. AR-04 → FR-018/019, T005/T024/T054. AR-05–06 → FR-006/008/009/012, SC-003/007, T004/T027/T033/T049/T052. Sin G3 comprobado, un método puede tener login pero sus mutaciones bloqueadas: **eso no acredita AC-05/07/12 ni cierra la feature**.
+
 ## Trazabilidad FR → trabajo
 
 | Requisitos | Tareas principales |

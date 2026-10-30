@@ -80,7 +80,7 @@ Cancelación, timeout OAuth/Graph, consentimiento denegado, Google distinto al e
 - **FR-003**: MUST preservar UserId y todas sus referencias. Users será propietario exclusivo del mapeo, sin acceso cruzado a su BD.
 - **FR-004**: MUST correlacionar tenant/object del emisor validado; MUST NOT usar email, username, teléfono, nombre, avatar o `sub` global para linking/correlación.
 - **FR-005**: MUST separar resolución, alta intencional y perfil. Linking/migración no pueden ejecutar aprovisionamiento genérico de la identidad candidata.
-- **FR-006**: MUST exigir consentimiento y dos pruebas recientes de control, ligadas a sesión/propósito, expirables y de un solo uso. El servidor deriva el UserId destino.
+- **FR-006**: MUST exigir consentimiento y control reciente verificable según [D3](architecture-review.md#d3--control-reciente-y-step-up-para-beta): origen+candidato para linking/migración; alternativa ya vinculada que permanece para unlink/recovery, sin exigir proveedor perdido. Cada prueba ligada a operación/sesión/propósito, de un solo uso y edad <=300s al confirmar; TTL de operación <=600s no amplía frescura. Sin evidencia CIAM fiable, mutación bloqueada. El servidor deriva el UserId destino; token nuevo/iat/prompt/MFA histórica no prueban reauth.
 - **FR-007**: MUST rechazar identidad asociada a otro UserId; fusionar usuarios existentes queda fuera de alcance.
 - **FR-008**: MUST bloquear último método y carreras; un estado desconocido CIAM impide unlink. Contar métodos primarios probados, no factores MFA ni un mero email de contacto.
 - **FR-009**: MUST registrar operaciones idempotentes, versionadas y auditadas, con reconciliación de fallos; no asumir transacción distribuida Graph/BD.
@@ -92,12 +92,12 @@ Cancelación, timeout OAuth/Graph, consentimiento denegado, Google distinto al e
 - **FR-015**: MUST distinguir email de login/claim/contacto y autoridad/fecha de verificación. Contacto no verificado no recupera acceso; username no revela email.
 - **FR-016**: MUST minimizar PII; nacimiento, teléfono/dirección y verificación telefónica se diseñan como extensiones, sin recogerlos/persistirlos por anticipación.
 - **FR-017**: MUST autorizar perfil sobre usuario resuelto y versión vigente; no exponer bindings/pruebas/PII privada en DTOs de miembros.
-- **FR-018**: MUST usar SPA pública MSAL, Authorization Code + PKCE, redirects exactos y limpieza de sesión/caché/borradores; sin secretos SPA.
-- **FR-019**: MUST diseñar compatibilidad MAUI: registro propio, PKCE, deep links/redirects y storage seguro. No inferir paridad de SDKs native auth; social puede incluir un tramo browser-delegated. MAUI productivo sigue diferido.
+- **FR-018**: MUST usar para Web beta SPA pública MSAL.js Browser/React, Authorization Code + PKCE **browser-delegated**, redirects exactos y limpieza de sesión/caché/borradores; sin secretos SPA ni Native Auth JS SDK en esta entrega. [D2](architecture-review.md#d2--browser-delegated-y-native-authentication).
+- **FR-019**: MUST diseñar compatibilidad MAUI: registro propio, PKCE, deep links/redirects y storage seguro. Candidato futuro MSAL.NET con navegador del sistema; Native Authentication no se fija sin versión/SDK/flujo real acreditados. Social native JS/Android puede incluir tramo browser-delegated, sin inferir paridad MAUI. MAUI productivo sigue diferido.
 - **FR-020**: MUST validar firma/algoritmo/lifetime/issuer/tenant/audience y scope delegado en cada API; rechazar tokens sociales, Graph e ID tokens como bearer de negocio.
 - **FR-021**: MUST mantener audience lógica común. En coexistencia, cada issuer solo acepta su audience autorizada; no un producto cartesiano de listas ni tenants descubiertos desde claims sin validar.
 - **FR-022**: MUST conservar autorización Owner/Admin/Member y contratos financieros; grupos/roles CIAM no se convierten en roles del dominio.
-- **FR-023**: MUST impedir acceso con cuenta/binding suspendidos en las tres APIs. Logout local no implica revocación instantánea de todos los tokens del IdP.
+- **FR-023**: MUST aplicar [D1 opción 1 beta](architecture-review.md#d1--suspensión-y-access-token-ya-emitido): tras commit de suspensión en Users, el siguiente control autoritativo de cada API rechaza incluso JWT vigente anterior. Estado consultado por request autenticada, sin caché entre peticiones; fail-closed 503 si no disponible, 403 si suspendido. No promete cancelar requests ya autorizadas ni reflejar instantáneamente cambios solo en Azure. Reactivación no revive tokens anteriores al corte. Logout local no equivale a revocación global IdP.
 - **FR-024**: MUST proteger replay/CSRF/state/nonce/PKCE/redirects, limitar abuso y errores enumerables; sin tokens/códigos/PII innecesaria en logs.
 - **FR-025**: MUST contemplar eliminación, retención, anonimización y recuperación según [privacidad](privacy-and-deletion.md); no habilitar borrado sin política aprobada.
 - **FR-026**: MUST respetar TP11 hasta aprobación de ADR/enmienda. Esta formalización no autoriza cambios Azure, BD o producción ni cierra gates anteriores.
@@ -110,9 +110,9 @@ User/Profile, IdentityBinding, AccountOperation/ProofReceipt, MigrationRecord, S
 
 - **SC-001**: los 12 casos de [aceptación](checklists/acceptance.md) tienen evidencia del candidato; Google/email reales para alta; ninguna omisión cuenta como éxito.
 - **SC-002**: migración autorizada/rollback conservan igualdad exacta de UserId y referencias de listas/grupos/gastos/auditoría, cero nuevos UserIds para migrados y cero huérfanos.
-- **SC-003**: todos los negativos de colisión/último método/concurrencia/replay/suplantación rechazan sin alterar correlación ni perder acceso alternativo.
+- **SC-003**: todos los negativos de colisión/último método/concurrencia/replay/suplantación y frescura D3 rechazan sin alterar correlación ni perder acceso alternativo; pruebas ausentes/viejas/SSO no acreditado nunca habilitan una mutación.
 - **SC-004**: todos los campos personalizados probados conservan valor tras login/sync; reimportación exige selección y versión.
-- **SC-005**: tres APIs pasan matriz de confianza/scopes y regresiones Users/ShoppingList/ProductCatalog; ningún token Google directo se acepta.
+- **SC-005**: tres APIs pasan matriz de confianza/scopes y regresiones Users/ShoppingList/ProductCatalog; ningún token Google directo se acepta. AR-01–03 acreditan suspensión con JWT ya emitido, 503 sin Users, reactivación sin resurrección y coste de ProductCatalog, conforme D1 y sin modificar budgets.
 - **SC-006**: logout/cambio A→B no expone datos A incluso con requests pendientes/recarga. Web se valida primero en 320/390/430px, teclado, lector y zoom, con evidencia manual propia.
 - **SC-007**: recuperación mantiene UserId; reconciliación probada en cada frontera de fallo CIAM/BD; sin bypass basado en perfil.
 - **SC-008**: acceso público requiere ADR/enmienda aprobados, prueba A o decisión B, política de frescura/recuperación, presupuesto operativo y ensayo de migración/rollback. Esta entrega prepara esa revisión, no acredita estos gates.

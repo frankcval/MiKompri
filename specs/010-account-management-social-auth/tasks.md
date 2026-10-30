@@ -11,15 +11,15 @@
 - [ ] T001 Ratificar auditoría/fuentes/versiones y límites de documentación en `current-state-audit.md` y `research.md`; registrar nueva fecha antes del spike.
 - [ ] T002 [US1] Tras autorización QA, validar Google/email/Microsoft personal y Entra legado en `evidence/provider-capabilities.md`, sin secretos/PII.
 - [ ] T003 [US3] Probar matriz A Google-only→email/email→Google, identidades en objetos distintos, Graph permisos y unlink/último método en `evidence/aggregation-spike.md`; no asumir identities==linking completo.
-- [ ] T004 [US3] Acreditar frescura/step-up por método, state/nonce/PKCE, recuperación y fallos CIAM en `evidence/assurance-spike.md`.
-- [ ] T005 [US5] Revalidar SDK/metadata/claims/scopes Web y MAUI futuro, browser/native+web-flow y redirects en `research.md`; no crear app MAUI productiva.
+- [ ] T004 [US3] Acreditar G3 por método según D3/AR-05–06 en `architecture-review.md`: auth_time/max_age/challenge verificable, silent SSO Google/refresh, MFA histórica, OTP primario y límites passkey, timestamps/300s al confirmar, state/nonce/PKCE y recovery sin proveedor perdido; `evidence/assurance-spike.md`. Sin garantía, no habilitar mutación.
+- [ ] T005 [US5] Revalidar SDK/metadata/claims/scopes: Web beta MSAL.js+Code/PKCE+browser-delegated; MAUI/MSAL.NET candidato browser sin fijar Native Auth antes de versión/SDK/redirect real. Registrar discrepancia oficial en `research.md`; AR-04, no crear app MAUI productiva.
 - [ ] T006 Aprobar coste/dependencias/región/operación y finalidad/retención de datos en `research.md` y `privacy-and-deletion.md`.
 
 ## Phase 2 — Architecture (bloqueante)
 
 - [ ] T007 Revisar `docs/adr/ADR-004-ciam-identity.md`; seleccionar A tras prueba positiva o B por insuficiencia documentada, sin mezclar modelos.
 - [ ] T008 Revisar/aprobar `constitution-amendment-proposal.md`; solo con autorización posterior actualizar constitución/version/templates mediante flujo constitucional.
-- [ ] T009 Ratificar `data-model.md` y `contracts/account-and-identity.md`, incluidos proof broker, TTL/frescura, status/revocación, errores y compatibilidad PUT/sync.
+- [ ] T009 Ratificar `data-model.md`, `contracts/account-and-identity.md` y D1–D3 de `architecture-review.md`: opción 1 beta (estado autoritativo por request sin cache inter-request), dependencia/fail-closed ProductCatalog, cortes/versión, prueba por operación/300s y límites de SDK. Incluir errores, p95/disponibilidad y compatibilidad PUT/sync sin alterar budgets.
 - [ ] T010 [US2] Aprobar cohortes/ventana/no migrados/cutover/rollback en `migration.md` antes de alterar confianza.
 - [ ] T011 [US3] Revisión de seguridad del `threat-model.md` y procedimiento de recuperación sin métodos; no bypass por atributos.
 - [ ] T012 [US4] Aprobar perfil mínimo/username/avatar y publicación en `data-model.md`; mantener DOB/teléfono/dirección sin recogida inicial.
@@ -42,11 +42,11 @@
 - [ ] T023 [US1] Escribir tests Web de inicio Google/email/Microsoft, cancelación y errores en `MiKompri.Web/tests/unit/auth/external-id.spec.ts` y `tests/component/profile/`.
 - [ ] T024 [US1] Adaptar `MiKompri.Web/src/auth/msal/msalConfig.ts`, `src/shared/config/env.ts` y entrada de login con MSAL/PKCE soportados, manteniendo secret-free SPA y opciones claras.
 - [ ] T025 [US5] Probar y adaptar aislamiento/limpieza A→B con requests pendientes en `MiKompri.Web/tests/unit/auth/session.spec.ts` y `src/auth/session/`, incluyendo caché TanStack y borradores.
-- [ ] T026 [US5] Validar forwarding bearer UsersApi y estado de cuenta/binding en tres APIs; tests en `test/MiKompri.ShoppingList.Api.Tests/` y `test/MiKompri.ProductCatalog.Api.Tests/`, sin accesos cross-DB.
+- [ ] T026 [US5] Tests primero y posterior integración del contrato mínimo Users access-status: lectura Users local, consumidores por bearer/UsersApi y reutilización solo request; ProductCatalog GET incluido, sin Graph ni loop/caché entre requests. AR-01–03 en `test/MiKompri.ShoppingList.Api.Tests/` y `test/MiKompri.ProductCatalog.Api.Tests/`; medir p95/SQL/RPC y fallos, sin accesos cross-DB.
 
 ## Phase 5 — Account linking, unlinking & recovery (US3)
 
-- [ ] T027 [US3] Tests de doble prueba, sesión/propósito/expiry/replay/consentimiento en `test/MiKompri.Users.Application.Tests/Commands/AccountOperationTests.cs` antes de handlers.
+- [ ] T027 [US3] Tests de pruebas por operación D3: origen+candidato link/migrate, alternativa superviviente unlink/recovery, sesión/propósito/expiry/replay/consentimiento/versión y edad al confirmar; `test/MiKompri.Users.Application.Tests/Commands/AccountOperationTests.cs` antes de handlers.
 - [ ] T028 [US3] Tests API de actor A/B, IDOR, último método, concurrencia/indisponibilidad y errores genéricos en `test/MiKompri.Users.Api.Tests/AccountMethodsTests.cs`.
 - [ ] T029 [US3] Implementar broker/adaptador de pruebas y handlers en `MiKompri.Users.Api/` y `MiKompri.Users.Application/Commands/AccountOperations/` según contrato aprobado, sin tokens en logs/body de negocio.
 - [ ] T030 [US3] Implementar adapter CIAM A o binding B elegido en `MiKompri.Users.Infrastructure/Identity/`, con permisos mínimos, locks, idempotencia y reconciliación; no implementar ambos preventivamente.
@@ -67,7 +67,7 @@
 ## Phase 7 — Security & tests (transversal)
 
 - [ ] T041 Recorrer cada amenaza de `threat-model.md` y vincular evidencia negativa/test concreto en `evidence/security.md`; revisión independiente.
-- [ ] T042 Probar cuenta/binding suspendido y tokens aún no expirados, rates/anti-enumeración y logs sin secretos/PII en Users y APIs consumidoras.
+- [ ] T042 Probar D1/AR-01–03: token emitido →commit suspensión →siguiente control rechazado en tres APIs, 503 sin Users, carrera de request en vuelo, binding alternativo y reactivación sin resucitar tokens anteriores/durante suspensión/mismo segundo. Añadir rates/anti-enumeración y logs sin secretos/PII; sin tests que supongan CAE o Graph por request.
 - [ ] T043 [US2] Ejecutar regresiones Groups/GroupMembership, Owner/Admin/Member, listas/gastos/participantes/idempotencia de 005/008/009 y verificar referencias UserId antes/después.
 - [ ] T044 Ejecutar suites Domain/Application/API con PostgreSQL, lint/typecheck/build/Web unit/component/integration y E2E controlados; registrar comandos/SHA/fallos en `evidence/validation.md`.
 - [ ] T045 Validar migraciones pendientes/modelos EF, imágenes Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; sin confundir CI de otro SHA.
@@ -79,10 +79,10 @@
 - [ ] T048 [US2] Entra existente migra al mismo UserId y conserva listas/grupos/gastos; AC-03/04 y rollback con evidencia de cohorte QA.
 - [ ] T049 [US3] Añadir método, email collision sin linking, último método y ataque B→A; AC-05/06/07/10 sobre proveedor/tenant reales además de negativos controlados.
 - [ ] T050 [US4] Login real tras personalizar nombre/avatar no sobrescribe; AC-08, incluyendo clear y reimportación explícita por versión.
-- [ ] T051 [US5] AC-09/11: token External ID vs Google directo y cambio/logout de cuenta, tres APIs y Web real.
+- [ ] T051 [US5] AC-09/11 y AR-01–04: tokens External ID/Google, suspensión/reactivación/fallo Users, ProductCatalog GET, cambio/logout y flujo Web browser-delegated, tres APIs y Web real.
 - [ ] T052 [US3] AC-12: recuperación conserva UserId y método alternativo; documentar pérdida total sin bypass.
 - [ ] T053 Validar 320/390/430, teclado/lector/zoom, errores/return intent y rendimiento sin modificar presupuestos existentes; evidencia humana independiente de mocks.
-- [ ] T054 Revalidar diseño/SDK/redirect/deep links MAUI cuando se formalice 006; no presentar maqueta como aceptación MAUI productiva ni bloquear el slice Web por una app fuera de alcance.
+- [ ] T054 Revalidar diseño/versión MSAL.NET/SDK/redirect/deep links MAUI cuando se formalice 006; no fijar Native Authentication desde tutorial Kotlin/JS ni presentar maqueta como aceptación productiva. MAUI sigue fuera del slice Web.
 - [ ] T055 Revisión de checklist, FR/SC, gates G1–G7, ADR/enmienda, costes y plan de retiro/no migrados. Autorizar despliegue/cutover por separado; no cerrar 007/008/009 por entregar 010.
 
 ## Dependencias y Definition of Done

@@ -26,6 +26,14 @@ Users orquesta doble prueba/consentimiento, idempotencia, perfil y journal; CIAM
 
 Web mantiene MSAL/PKCE y navegador delegado como opción inicial. MAUI futuro usará registro propio y flujos soportados por plataforma; no se infiere que native auth excluya social ni que MSAL.NET tenga toda la paridad Android/JS.
 
+### Precisión beta propuesta tras revisión acotada del 30/10
+
+- **D1: opción 1, suspensión prácticamente inmediata** en el siguiente control autoritativo tras commit Users. Validar estado cuenta/binding por request en tres APIs, sin allow cacheado entre peticiones y sin esperar exp del JWT; Users local, consumidores por contrato mínimo. 403 suspendido, 503 si no puede resolverse estado. No se cancelan retroactivamente peticiones ya autorizadas. ProductCatalog incorpora dependencia operativa Users; medir latencia/disponibilidad sin cambiar budgets. Sin Graph por request, Redis/event bus ni CAE supuesto; tokens/version claims no sustituyen lookup. Cortes server-side impiden revivir tokens antiguos al reactivar.
+- **D2: Web = Authorization Code + PKCE + MSAL.js browser-delegated**. Native Auth JS/Android puede incluir social vía tramo web; no se adopta para beta. MAUI/MSAL.NET y Native Auth requieren versión/SDK/retorno comprobados antes de decidir; las discrepancias oficiales se conservan.
+- **D3: prueba reciente por operación**, <=300s al confirmar, operación <=600s. Reauth CIAM y auth_time/challenge verificables solo tras G3; no iat/prompt/MFA histórica. Linking y migración prueban origen+candidato; unlink prueba alternativa que permanece; recovery no exige el proveedor perdido ni permite bypass sin alternativa. OTP primario no es MFA; passkey no es actualmente una solución general para OTP/social. Sin evidencia fiable, mutación bloqueada, no aceptación simulada.
+
+Comparación completa, garantías/limitaciones, matrices por método/operación y pruebas pendientes en [architecture-review](../../specs/010-account-management-social-auth/architecture-review.md); fuentes actuales R20–R28 en research. D1–D3 siguen **propuestos**, no aprobados ni implementados.
+
 ## Consecuencias
 
 Ventajas: credenciales externas, tokens homogéneos para APIs, dominio independiente del proveedor, perfil personalizado estable. Costes: tenant y federaciones, Graph/operación privilegiada si A lo requiere, QA real, migración/coexistencia/rollback, MFA/recuperación, posibles MAU/SMS y avatar/storage. Ningún coste cero total o despliegue se presume.

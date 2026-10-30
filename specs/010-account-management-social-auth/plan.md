@@ -8,6 +8,12 @@
 
 Acceso de consumidores sin cuenta Microsoft mediante External ID, Google/email y Microsoft adicional. Preferencia A (CIAM agrega métodos) con gate G1 antes de elegir esquema definitivo; B mínimo solo por insuficiencia acreditada. UserId Guid permanece inmutable. Users orquesta mapeo/perfil/consentimiento, CIAM credenciales y tokens; tres APIs conservan permisos existentes. [Research y decisiones](research.md), [ADR-004](../../docs/adr/ADR-004-ciam-identity.md).
 
+## Decisiones beta revisadas — D1/D2/D3
+
+[Comparación y contrato de garantías](architecture-review.md): **opción 1**, lookup autoritativo Users por cada request autenticada, sin caché de autorización entre peticiones; Users local y consumidores por contrato mínimo. ProductCatalog adquiere dependencia de red/estado Users, también en GET; no se cambia su autorización de catálogo global. Estado suspendido 403, no resuelto por fallo 503; sin retries/replay de escrituras. Cota de dependencia propuesta 1s máximo configurable, no un SLO nuevo: medir contra budgets existentes antes de habilitar. Si fallan, revisar explícitamente garantía vs híbrido, no esconder un TTL. No Graph por request, Redis, bus de revocación, nuevos claims dinámicos o CAE como requisito beta. Reutilizar resultado únicamente dentro de request y verificar cortes para no revivir JWT anteriores al reactivar.
+
+Web adopta **Code+PKCE+MSAL.js Browser/React+browser-delegated**; Native Auth JS no se implementa. MAUI futuro: candidato MSAL.NET/browser del sistema, sin fijar Native Auth hasta prueba de SDK/versión/redirects. D3 requiere evidencia CIAM fiable de control <=300s al confirmar; operación <=600s y matriz diferenciada por link/migrate/unlink/recovery. Solo abrir mutaciones cuyo G3 esté acreditado; OTP primario no es MFA, passkeys no son fallback universal y proveedor perdido no se exige como prueba en recovery. No se considera completada la aceptación de métodos por dejar sus mutaciones bloqueadas.
+
 ## Technical Context
 
 | Campo | Contexto y cambio propuesto |
@@ -47,6 +53,7 @@ specs/010-account-management-social-auth/
   contracts/account-and-identity.md
   checklists/requirements.md, checklists/acceptance.md
   evidence/formalization-review.md
+  architecture-review.md
 docs/adr/ADR-004-ciam-identity.md        # Propuesto, no aceptado
 ```
 
@@ -54,11 +61,11 @@ Rutas futuras de implementación: Users Domain/Users (invariantes), Application/
 
 ## Fases, dependencia y entrega incremental
 
-1. **Research:** ratificar fuentes y ensayar en QA después de autorización separada. Matriz A: nuevos Google/email, añadir método, colisiones, unlink/último método, recuperación, Graph/consistencia; Microsoft personal y legado; metadata/claims/assurance; SDKs Web/MAUI. No crear tenant por esta fase documental.
+1. **Research:** ratificar fuentes y ensayar en QA después de autorización separada. Matriz A: nuevos Google/email, añadir método, colisiones, unlink/último método, recuperación, Graph/consistencia; Microsoft personal y legado; auth_time/max_age frente a SSO/refresh, assurance, límites passkey/OTP; SDKs Web/MAUI. Validar impacto de D1, especialmente ProductCatalog. No crear tenant por esta fase documental.
 2. **Architecture:** aprobar enmienda/ADR, A o B tras G1, límites de perfil, TTL/frescura, política de recovery/PII/coste. Actualizar contratos y revisar amenazas. Base de dominio/test antes de persistencia y API.
 3. **Migration:** expandir/backfill Users, introducir resolución antes de provisioning, journal y bootstrap intencional. Ensayo legacy/CIAM preserva IDs, rollback de tráfico sin Down. Matriz exacta old/new en tres APIs debe estar lista antes de cohorte.
 4. **Authentication:** Google + email recomendados; Microsoft adicional, incluyendo legado. MSAL/PKCE, callbacks/return intent y sesión. Slice US1 verificable en QA sin activar migración masiva; usuarios nuevos y existentes tienen rutas separadas para evitar duplicación por operación.
-5. **Account linking:** broker doble prueba/consentimiento, adapter A o bindings B aprobados, idempotencia y reconciliación. Añadir antes de permitir quitar; recovery alternativo; no ampliar a merge de UserIds.
+5. **Account linking:** broker con pruebas/consentimiento según operación D3, adapter A o bindings B aprobados, idempotencia y reconciliación. Añadir antes de permitir quitar; unlink usa alternativa que permanece y recovery no exige proveedor perdido. No habilitar mutación sin G3; no ampliar a merge de UserIds.
 6. **Profile:** ownership por campo, migrar perfiles anteriores a personalizados, username/nombres/idioma, contacto/procedencia y avatar seguro según alcance aprobado. Sin DOB/teléfono/dirección iniciales. PUT/sync existentes con transición de contrato documentada.
 7. **Security & tests:** contratos JWT/scope, revocación/estado, pruebas adversarias, carreras/replay y regresiones relacionales/permisos/finanzas; matriz de fallos Graph/BD. Sin relajar gates anteriores.
 8. **Acceptance:** QA real Google sin Microsoft, email, Microsoft y Entra legado, doce casos, accesibilidad/móvil, rollback, privacidad/operación. MAUI solo se verifica en la fase que le corresponda; no se fabrica aceptación productiva móvil para cerrar Web.
@@ -70,6 +77,8 @@ No paralelizar mutaciones de confianza/esquema antes de elegir A/B. Dentro de sl
 Preservar grupos/membresías/roles y relaciones en fixtures antes/después. Incluir CommonAudienceValidationTests (ahora insuficientes para CIAM), middleware/profile/SyncProfile tests y web session recovery. Añadir PostgreSQL para constraints/backfill y contaminación de cuenta A→B con requests pendientes. Validación real no puede sustituirse por TestAuthHandler.
 
 Build/lint/typecheck/suites, imágenes Docker y CI por SHA serán gates de implementación. La formalización actual se valida con prerrequisitos Spec Kit, enlaces, trazabilidad FR→tasks→aceptación y diff documental; no se ejecuta DB ni se reclama éxito de tests futuros. [Quickstart de revisión/QA](quickstart.md).
+
+La revisión D1–D3 añade pruebas pendientes AR-01–06 al checklist: tokens emitidos antes/durante suspensión, reactivación/precisión de segundos, fallo Users, requests en vuelo, dos bindings, ProductCatalog GET y p95, fresh challenge vs silent SSO, pruebas expiradas a confirmación y proveedor perdido. No son tests ejecutados por editar documentación.
 
 ## Complexity Tracking
 
