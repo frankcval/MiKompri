@@ -1,6 +1,12 @@
 # MiKompri.Web
 
-Cliente Web SPA de MiKompri (MVP-4) construido con React + TypeScript + Vite.
+Cliente Web SPA de MiKompri (MVP-4), construido con React + TypeScript + Vite, Fluent UI v9, MSAL y TanStack Query. Es el cliente prioritario actual; Android/MAUI está aplazado.
+
+## Estado al 30/10/2026
+
+007 aporta el cliente full-stack; 008 moderniza UX y autorización; 009 completa preparación, compra y consulta. Las tres tienen implementación en `main` (008/009 integradas por PR #56/#57), con aceptación global todavía pendiente. En 009, T009 está cerrada con evidencia técnica y T010/T011 siguen abiertas. [Estado y roadmap](../README.md#-estado-actual-del-proyecto), [tareas 009](../specs/009-shopping-experience-completion/tasks.md) y [evidencia](../specs/009-shopping-experience-completion/evidence/review-corrections.md).
+
+010 (cuenta/social auth) y 011 (iconografía) son solo alcances futuros. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista ni TP11.
 
 ## Requisitos
 
@@ -10,8 +16,9 @@ Cliente Web SPA de MiKompri (MVP-4) construido con React + TypeScript + Vite.
 ## Comandos principales
 
 ```powershell
-npm install
+npm ci
 npm run dev
+npm run lint
 npm run build
 npm run typecheck
 npm run test
@@ -21,21 +28,30 @@ npm run test:integration
 npm run test:e2e
 ```
 
-## Estructura base
+## Estructura actual
 
 ```text
 src/
-├── app/
-│   └── App.tsx
+├── app/          # Providers, router, layout y entrada
+├── auth/         # MSAL, guard y recuperación de sesión/borradores
+├── features/     # Perfil, grupos, listas, catálogo y gastos/reparto
+├── shared/       # API, configuración, fechas y UI común
+├── assets/       # Fuentes y recursos
 └── main.tsx
 tests/
+├── unit/
+├── component/
+├── integration/
+├── e2e/          # Recorridos controlados y suite real; configs Playwright separadas
+├── visual/
 └── setup/
-    └── vitest.setup.ts
 ```
 
 ## Variables de entorno
 
-Usar `.env.example` como plantilla para variables locales/cloud del frontend.
+Desde `MiKompri.Web`, copiar `.env.example` a `.env.local` y configurar las URLs públicas de Users, ShoppingList y ProductCatalog, el registro SPA Entra, tenant/authority, redirect y logout URIs, y `VITE_API_SCOPE` del recurso backend común. Reiniciar Vite después de editarlo. `VITE_*` es configuración pública incorporada durante el build, nunca secretos de cliente.
+
+Levantar antes las APIs y PostgreSQL con el Compose de la raíz; ese Compose no incluye un servicio Web. `npm run dev` sirve la SPA en `http://localhost:5173`. Registrar `/auth/callback` para ese origen en Entra. Usuarios autenticados acceden a `/lists`; `/profile`, `/groups`, `/personal-lists`, `/shared-lists` y `/product-catalog` son rutas protegidas. [Guía CORS](../docs/web-client-cors.md) y [contratos/identidad](../docs/client-contract-reuse-guidelines.md).
 
 ## Modernización 008
 
@@ -47,7 +63,7 @@ Mis listas, índice personal y listas de grupo ofrecen Activas/Historial y orden
 
 Añadir productos muestra resultados seleccionables y creación contextual con nombre precompletado. Catálogo permite buscar/editar productos, gestionar mercados y registrar precios manuales para consultar su historial. Esos precios no se crean automáticamente al registrar compras.
 
-Después de marcar se pueden omitir o registrar datos reales (importe total, mercado y fecha opcionales, pagador/comprador/participantes según contexto). Gastos permanece accesible por separado, también en personales; se utiliza el mismo registro y una operación persistente para reintentar sin duplicación. Requiere backend/migración 009; contratos shared legacy continúan compatibles. [Validación](../specs/009-shopping-experience-completion/evidence/validation.md) y [guía QA](../specs/009-shopping-experience-completion/quickstart.md).
+Después de marcar se puede omitir la captura o registrar datos reales (importe total obligatorio al guardar; mercado y fecha opcionales; pagador/comprador/participantes según contexto). Gastos permanece accesible por separado, también en personales; se utiliza el mismo registro y una operación persistente para reintentar sin duplicación. Requiere backend/migración 009; contratos shared legacy continúan compatibles. Las fechas de compra/precio son civiles: Web usa día local y envía `X-Client-Utc-Offset-Minutes`; auditoría sigue UTC. [Contratos](../specs/009-shopping-experience-completion/contracts/api.md), [validación](../specs/009-shopping-experience-completion/evidence/validation.md) y [guía QA](../specs/009-shopping-experience-completion/quickstart.md).
 
 `npm test` ejecuta las pruebas locales; `npm run test:e2e` usa fixtures controlados y no certifica Entra. Para tres motores instalar `npx playwright install chromium firefox webkit` y definir `PLAYWRIGHT_ALL_BROWSERS=1`. Se ejecutan como máximo dos workers.
 
@@ -55,11 +71,13 @@ Después de marcar se pueden omitir o registrar datos reales (importe total, mer
 
 Docker incluye fallback SPA, caché de assets, compresión y bloqueo de `/tests/`. El harness solo se usa en desarrollo/pruebas. [Plan P0–P3, evidencia y pendientes](../specs/008-web-ux-modernization/quickstart.md).
 
+El Dockerfile compila la SPA y la sirve con nginx; `.env.local` está excluido del contexto Docker. No asumir que el login queda configurado al construir la imagen ni que cambiar variables del contenedor nginx reconfigura el bundle: la configuración pública debe estar disponible durante su compilación. Azure Static Web Apps es un destino previsto, sin despliegue productivo acreditado por esta documentación.
+
 Las fuentes web derivadas se denominan MiKompri Sans; conservan el diseño original de Source Sans 3, la atribución y la licencia OFL. Las variantes latinas pesan aproximadamente 76 kB en total; otros alfabetos usan las variantes completas por cobertura Unicode. El script opcional `python scripts/build-fonts.py` requiere `fonttools[woff]` solo para regenerarlas. Las licencias también se distribuyen en `public/fonts/`.
 
 ## CI y aceptación con Entra
 
-`CI - MiKompri Web` ejecuta en cada push/PR las pruebas locales, los recorridos controlados de tres navegadores y la compilación Docker. No requiere cuentas Entra. `npm run test:ci-config` verifica que el preflight rechaza configuración incompleta; sus fixtures no autentican usuarios.
+`CI - MiKompri Web` ejecuta en las ramas configuradas y PRs hacia main/develop las pruebas locales, los recorridos controlados de tres navegadores y la compilación Docker. No requiere cuentas Entra. `npm run test:ci-config` verifica que el preflight rechaza configuración incompleta; sus fixtures no autentican usuarios.
 
 `Acceptance - MiKompri Web with Entra` está separado en `.github/workflows/acceptance-mikompri-web-entra.yml` y se inicia manualmente con `workflow_dispatch`. Cuando se invoca exige todos los recursos y falla si faltan; no convierte una prueba omitida en una aceptación. El cierre de 008 exige una ejecución real satisfactoria sobre el commit de entrega, además de la CI normal.
 
@@ -76,4 +94,4 @@ Configurar en **Settings → Secrets and variables → Actions**:
 
 `http://localhost:5173` del equipo de desarrollo no es accesible desde un runner hospedado de GitHub. Para la ejecución hospedada preparar QA accesible; para validar el entorno local usar `npm run test:e2e:integrated` con las sesiones locales y las variables anteriores (los defaults de API local se conservan).
 
-[GitHub requiere que el workflow manual exista en la rama predeterminada](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow). El archivo nuevo debe incorporarse a `main` para que aparezca **Run workflow** en Actions; después se puede seleccionar la rama a validar. Hasta entonces la misma suite se puede ejecutar localmente. Este cambio no configura credenciales ni acredita la aceptación pendiente.
+El workflow de aceptación ya está incorporado a `main`; se puede iniciar desde Actions y seleccionar la rama a validar, con los recursos QA anteriores configurados. También se puede ejecutar la suite localmente. Su presencia no configura credenciales ni acredita la aceptación pendiente.
