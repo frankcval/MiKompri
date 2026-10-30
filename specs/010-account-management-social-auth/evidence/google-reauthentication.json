@@ -1,0 +1,40 @@
+{
+  "accessTokenValidation": {
+    "kind": "REAL_QA_API_ACCESS_TOKEN_VALIDATED",
+    "accepted": true,
+    "issuerSha256": "d32d1d4c1daf0eb8fb2d1cee85d0d9f92da4c738a60d087255884643e30c57fb",
+    "tenantSha256": "389dca61fa54aeda267b8b793b01f0e4a39c4a113280cd6291dcfc09a8bdca20",
+    "objectSha256": "79a6fda1f0038bbb444345f0f9327d22a922d98b6f70287634c4fda2d9110f41",
+    "subjectSha256": "92f913525aa57929ae7ad2fccad32687a864dcc613c303f2033b9badd2044ba2",
+    "audienceSha256": "2707ce0395c5da12f7aff043dcf552ccef63bddcae47760222af3924cbd03c77",
+    "requiredScopePresent": true,
+    "authTime": 1793372920,
+    "issuedAt": 1793372621,
+    "expiresAt": 1793372921,
+    "challengeStartedAt": 1793372849,
+    "observedAt": 1793372921,
+    "withinG3TimestampBounds": true,
+    "provesG3": false
+  },
+  "scopeObservation": {
+    "authenticated": true,
+    "tenantMatchesQa": true,
+    "objectIsGuid": true,
+    "objectSha256": "79a6fda1f0038bbb444345f0f9327d22a922d98b6f70287634c4fda2d9110f41",
+    "requiredScopePresent": true,
+    "diagnosticScopePresent": true,
+    "scopeCount": 2
+  },
+  "idTokenAsApiBearerStatus": 401,
+  "idTokenAuthTimeClientObservationOnly": 1793372920,
+  "provesFreshChallenge": false,
+  "requestObservation": {
+    "prompt": "login",
+    "maxAge": "0",
+    "msalLoginHintInitiallyLedToPasswordScreen": true,
+    "loginHintAndAnchorRemovedForDiagnosticRetry": true,
+    "googleFreshChallengeConfirmedByHolder": false,
+    "holderObservation": "account_selection_or_consent_only",
+    "classificationForObservedRoute": "NOT RELIABLE FOR G3"
+  }
+}

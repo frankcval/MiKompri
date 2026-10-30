@@ -56,6 +56,8 @@ La recuperación sin sesión previa usa un desafío del mismo broker con método
 
 Linking/migración prueban origen+candidato. Unlink exige control reciente mediante alternativa que permanece, consentimiento y checks de último método; no reautenticar obligatoriamente con el método comprometido que se retira. Recovery prueba alternativa ya vinculada y, si incorpora otro acceso, el candidato. Pérdida total sin prueba →sin autoservicio beta, nunca recovery por perfil. OTP primario no se etiqueta MFA; passkey actual no se presupone para OTP/social. No se cierran AC de linking/recovery por dejar el recorrido deshabilitado hasta G3.
 
+**Candidato de prueba, no contrato aprobado:** [contexto CA+desafío CIAM](../evidence/g3-step-up-review.md). `acrs` solo se evalúa contra contexto/política efectiva fijados por entorno, nunca como permiso autosuficiente ni timestamp. El broker debe acreditar método/control reciente y tiempo real del factor; la tolerancia Every time no modifica300/600s ni permite usar iat/callback como AuthenticatedAt. Política inexistente/deshabilitada/report-only, tiempo incierto o bootstrap de factor no acreditado →sin ProofReceipt aceptable. No consulta Graph por request ni nuevos endpoints productivos por esta propuesta. Un factor MFA verificado tampoco añade automáticamente un método de login email o una nueva correlación UserId.
+
 ## Integración y entornos
 
 Web y futuro MAUI tienen registros independientes. SPA: redirect exacto `/auth/callback`, logout exacto, registro público sin secreto, MSAL authority conocida del CIAM y scope backend. Broker de pruebas tiene callback distinto. MAUI: registro público/PKCE, redirects y firma/paquete Android/deep links probados en su fase; no wildcard ni secreto embebido.

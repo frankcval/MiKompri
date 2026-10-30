@@ -1,0 +1,12 @@
+{
+  "kind": "REAL_QA_GOOGLE_CONSUMER_DIRECTORY_CORRELATION",
+  "matchingObjectCount": 1,
+  "objectIdMatchesValidatedToken": true,
+  "identityTypes": ["federated", "userPrincipalName"],
+  "federatedIssuerLiteral": "google.com",
+  "accountEnabled": true,
+  "sameObjectAsPriorEmailOtpConsumer": false,
+  "holderConfirmedGoogleAccountWithoutMicrosoft": true,
+  "miKompriUserCreated": false,
+  "freshGoogleChallengeConfirmedByHolder": false
+}

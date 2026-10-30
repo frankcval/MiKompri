@@ -1,0 +1,129 @@
+{
+  "jwtControls": {
+    "Total": 12,
+    "Passed": 12
+  },
+  "powerShellSyntax": [
+    {
+      "SyntaxErrors": 0,
+      "Script": "get-google-qa-inventory.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "get-qa-inventory.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-auth-harness.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-benchmark.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-graph-probes.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-graph-token-negative.ps1"
+    }
+  ],
+  "productionChanges": [],
+  "branch": "010-account-management-social-auth",
+  "baseCommit": "b02947f5f624cd0b1326018982967cae5325ab03",
+  "g3TimingControls": {
+    "Total": 10,
+    "Passed": 10
+  },
+  "domainProductionSchemaChanged": false,
+  "htmlJavaScriptSyntax": "PASS",
+  "sourceFiles": [
+    {
+      "Path": "tools/spikes/010-external-id/.gitignore",
+      "Sha256": "01c9c7cf0f94237049af1ffb52110b959311cb4afe36ae333e2436a09ff1cddf"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/auth.html",
+      "Sha256": "c25850cdd229d5b81c67f2edb1f39eab9bf66e40926e3c25f081f7ce3d26cb5a"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/AuthHarness.cs",
+      "Sha256": "366e699aa74f3853623f2eda61abf4a3fc5b35d10b1a90b9cefe2152b047bb82"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/ExternalIdSpike.csproj",
+      "Sha256": "567f7a276f198fe61dc5761bd81a036e1e35677154c575b85d659e3bbedb3dcc"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/get-google-qa-inventory.ps1",
+      "Sha256": "1d5b0550c971b41b701a972446da844d4ebcbd1f09ed8f8e1cef260f425a9519"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/get-qa-inventory.ps1",
+      "Sha256": "30eb9c7d52a0cbf086f37681c168e1e909416c6e0ee26ae9ce761044bebadbb0"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/google-direct.html",
+      "Sha256": "87378d1cc55edcc11aa444649f476ee4b04af4aa8ae8555dbd7b5eeeaed8d8db"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/Program.cs",
+      "Sha256": "49db482eb1dafca7ea12eccad35fb4febe664ca8cdf1eb23d385722246c9c9f0"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/README.md",
+      "Sha256": "4bc4f0d3468170340c6c4bfb996d4c0d8f66d894a55bd7111c8dad54b258aefc"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-auth-harness.ps1",
+      "Sha256": "5a8fb13a7f42d8f7bcd8cd7269427191ddf03082b3177836299656d8f6efafec"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-benchmark.ps1",
+      "Sha256": "5c501dd547028d5f40c8eac43fc89a201601f7269716ddc0885758289b7b02a4"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-graph-probes.ps1",
+      "Sha256": "4861445a1f17769b4fbf7e575758468ba25feae842501bc06c592c26a552e07b"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-graph-token-negative.ps1",
+      "Sha256": "5cfe1a4ffa9ae6fd7800471d2cacfc232dde0f475cd2d5633b8ed406ca235924"
+    }
+  ],
+  "kind": "ISOLATED_SPIKE_SOURCE_VALIDATION",
+  "changedFilesInScope": 54,
+  "trailingWhitespaceIssues": [],
+  "htmlJavaScriptFilesChecked": 2,
+  "googleDirectNegative": "PASS_REAL_GOOGLE_ID_TOKEN_REJECTED_401",
+  "googleQaSetup": "PASS_REAL_GOOGLE_SIGN_IN_AND_CIAM_TOKEN_VALIDATION",
+  "continuationValidation": {
+    "jsonFilesParsed": 24,
+    "date": "2026-10-30",
+    "localLinksChecked": 179,
+    "emailG3": "INCONCLUSIVE",
+    "completedTasks": 0,
+    "brokenLocalLinks": 0,
+    "sourceHashMismatches": 0,
+    "googleG3ObservedRoute": "NOT RELIABLE FOR G3",
+    "googleDirectSubjectMatchesCiamFederatedIdentity": true,
+    "sensitivePatternFiles": 0
+  },
+  "g3StepUpDocumentaryReview": {
+    "completedTasks": 0,
+    "observedGoogleRouteClassification": "NOT RELIABLE FOR G3",
+    "uniqueOpenTasks": 55,
+    "cloudConfigurationChanged": false,
+    "jsonFilesParsed": 24,
+    "date": "2026-10-30",
+    "kind": "OFFICIAL_DOCUMENTATION_REVIEW_NOT_RUNTIME_EVIDENCE",
+    "newRuntimeTestsExecuted": false,
+    "decision": "ALTERNATIVE A REQUIRES CHANGES",
+    "brokenLocalLinks": 0,
+    "candidateClassification": "INCONCLUSIVE",
+    "localLinksChecked": 189,
+    "unchangedHarnessSourceHashes": 13,
+    "artifact": "g3-step-up-review.md"
+  }
+}

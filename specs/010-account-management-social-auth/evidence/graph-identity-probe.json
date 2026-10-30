@@ -1,0 +1,14 @@
+{
+  "Kind": "REAL_CIAM_GRAPH_SYNTHETIC_IDENTITY_NOT_GOOGLE_LOGIN",
+  "CreateFederatedFixture": "PASS",
+  "ReadIdentities": "PASS",
+  "AddLocalIdentity": "REJECTED",
+  "FixtureDeleted": true,
+  "InitialIdentityTypes": [
+    "federated",
+    "userPrincipalName"
+  ],
+  "AddLocalStatus": 400,
+  "AddLocalCode": "Request_BadRequest",
+  "AddLocalMessage": "Adding a non-federated user signInType is not permitted if the user only has social/federated identities or no identities set. Please recreate the user with a non-federated identity along with existing identities if any."
+}

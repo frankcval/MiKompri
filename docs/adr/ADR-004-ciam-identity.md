@@ -34,6 +34,18 @@ Web mantiene MSAL/PKCE y navegador delegado como opción inicial. MAUI futuro us
 
 Comparación completa, garantías/limitaciones, matrices por método/operación y pruebas pendientes en [architecture-review](../../specs/010-account-management-social-auth/architecture-review.md); fuentes actuales R20–R28 en research. D1–D3 siguen **propuestos**, no aprobados ni implementados.
 
+### Actualización posterior: autorización y observaciones del spike QA
+
+El usuario ha aprobado D1–D3 **para el spike controlado**, sin aceptar todavía este ADR completo ni enmienda. [Resumen](../../specs/010-account-management-social-auth/evidence/spike-summary.md), [probes de agregación](../../specs/010-account-management-social-auth/evidence/aggregation-spike.md), [G3](../../specs/010-account-management-social-auth/evidence/assurance-spike.md).
+
+Email OTP real se representa como identidad federated/mail. Los probes CIAM permiten agregar mail a google.com ficticio y viceversa con mismo oid; el rechazo documentado/observado de social-only→emailAddress corresponde a cuenta local password y no descarta esa ruta OTP. No recrear objetos ni alterar UserId para sortearlo. Estas ediciones no acreditan prueba de control ni acceso con Google real.
+
+Graph permite retirar último método explícito, no fusiona identidades ocupadas y dos PATCH concurrentes aceptados dejan una sola adición. Por ello A requiere concretar guards/journal/serialización/reconciliación y cerrar G1/G3/permisos mínimos, no un simple PATCH desde UI. Se conserva A como candidata; no seleccionar/implementar B mientras no se demuestre insuficiencia de la ruta OTP segura. D1 tiene benchmark local parcial; sin acceso-status productivo ni aceptación cloud. Constitución intacta y fases3–8 no iniciadas.
+
+El acceso Google posterior sí funciona sin cuenta Microsoft, según confirmación del titular, token CIAM validado y objeto Graph federated/google.com distinto del OTP. En cambio, la reautenticación prompt=login/max_age=0 (reintentada sin login_hint) produjo auth_time nuevo tras solo selección/consentimiento: **NOT RELIABLE FOR G3 para la ruta ensayada**. No aprobar un broker que use ese timestamp como control Google reciente. Antes de implementar, revisar una prueba/challenge CIAM verificable y su compatibilidad real por método; si no puede acreditarse, las mutaciones afectadas siguen bloqueadas. Cambiar A por B no resuelve automáticamente esta limitación. No se rebajan300/600s ni se mutan identidades reales para forzar una aceptación.
+
+Investigación posterior propone ensayar authentication context CA con desafío CIAM, no reauth Google forzada: [revisión G3](../../specs/010-account-management-social-auth/evidence/g3-step-up-review.md). Soporte documental no es PASS: email MFA social presenta discrepancia con la configuración OTP, `acrs` puede emitirse sin política y Every time tolera MFA previa5min. Primero verificar compatibilidad, política efectiva, bootstrap del factor y timestamp del control real; SMS no se activa ni se impone teléfono, password o passkey. Este candidato no cambia D3 ni acepta ADR/arquitectura final.
+
 ## Consecuencias
 
 Ventajas: credenciales externas, tokens homogéneos para APIs, dominio independiente del proveedor, perfil personalizado estable. Costes: tenant y federaciones, Graph/operación privilegiada si A lo requiere, QA real, migración/coexistencia/rollback, MFA/recuperación, posibles MAU/SMS y avatar/storage. Ningún coste cero total o despliegue se presume.

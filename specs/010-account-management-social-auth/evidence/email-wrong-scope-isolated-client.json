@@ -1,0 +1,22 @@
+{
+  "kind": "REAL_CIAM_ACCESS_TOKEN_SCOPE_NEGATIVE_SEPARATE_CLIENT",
+  "clientAlias": "QA_DIAGNOSTIC_SPA",
+  "consentedScope": "diagnostic_only",
+  "expectedApiStatus": 403,
+  "scopeObservation": {
+    "authenticated": true,
+    "tenantMatchesQa": true,
+    "objectIsGuid": true,
+    "objectSha256": "793a9e4d93cd8ffc4ac257dccec266cfa46c11737a7abd8664b2b89d6ee8cbaf",
+    "requiredScopePresent": false,
+    "diagnosticScopePresent": true,
+    "scopeCount": 1
+  },
+  "accessTokenValidation": {
+    "accepted": false,
+    "status": 403
+  },
+  "idTokenAsApiBearerStatus": 401,
+  "idTokenAuthTimeClientObservationOnly": null,
+  "provesFreshChallenge": false
+}

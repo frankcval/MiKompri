@@ -1,0 +1,132 @@
+{
+  "FixtureCleanup": [
+    {
+      "PermanentlyDeleted": true,
+      "SoftDeleted": true
+    },
+    {
+      "PermanentlyDeleted": true,
+      "SoftDeleted": true
+    },
+    {
+      "PermanentlyDeleted": true,
+      "SoftDeleted": true
+    }
+  ],
+  "Kind": "REAL_CIAM_GRAPH_SYNTHETIC_FIXTURES_NOT_PROVIDER_SIGN_IN",
+  "Observations": [
+    {
+      "Types": [
+        "federated",
+        "userPrincipalName"
+      ],
+      "Name": "create_and_read_federated_fixture",
+      "Result": "ACCEPTED"
+    },
+    {
+      "Code": "Request_BadRequest",
+      "Status": 400,
+      "Message": "Adding a non-federated user signInType is not permitted if the user only has social/federated identities or no identities set. Please recreate the user with a non-federated identity along with existing identities if any.",
+      "Name": "federated_only_add_email_identity",
+      "Result": "REJECTED"
+    },
+    {
+      "Types": [
+        "emailAddress",
+        "userPrincipalName"
+      ],
+      "Name": "create_and_read_local_fixture",
+      "IsOtpSignInEvidence": false,
+      "Result": "ACCEPTED"
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "local_add_unoccupied_federated_identity"
+    },
+    {
+      "SameObjectId": true,
+      "Name": "read_after_add",
+      "FederatedPresent": true,
+      "Result": "OBSERVED",
+      "LocalPresent": true
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "unlink_federated_keep_local"
+    },
+    {
+      "Code": "Request_BadRequest",
+      "Status": 400,
+      "Message": "Another object with the same value for property alternativeSecurityIds already exists.",
+      "Name": "add_federated_identity_already_owned_by_other_object",
+      "Result": "REJECTED"
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "remove_last_explicit_method_leave_upn"
+    },
+    {
+      "Types": [
+        "userPrincipalName"
+      ],
+      "Name": "read_after_last_method_attempt",
+      "Result": "OBSERVED",
+      "IsLoginRecoveryEvidence": false
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "google_shaped_federated_add_mail_otp_shaped_identity"
+    },
+    {
+      "GooglePresent": true,
+      "Result": "OBSERVED",
+      "MailPresent": true,
+      "Name": "read_google_plus_mail",
+      "SameObjectId": true,
+      "ProvesProviderLogin": false
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "mail_otp_shaped_add_unoccupied_google_shaped_identity"
+    },
+    {
+      "GooglePresent": true,
+      "Result": "OBSERVED",
+      "MailPresent": true,
+      "Name": "read_mail_plus_google",
+      "SameObjectId": true,
+      "ProvesProviderLogin": false
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "unlink_google_keep_mail_otp_shaped"
+    },
+    {
+      "Result": "ACCEPTED",
+      "Name": "remove_last_mail_method_leave_upn"
+    },
+    {
+      "Types": [
+        "userPrincipalName"
+      ],
+      "Name": "read_after_last_mail_method",
+      "Result": "OBSERVED",
+      "ProvesUsableSurvivingAccess": false
+    },
+    {
+      "RightStatus": 204,
+      "LeftStatus": 204,
+      "Result": "OBSERVED",
+      "Name": "concurrent_collection_replacements",
+      "FederatedIdentitiesRemaining": 1,
+      "IsAtomicLinkingEvidence": false
+    },
+    {
+      "ReadSucceeded": true,
+      "CandidatePresent": false,
+      "Name": "client_timeout_then_reread",
+      "ProvesExactlyOnce": false,
+      "Result": "CLIENT_CANCELLED_OUTCOME_UNKNOWN"
+    }
+  ]
+}

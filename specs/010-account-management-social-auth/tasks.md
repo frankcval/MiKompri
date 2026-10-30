@@ -2,7 +2,7 @@
 
 **Input**: [spec](spec.md), [plan](plan.md), [research](research.md), [modelo](data-model.md), [contratos](contracts/account-and-identity.md).
 
-**Estado**: formalización documental; todas las tareas siguientes son trabajo/revisión futura y permanecen abiertas. Tener un artefacto no acredita su aprobación o un test real. No implementar ni configurar Azure/BD con esta ejecución.
+**Estado**: formalización y spike controlado autorizado el 30/10/2026. D1–D3 están aprobados **para el spike**, no para implementación completa. Se permiten únicamente recursos QA mínimos y harness aislado según [plan previo](evidence/spike-resource-plan.md); no código productivo, migraciones EF ni cambios de datos MiKompri. Todas las tareas siguientes permanecen abiertas hasta acreditar íntegramente sus condiciones; tener un artefacto no acredita aprobación ni test real.
 
 **Tests**: TP8; dominio/caso de uso/API antes de modificar reglas, persistencia real para carreras/migración. [USx] remite a historias de spec. Paths de código nuevos son destinos planificados, no archivos existentes. No se delega ni ejecuta trabajo paralelo por marcar [P].
 
@@ -11,7 +11,7 @@
 - [ ] T001 Ratificar auditoría/fuentes/versiones y límites de documentación en `current-state-audit.md` y `research.md`; registrar nueva fecha antes del spike.
 - [ ] T002 [US1] Tras autorización QA, validar Google/email/Microsoft personal y Entra legado en `evidence/provider-capabilities.md`, sin secretos/PII.
 - [ ] T003 [US3] Probar matriz A Google-only→email/email→Google, identidades en objetos distintos, Graph permisos y unlink/último método en `evidence/aggregation-spike.md`; no asumir identities==linking completo.
-- [ ] T004 [US3] Acreditar G3 por método según D3/AR-05–06 en `architecture-review.md`: auth_time/max_age/challenge verificable, silent SSO Google/refresh, MFA histórica, OTP primario y límites passkey, timestamps/300s al confirmar, state/nonce/PKCE y recovery sin proveedor perdido; `evidence/assurance-spike.md`. Sin garantía, no habilitar mutación.
+- [ ] T004 [US3] Acreditar G3 por método según D3/AR-05–06 en `architecture-review.md`: auth_time/max_age/challenge verificable, silent SSO Google/refresh, MFA histórica, OTP primario y límites passkey, timestamps/300s al confirmar, state/nonce/PKCE y recovery sin proveedor perdido; `evidence/assurance-spike.md`. Revisar/ensayar candidato de `evidence/g3-step-up-review.md`: contexto/política efectivos, discrepancia email MFA social+OTP, tolerancia5min, timestamp real del factor y bootstrap seguro. Sin garantía, no habilitar mutación ni rebajar D3.
 - [ ] T005 [US5] Revalidar SDK/metadata/claims/scopes: Web beta MSAL.js+Code/PKCE+browser-delegated; MAUI/MSAL.NET candidato browser sin fijar Native Auth antes de versión/SDK/redirect real. Registrar discrepancia oficial en `research.md`; AR-04, no crear app MAUI productiva.
 - [ ] T006 Aprobar coste/dependencias/región/operación y finalidad/retención de datos en `research.md` y `privacy-and-deletion.md`.
 
@@ -86,6 +86,16 @@
 - [ ] T055 Revisión de checklist, FR/SC, gates G1–G7, ADR/enmienda, costes y plan de retiro/no migrados. Autorizar despliegue/cutover por separado; no cerrar 007/008/009 por entregar 010.
 
 ## Dependencias y Definition of Done
+
+### Registro parcial del spike autorizado
+
+- T001/T005: fuentes oficiales reconsultadas, metadata real y MSAL Browser instalado3.30.0; Code+PKCE browser-delegated email ejecutado en harness. No MAUI/Native Auth aceptados.
+- T002: registro/retorno email OTP y acceso Google real sin Microsoft, access tokens CIAM validados e ID tokens rechazados como bearer; faltan negativos OTP y Microsoft. Sigue abierta.
+- T003: probes reales CIAM con fixtures ficticios (no login Google): colección, colisiones, Google-shaped↔mail-shaped, unlink, último método, concurrencia y cancelación/relectura; falta doble prueba y acceso real con ambos métodos. Sigue abierta.
+- T004: auth_time firmado, refresh y reauth observados por método. Titular confirma OTP nuevo para email; Google solo selección/consentimiento con auth_time nuevo: ruta ensayada NOT RELIABLE FOR G3. Faltan estrategia verificable Google y cierre de negativos/binding/expiración email; no autorizar mutaciones por timestamp solo. Sigue abierta.
+- T006/T009: benchmark local y costes condicionados documentados; no aceptación cloud, disponibilidad D1 ni ratificación completa del modelo/contratos.
+
+Fuentes y límites en [resumen del spike](evidence/spike-summary.md). No se inicia Phase3–8, no se cierra ninguna tarea por entregar estos probes y no se modifican gates anteriores.
 
 T001–006 → T007–012 → T013–019 → T020–026 → T027–033 → T034–040 → T041–046 → T047–055. Las historias tienen pruebas independientes en QA, pero comparten arquitectura/trust aprobados. No mutar esquemas ni registrar credenciales antes de los gates. Avatar, borrado operativo, PII adicional y MAUI no se convierten en trabajo obligatorio por figurar como análisis.
 

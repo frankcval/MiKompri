@@ -81,7 +81,7 @@ Cada ProofReceipt exige `now - AuthenticatedAt <=300s`, tiempo no futuro fuera d
 | MFA CIAM | Reto actual/verificable y método/assurance admitidos; claims firmados solo con semántica comprobada | Tener MFA registrado, `amr=mfa` viejo o sesión con MFA histórica no acredita frescura actual |
 | Passkey CIAM | Solo si la combinación de cuenta/SDK/flujo está soportada y probada; reto reciente y user verification acreditados | Documentación actual limita passkeys a cuentas locales email+password, no OTP/social; no usarlas como solución universal para Google-only/OTP ni asumir native auth/embedded WebView |
 
-La guía actual de passkeys también indica que external tenants no permiten exigir authentication strengths en Conditional Access. No diseñar `acr`/`acrs` o una política CA de workforce como capacidad disponible sin validación en External ID. Los claims `amr`/`acr`/`acrs`, si aparecen, no tienen significado portátil por su nombre. [MFA](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-multifactor-authentication-customers), [límites de passkeys](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-sign-in-with-passkey).
+La guía actual de passkeys indica que external tenants no permiten exigir authentication strengths en Conditional Access. Esto **no excluye authentication context**: la [guía MFA para CIAM](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-multifactor-authentication-customers) y la matriz de capacidades sí documentan contexto/step-up. El contexto solicitado puede emitirse sin una política protectora y no acredita por sí solo el instante de MFA. Los claims `amr`/`acr`/`acrs` requieren semántica/configuración comprobadas. [Límites de passkeys](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-sign-in-with-passkey), [revisión y ensayo candidato G3](evidence/g3-step-up-review.md).
 
 ### Matriz por operación: evita exigir una prueba imposible
 
@@ -112,5 +112,17 @@ MFA/reauth por contexto de riesgo, prueba resistente a phishing donde esté sopo
 Son pruebas futuras de diseño, no resultados ejecutados. D1–D3 quedan propuestas para aprobar; G1–G7 y ADR/enmienda siguen pendientes, sin nueva autorización de Azure o implementación.
 
 ## Validación de esta revisión documental
+
+### Ejecución posterior autorizada: spike QA
+
+El usuario aprueba D1–D3 **para un spike técnico aislado**, sin autorizar implementación completa ni enmienda constitucional. La afirmación de «sin autorización Azure» anterior describe la revisión documental original, no esta autorización posterior. [Plan previo](evidence/spike-resource-plan.md), [resultados y pendientes](evidence/spike-summary.md).
+
+Se crea CIAM QA separado, API/SPA sin secretos y flujo email OTP. Harness fuera de producción acredita email/token y controles; D1 solo se mide mediante proxy local, no se implementa access-status. Probes Graph distinguen el OTP real `federated/mail` de `emailAddress`/password: ambas direcciones Google-shaped↔mail-shaped son editables con mismo oid, pero no acreditan Google real ni doble prueba. Graph acepta retirar último método explícito y dos PATCH concurrentes pierden una adición. No delegar estas garantías en el proveedor por existir identities.
+
+G1/G3 siguen condicionando arquitectura final; no se reduce D3 ni se acepta A por los fixtures. La constitución/ADR general y fases3–8 permanecen pendientes de revisión/implementación posterior.
+
+Continuación Google: acceso básico sin Microsoft validado en harness y correlacionado con objeto federated/google.com. Reauth con prompt=login/max_age=0, tras retirar login_hint en diagnóstico, emite auth_time nuevo aunque el titular solo selecciona/consiente. Resultado **NOT RELIABLE FOR G3** de la ruta observada; estudiar desafío CIAM verificable antes de habilitar linking/unlinking/migración/recovery, sin escoger B ni ampliar configuración automáticamente. [Evidencia por método](evidence/assurance-spike.md).
+
+Revisión documental posterior: priorizar ensayo de authentication context CA + desafío CIAM; email OTP para Google es primer candidato condicionado por discrepancia oficial de configuración, SMS solo alternativa con finalidad/coste revisados. Every time puede reutilizar MFA de los cinco minutos anteriores: no satisface automáticamente el reto ligado a operación D3. Exigir política efectiva, factor/enrolamiento seguros y tiempo verificable; sin ello negar. [Comparación, límites y matriz QA propuesta](evidence/g3-step-up-review.md). No se configura CA ni se aprueba EvidenceKind o modificación de D3 por esta propuesta.
 
 Prerrequisitos Spec Kit resuelven 010 y la rama Git es la solicitada. Comprobados 18 artefactos Markdown de 010/ADR, 97 enlaces locales/anchors sin errores, 26 FR/ocho SC/doce AC más seis AR, ocho fases y 55 tareas únicas abiertas. `git diff --check` correcto incluyendo el archivo nuevo. Diff de 13 archivos Markdown: no cambia feature activa, constitución/enmienda propuesta, código, configuración MSAL/JWT, workflows ni esquema/migración EF. No se han ejecutado tests funcionales/QA ni configurado tenant, registros, secretos o BD; las matrices anteriores siguen pendientes.

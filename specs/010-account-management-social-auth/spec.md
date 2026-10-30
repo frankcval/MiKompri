@@ -1,5 +1,7 @@
 # Feature Specification: 010 — Account Management & Social Auth
 
+Estado de verificación posterior a la formalización: [spike QA controlado](evidence/spike-summary.md), autorizado separadamente para D1–D3 y recursos QA mínimos. No implementación productiva ni aceptación de G1/G3 por existir artefactos. FR/SC de esta especificación no se rebajan; constitución y UserId canónico intactos.
+
 **Feature Branch**: `010-account-management-social-auth`
 
 **Created**: 2026-10-30
@@ -119,6 +121,6 @@ User/Profile, IdentityBinding, AccountOperation/ProofReceipt, MigrationRecord, S
 
 ## Assumptions, Dependencies & Out of Scope
 
-Depende de 003 (Users/correlación), 007 (MSAL/sesión), 008 (autorización) y 009 (UserId en compras/history). Sus pendientes permanecen abiertos. 006 no existe: MAUI no tiene implementación que certificar. Google requiere proyecto del proveedor y CIAM un tenant/suscripción administrables en una fase futura autorizada.
+Depende de 003 (Users/correlación), 007 (MSAL/sesión), 008 (autorización) y 009 (UserId en compras/history). Sus pendientes permanecen abiertos. 006 no existe: MAUI no tiene implementación que certificar. Google requiere proyecto del proveedor y CIAM un tenant/suscripción administrables. El spike posterior autorizado ya dispone de recursos QA aislados y acceso Google/email real; esto no autoriza despliegue productivo ni cierra G1/G3. Véase [resumen](evidence/spike-summary.md).
 
 Fuera: contraseñas propias, autenticación desde cero, APIs validando Google/Apple directamente, múltiples CIAM permanentes, ownership por identificadores externos, fusión de UserIds, chat, pagos, cambios funcionales ShoppingList/ProductCatalog, MAUI productivo, PII innecesaria, borrado productivo y activación Apple/otros sin decisión posterior. No se modifican presupuestos ni aceptación 007/008/009.

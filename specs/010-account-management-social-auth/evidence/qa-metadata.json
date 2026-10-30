@@ -1,0 +1,21 @@
+{
+  "pkceS256Advertised": false,
+  "issuerSha256": "d32d1d4c1daf0eb8fb2d1cee85d0d9f92da4c738a60d087255884643e30c57fb",
+  "signingKeyCount": 8,
+  "kind": "REAL_QA_METADATA_NOT_ISSUED_USER_TOKEN",
+  "codeFlowAdvertised": true,
+  "tenantSha256": "389dca61fa54aeda267b8b793b01f0e4a39c4a113280cd6291dcfc09a8bdca20",
+  "issuerTemplate": "https://<qa-tid>.ciamlogin.com/<qa-tid>/v2.0",
+  "discoveryHostUsesQaSubdomain": true,
+  "pkceMethodsPropertyPresent": false,
+  "browserAuthorizationRequest": {
+    "codeChallengeMethod": "S256",
+    "msalBrowserVersion": "3.30.0",
+    "rawQueryPersisted": false,
+    "statePresent": true,
+    "responseType": "code",
+    "noncePresent": true
+  },
+  "emailOtpFlowConfigured": true,
+  "spaAssignedToFlow": true
+}

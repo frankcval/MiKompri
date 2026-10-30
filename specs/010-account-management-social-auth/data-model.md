@@ -1,6 +1,8 @@
 # Modelo de datos propuesto — 010
 
-Solo diseño; no clases, migraciones EF ni cambios de BD ejecutados. Esquema actual en [auditoría](current-state-audit.md). [ADR](../../docs/adr/ADR-004-ciam-identity.md), [migración](migration.md) y [privacidad](privacy-and-deletion.md) gobiernan activación y retención.
+Solo diseño del modelo productivo; no clases productivas, migraciones EF ni cambios en BD MiKompri ejecutados. El spike posterior usa fixtures CIAM y BD local desechable aislada, sin alterar este modelo. Esquema actual en [auditoría](current-state-audit.md). [ADR](../../docs/adr/ADR-004-ciam-identity.md), [migración](migration.md) y [privacidad](privacy-and-deletion.md) gobiernan activación y retención.
+
+Observación QA del30/10: el consumidor email OTP aparece en CIAM como `federated`/issuer `mail`, no `emailAddress`/password. Es un detalle del adapter CIAM, no un identificador canónico nuevo ni prueba de control por email. [Evidencia de representación y límites](evidence/aggregation-spike.md). No fijar esquema/migración a una representación inferida de la etiqueta «email»; ambas autenticaciones reales al mismo oid deben probarse antes del modelo final.
 
 ## Invariantes
 

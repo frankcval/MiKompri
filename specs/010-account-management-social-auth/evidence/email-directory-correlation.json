@@ -1,0 +1,14 @@
+{
+  "kind": "REAL_QA_CONSUMER_DIRECTORY_CORRELATION",
+  "matchingObjectCount": 1,
+  "objectIdMatchesValidatedToken": true,
+  "identityTypes": [
+    "federated",
+    "userPrincipalName"
+  ],
+  "accountEnabled": true,
+  "miKompriUserCreated": false,
+  "creationType": null,
+  "consumerMatchesQaAdministrator": false,
+  "federatedIssuerLiteral": "mail"
+}

@@ -1,0 +1,10 @@
+{
+  "activeSyntheticFixtures": 0,
+  "kind": "QA_RESOURCE_AND_CLEANUP_VERIFICATION",
+  "unusedCliServicePrincipalRemoved": true,
+  "qaSpaGrantScopes": "access_as_user diagnostic_only",
+  "productionDataChanged": false,
+  "qaGrantRestored": true,
+  "benchmarkContainerRemaining": 0,
+  "deletedSyntheticFixtures": 0
+}

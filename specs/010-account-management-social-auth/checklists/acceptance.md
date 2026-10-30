@@ -41,6 +41,13 @@ Los doce AC originales permanecen; [AR-01–06](../architecture-review.md#prueba
 - [ ] AR-05: por método, verificar reauth CIAM/auth_time/challenge real vs SSO/refresh. Rechazar timestamp ausente/viejo/futuro, max_age ignorado, iat nuevo, prompt solo, selector/consentimiento y MFA histórica; comprobar ambas pruebas a <=300s al confirmar, reto ligado a operación y TTL <=600s.
 - [ ] AR-06: unlink prueba método que permanece; recuperación usa alternativa ya vinculada y no exige proveedor perdido. Sin alternativa no hay bypass beta; OTP primario no se cuenta como MFA ni passkey se ofrece a social/OTP no soportado.
 
+Ampliación pendiente AR-05: [ensayo de step-up CIAM](../evidence/g3-step-up-review.md), investigación sin configuración ni ejecución nuevas.
+
+- [ ] Confirmar compatibilidad real de email MFA para Google manteniendo el flujo OTP existente; conservar discrepancia entre guías, sin cambio silencioso a password ni SMS.
+- [ ] Contexto solicitado sin política o con política deshabilitada/report-only no acredita prueba; verificar configuración efectiva, no solo `acrs`.
+- [ ] MFA anterior0/240/301s, Every time, token renovado y retorno con auth_time nuevo no saltan frescura ligada a operación. Tiempo real del factor comprobado; límites300/301s y600/601s intactos.
+- [ ] Primer enrolamiento/cambio de factor no permite sesión social robada+factor elegido por atacante; factor MFA no crea método primario/login ni linking por email.
+
 AR-01–03 → FR-020/021/023, SC-005, T009/T026/T042/T051. AR-04 → FR-018/019, T005/T024/T054. AR-05–06 → FR-006/008/009/012, SC-003/007, T004/T027/T033/T049/T052. Sin G3 comprobado, un método puede tener login pero sus mutaciones bloqueadas: **eso no acredita AC-05/07/12 ni cierra la feature**.
 
 ## Trazabilidad FR → trabajo

@@ -82,4 +82,14 @@ La revisión D1–D3 añade pruebas pendientes AR-01–06 al checklist: tokens e
 
 ## Complexity Tracking
 
+### Spike QA autorizado, separado de implementación
+
+Se ha autorizado D1–D3 solo para el spike y preparación QA mínima, con [plan de recursos previo](evidence/spike-resource-plan.md) y [evidencia](evidence/spike-summary.md). Harness en `tools/spikes/010-external-id/`, fuera de solución/APIs/Web productivos; no migraciones EF ni escritura en BD MiKompri. Config pública local ignorada; secretos/tokens fuera de evidencia.
+
+El adapter futuro debe distinguir email OTP observado como federated/mail de emailAddress/password; no fijar representación Graph a partir de etiquetas de UI. La colección permite ambos métodos ficticios bajo mismo oid, pero último método/concurrencia requieren guardia propia, y falta linking con Google real/G3. No pasar a Phase3–8 por tener fuentes/probes. D1 permanece hipótesis operativa apoyada por benchmark local, no garantía medida en cloud.
+
+Continuación: Google sin Microsoft ya accede al harness con token CIAM validado; token Google directo rechazado401. La reautenticación Google ensayada emite auth_time nuevo tras solo selección/consentimiento, por lo que es NOT RELIABLE FOR G3. Priorizar revisión de desafío verificable CIAM, comportamiento login_hint y expiración del retorno antes de mutar/linkar objetos reales. Esta observación no autoriza políticas nuevas ni rebaja300/600s; no iniciar Phase3–8 ni B. [Evidencia](evidence/assurance-spike.md).
+
+Siguiente ensayo diseñado, no ejecutado: [contexto CA y desafío CIAM](evidence/g3-step-up-review.md), reutilizando QA/harness y como máximo un contexto/política propios tras autorizar configuración. Primero verificar compatibilidad email OTP secundario para Google sin reemplazar OTP primario; SMS requiere decisión aparte. Probar política ausente/deshabilitada, MFA previa bajo tolerancia5min, bootstrap seguro y tiempo firmado del factor ligado a operación. `acrs`+token reciente no son PASS. D3 se conserva; si la ruta no satisface su frescura, volver a arquitectura antes de implementar.
+
 La complejidad justificada es puente de migración y operaciones seguras; no una plataforma genérica de identidad. Adapter Graph/almacén efímero/filas nuevas se mantienen condicionados a pruebas A. B aumenta bindings permanentes solo si demuestra necesidad. Borrado productivo, verificaciones de contacto propias y recopilación PII adicional necesitan decisión posterior. No hay excepción constitucional aceptada por este plan.
