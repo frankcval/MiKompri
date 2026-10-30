@@ -1,0 +1,62 @@
+# Research — External ID y decisiones 010
+
+Consulta oficial: **30/10/2026**. Solo documentación de producto Microsoft, Graph y SDKs; no usar respuestas Q&A, ejemplos Azure AD B2C ni guías B2B workforce como garantía de CIAM. No se ha creado tenant ni probado Graph/proveedores reales. Hecho documental ≠ capacidad acreditada en nuestro entorno. [Auditoría del repositorio](current-state-audit.md).
+
+## Evidencia actual y consecuencias
+
+| ID | Fuente oficial consultada | Hecho / consecuencia para MiKompri |
+| --- | --- | --- |
+| R01 | [Métodos de acceso external tenants](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-authentication-methods-customers) | Email con contraseña u OTP y federación Google/Facebook/Apple/OIDC. Un objeto CIAM representa al cliente; Google no exige cuenta Microsoft. Cambiar configuración local de password a OTP no convierte automáticamente usuarios existentes. Recomendar Google + email OTP; Microsoft adicional. |
+| R02 | [Google para clientes](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-google-federation-customers) | Requiere proyecto/aplicación Google, credenciales de federación y user flow External ID. Son dependencias futuras de administración; la SPA no recibe el secreto Google. |
+| R03 | [Apple para clientes](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-apple-federation-customers) | Apple está documentado; requiere alta/configuración de desarrollador y rotación de su secreto (la guía indica seis meses). Evaluación posterior por coste operativo, relay email y pruebas de recuperación; no convertir email relay en identidad. |
+| R04 | [Comparativa de features externas](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-supported-features-customers) | Tabla incluye Microsoft personal por OIDC y Entra organizacional. Son escenarios distintos; registro de aplicación de cliente en external tenant sigue siendo single-tenant. No confundir invitación administrativa con alta CIAM. La tabla es evidencia de soporte, no receta MSA ya probada. |
+| R05 | [Entra organizacional federado](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-entra-id-federation-customers) | OIDC con el tenant antiguo permite autenticar sus usuarios y crear objetos en el nuevo directorio. No demuestra que se conserve oid ni UserId MiKompri: Users debe migrar explícitamente. Puede haber un nuevo reto MFA en el CIAM. |
+| R06 | [OIDC personalizado](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-custom-oidc-federation-customers) | Define metadata, issuer, mapeo y autorización code. Validar MSA personal con configuración admitida en QA; `consumers`/`common` del proveedor no convierte nuestras APIs en multitenant ni autoriza cualquier issuer. No se promete que un botón genérico Microsoft cubra todos los tenants. |
+| R07 | [objectIdentity de Graph](https://learn.microsoft.com/en-us/graph/api/resources/objectidentity?view=graph-rest-1.0) | El directorio admite colección de identidades y unicidad issuer+issuerAssignedId. Esto sustenta explorar A, pero no prueba un flujo seguro autoservicio de linking para todas las combinaciones. No son UserIds MiKompri. |
+| R08 | [Update user Graph](https://learn.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0) | Actualizar identities sustituye la colección; requiere `User.ManageIdentities.All` y conservar identidades requeridas. La nota sobre añadir cuenta local está expresamente referida a B2C: no extrapolar a External ID. Probar Google-only→email, transferencias entre objetos, permisos reales, concurrencia, compensación y unlink antes de decidir A definitivamente. |
+| R09 | [Permisos de clientes del directorio](https://learn.microsoft.com/en-us/entra/external-id/customers/reference-user-permissions) | Autoservicio de perfil y cambio de password no equivale a permiso para modificar identities. La SPA no obtiene privilegios Graph de directorio. Mantener Users perfil separado del perfil CIAM. |
+| R10 | [Elegir enfoque de autenticación](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-choose-authentication-approach) | La matriz actual admite social en native auth con tramo navegador; no es autenticación social completamente nativa. Se prefiere browser-delegated para Web por menor superficie propia. |
+| R11 | [Anuncio Microsoft, 01/04/2026](https://devblogs.microsoft.com/identity/native-auth-social-idps-web-view-ga/) | Anuncia GA social en native auth vía browser-delegated/web-view, también para pasos posteriores como MFA en ese flujo. No implica soporte idéntico en MSAL.NET/MAUI. |
+| R12 | [Tutorial Android social/native](https://learn.microsoft.com/en-us/entra/identity-platform/tutorial-native-authentication-android-identity-provider-sign-in-sign-up), [React social/native](https://learn.microsoft.com/en-us/entra/identity-platform/tutorial-native-authentication-single-page-app-react-social-sign-in) | Ejemplos concretos de federación dentro de native auth. Justifican corregir la antigua frase «social exclusivamente fuera de native auth»; cada cliente necesita prueba de versión/SDK y retorno de navegador. |
+| R13 | [MSAL.NET y MAUI](https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/authentication?view=net-maui-10.0), [MSAL.NET](https://learn.microsoft.com/en-us/entra/msal/dotnet) | MAUI soporta MSAL.NET para adquirir tokens; hay diferencias por plataforma. Recomendación futura: navegador del sistema + PKCE, redirect propio y almacenamiento seguro. No hay proyecto 006 ni evidencia de paridad del SDK native auth .NET; no crear uno ahora. |
+| R14 | [React SPA external tenant](https://learn.microsoft.com/en-us/entra/identity-platform/tutorial-single-page-app-react-prepare-app?tabs=external-tenant), [configuración MSAL.js](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/configuration) | Adaptar authority/metadata/redirects del tenant, dominios confiables según SDK y scope del backend. No basta sustituir texto login.microsoftonline por ciamlogin en todos los validadores. Evaluar actualización de MSAL en rama de implementación, no ahora. |
+| R15 | [Claims ID token](https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference) | tid/oid permiten correlación entre aplicaciones del mismo tenant; sub es por aplicación. Objetos en tenants distintos no conservan oid. No usar campos humanos como identidad. |
+| R16 | [Claims access token](https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference) | aud puede ser GUID o URI según versión; APIs validan el destinatario real. Configurar issuer desde metadata confiable, no una suposición de host. Token de Graph/SPA/social no es token de nuestra API. Probar tid/oid y scopes emitidos en QA. |
+| R17 | [SSPR](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-enable-password-reset-customers) | Email/password admite reset CIAM con métodos configurados; OTP no necesita reset de una contraseña local. SSPR de directorio no recupera automáticamente la correlación MiKompri ni un proveedor Google perdido. |
+| R18 | [MFA](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-multifactor-authentication-customers) | OTP email usado como primer factor no sirve simultáneamente como segundo factor. SMS añade dependencia/coste; la guía actual también describe passkeys. La frescura/step-up para operaciones sensibles se debe demostrar por método, no inferir de token recién emitido. |
+| R19 | [Pricing/billing](https://learn.microsoft.com/en-us/entra/external-id/external-identities-pricing), [FAQ de pricing](https://learn.microsoft.com/en-us/entra/external-id/customers/faq-customers) | Modelo MAU; FAQ indica primer tramo de 50.000 MAU sin coste core. Add-ons no heredan esa gratuidad; SMS es de pago. Presupuestar también correo/abuso, Graph, almacenamiento/avatar, observabilidad y operación. No fijar precio unitario ni asumir coste cero total; validar región/contrato y presupuesto antes de aprovisionar. |
+
+### Discrepancias oficiales que no deben ocultarse
+
+La página general R01 y la guía de planificación aún contienen frases restrictivas de native auth frente a federación, mientras R10/R11/R12 explican soporte social mediante web flow. Se adopta esa distinción precisa: UI/API nativa puede coexistir con tramo delegado; no se promete flujo completamente nativo ni SDK .NET equivalente. Usar R10/R12 y pruebas por plataforma antes de implementar, dejando la contradicción registrada.
+
+Graph documenta el recurso general, no una garantía de account linking CIAM end-to-end. No se adopta el ejemplo de custom policies de Azure AD B2C ni se infiere linking por email. No hay aquí evidencia operativa para declarar resueltos Google-only→email y las colisiones entre objetos existentes.
+
+## Comparación arquitectónica A / B
+
+| Aspecto | A: External ID agrega métodos | B: varias identidades CIAM en Users |
+| --- | --- | --- |
+| Correlación normal | Una identidad External ID activa por UserId | Varios objetos External ID activos por UserId |
+| Google/email/Microsoft | Métodos del mismo objeto CIAM | Cada acceso puede producir otro oid CIAM; Users los vincula explícitamente |
+| Credenciales/JWT | CIAM; APIs nunca aceptan Google directo | Exactamente la misma frontera CIAM; no tokens sociales en negocio |
+| Estado propio | Perfil, binding canónico, journal y alias legado acotado | Añade colección permanente, unicidad, revocación/caché y recuperación por binding |
+| Linking/unlink | Depende de Graph/CIAM, permisos y comportamiento real | Orquestación de doble prueba y mapeo en Users; dependencia CIAM para credenciales permanece |
+| Migración/rollback | Necesita puente old/new aunque CIAM agregue métodos | El mismo puente; más combinaciones permanentes que mantener |
+| Fallos | Consistencia Graph/BD, transferencias, límites de añadir método | Mayor complejidad/privacidad, usuarios CIAM duplicados y semántica last-method |
+| Cuándo elegir | Si cumple los casos obligatorios sin fragilidad/privilegios desproporcionados | Solo si el gate A demuestra un caso obligatorio no soportado o coste/riesgo inaceptable |
+
+**Recomendación**: A primero, con Users como orquestador de consentimiento/pruebas y ledger de migración; no un backend sin lógica de cuenta. La viabilidad de cada mutación CIAM es un gate abierto, no una capacidad asumida. B queda diseñada como fallback mínimo (múltiples `(issuer, tid, oid)` emitidos por el mismo CIAM) y requiere nueva decisión del ADR antes de habilitarse; no se introduce ahora una tabla genérica de tokens Google/Apple.
+
+## Decisiones recomendadas y gates de implementación
+
+| Gate | Decisión revisable | Evidencia pendiente / responsable de revisión |
+| --- | --- | --- |
+| G1 | A preferente; B solo por insuficiencia documentada | Prueba QA de Google→email, email→Google, Microsoft, colisión de objetos, add/remove, último método, Graph read-modify-write y compensación; arquitectura + seguridad |
+| G2 | Google + email OTP; Microsoft personal adicional y organización legada para migrar | Verificar entrega/abuso/recuperación, MSA OIDC real y compatibilidad MFA. Si OTP no satisface step-up, revisar password+SSPR/passkey soportada o diseño antes de habilitar; no degradar FR-006 |
+| G3 | Pruebas de control <=5min y transacción <=10min | Acreditar auth_time/reauth/step-up en cada método; iat, access token vigente o prompt=login solos no bastan; seguridad |
+| G4 | Puente legado acotado y retiro controlado | Inventario de usuarios/referencias, estrategia no migrados y ensayo/rollback; sin leer BD reales en esta ejecución |
+| G5 | Web browser-delegated, MAUI futuro | Versiones MSAL, metadata/claims reales, redirects y prueba por plataforma. No requisito de implementar MAUI para cerrar Web |
+| G6 | Perfil mínimo; PII/retención aprobadas | Producto/privacidad aprueban username/avatar, políticas de publicación, retención y eventual borrado; sin plazos legales inventados |
+| G7 | Enmienda TP11 y ADR propuestos | Aprobación arquitectura/maintainer antes de tocar constitución, registros, BD o activar nuevas authorities |
+
+Estos gates no impiden revisar arquitectura: son decisiones/proofs explícitos que impiden **implementar/activar** una arquitectura como si estuviera validada. No hay cuentas, secretos ni sesiones nuevas; todos los tests de proveedor/migración quedan pendientes en tasks/checklists.
