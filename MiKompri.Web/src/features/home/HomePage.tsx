@@ -80,5 +80,5 @@ function HomeFaq() {
 }
 
 export function HomePage() {
-  return <div className={s.home}><a className={s.skip} href="#main-content">Saltar al contenido</a><HomeHeader /><main id="main-content" tabIndex={-1}><HomeHero /><HowItWorks /><SharingScenarios /><HomeFaq /><section className={`${s.container} ${s.finalCta}`}><h2>La próxima compra empieza aquí.</h2><p>Una lista compartida. Una cosa menos en la cabeza.</p><CreateListLink /></section></main><footer className={`${s.container} ${s.footer}`}><Link className={s.brand} to="/">MiKompri.</Link><span>La compra, mejor en compañía.</span></footer></div>
+  return <div className={s.home}><a className={s.skip} href="#main-content" tabIndex={0}>Saltar al contenido</a><HomeHeader /><main id="main-content" tabIndex={-1}><HomeHero /><HowItWorks /><SharingScenarios /><HomeFaq /><section className={`${s.container} ${s.finalCta}`}><h2>La próxima compra empieza aquí.</h2><p>Una lista compartida. Una cosa menos en la cabeza.</p><CreateListLink /></section></main><footer className={`${s.container} ${s.footer}`}><Link className={s.brand} to="/">MiKompri.</Link><span>La compra, mejor en compañía.</span></footer></div>
 }

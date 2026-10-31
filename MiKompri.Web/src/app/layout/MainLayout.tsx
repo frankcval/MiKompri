@@ -23,7 +23,7 @@ export function MainLayout({ children }: PropsWithChildren) {
     return <Link key={to} to={to} aria-current={selected ? 'page' : undefined} onClick={() => setOpen(false)}><AppIcon name={icon} size={24} selected={selected} /><span>{label}</span></Link>
   })
   return <div className={s.shell}>
-    <a className={s.skip} href="#main-content">Saltar al contenido</a>
+    <a className={s.skip} href="#main-content" tabIndex={0}>Saltar al contenido</a>
     <header className={s.header}><NavLink to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</NavLink>
       <AccountMenu className={s.account} />
       <IconAction {...restoreFocus} ref={menuTrigger} name="menu" className={s.menuButton} label="Abrir menú" aria-expanded={open} onKeyDown={event => { if (event.key === 'Escape' && open) closeMenu() }} onClick={event => { event.currentTarget.focus(); setOpen(true) }} />
