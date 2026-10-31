@@ -1,0 +1,20 @@
+.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,280px),1fr)); gap: var(--mk-space-4); list-style: none; padding: 0; margin: 0; }
+.grid > li { min-width: 0; display: flex; }
+.card.card { display: grid; align-content: start; gap: var(--mk-space-4); width: 100%; padding: 24px; border: 1px solid var(--mk-line); border-left: 4px solid var(--mk-teal); border-radius: var(--mk-radius-paper); background: var(--mk-paper); color: var(--mk-ink); text-decoration: none; }
+.card:hover { border-color: var(--mk-teal); }
+.identity { display: flex; align-items: flex-start; gap: var(--mk-space-3); min-width: 0; }
+.identity h2 { font-size: 22px; line-height: 28px; margin: 0; }
+.symbol { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; color: var(--mk-teal); border-radius: var(--mk-radius-control); background: var(--mk-selected); }
+.context { color: var(--mk-muted); font-size: 14px; line-height: 20px; margin-top: 4px; display: block; }
+.metadata { display: flex; flex-wrap: wrap; align-items: center; gap: var(--mk-space-3); font-size: 14px; line-height: 20px; color: var(--mk-muted); }
+.metadata:empty { display: none; }
+.role { color: var(--mk-teal); font-weight: 600; }
+.entry { color: var(--mk-teal); text-decoration: underline; text-underline-offset: 4px; min-height: 44px; display: flex; align-items: center; }
+.empty { display: grid; justify-items: start; gap: var(--mk-space-4); border: 1px dashed var(--mk-control); border-radius: var(--mk-radius-paper); padding: 24px; background: var(--mk-paper); }
+.detailHeader { display: grid; gap: var(--mk-space-4); border-bottom: 1px solid var(--mk-line); padding-bottom: 24px; }
+.detailHeader > header { border: 0; padding-bottom: 0; }
+.sharedEntry.sharedEntry { display: grid; align-content: start; gap: 12px; padding: 24px; border: 1px solid var(--mk-line); border-radius: var(--mk-radius-paper); background: var(--mk-paper); text-decoration: none; color: var(--mk-ink); }
+.sharedEntry h2 { display: flex; align-items: center; gap: 12px; }
+.sharedEntry p { color: var(--mk-muted); }
+.back { gap: 8px; justify-self: start; }
+@media(forced-colors:active) { .card.card,.sharedEntry.sharedEntry { border-color: CanvasText; } .symbol { border: 1px solid CanvasText; } .role { color: CanvasText; } }

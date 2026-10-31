@@ -79,3 +79,10 @@ Pendientes concretos:
 - Presupuestos de T027/SC006/AC11: medición completa, pero FAIL LCP en4rutas; interacciones/CLS del candidato PASS. No ampliar budgets para cerrar.
 - T031: verificar CI remoto del commit que publica este candidato; el CI de la formalización no acredita la implementación. El commit/push solicitado no cierra por sí solo este gate.
 - T032: revisión de DoD/PR después de gates; sin merge/deploy.
+
+## Cierre autorizado desde HEAD remoto cf83bff
+
+- [ ] T033 Refinar listado/creación/detalle de Grupos con myRole/memberCount ya efectivos; tests vacío/uno/diez/texto largo/errores/creación/foco/responsive sin lifecycle ni backend.
+- [ ] T034 Diagnosticar LCP de las cuatro rutas antes de optimizar, con elemento/waterfall/recursos/render y atribución011 documentados.
+- [ ] T035 Reducir porción atribuible a011 y oportunidades seguras de carga crítica; medir80muestras mismo protocolo, imports/gzip y clasificación A/B/C sin manipular budgets.
+- [ ] T036 Verificar candidato final: navegación/icon-actions/teclado/zoom/toque/QA diferida explícita, suites completas/tres motores/Docker/CI exacto; reconciliar gates y preparar PR solo si READY.

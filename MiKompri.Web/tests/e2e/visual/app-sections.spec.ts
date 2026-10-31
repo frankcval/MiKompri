@@ -63,9 +63,11 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(page.getByRole('heading', { name: 'Grupos', exact: true })).toBeVisible()
     await expect(page.getByText('Casa y familia')).toBeVisible()
     await check(page, 'groups', width)
-    const groupInput = page.getByRole('textbox', { name: 'Nombre del grupo' })
+    await page.getByRole('button', { name: 'Crear grupo', exact: true }).click()
+    const groupInput = page.getByRole('dialog', { name: 'Crear grupo', exact: true }).getByRole('textbox', { name: 'Nombre del grupo' })
     await groupInput.focus()
-    expect(await groupInput.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(40)
+    expect(await groupInput.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
+    await page.getByRole('dialog', { name: 'Crear grupo', exact: true }).getByRole('button', { name: 'Cancelar' }).click()
     await open(page, `/personal-lists/${listId}`)
     await expect(page.getByRole('heading', { name: longName, exact: true })).toBeVisible()
     await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
@@ -103,7 +105,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
 
 for (const section of [
     { path: '/profile', loading: 'Cargando perfil', empty: 'Perfil vacío.' },
-    { path: '/groups', loading: 'Cargando grupos', empty: 'Sin grupos todavía.' },
+    { path: '/groups', loading: 'Cargando grupos', empty: 'Aún no tienes grupos' },
     { path: '/personal-lists', loading: 'Cargando listas…', empty: 'Sin listas personales todavía. Crea una lista para empezar.' },
     { path: '/shared-lists', loading: 'Cargando tus grupos', empty: 'Todavía no perteneces a ningún grupo.' },
     { path: '/product-catalog', loading: 'Cargando...', empty: 'Sin productos' },

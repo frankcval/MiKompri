@@ -79,3 +79,11 @@ Revertir solo commits de la capa visual011; mantener datos, APIs, fixtures priva
 Spec/diseño revisados → foundation → US1/US2/US3 → US4/US5 → a11y/métricas/regresiones/CI/evidencia. Cada historia es comprobable por separado; wrappers comunes no requieren cambiar dominio.
 
 Hecho solo con acceptance.md acreditado en implementación final. Todas las tareas de implementación siguen abiertas; esta formalización no declara funcionalidad implementada ni su CI verde. Actualizar versiones/exports solo con nueva auditoría; respetar licencia. Sin cambiosTP11 ni bloqueos010-B/012, sin instalaciones en esta ejecución.
+
+## Revisión final autorizada sobre cf83bff
+
+1. Auditar HEAD/main/CI y contratos efectivos de Grupos antes de código.
+2. Mantener tokens/sans/teal; espacios de grupo en papel con banda teal y símbolo groups, diferentes de notas de compra. Crear grupo pasa a diálogo Fluent compacto; validación/carga/error/query/foco permanecen. Detalle conecta una entrada a listas y panel Personas. Sin acciones ficticias.
+3. Diagnóstico independiente de LCP por ruta (elemento/waterfall/JS/CSS/fuentes/query/render) antes de optimizar; runner y budgets intactos. Revisar iconos realmente usados y carga crítica.
+4. Validar el candidato final con suites,3motores/Docker y80muestras después, sin carga concurrente; atribuir porción011 vs deuda previa.
+5. QA humana ausente se registra diferida no bloqueante, sin casilla de ejecución ficticia. Clasificación de deuda según autorización de spec; CI exacto tras commit/push, PR si gates aplicables acreditados. No merge/deploy.

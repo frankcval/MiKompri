@@ -66,6 +66,12 @@ Como usuario habitual, encuentro el mismo lenguaje de iconos, espaciado, colores
 2. **Given** login/logout/cambio Google↔Microsoft, **Then** botones010-A, rutas, perfil y aislamiento permanecen; no se restaura configuración antigua ni se cambia trust.
 3. **Given** un futuro cliente MAUI, **Then** puede reutilizar significado/etiquetas/tamaños de toque; no requiere dependencias React ni una implementación MAUI en011.
 
+### Refinamiento autorizado de Grupos y gates
+
+El titular autoriza sobre el HEAD remoto cf83bff: tarjetas de espacios compartidos con nombre/rol/memberCount reales, creación compacta mediante diálogo y detalle Personas/Listas. Users ya devuelve los campos; no nuevos endpoints ni reglas. Group lifecycle and invitations intentionally out of scope for 011.
+
+La QA humana no ejecutada puede clasificarse DEFERRED NON-BLOCKING MANUAL QA, conservando su estado pendiente. Deuda de LCP previa puede no bloquear PR solo si no empeora materialmente, CLS/interacciones cumplen, payload queda justificado y remediarla requiere ampliar alcance. Regresión atribuible a011 debe corregirse; el budget global nunca se declara PASS si falla.
+
 ### Edge Cases
 
 320px, zoom200%/400%, tamaños de texto del sistema, traducción/texto largo, listas de100ítems, cero precio vs precio desconocido, total parcial, error parcial de compartidas, todas compradas/desmarcado posterior, hover imposible, Escape con menú/dialog abierto, focus restoration, icono no mapeado, forced-colors, reduced-motion, conexión lenta y usuario autenticado de otro proveedor. Ninguno añade nuevas reglas de negocio.
@@ -110,7 +116,7 @@ Solo presentación: SemanticIcon, IconTreatment, SurfaceToken y ScreenVisualStat
 - **SC-003** Las cinco historias pasan en320/390/430 y escritorio; rutas/queries/checkbox/destructivas/auth mantienen comportamiento y regresiones pasan.
 - **SC-004** Parejas de color de texto>=4.5:1 y contornos/foco necesarios>=3:1; pruebas forced-colors/zoom/teclado/reduced-motion documentadas, sin fingir lector manual.
 - **SC-005** Capturas implementadas se comparan con las tres referencias aprobadas, mostrando papel/pizarra/jerarquía y sin nuevos gestos o funciones; estados límite documentados.
-- **SC-006** Bundle/imports y métricas cumplen protocolo/budgets existentes; lint/typecheck/build y suites Web/CI del HEAD pasan. Modelo backend permanece sin cambios.
+- **SC-006** Bundle/imports y métricas se verifican con el protocolo y budgets existentes; regresiones atribuibles a011 corregidas, deuda previa clasificada explícitamente sin declarar PASS global. Lint/typecheck/build y suites Web/CI del SHA final pasan. Modelo backend permanece sin cambios. La excepción de deuda requiere las condiciones autorizadas arriba.
 
 ## Assumptions, Dependencies & Out of Scope
 

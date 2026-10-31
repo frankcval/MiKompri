@@ -4,6 +4,7 @@ export type GroupSummary = {
   id: string
   name: string
   myRole?: string
+  memberCount?: number
 }
 
 export type GroupMember = {

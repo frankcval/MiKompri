@@ -85,3 +85,9 @@ Datos ficticios y SVG estáticos, sin interacción, servidor ni credenciales. Il
 ## Secuencia visual y reversión
 
 Primero registro/acciones/navegación, después Mis listas/detalle y finalmente adaptación común de catálogo/grupos/perfil. Comparar capturas y pruebas antes de ampliar. Revertir cambios de CSS/tokens/componentes de011 si es necesario; nunca auth/BD/env como efecto colateral. La implementación actual se compara con estas referencias; las verificaciones pendientes figuran en tasks.md y evidencia.
+
+## Refinamiento Grupos autorizado
+
+Mantener papel#FFFDF6, tinta#20312C y teal#006B68 con la misma sans/ritmo. Cada grupo es un espacio compartido: icono groups sobre acento suave, nombre22px, rol/personas secundarios cuando llegan en el DTO y acción textual Ver grupo. Sin imán de lista ni rayado de compra; banda lateral y paneles planos distinguen colaboración de productos. Móvil una columna; desktop grid según espacio, nombres envueltos. Una sola tarjeta conserva tamaño intencional.
+
+Cabecera con CTA Crear grupo; diálogo Fluent reutiliza el formulario sencillo y feedback existente. Empty state explica crear un primer grupo sin anunciar invitaciones. Detalle: nombre/contexto real → entrada Listas compartidas → Personas del grupo; no acciones duplicadas ni lifecycle ficticio. La revisión visual compara lists/groups/catalog sin igualar sus estructuras.
