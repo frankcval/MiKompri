@@ -1,6 +1,6 @@
 # Modelo mínimo — 010-A y extensiones010-B
 
-Modelo 010-A implementado en esta rama; sin aplicación a bases originales/productivas. [Auditoría inicial](current-state-audit.md), [migración](migration.md), [ADR](../../docs/adr/ADR-004-ciam-identity.md). La aceptación de traslado real sigue abierta.
+Modelo 010-A implementado en esta rama; sin aplicación a bases originales/productivas. [Auditoría inicial](current-state-audit.md), [migración](migration.md), [ADR](../../docs/adr/ADR-004-ciam-identity.md). La aceptación de traslado real sigue abierta como DEFERRED — Microsoft External ID migration; no es gate beta010-A. La decisión31/10 no cambia schema ni elimina journal/reservation.
 
 Migración aditiva `20261030212332_AccountExperience010A`: nueve columnas Users (Username, GivenName, FamilyName, PreferredLanguage, DefaultListSort, ProfileVersion, IsSuspended, SecurityVersion, TokensValidFromExclusive) y journal IdentityMigrations con FK restrictiva e índices únicos origen/destino. No reescribe UserId/ownership. DefaultListSort admite newest/oldest/name/updated; PreferredLanguage admite es o null. ProfileVersion controla concurrencia; solo el alta inicial importa claims, por lo que no hace falta almacenar snapshots del IdP ni flags de autoridad por campo.
 

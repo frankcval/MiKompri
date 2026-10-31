@@ -32,7 +32,7 @@ ShoppingList/ProductCatalog lo consultan antes del handler protegido, GET inclui
 
 Este contrato se justifica porque GET/me actual crea/sincroniza perfil; no puede usarse así para autorizar cada request. No bloquea primer token validado en harness, sí salida productiva protegida.
 
-## Traslado Microsoft administrado
+## Traslado Microsoft administrado — DEFERRED, no gate beta010-A
 
 Contrato interno/runbook de cohorte, no nueva API pública de linking: fuente inmutable acreditada, UserId derivado por Users, destino reservado, versión/estado/idempotencia y rollback según migración. No cuerpo HTTP que elija UserId destino. Estado incierto o candidato desconocido bajo piloto→denegar negocio y no insertar otro User.
 

@@ -1,48 +1,53 @@
-# Aceptación — 010-A y trazabilidad 010-B
+# Aceptación — 010-A beta y trabajo diferido
 
-**Estado31/10:** aceptación integrada parcial; [validación técnica](../evidence/validation.md) y [login Google real confirmado](../evidence/authentication-recovery-2026-10-31.md). Se conservan las casillas de aceptación abiertas hasta cerrar todos los pasos del candidato y su evidencia; el traslado Microsoft real no está acreditado. Un PASS en harness no sustituye esos recorridos. [Spec](../spec.md), [tareas](../tasks.md), [alcance](../evidence/010-a-scope-review.md).
+Decisión de producto explícita31/10/2026: Google sin Microsoft vía External ID + continuidad Microsoft legacy. **Ocho aceptaciones obligatorias**;06/07 conservadas como DEFERRED — Microsoft External ID migration. Ningún PASS de migración. [Spec](../spec.md), [tasks](../tasks.md), [validación](../evidence/validation.md), [proveedores reales](../evidence/real-provider-acceptance.md).
 
-## Diez casos obligatorios de 010-A
+## Casos beta y evidencia
 
-| Caso | Evidencia requerida sobre candidato | Requisitos / tareas |
-| --- | --- | --- |
-| A-AC01 Microsoft actual sigue entrando | Login real por ruta existente, sin redirección que cree otra cuenta; tipos actuales conservados | US1; FR-001/011; T002/023/047 |
-| A-AC02 Google nuevo sin Microsoft | Titular confirma que no necesita cuenta Microsoft; login Web normal mediante CIAM | US1; FR-001/018; T002/024/047 |
-| A-AC03 Access token válido MiKompri | Ambos recorridos aceptados por Users, ShoppingList y ProductCatalog bajo su matriz explícita; CIAM en Google y tras traslado Microsoft; excepción legado durante coexistencia | US5; FR-020/021; T020/021/051 |
-| A-AC04 Rechazo Google directo | Token Google directo401; añadir negativos Graph, ID token SPA, issuer/audience/tenant erróneos, exp y scope ausente/incorrecto | US5; FR-020/021; T020/051 |
-| A-AC05 Identidad resuelta a UserId | Tuple confiable se resuelve solo en Users; sin email/sub global ni targetUserId elegido por cliente; destino ocupado deniega | US2/5; FR-003/004/005/007; T013–018/051 |
-| A-AC06 Microsoft conserva exactamente UserId | Manifiesto antes/después de traslado a CIAM y rollback, igualdad exacta del Guid, no INSERT sustituto | US2; FR-003/010/011; T014/017/019/048 |
-| A-AC07 Datos conservan mismo propietario | Listas/grupos/memberships/gastos/compras/AddedBy/PaidBy/PurchasedBy/historial comparados antes/después y tras rollback, sin pérdida de compras posteriores | US2; FR-003/022; T019/043/048 |
-| A-AC08 Google nuevo obtiene nuevo UserId | Alta intencional única e idempotente/concurrente; no apropiación de cuenta Microsoft por email coincidente | US1/2; FR-004/005; T013/017/018/047 |
-| A-AC09 Logout/cambio no mezcla datos | A→B, respuesta tardía, multi-tab/recarga y cambio de issuer; limpiar tokens/caché/borradores y generación de sesión | US5; FR-018/023/024; T025/051 |
-| A-AC10 Perfil personalizado prevalece | Claims inicializan; cambiar DisplayName/nombres/idioma propios, repetir login/GET/sync, conservar personalizaciones y borrados voluntarios | US4; FR-013/014/017; T034/036/038/050 |
+| Caso | Criterio beta | Estado/evidencia |
+|---|---|---|
+| A-AC01 | Microsoft actual conserva ruta/UserId/tipos admitidos; sin alta CIAM sustituta | PASS: login normal y tres APIs200, Guid esperado |
+| A-AC02 | Google sin cuenta Microsoft entra por selector External ID→Google→Web | PASS: titular confirma condición, alta Web y login actual reales |
+| A-AC03 | Access token MiKompri en Users/ShoppingList/ProductCatalog, combinaciones explícitas | PASS: Google CIAM y Microsoft legacy200; no se exige Microsoft CIAM en beta |
+| A-AC04 | Rechazar Google directo/ID/Graph, issuer/aud/tenant/scope/exp incorrectos | PASS: negativos reales tres APIs401 y suites firmadas |
+| A-AC05 | Correlación exclusivamente Users, UserId canónico; no adopción por email/sub/perfil/client targetUserId | PASS: resolución real, negativos Application/API/PG ejecutados |
+| A-AC06 | Igual UserId antes/después de traslado Microsoft y rollback, sin INSERT sustituto | DEFERRED — Microsoft External ID migration; INCONCLUSIVE por colisión CIAM, no bloquea beta |
+| A-AC07 | Referencias/listas/grupos/memberships/gastos/compras/historial conservados antes/después/rollback | DEFERRED — Microsoft External ID migration; no manifiesto real aceptado, no bloquea beta |
+| A-AC08 | Google nuevo obtiene UserId propio, alta única/concurrente, sin adoptar Microsoft por email | PASS beta: alta Google Web acreditada, UserId distinto/estable y negativos/concurrencia PG; repetición con otro tester/atributos T059 diferida según suficiencia documentada |
+| A-AC09 | Google logout→Microsoft y Microsoft logout→Google sin mezcla de token/UserId/perfil/caché/sesión | PASS beta: ambas direcciones reales; requests tardías/TanStack/drafts/generación/cuenta/tenant en suites. Matriz manual exhaustiva T060 no acreditada ni bloqueante |
+| A-AC10 | Perfil propio prevalece sobre claims; campos/clear sobreviven logout/login | PASS: dos relogin Google con seis campos y clear, sync/GET y tests de autoridad; atributos ausentes no se inventan |
 
 - [x] A-AC01
-- [ ] A-AC02
-- [ ] A-AC03
+- [x] A-AC02
+- [x] A-AC03
 - [x] A-AC04
 - [x] A-AC05
-- [ ] A-AC06
-- [ ] A-AC07
-- [ ] A-AC08
-- [ ] A-AC09
-- [ ] A-AC10
+- [ ] A-AC06 — DEFERRED — Microsoft External ID migration
+- [ ] A-AC07 — DEFERRED — Microsoft External ID migration
+- [x] A-AC08
+- [x] A-AC09
+- [x] A-AC10
 
-Google/token del harness aporta evidencia parcial a02/03/04, no sustituye estos recorridos ni permite marcar tareas. Mantener Microsoft legado no cierra06/07: deben ensayarse traslado y rollback.
+El PASS de08 usa evidencia real de nueva alta Web y código relevante idéntico, no solo harness ni existencia de tests. La alta adicional tras configurar nombres opcionales requiere otra cuenta QA admitida/autenticada por su titular; se acepta la evidencia actual para beta sin garantizar nuevos claims. [Decisión de suficiencia](../evidence/real-provider-acceptance.md#suficiencia-de-alta-google-para-beta).
+
+## Gates de entrega beta
+
+- [x] ADR-004/TP11 1.2.0 y coexistencia aprobados; Google usa un CIAM y Microsoft legacy no se retira.
+- [x] D1 cuenta actual:200→suspender403→reactivar token viejo401→token iat posterior200; Users caído503, sin allow inter-request. No repetir mutaciones si código/configuración iguales.
+- [x] Web Code+PKCE+MSAL.js browser-delegated, callbacks/errores seguros y cuenta activa confiable.
+- [x] Negativos y privacidad de login/provisión/perfil/sesión A; sin secretos/PII sensible versionados; recovery en proveedor original.
+- [x] Suites y builds ejecutados, EF sin cambios, Docker; CI de los cinco workflows del SHA final se confirma antes de abrir/marcar listo el PR. Los hashes actuales y runs se entregan en su descripción/informe final.
+- [x] Básicos UX:320/390/430 sin overflow, botones44px, navegación teclado y mensajes/loading/cancelación/return intent cubiertos por observación y suites.
+
+Lector/zoom manual completos=T053 y matriz manual exhaustiva multi-tab=T060 **DEFERRED NON-BLOCKING QA**, no probados. No bloquean beta por decisión explícita si básicos/suites pasan. Nuevos atributos de otra alta=T059, mismo estado. No se alteran budgets ni aceptaciones007/008/009.
 
 ## Email OTP opcional
 
-- [ ] **A-AC11:** si T056 se aprueba, una persona nueva sin Microsoft entra por email OTP en la aplicación; mismo CIAM/contrato y UserId estable entre accesos. Alta/login posterior, OTP inválido/expirado/reutilizado y aislamiento de sesión probados. Sin linking/G3.
-- [ ] Decisión explícita de habilitar tras QA o dejar deshabilitado/diferido. Ningún fallo de esta opción bloquea Microsoft + Google.
+- [ ] A-AC11/T056 — A-OPT; no habilitado como método Web beta. Falta QA de alta/login/OTP inválido/expirado/reutilizado y sesión. Selector CIAM QA puede conservar OTP heredado para no afectar evidencia; no es método vinculado.
 
-## Gates de entrega A
+## Fuera de alcance
 
-- [ ] ADR/TP11 y transición ratificados; no retirar Microsoft a usuarios no migrados.
-- [ ] AR-01–03 D1 antes de negocio productivo: suspensión con JWT vigente, caída Users503 sin allow anterior, reactivación/corte anti-resurrección y métricas ProductCatalog con budgets vigentes. Única canónica A; pruebas de varios bindings solo si en el futuro existen.
-- [ ] AR-04 Web: Code+PKCE+MSAL.js browser-delegated. SDK/Native Auth/deep links MAUI se difieren.
-- [ ] Negativos de login/provisión/migración/perfil/sesión y seguridad/privacidad aplicables A; recuperación explícita en proveedor original.
-- [ ] Suites Domain/Application/API/PostgreSQL, Web unit/component/integration/E2E, lint/typecheck/build; CI del SHA exacto y modelo EF coherente.
-- [ ] QA móvil320/390/430, teclado/lector/zoom y errores/cancelación/return intent reales donde corresponda; no alterar budgets ni cerrar gates de otras features.
+010-B completo permanece abierto. Invitaciones/grupos son012-group-invitations-collaboration independiente. Sin merge/deploy ni ejecución de migración Microsoft.
 
 ## Trazabilidad de los doce casos anteriores
 
@@ -73,16 +78,10 @@ AR-05–06 y ampliación G3 contexto/MFA quedan pendientes B/T004: prueba recien
 | FR-002/026 | T001/007/008/055; agregación futura T003[B] |
 | FR-003/004/005/007/010/011/022 | T013–019/043/048 |
 | FR-006/008 y partes de009/024 | T004/027–033/049/052[B] |
-| FR-009 parte traslado | T014/017/019[A] |
+| FR-009/010 traslado futuro | T014/017 técnicos conservados; T019/T048 DEFERRED MICROSOFT MIGRATION |
 | FR-013/014/015/016/017 | T012/034–038/050[A]; fotos/reimportación T039/058[B] |
 | FR-019 | T054[futuro MAUI] |
 | FR-023/024 parte login | T020/025/026/041/042/046/051[A] |
 | FR-025 | Minimización T006/012/046[A]; eliminación T040[B] |
 
-SC-001→10 A-AC; SC-002→06/07; SC-003→04/05/08 y negativos; SC-004→10; SC-005→03/04+D1/regresiones; SC-006→09 y gate UX; SC-007→limitación de recovery en proveedor(A)/AC-12(B); SC-008→ADR/TP11/transición. Ninguna aceptación B condiciona cerrar A.
-
-## Reconciliación del candidato a9ca37d — 31/10
-
-A-AC01: Microsoft legacy normal, tres APIs200, Guid esperado; A-AC04: Google directo/Graph/ID CIAM reales401 en las mismas APIs, además de matriz firmada; A-AC05: resolución exclusivamente Users, tests ejecutados Application37/API93/PG7 y negativos de adopción/sub/target/estado. [Evidencia](../evidence/real-provider-acceptance.md), [seguridad](../evidence/security.md), [validación](../evidence/validation.md).
-
-Las demás casillas conservan sus criterios completos: alta nueva tras actualizar atributos, traslado/rollback con manifiestos, token Microsoft tras traslado, matriz real completa de sesiones y perfil inicial no se cierran por los positivos parciales. T050 sí acredita específicamente personalización/clear con relogin; no equivale a certificar nueva importación. D1 real postcorte y ambas direcciones de cambio ejecutados. Lector y zoom manual pendientes. EmailT056 y toda010-B siguen fuera del cierre obligatorio de Microsoft+Google.
+SC-001→ocho A-AC beta; SC-002→06/07 diferidos; SC-003→04/05/08 y negativos; SC-004→10; SC-005→03/04+D1/regresiones; SC-006→09 y gate UX; SC-007→limitación de recovery en proveedor(A)/AC-12(B); SC-008→ADR/TP11/coexistencia/CI final. Ninguna aceptación B condiciona cerrar A.

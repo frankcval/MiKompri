@@ -1,15 +1,15 @@
-# Seguridad010-A — revisión del candidato a9ca37d
+# Seguridad010-A — beta y evidencia de código sin cambios
 
-31/10/2026; [amenazas](../threat-model.md), [validación](validation.md), [migración](migration-rehearsal.md). Revisión aplicable a010-A; no acredita controles010-B ni cierre global.
+31/10/2026; [amenazas](../threat-model.md), [validación](validation.md), [migración](migration-rehearsal.md). Revisión aplicable a beta aprobada31/10: Google CIAM+legacy, sin migración Microsoft como gate. Controles010-B no acreditados. Evidencia a9ca37d aplicable por igualdad de árboles relevantes con6dd53e0 y commit documental final.
 
 | Amenaza A | Evidencia ejecutada | Límite pendiente |
 |---|---|---|
 | Token ajeno/issuer cruzado/Google/Graph/ID | Matriz firmada20 HTTP por API y17 criptográficos; además Google directo real, Graph real e ID token CIAM401 en las tres APIs normales | Sin equivalencia con migración ni cambio de trust |
-| Cuenta suspendida/token resucitado/Users caído | [Secuencia real saneada](d1-real-cutoff.json),200→403→401→200 estrictamente posterior; consumidores503 con Users caído | AR de traslado canónico real permanece en T042/T048 |
+| Cuenta suspendida/token resucitado/Users caído | [Secuencia real saneada](d1-real-cutoff.json),200→403→401→200 estrictamente posterior; consumidores503 con Users caído | Traslado canónico real se difiere a T019/T048, sin bloquear D1 beta |
 | Email/sub/perfil usados como identidad | Application niega adopción por esos atributos, PostgreSQL8 provisiones concurrentes→un Guid; reserva/origen retirado niegan alta | Cohorte federada real no acreditada, no se adopta mail ante colisión CIAM |
 | Traslado al destino incorrecto | Verificador Graph7 controlados, PG7/7 con unicidad/versiones/locks/retry/rollback | Source authentication sí ejecutada, pero CIAM no acredita destino; no se aplica traslado |
 | Mass assignment/perfil pisado | API If-Match/428/412/409, whitelist, username único/clear; dos relogin Google conservan campos propios y borrados | Alta Google nueva para importación del nuevo flow pendiente |
-| Datos A visibles en B | Web activa/tenant/generación/abort, respuestas tardías/remount/caché/borradores; comparación real de perfiles Google/Microsoft | Matriz real completa/multi-tab no sustituida por suites |
+| Datos A visibles en B | Web activa/tenant/generación/abort, respuestas tardías/remount/caché/borradores; comparación real de perfiles Google/Microsoft | Ambos sentidos reales + suites suficientes beta; matriz exhaustivaT060 diferida |
 
 ## Tokens reales y reproducción
 
@@ -23,10 +23,10 @@
 
 Operación administrativa local: contexto EF apuntado literalmente a Host127.0.0.1/Port55432/DatabaseMiKompri010QAUsers, selección única de consumidor CIAM por hash SHA256 del UserId, llamada al método de dominio y SaveChangesAsync. Proyecto temporal ignorado .local/qa-status, sin endpoint nuevo ni SQL que rebaje cutoffs. Para repetir: login y GET normales; seleccionar únicamente cuenta QA propia; ejecutar SetSuspended en el orden anterior; conservar el token viejo en memoria y probarlo antes/después; adquirir forceRefresh hasta comprobar iat>corte y repetir los tres GET. No aplicar sobre bases originales, no usar ID token en el positivo. Estado final: cuenta activa/version2, Users saludable; el corte permanece elevado.
 
-Los controles de no caché inter-request, respuesta incompleta/HTTP201/202 y reutilización de UserId dentro de ShoppingList request pasan en suites API actuales. La secuencia real anterior observa denegación al siguiente request; no cancela retroactivamente requests ya autorizadas. T042 conserva abierto el caso de cambio de canónica real, bloqueado por T048; no requiere varios bindings B.
+Los controles de no caché inter-request, respuesta incompleta/HTTP201/202 y reutilización de UserId dentro de ShoppingList request pasan en suites API actuales. La secuencia real anterior observa denegación al siguiente request; no cancela retroactivamente requests ya autorizadas. T042 cierra D1 beta para la cuenta/canónica actual. El caso de cambio de canónica real se conserva diferido con T019/T048; no requiere varios bindings B.
 
 ## Secretos, minimización y configuración
 
 Se conserva logging sin PII, configuración SPA pública, namespaces por ruta/tenant/cliente/cuenta; recovery en proveedor original. Credencial Microsoft anterior solo en CIAM/DPAPI con retiro previsto06/11. No contraseñas MiKompri, Graph en negocio, broker, nuevos permisos de negocio ni colección genérica de identidades. No se cambian CA/G3/defaults ni se crean licencias/trials/SMS/credenciales en esta revisión. Los nombres/apellidos del flujo son opcionales; no se añaden teléfono, nacimiento, dirección o foto. El candidato federado nuevo no tiene correo/contraseña/roles.
 
-La revisión de archivos versionables y exclusiones se registra en validation.md; los logs/TRX/traces y .env/.local privados permanecen ignorados y fuera de Docker. No eliminar evidencia histórica válida por nombres de campos como accessTokenValidation. T041 no se cierra por esta matriz: los pendientes de migración/sesiones reales permanecen explícitos.
+La revisión de archivos versionables y exclusiones se registra en validation.md; los logs/TRX/traces y .env/.local privados permanecen ignorados y fuera de Docker. No eliminar evidencia histórica válida por nombres de campos como accessTokenValidation. T041 cierra amenazas aplicables beta por negativos ejecutados y revisión; migración Microsoft queda diferida, y matriz manual exhaustiva de sesiónT060 conserva riesgo residual no bloqueante. No se declara PASS de esos ensayos futuros.

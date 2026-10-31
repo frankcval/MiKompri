@@ -1,6 +1,8 @@
-# Transición Microsoft — 010-A
+# Transición Microsoft — diferida después de010-A beta
 
-**Diseño, no ejecutado.** Mantener `UserId=A` y todas sus relaciones. La nueva tupla CIAM puede ser distinta; no recrear User, OwnerId, memberships, AddedBy, PaidBy, PurchasedBy, compras, gastos ni historia.
+**DEFERRED — Microsoft External ID migration.** Decisión de producto aprobada31/10/2026: no es requisito de la beta010-A. A-AC06/A-AC07 y T019/T048 siguen abiertos, no PASS. Ensayo real **INCONCLUSIVE** por colisión CIAM; [evidencia íntegra](evidence/migration-rehearsal.md). No ejecutar federación/preparación/reserva/cutover/rollback/manifiestos ni retirar legacy en esta entrega. Se conservan tests, runner, journal/reservation e infraestructura técnica.
+
+**Diseño futuro, no ejecutado.** Mantener `UserId=A` y todas sus relaciones. La nueva tupla CIAM puede ser distinta; no recrear User, OwnerId, memberships, AddedBy, PaidBy, PurchasedBy, compras, gastos ni historia.
 
 ## Ruta inicial y destino
 
@@ -41,8 +43,8 @@ Para el primer release se mantiene Microsoft legacy hasta que su cutover esté a
 
 La autoridad del traslado es federación del **mismo origen Microsoft** e inventario/reserva aprobados; no una operación de usuario para probar Google+Microsoft. D3/G3 para cambio autoservicio entre proveedores permanece en010-B. Si la equivalencia inmutable no puede demostrarse, no sustituirla por email ni relajar G3: detener traslado y revisar diseño, conservando acceso Microsoft.
 
-## Aceptación obligatoria
+## Aceptación obligatoria de la migración futura (no de beta010-A)
 
 T014/017/019/043/048: A/B, legacy incompleto, destino ocupado, dos reintentos concurrentes, pausa de provisión/candidato desconocido, caída en cada frontera, login y rollback, igualdad exacta UserId/ownership antes/después y rechazo de JWT de fuente retirada. Manifiestos por contexto sin cross-DB en runtime ni PII en evidencia.
 
-La QA del spike no acredita este recorrido de migración. No es gate G3 del primer login aislado, pero sí gate de cutover y cierre de la tarea de traslado. Recuperación si se pierde el acceso original se delega al proveedor; no sustituir identidad mediante otro proveedor en A.
+La QA del spike no acredita este recorrido de migración. No es gate G3 del primer login aislado, pero sí gate de cutover y cierre futuro de la tarea de traslado; no bloquea la beta actual. Recuperación si se pierde el acceso original se delega al proveedor; no sustituir identidad mediante otro proveedor en A.

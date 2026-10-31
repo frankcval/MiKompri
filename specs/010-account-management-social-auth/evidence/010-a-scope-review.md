@@ -1,3 +1,32 @@
+# Decisión de alcance beta010-A — 31/10/2026
+
+**Aprobación explícita del titular:** Google sin cuenta Microsoft mediante External ID es la prioridad funcional; Microsoft legacy permanece operativo. Microsoft→External ID deja de ser gate beta. TP11 **1.2.0 se conserva**, con interpretación incremental aceptada en [ADR-004](../../../docs/adr/ADR-004-ciam-identity.md).
+
+## DoD vigente
+
+Doce gates de producto: Google sin Microsoft, CIAM, token MiKompri, UserId interno, tres APIs, rechazo Google directo, continuidad legacy, aislamiento, perfil propio, D1, CI SHA final y cero secretos/PII sensible versionados. Se trazan en ocho A-AC01–05/08–10 y [tasks](../tasks.md).
+
+**A-AC06/A-AC07 = DEFERRED — Microsoft External ID migration.** T019/T048 siguen abiertos sin completarlos; federación/destino/reserva/cutover/rollback/manifiestos/retiro legacy quedan futuros. [Ensayo INCONCLUSIVE por colisión CIAM](migration-rehearsal.md) conservado íntegro. No borrar tests, runner, journal/reservation ni infraestructura. No ejecutar una nueva migración ni usar email para adoptar al piloto.
+
+## Suficiencia beta y riesgos aceptados
+
+- Google real actual llega mediante selector/Google a Web y APIs200; ID token401; UserId estable/distinto de Microsoft y perfil/clear conservados. Alta nueva Google Web ya acreditada; otra alta tras nuevos atributos requiere tester admitido/autenticación manual del titular no disponible en esta sesión. Se acepta evidencia existente para beta, con T059 QA posterior, sin prometer nombres si el CIAM no los entrega.
+- Ambos cambios reales Google↔Microsoft más tests de requests tardías/TanStack/drafts/generación/cuenta/tenant cierran sesión beta. La matriz manual exhaustiva multi-tab permanece T060, riesgo residual y no blocker.
+- Básicos320/390/430 sin overflow, targets44px, Tab, nombres/mensajes/loading/cancelación pasan por observación y suites. Lector/zoom completos T053 siguen sin ejecutar; QA posterior no bloqueante.
+- D1 real200→403→401→200 y503 con Users caído corresponde a código/configuración relevante sin cambios; no repetir suspensiones. Árboles git contrastados con a9ca37d y candidato6dd53e0; esta revisión modifica únicamente documentación.
+- No configuración Azure/CIAM, métodos, secretos, credenciales, bases/modeloEF ni código de negocio nuevos; entorno QA funcional se deja activo. Microsoft conserva issuer/app/configuración/usuarios y compatibilidad. Coexistencia transitoria con un único CIAM.
+
+EmailT056 sigue A-OPT/no anunciado en Web.010-B completo fuera. Invitaciones/grupos se reservan para012-group-invitations-collaboration independiente, sin ampliar010. No cambian completitud007/008/009 ni budgets.
+
+## Auditoría y publicación
+
+Base remota6dd53e0080bd7547ce167752883e56f6430e9ebc coincide con rama local; main...HEAD=0/12. Cinco workflows success de esa base. Se escanean secretos/enlaces/IDs, se valida Spec Kit y se verifica **de nuevo** CI del commit documental final antes de crear/actualizar el PR. No usar el SHA base como CI final. [Validación](validation.md), [aceptación](../checklists/acceptance.md), [proveedores](real-provider-acceptance.md).
+
+## Revisión histórica conservada
+
+<details>
+<summary>Revisión30/10 y reconciliaciones anteriores: no definen gates beta vigentes</summary>
+
 # Revisión de alcance — 010-A Microsoft + Google
 
 > Actualización2026-10-30: aprobación explícita de010-A/ADR/TP11 y transición; TP11 **1.2.0 aplicada**. **010-A READY FOR IMPLEMENTATION**. El resto conserva la propuesta/revisión previa; [registro actual](implementation.md).
@@ -85,3 +114,5 @@ Archivos de esta revisión: spec, plan, tasks, scope, research, architecture-rev
 ## Ratificación010-A — 31/10/2026
 
 El estado previo de este documento es histórico. El titular aprobó010-A/ADR-004/TP11 el30/10; implementación y validación se revisan ahora sobre a9ca37d, manteniendo010-B diferida. Auditoría remota inicial46cf coincidente con origin,0/9 respecto a main; fuentes vigentes en research.md, evidencia actual en implementation.md/validation.md/real-provider-acceptance.md. No se usa la aprobación para cerrar migración real ni accesibilidad, y no se modifica aceptación007/008/009. T001 ratifica auditoría/alcance, no certifica entrega.
+
+</details>

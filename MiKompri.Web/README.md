@@ -2,11 +2,11 @@
 
 Cliente Web SPA de MiKompri (MVP-4), construido con React + TypeScript + Vite, Fluent UI v9, MSAL y TanStack Query. Es el cliente prioritario actual; Android/MAUI está aplazado.
 
-## Estado al 30/10/2026
+## Estado al 31/10/2026
 
 007 aporta el cliente full-stack; 008 moderniza UX y autorización; 009 completa preparación, compra y consulta. Las tres tienen implementación en `main` (008/009 integradas por PR #56/#57), con aceptación global todavía pendiente. En 009, T009 está cerrada con evidencia técnica y T010/T011 siguen abiertas. [Estado y roadmap](../README.md#-estado-actual-del-proyecto), [tareas 009](../specs/009-shopping-experience-completion/tasks.md) y [evidencia](../specs/009-shopping-experience-completion/evidence/review-corrections.md).
 
-010-A tiene código implementado en su rama: Google mediante External ID, Microsoft legacy conservado, perfil propio, D1 e aislamiento de sesión; [aceptación pendiente](../specs/010-account-management-social-auth/evidence/validation.md). CIAM permanece deshabilitado por defecto en configuración fuente. 010-B y 011 siguen futuros. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista.
+010-A tiene código implementado en su rama: Google mediante External ID, Microsoft legacy conservado, perfil propio, D1 e aislamiento de sesión; [aceptación beta y riesgos diferidos](../specs/010-account-management-social-auth/evidence/validation.md). CIAM permanece deshabilitado por defecto en configuración fuente. 010-B y 011 siguen futuros. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista.
 
 ## Requisitos
 
@@ -102,7 +102,7 @@ El workflow de aceptación ya está incorporado a `main`; se puede iniciar desde
 
 El selector QA aún ofrece email OTP heredado del spike, pero la Web no lo anuncia: T056 sigue opcional y pendiente. No retirarlo sin evaluar la evidencia y las cuentas QA existentes. El perfil permite personalizar nombre, username, nombres/apellidos, idioma y orden inicial; los datos propios y los borrados explícitos prevalecen en accesos posteriores. Un `unknown` previo no se corrige mediante Graph.
 
-La migración Microsoft federada real y su rollback siguen sin acreditarse por colisión de cuenta en CIAM. El proveedor experimental está retirado del flujo y no se ejecutó cutover. La aceptación manual de lector/zoom también permanece pendiente. [Resultados del candidato](../specs/010-account-management-social-auth/evidence/validation.md), [proveedores reales](../specs/010-account-management-social-auth/evidence/real-provider-acceptance.md) y [migración](../specs/010-account-management-social-auth/evidence/migration-rehearsal.md). Estas limitaciones impiden declarar el cierre global de010-A; no reabren010-B ni cambian007/008/009.
+Microsoft→External ID y rollback real quedan DEFERRED MICROSOFT MIGRATION por decisión beta31/10; el ensayo conserva INCONCLUSIVE por colisión CIAM. Proveedor experimental fuera del flujo, sin nuevo cutover. Lector/zoom completos y matriz manual exhaustiva multi-tab quedan DEFERRED NON-BLOCKING QA; los básicos móviles/teclado y ambas direcciones reales sí están acreditados. [Resultados del candidato](../specs/010-account-management-social-auth/evidence/validation.md), [proveedores reales](../specs/010-account-management-social-auth/evidence/real-provider-acceptance.md) y [migración](../specs/010-account-management-social-auth/evidence/migration-rehearsal.md). Estos diferidos no bloquean la beta010-A Google sin Microsoft+legacy operativo. CI final success y revisión de PR son gates de publicación; no reabren010-B ni cambian007/008/009.
 
 Para continuar010-A en este equipo se deja activa la configuración QA que incluye ambos proveedores y sus tres APIs compatibles. Arrancar con `npm run dev:010a`: Vite carga `.env.010a.local` ignorado explícitamente, aunque `.env.local` corresponda a otro entorno. No restaurar automáticamente la configuración antigua al terminar una comprobación: ocultaba Google y conectaba el bootstrap de la Web a la API anterior, cuyo POST de sync devuelve401 con el mismo token Microsoft que permite GET200. Los tres servicios010-A usan28082/28080/28083 y datos QA separados; no muestran las listas de la base anterior.
 

@@ -1,8 +1,8 @@
 # Tasks: 010 — MVP010-A y futuro010-B
 
 **Input**: [spec](spec.md), [plan](plan.md), [modelo](data-model.md), [migración](migration.md), [contratos](contracts/account-and-identity.md).
-**Estado**: arquitectura aprobada30/10/2026, TP11 1.2.0 aplicada; implementación en rama y aceptación QA en curso31/10. T007–T010 acreditan aprobación explícita. [Resultados técnicos](evidence/validation.md) y [recuperación/login real](evidence/authentication-recovery-2026-10-31.md) distinguen código, pruebas y aceptación pendiente. Las demás tareas no se cierran por existencia de archivos ni por diferirse a B.
-**Formato**: A=obligatorio para el MVP; A-OPT=opcional y no bloqueante; B=diferido. Tests antes de reglas según TP8; no ejecución paralela/delegación por una etiqueta.
+**Estado**: beta010-A con alcance aprobado31/10/2026: Google CIAM sin Microsoft + Microsoft legacy. TP11 1.2.0 intacta; gates funcionales acreditados, CI del SHA final verificada al publicar el PR. Migración Microsoft y QA ampliada se difieren explícitamente. T007–T010 acreditan aprobación explícita. [Resultados técnicos](evidence/validation.md) y [recuperación/login real](evidence/authentication-recovery-2026-10-31.md) distinguen código, pruebas y aceptación pendiente. Las demás tareas no se cierran por existencia de archivos ni por diferirse a B.
+**Formato**: A=gates beta (BLOCKS 010-A BETA si falta su aceptación); A-OPT=opcional; B=010-B; DEFERRED-MICROSOFT-MIGRATION=traslado futuro; DEFERRED-NON-BLOCKING-QA=QA posterior. Diferir no equivale a completar. Tests antes de reglas según TP8; no ejecución paralela/delegación por una etiqueta.
 
 ## 010-A — A0 aprobación y configuración del diseño
 
@@ -17,32 +17,30 @@
 
 ## 010-A — A1 login aislado (no habilita negocio protegido)
 
-- [ ] T002 [A][US1] Validar Microsoft existente y Google sin Microsoft con `evidence/provider-capabilities.md`, claims/token del recurso y diferencias de usuario nuevo/existente. Preservar tipos de cuenta ya admitidos; MSA adicional/email no son gate de este ítem.
+- [x] T002 [A][US1] Validar Microsoft existente y Google sin Microsoft con `evidence/provider-capabilities.md`, claims/token del recurso y diferencias de usuario nuevo/existente. Preservar tipos de cuenta ya admitidos; MSA adicional/email no son gate de este ítem.
 - [x] T005 [A][US5] Verificar/pinar MSAL Web/metadata/Code+PKCE browser-delegated; conservar la auditoría Native Auth sin convertir SDK MAUI en bloqueo.
 - [x] T020 [A][US5] Tests JWT firmados para pares issuer/tenant/audience/scope/clientes/tid/oid de tres APIs en `test/MiKompri.Users.Api.Tests/Security/ExternalIdValidationTests.cs` y equivalentes; negativos Google/Graph/ID/expired/cruces.
 - [x] T022 [A][US1] Tras autorización pertinente preparar configuración CIAM/Google y confianza de QA según `quickstart.md`; conservar Microsoft actual. No activar Authentication Context/CA de linking ni modificar defaults para login.
 - [x] T023 [A][US1] Tests Web de botones Google prioritario/Microsoft disponible, callback, cancelación, errores y aviso de cuenta Microsoft existente en `MiKompri.Web/tests/unit/auth/external-id.spec.ts` y componentes auth.
 - [x] T024 [A][US1] Integrar Web MSAL/configuración conocida por ruta/proveedor en `MiKompri.Web/src/auth/msal/msalConfig.ts`, `src/shared/config/env.ts` y login; secrets fuera de SPA. No UI de vincular/desvincular. Proveedores opcionales no se muestran hasta QA.
 
-## 010-A — A2 identidad y transición Microsoft
+## 010-A — A2 identidad y regresiones conservadas
 
 - [x] T013 [A][US2] Tests de UserId inmutable, canonical tuple única y traslado acotado en `test/MiKompri.Users.Domain.Tests/`; AccountOperation/ProofReceipt y pruebas de cambio de métodos se conservan en T027[B].
 - [x] T014 [A][US2] Tests de traslado Microsoft administrado en `test/MiKompri.Users.Application.Tests/Commands/IdentityResolutionTests.cs`, `test/MiKompri.Users.Api.Tests/PostgresIdentityTests.cs` y `FederatedOriginVerifierTests.cs`: origen federado acreditado, reserva, destino ocupado, idempotencia, email collision y fallback sub solo legado; sin doble prueba G3 genérica.
 - [x] T015 [A][US2] Adaptar resolución/alta en `MiKompri.Users.Domain/Users/` y `MiKompri.Users.Application/Commands/SyncProfile/`: una canónica activa, namespace confiable y registro acotado de migración; no ExternalIdentities[] genérica.
 - [x] T016 [A][US2/US4] Preparar únicamente schema aditivo necesario para perfil/estado y traslado en `MiKompri.Users.Infrastructure/Persistence/`; backfill fiable, perfiles previos personalizados, sin tablas de broker por anticipación.
-- [x] T017 [A][US2] Tests PostgreSQL Docker de índices/provisión concurrente/reserva/cutover en `test/MiKompri.Users.Api.Tests/IdentityMigrationTests.cs`, manifiestos antes/después.
+- [x] T017 [A][US2] Tests PostgreSQL Docker de índices/provisión concurrente/reserva/cutover en `test/MiKompri.Users.Api.Tests/PostgresIdentityTests.cs`; manifiestos de pruebas técnicas, no aceptación del traslado real.
 - [x] T018 [A][US2] Separar resolver/provisión/sync en `MiKompri.Users.Api/Middleware/UserProvisioningMiddleware.cs`; migración reservada/retirada no puede crear User sustituto ni reactivar origen por fallback.
-- [ ] T019 [A][US2] Ensayar reintento/timeout/no migrados/rollback de tráfico sin Down ni pérdida de nuevas compras en `evidence/migration-rehearsal.md`; detener cutover si origen no acreditado, conservar Microsoft.
-- [ ] T048 [A][US2] Acreditar cohorte Microsoft en QA que conserva exactamente UserId y referencias al pasar a CIAM y al revertir, A-AC06/07. Conservar acceso legado no acredita por sí solo migración terminada; no habilitar cambio de método autoservicio.
 
 ## 010-A — A3 APIs protegidas y sesión
 
 - [x] T021 [A][US5] Adaptar `MiKompri.{Users,ShoppingList,ProductCatalog}.Api/Security/*JwtValidation.cs` y Program a confianza explícita por issuer y scopes; sin cambiar permisos de negocio ni aceptar Google directo.
 - [x] T025 [A][US5] Tests y limpieza de sesión A→B en `MiKompri.Web/tests/unit/auth/session.spec.ts`, `src/auth/session/`; namespaces Microsoft/CIAM, TanStack/borradores y respuestas tardías.
 - [x] T026 [A][US5] Tests primero e integración mínima D1 access-status: lectura Users local; consumidores por UsersApi/bearer, GET catálogo incluido, resultado solo dentro de request. No Graph/Redis/bus/cache inter-request. Gate antes de liberar negocio, no de primer login aislado.
-- [ ] T042 [A][US5] AR-01–03: JWT vigente→suspender→siguiente control de tres APIs deniega; Users caído503; carreras autorizadas en vuelo y cortes/reactivación no resucitan tokens. Probar canónica activa/traslado, sin exigir múltiples bindings B.
+- [x] T042 [A][US5] AR-01–03: JWT vigente→suspender→siguiente control de tres APIs deniega; Users caído503; carreras autorizadas en vuelo y cortes/reactivación no resucitan tokens. Canónica activa beta; el caso original de traslado se conserva en T019/T048 diferidos, sin exigir múltiples bindings B.
 - [x] T043 [A][US2] Regresiones Groups/GroupMembership/Owner/Admin/Member, listas/gastos/participantes/compras/idempotencia005/008/009 y referencias UserId.
-- [ ] T051 [A][US5] A-AC03/04/05/09 y AR-01–03 en tres APIs/Web real: confianza, D1, logout/cambio y browser-delegated. AR-05–06/G3 no bloquean este ítem.
+- [x] T051 [A][US5] A-AC03/04/05/09 y AR-01–03 en tres APIs/Web real: confianza, D1, logout/cambio y browser-delegated. AR-05–06/G3 no bloquean este ítem.
 
 ## 010-A — A4 perfil básico
 
@@ -55,13 +53,25 @@
 
 ## 010-A — A5 validación y cierre
 
-- [ ] T041 [A] Evidencia negativa de amenazas aplicables A en `evidence/security.md`; matriz separada de métodos B y revisión de seguridad.
+- [x] T041 [A] Evidencia negativa de amenazas aplicables A en `evidence/security.md`; matriz separada de métodos B y revisión de seguridad.
 - [x] T044 [A] Suites Domain/Application/API/PostgreSQL, lint/typecheck/build/Web unit/component/integration/E2E directamente afectados; registrar SHA/comandos/resultados en `evidence/validation.md`.
 - [x] T045 [A] Verificar modelo/migraciones EF, Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; no dar por verde CI de otro SHA.
 - [x] T046 [A] Revisar issuer/audience/scopes/CORS/redirects/configuración por entorno, mínimo privilegio de transición y recuperación en proveedor; sin secretos/PII en evidencia ni Graph en negocio.
-- [ ] T047 [A][US1] Microsoft existente y Google nuevo sin Microsoft en aplicación normal, A-AC01/02/08, `evidence/real-provider-acceptance.md`. Harness es evidencia parcial; email no bloquea.
-- [ ] T053 [A] Web320/390/430, teclado/lector/zoom, errores/return intent y budgets existentes; evidencia manual real cuando corresponda.
-- [ ] T055 [A] Revisión final FR/SC y10 A-AC, aprobación ADR/TP11, coexistencia/migración/rollback y autorización de despliegue. A-AC11 solo si T056 se habilita. No exigir tareas B ni cerrar007/008/009.
+- [x] T047 [A][US1] Microsoft existente y Google nuevo sin Microsoft en aplicación normal, A-AC01/02/08, `evidence/real-provider-acceptance.md`. Harness es evidencia parcial; email no bloquea.
+- [x] T055 [A] Revisión final del alcance beta31/10: ocho A-AC01–05/08–10, doce gates de producto, ADR/TP11/coexistencia y CI exacta final. A-AC06/07 y T019/T048 diferidos; ninguna autorización de despliegue/merge/cutover implícita. A-AC11 solo si T056 se habilita. No exigir tareas B ni cerrar007/008/009.
+
+## Microsoft External ID migration — diferida, no gate beta
+
+Decisión explícita31/10: conservar criterios originales sin completarlos. A-AC06/A-AC07 = DEFERRED — Microsoft External ID migration. El ensayo sigue INCONCLUSIVE por colisión CIAM; no PASS/FAIL. Tests, runner, journal/reservation e infraestructura permanecen. No ejecutar preparación de destino/reserva/cutover/rollback/manifiestos/retiro legacy durante beta.
+
+- [ ] T019 [DEFERRED-MICROSOFT-MIGRATION][US2] Ensayar reintento/timeout/no migrados/rollback de tráfico sin Down ni pérdida de nuevas compras en `evidence/migration-rehearsal.md`; detener cutover si origen no acreditado, conservar Microsoft.
+- [ ] T048 [DEFERRED-MICROSOFT-MIGRATION][US2] Acreditar cohorte Microsoft en QA que conserva exactamente UserId y referencias al pasar a CIAM y al revertir, A-AC06/07. Conservar acceso legado no acredita por sí solo migración terminada; no habilitar cambio de método autoservicio.
+
+## QA ampliada — DEFERRED NON-BLOCKING QA
+
+- [ ] T053 [DEFERRED-NON-BLOCKING-QA] Web320/390/430, teclado/lector/zoom, errores/return intent y budgets existentes; evidencia manual real cuando corresponda. Evidencia básica320/390/430/teclado/targets/errores/loading/cancelación sí acreditada para beta; lector/zoom completos siguen sin probar.
+- [ ] T059 [DEFERRED-NON-BLOCKING-QA][US1] Repetir alta Google con otro tester nunca registrado tras activar atributos opcionales de nombre; registrar claims realmente disponibles, sin Graph/backfill ni usar email para adoptar usuarios. Evidencia de alta Google Web existente suficiente para beta, decisión en real-provider-acceptance.md.
+- [ ] T060 [DEFERRED-NON-BLOCKING-QA][US5] Matriz manual exhaustiva multi-tab y respuestas demoradas. Ambos cambios reales y cobertura automatizada adecuada bastan para beta; no afirmar que esta matriz manual ya se ejecutó.
 
 ## 010-A — opcional, nunca bloquea Microsoft + Google
 
@@ -87,6 +97,35 @@ No borrar ni cerrar por diferir. [Requisitos y gates](010-b-deferred.md). La cla
 - [ ] T054 [B/futuro006] MAUI: SDK/versión/deep links reales; sin extrapolar tutorial Kotlin/JS a MSAL.NET ni bloquear A Web.
 - [ ] T057 [B/opcional] Proveedores adicionales y tipos Microsoft no admitidos actualmente; Apple/Facebook/passkeys/SMS/MFA avanzada solo tras necesidad, QA y autorización nueva. Recuperación sigue en proveedor hasta diseñar alternativa segura.
 - [ ] T058 [B/opcional][US4] UI de reimportación explícita por campo/procedencia y personalizaciones de avatar, con versión/consentimiento. No necesaria para inicialización única A.
+
+## Dependencies & Execution Order — beta31/10
+
+Auditoría/aprobación → Google CIAM+Microsoft legacy → correlación/alta y JWT → D1 → perfil/sesión → ocho aceptaciones beta → CI SHA final → PR para revisión. Microsoft→External ID se programa después; no bloquea Google ni el cierre beta.010-B y012 independientes.
+
+## Revisión individual de las nueve tareas A antes abiertas
+
+| Tarea original | Resolución y evidencia suficiente beta |
+|---|---|
+| T002 | Cerrada: Microsoft legacy y Google sin Microsoft en Web normal, access token CIAM/legacy y UserId estable; alta Google ya ejecutada. Repetición opcional con nuevos atributos en T059, sin fingir claims ausentes |
+| T019 | DEFERRED MICROSOFT MIGRATION; criterio original de retry/timeout/manifiestos/rollback real no completado |
+| T041 | Cerrada para A: JWT/Google directo/Graph/ID reales rechazados y matriz negativa Domain/Application/API/PG; amenazas de traslado real pasan a T019/T048, linking/recovery a010-B |
+| T042 | Cerrada para A: D1 real200→403→401→200 con token estrictamente posterior, consumidores503 al caer Users; no se rebajan cortes. Canónica trasladada se probará en la migración futura |
+| T047 | Cerrada: Google nuevo Web acreditado y relogin actual + Microsoft normal sin regresión; se acepta evidencia existente de nueva alta según decisión beta. No equivale a migración Microsoft |
+| T048 | DEFERRED MICROSOFT MIGRATION; falta traslado/rollback y preservación real de manifiestos, INCONCLUSIVE conservado |
+| T051 | Cerrada beta: JWT/D1 reales y Google↔Microsoft sin mezcla; tests cubren requests tardías/TanStack/drafts/generación/cuenta/tenant. Matriz manual exhaustiva T060 no bloqueante |
+| T053 | DEFERRED NON-BLOCKING QA; básicos UX pasan, lector/zoom manual completos no acreditados |
+| T055 | Cerrada por nuevo alcance aprobado y evidencia beta, sin exigir migración Microsoft/QA ampliada. CI final y estado del PR se verifican en publicación; no deploy/merge |
+
+T056 = A-OPT. Todas las tareas B =010-B y siguen abiertas. T059/T060 son QA no bloqueante; ningún ID original eliminado. No quedan tareas A funcionales abiertas/BLOCKS 010-A BETA si los cinco workflows del SHA final terminan success. README y evidencia se publican junto al candidato.
+
+Evidencia: [validación](evidence/validation.md), [proveedores](evidence/real-provider-acceptance.md), [seguridad](evidence/security.md), [D1 real](evidence/d1-real-cutoff.json), [alcance](evidence/010-a-scope-review.md), [traslado INCONCLUSIVE](evidence/migration-rehearsal.md).
+
+## Registro histórico anterior a la decisión beta31/10
+
+El texto siguiente conserva las reconciliaciones previas; sus estados abiertos/bloqueos de migración y QA **no definen el DoD vigente**. La tabla y casillas anteriores aplican la decisión actual sin convertir resultados INCONCLUSIVE en PASS.
+
+<details>
+<summary>Histórico de tareas anterior al alcance beta aprobado</summary>
 
 ## Dependencies & Execution Order
 
@@ -156,3 +195,5 @@ T050 cerrada por recorrido real completo de campos A y clear con dos logout/logi
 | T053 | Abierta:320/390/430 sin overflow, botones44px/Tab observados y suites de errores/loading/cancelación; faltan lector/zoom y aceptación manual completa |
 
 T044 conserva los resultados ejecutados, incluidos timeout inicial Web y119/120 E2E seguido de1/1 en repetición; no se afirma cero fallos en la primera ejecución. CI del código actual pasó el gate controlado de tres navegadores. No cambia criterio de rendimiento.
+
+</details>

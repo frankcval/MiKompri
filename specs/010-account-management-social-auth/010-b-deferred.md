@@ -27,4 +27,18 @@ Account merging sigue fuera: dos UserIds existentes no se fusionan como solució
 
 T003/004/027–033/039/040/049/052/054/057/058 permanecen abiertos en [tasks](tasks.md). AC originales05/07/12, parte de06/08/10 y AR-05–06 aplican aquí. La decisión de cierre010-A no los completa ni cancela.
 
-Antes de implementar B: nueva priorización, revisión del ADR/modelo/contratos, evidencia G1/G3 aplicable y autorización de configuración/datos. El protocolo de traslado Microsoft administrado de010-A se distingue de migración autoservicio entre proveedores.
+Antes de implementar B: nueva priorización, revisión del ADR/modelo/contratos, evidencia G1/G3 aplicable y autorización de configuración/datos. El protocolo administrado Microsoft→External ID se difiere por separado; no equivale a migración autoservicio entre proveedores ni convierte automáticamente ese trabajo en010-B.
+
+## Migración Microsoft diferida por decisión de beta31/10
+
+**DEFERRED — Microsoft External ID migration**, independiente de la gestión de métodos010-B. A-AC06/07 y T019/T048 siguen abiertos; no bloquean Google CIAM+Microsoft legacy. Se conservan [runbook](migration.md), [ensayo INCONCLUSIVE](evidence/migration-rehearsal.md), tests, runner, journal/reservation y preparación técnica. Federación/destino/reserva/cutover/rollback/manifiestos/retiro legacy requieren una iteración posterior y preservarán exactamente UserId/referencias. No reabrir CA/G3 ni adoptar por email para cerrarlos.
+
+## QA posterior no bloqueante
+
+T053: lector/zoom manual completos. T059: repetición de alta Google con otro tester nunca registrado para nuevos atributos. T060: matriz manual exhaustiva multi-tab/requests tardías. Ninguno se marca probado por diferir; controles básicos de UX, ambos cambios reales y suites siguen siendo obligatorios beta.
+
+T056 continúa A-OPT y Web no anuncia email. Se conserva el selector OTP QA porque comparte configuración/evidencia con el spike; no se ofrece como método vinculado.
+
+## Iniciativa independiente prevista012
+
+`012-group-invitations-collaboration`: buscar usuario, invitar, aceptar/rechazar, notificar, enlaces para no registrados e incorporación a listas compartidas. No implementar ni ampliar010; no bloquea autenticación.

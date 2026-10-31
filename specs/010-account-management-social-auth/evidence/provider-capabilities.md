@@ -36,3 +36,7 @@ Las discrepancias oficiales siguen registradas. D2 se conserva: Web browser-dele
 2. Retorno/token/oid email ya observados; completar OTP inválido/expirado y [G3](assurance-spike.md). No guardar capturas de buzón ni PII.
 3. Proyecto/cliente/proveedor Google ya preparados. El titular ya añadió la cuenta tester y confirmó condición sin Microsoft; no se guarda correo en evidence. El panel Entra no generaba una URL única: se usaron las siete URLs de la guía Microsoft actual, resueltas en `.local/google-redirects.txt` ignorado. No se usan callbacks B2B/B2C de otro producto por similitud de nombre.
 4. Acceso Google real acreditado; resolver G3 antes de casos de agregación con doble prueba. Microsoft adicional solo tras básicos completos.
+
+## Estado beta aprobado31/10
+
+La tabla de arriba corresponde al spike30/10; no define el estado del cliente actual. [Aceptación Web normal](real-provider-acceptance.md) acredita Google sin Microsoft, nuevo UserId y tokens de recurso en tres APIs, perfil persistente y Microsoft legacy. Actualización beta: Microsoft→External ID se difiere, no se intenta otra federación y A-AC06/07 no bloquean. Google nuevo Web existente más retorno actual/código idéntico se acepta para beta; repetición con nuevos atributosT059, lector/zoomT053 y matriz manualT060 quedan QA posterior no bloqueante. EmailT056 sigue opcional; G3 y métodos permanecen010-B.

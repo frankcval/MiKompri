@@ -1,6 +1,6 @@
 # Validación010-A — 31/10/2026
 
-Código candidato **a9ca37d4f8130b2a29ad017a075839257942a5f6**, posterior a la auditoría inicial de46cf0ba. Los cambios posteriores de cierre son documentación/evidencia; el informe final identifica el SHA publicado y sus cinco workflows. No usar los resultados anteriores de406 como si fueran los de esta ejecución. No cierre global de010-A ni aceptación de producción.
+Código candidato **a9ca37d4f8130b2a29ad017a075839257942a5f6**, posterior a la auditoría inicial de46cf0ba. Los cambios posteriores de cierre son documentación/evidencia; el informe final identifica el SHA publicado y sus cinco workflows. No usar los resultados anteriores de406 como si fueran los de esta ejecución. La decisión beta31/10 permite cierre funcional con los gates actualizados; no aceptación/despliegue de producción. Las condiciones de migración/QA ampliada previas se sustituyen por los diferidos explícitos al final.
 
 ## Ejecuciones del candidato
 
@@ -85,7 +85,7 @@ Los cinco workflows de **a9ca37d4f8130b2a29ad017a075839257942a5f6** finalizaron 
 
 Después de publicar el commit documental se reconsulta su SHA exacto; su estado se entrega con el cierre al titular. Los PASS anteriores no certifican automáticamente ese HEAD. Sonar fuera de alcance.
 
-**No se declara READY FOR PR:** faltan ensayo Microsoft federado/rollback con manifiestos y aceptación manual aplicable. Alta nueva para atributos y matriz de sesión completa conservan sus tareas abiertas. T056 y010-B no son bloqueos del núcleo por sí mismos. README raíz/Web actualizados, sin modificar completitud007/008/009.
+**Decisión vigente beta31/10:** ensayo Microsoft/rollback/manifiestos = DEFERRED MICROSOFT MIGRATION, no gate. Lector/zoom completos, repetición de alta para atributos y matriz manual exhaustiva = DEFERRED NON-BLOCKING QA. Sus tareas permanecen abiertas sin fingir PASS. T056 y010-B no bloquean. Gates funcionales beta acreditados; READY depende de cinco workflows success del SHA exacto final y PR. README raíz/Web actualizados, sin modificar completitud007/008/009.
 
 ## Estado local al terminar QA
 
@@ -94,3 +94,34 @@ Después de publicar el commit documental se reconsulta su SHA exacto; su estado
 ## Corrección posterior del entorno local
 
 La restauración descrita arriba se revierte tras reproducir la regresión comunicada por el titular: Google oculto y sync Microsoft401 en la API anterior, frente a200 en la API010-A con el mismo token. Ahora se deja el entorno QA compatible activo y ambos botones disponibles; Microsoft vuelve a listas y Google da sync/perfil/listas/catálogo200. npm run dev:010a carga el archivo QA privado explícitamente. Auth49/49 y lint/typecheck/build pasan; sin cambios de código productivo, trust, schema ni traslados en las bases anteriores. [Diagnóstico y estado vigente](authentication-recovery-2026-10-31.md#regresión-de-entorno-al-finalizar-qa-y-corrección--31102026). No se reaplica la restauración automática que causó el fallo.
+
+## Cierre beta aprobado31/10 y trazabilidad del candidato
+
+Nueva frontera: Google sin Microsoft mediante CIAM, Microsoft legacy conservado, UserId/JWT/APIs/perfil/sesión/D1 y cero secretos. A-AC06/07/T019/T048 no bloquean; INCONCLUSIVE de migración no se reinterpreta. T053/059/060 son QA posterior, emailT056 opcional,010-B e invitaciones012 fuera.
+
+La auditoría remota base6dd53e0080bd7547ce167752883e56f6430e9ebc coincide con local (0/0) y main...HEAD=0/12. CI base Users41220960524,ShoppingList41220960483,ProductCatalog41220960535,Resource41220960494,Web41220960500 finalizó success. **No se usa esa base como CI del commit documental final**: se consulta el SHA publicado exacto y se registra junto al PR/informe. PR listo solo después de cinco success; sin merge/deploy.
+
+Esta ejecución modifica solo Markdown. Árboles git de runtime idénticos entre validadoa9ca37d y6dd53e0, y comprobados de nuevo frente al final; pruebas previas409/PG7/Web138/auth49, Docker y EF siguen siendo de ese código. La CI final ejecuta las suites de nuevo. Por ello no se repite la mutación destructiva D1 ni se simulan nuevos cutoffs.
+
+| Árbol relevante | Git tree SHA compartido a9ca37d/6dd53e0 |
+|---|---|
+| MiKompri.Identity | `a4913e961f4f17baf63bf49b6dce79d9488faa4b` |
+| MiKompri.Users.Api | `03edf285154779beadd23653f1df408e262121fa` |
+| MiKompri.Users.Application | `2018f805e5a1d1dbe7d6b1757d7e14fd5223350a` |
+| MiKompri.Users.Domain | `ef4847c25a95c9dfcf3777168f8c84485280daea` |
+| MiKompri.Users.Infrastructure | `e0cf8e38eff764ac1f3fb02b2f33dba6b1eef96a` |
+| MiKompri.ShoppingList.Api | `81ec23f8b36a31fa3c7886eb9ea4ce80348659c6` |
+| MiKompri.ShoppingList.Application | `47d658b9f93d9b9a71eba92f1be6d8c244b5e80c` |
+| MiKompri.ShoppingList.Domain | `9501cbc9d729ccd69a63b9d2e535fbf672d6c822` |
+| MiKompri.ShoppingList.Infrastructure | `1bb6f40766ce392d240d88385f61a915d8d551d6` |
+| MiKompri.ProductCatalog.Api | `e4f6b2cc962c7a1acc36624dc3988be86d58e7ea` |
+| MiKompri.ProductCatalog.Application | `9125208723ebd611fa79fd326d1e2158c1b49309` |
+| MiKompri.ProductCatalog.Domain | `1710a195d87502228dab0b4011ba75982ffc7fcf` |
+| MiKompri.ProductCatalog.Infrastructure | `8102c70ba10a10dfe6ef49a330a67dee93f66b6e` |
+| MiKompri.Web/src | `a7d9201a45cabdd2c5d3b7194b5d407fff60ccd8` |
+
+Revalidación normal actual: Google→selector CIAM→GoogleSSO→Web, tres APIs200; ID token CIAM401 en tres APIs; mismo Google UserId, distinto de Microsoft, personalización/clear conservados. Microsoft legacy y ambos cambios reales acreditados en el mismo árbol; los controles tardíos/TanStack/drafts/activa/tenant están ejecutados en suites. Alta Google adicional con otro tester no disponible se difiere justificadamenteT059; alta nueva Web existente suficiente beta según real-provider-acceptance.md.
+
+UX básico actual:320/390/430 sin overflow; dos botones44px y Tab alcanza Google/Microsoft/enlaces. Errores/cancelación/loading/return intent en tests. T053 lector/zoom y T060 manual multi-tab no ejecutados, riesgos no bloqueantes aceptados; no modificar gates007/008/009.
+
+Revisión final ejecutada: Spec Kit -Json -RequireTasks -IncludeTasks y -PathsOnly exit0/feature010;60 tareas únicas (58 originales conservadas),38 A cerradas,26FR/ochoSC/seis historias;249 enlaces locales/anchors sin fallos;69 archivos010/ADR/README sin JWT completos, credencial Google/clave privada ni email personal, cero artefactos privados versionados; git diff --check exit0. TP11, código productivo, APIs/BD/configuración de identidad y entorno QA funcional permanecen. No restauración automática de.env.local. Historial de pruebas/fallos previos se conserva. [Checklist beta](../checklists/acceptance.md), [tareas](../tasks.md), [decisión](010-a-scope-review.md).

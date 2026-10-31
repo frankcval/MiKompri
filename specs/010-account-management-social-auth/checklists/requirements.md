@@ -1,30 +1,20 @@
-# Specification Quality Checklist — 010-A
+# Specification Quality Checklist — 010-A beta
 
-> Actualización2026-10-30: aprobación explícita de010-A/ADR/TP11 y transición; TP11 **1.2.0 aplicada**. **010-A READY FOR IMPLEMENTATION**. El resto conserva la propuesta/revisión previa; [registro actual](../evidence/implementation.md).
+Revisión documental31/10/2026 con decisión de producto explícita. TP11 **1.2.0 aplicada y conservada**; [ADR-004](../../../docs/adr/ADR-004-ciam-identity.md), [spec](../spec.md), [plan](../plan.md), [aceptación](acceptance.md), [decisión](../evidence/010-a-scope-review.md).
 
-Fecha2026-10-30. Revisión de **documentación**, no cumplimiento funcional. [Spec](../spec.md), [plan](../plan.md), [aceptación](acceptance.md), [informe](../evidence/010-a-scope-review.md).
+- [x] Alcance obligatorio Google sin Microsoft vía External ID + Microsoft legacy operativo; no G3/linking.
+- [x] A-AC01–05/08–10 son ocho casos beta;06/07 conservados DEFERRED — Microsoft External ID migration, no PASS.
+- [x] T019/T048 abiertos/diferidos, fuera de gates obligatorios; tests/runner/journal/reservation/evidencia no eliminados.
+- [x] T055 evalúa alcance31/10; no exige traslado real ni autorización de despliegue para PR.
+- [x] UserId inmutable/Users dueño de correlación; permisos y referencias íntegros, no adopción por email/perfil/sub global.
+- [x] TP11 no revertida: coexistencia transitoria con un CIAM, legacy conservado; futura migración exige origen/UserId/referencias/rollback.
+- [x] D1 por request completo y JWT real/sintético; sin Graph por request/Redis/bus/CAE supuesto.
+- [x] MSAL.js/Code+PKCE browser-delegated; perfil básico/clear/autoridad propia e iniciales, sin PII futura/storage.
+- [x] Ambos cambios reales + tests tardíos/caché/drafts/generación/cuenta/tenant suficientes beta; manual exhaustiva diferidaT060.
+- [x] Básicos UX mobile-first obligatorios; lector/zoom completosT053 y alta adicional de atributosT059 diferidos no bloqueantes, sin fingir ejecución.
+- [x] EmailT056=A-OPT no anunciado,010-B abierto;12 casos originales trazados,26FR/ochoSC conservados.
+- [x] Invitaciones/grupos fuera de010, iniciativa independiente012 prevista.
+- [x] Evidencia histórica/G3/INCONCLUSIVE conservada; no nuevos tenants/apps/credenciales/BD ni ejecución de traslado por reorganizar alcance.
+- [x] Entorno local010-A con ambos accesos se conserva; no restauración automática incompatible.
 
-## Comprobaciones documentales
-
-- [ ] Alcance obligatorio Microsoft existente+Google sin Microsoft, sin G3/linking como dependencia.
-- [ ] Email OTP elegible, QA previo y deshabilitado hasta aprobación; no bloquea núcleo.
-- [ ] IDs T001–T055 conservados, futuras tareas visibles, T056–058 añadidas y ninguna tarea de producto cerrada.
-- [ ] Historias, 26FR, ochoSC y diez A-AC obligatorios trazados; onceavo opcional y doce AC previos reconciliados.
-- [ ] UserId canónico, permisos/ownership íntegros, no correlación por email/perfil/sub global.
-- [ ] Transición Microsoft obligatoria diseñada con origen inmutable, reserva, cohortes, bloqueo de duplicados, no migrados y rollback; coexistencia no equivale a migración aceptada.
-- [ ] Alternativa A simple preferida; no colección de identidades/AccountOperation/ProofReceipt para login básico. B requiere insuficiencia demostrada y nueva revisión.
-- [ ] D1 autoritativo antes de negocio productivo; no exige completar D1 para primer login aislado. Sin Graph por request/Redis/bus/CAE.
-- [ ] Web MSAL.js/Code+PKCE browser-delegated; MAUI/Native Auth no se fijan ni bloquean A.
-- [ ] Perfil básico, autoridad propia y minimización; iniciales, no foto/storage/DOB/teléfono/dirección.
-- [ ] Recuperación original del proveedor, sin identidad sustituta desde soporte/email.
-- [ ] ADR propuesto y propuesta TP11 1.2.0; constitución vigente intacta.
-- [ ] Evidencia G3 preservada, sin convertir c1 en MFA ni resultados INCONCLUSIVE en PASS.
-- [ ] Enlaces/Spec Kit/formato y archivos protegidos verificados según informe; esta lista requiere revisión humana antes de marcarla.
-
-## Decisión pendiente indispensable para iniciar identidad
-
-- [ ] Ratificar ADR-004 y propuesta TP11, incluyendo contrato de confianza/coexistencia y transición Microsoft acotada (T007/T008/T009/T010). Aplicación constitucional posterior autorizada conforme a gobernanza.
-
-Las tareas de integración/QA/migración/D1/perfil son trabajo de implementación/entrega del MVP, no evidencia de que la documentación impida comenzar después de esa ratificación. G1/G3/linking, email, fotos, MAUI y recuperación entre proveedores no bloquean iniciar ni entregar el núcleo Microsoft + Google.
-
-**Dictamen de inicio:** ver informe de alcance. Esta checklist no marca ninguna aceptación productiva, tarea previa ni aprobación arquitectónica.
+La revisión de enlaces, IDs y Spec Kit se ejecuta antes del commit. Aceptación técnica/producto en acceptance.md y validation.md; la checklist documental no inventa pruebas de proveedor, migración, lector o zoom. Los cinco workflows del SHA exacto final deben pasar antes de publicar el PR como listo. Sin merge/deploy automático.

@@ -1,17 +1,17 @@
-# 010 — Alcance incremental
+# 010 — Alcance incremental aprobado para beta
 
-Revisión30/10/2026, solo documentación. [Spec](spec.md), [plan](plan.md), [tasks](tasks.md), [decisión y trazabilidad](evidence/010-a-scope-review.md).
+Revisión31/10/2026. [Spec](spec.md), [plan](plan.md), [tasks](tasks.md), [decisión/evidencia](evidence/010-a-scope-review.md), [ADR-004](../../docs/adr/ADR-004-ciam-identity.md).
 
-**010-A:** conservar Microsoft existente; Google prioritario sin cuenta Microsoft mediante External ID/token backend/tupla→Users→UserId; transición Microsoft controlada sin duplicados; Web MSAL/browser-delegated; perfil básico propio; logout/cambio de cuenta y regresiones de ownership. D1 antes de negocio productivo, sin exigirlo a primer login aislado.
+**010-A beta:** Google prioritario sin cuenta Microsoft mediante External ID→token MiKompri→Users→UserId Guid inmutable; Microsoft legacy conserva issuer/registro/configuración/UserId actuales. Web MSAL/Code+PKCE browser-delegated, tres APIs/JWT explícito, D1, perfil propio, logout/cambio y regresiones de ownership. La beta **no necesita migrar Microsoft a External ID**.
 
-**Email OTP:** elegible en el mismo A como opción no bloqueante, tras QA de T056 y aprobación; mismo CIAM/contrato/provisión. Login básico funciona en harness. Sin G3/linking ni modelo adicional. Si falla/retrasa Microsoft+Google, diferirlo y no mostrarlo.
+**DEFERRED — Microsoft External ID migration:** A-AC06/07, T019/T048, federación/destino/reserva/cutover/rollback reales/manifiestos/retiro legacy. Ensayo INCONCLUSIVE por colisión CIAM, sin PASS/FAIL reinterpretado; runner/tests/journal/reservation/infraestructura y evidencia conservados. La futura migración deberá preservar exactamente UserId/referencias. Coexistencia transitoria por rollout con un único CIAM, no múltiples CIAM permanentes.
 
-**010-B:** segundo método, link/unlink/cambio de proveedor, recovery con alternativa, G3, Authentication Context/CA de linking, posibles providers/MFA avanzados y B arquitectónica solo por insuficiencia demostrada. [Backlog conservado](010-b-deferred.md). Merging sigue fuera.
+**A-OPT:** email OTP/T056 opcional y no anunciado en Web. Selector QA puede conservarlo para no afectar evidencia compartida; no habilitar para cerrar beta.
 
-UserId Guid inmutable y Users dueño de correlación. No identidades Google/email/sub en ownership; no asociación por email. Perfil propio prevalece sobre claims. Avatar iniciales; foto/storage, DOB/teléfono/dirección y reimportación UI fuera del primer incremento.
+**DEFERRED NON-BLOCKING QA:** lector/zoom manual completosT053, alta Google adicional para nuevos atributosT059 y matriz manual exhaustiva multi-tabT060. Básicos320/390/430/teclado/targets/errores/loading/cancelación, ambos cambios reales y cobertura automatizada adecuada sí son gate beta.
 
-No se implementa ni configura nada por esta revisión. [Spikes](evidence/spike-summary.md) conservados, con G3 no demostrado; eso no bloquea el alcance A sin operaciones de métodos. [ADR](../../docs/adr/ADR-004-ciam-identity.md)/[TP11 propuesto](constitution-amendment-proposal.md) pendientes de aprobación; constitución vigente intacta.
+**010-B:** linking/unlinking/cambio de proveedor/segundo método/G3/Authentication Context/recovery entre proveedores/MFA avanzada/passkeys/SMS/Apple/Facebook/avatar storage/MAUI. Alternative B solo por insuficiencia demostrada y otro ADR. Merging sigue fuera. [Backlog](010-b-deferred.md).
 
-## Aprobación posterior
+**012 independiente prevista:** group-invitations-collaboration — búsqueda/invitar/aceptar/rechazar/notificar/enlace no registrado/incorporación a listas compartidas. No implementación en010 ni bloqueo de autenticación.
 
-El 2026-10-30 el titular aprueba ADR-004/transición/TP11 para 010-A y autoriza implementación. TP11 1.2.0 aplicada. **010-A READY FOR IMPLEMENTATION**. El texto previo describe la revisión documental histórica. Sin aprobación de010-B, merge o producción. [Registro](evidence/implementation.md).
+Users posee correlación; ownership/GroupMembership/AddedBy/PaidBy/PurchasedBy/auditoría usan UserId interno, nunca email/Google/sub global. Perfil propio y clear prevalecen; no DOB/teléfono/dirección/foto futuros. TP11 **1.2.0 permanece intacta**. Cierre beta habilita PR para revisión; no merge, deploy, cutover ni configuración cloud nuevos. Entorno local010-A funcional se conserva, sin restauración automática de API anterior.

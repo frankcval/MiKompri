@@ -1,3 +1,16 @@
+# Ensayo Microsoft→External ID — DEFERRED
+
+**Decisión aprobada31/10/2026:** DEFERRED — Microsoft External ID migration. A-AC06/A-AC07 y T019/T048 siguen abiertos y no bloquean beta010-A. El resultado real se conserva **INCONCLUSIVE por colisión CIAM**, sin convertirlo en PASS ni FAIL.
+
+No ejecutar nueva federación, preparación de destino, reserva, cutover/rollback, manifiestos o retiro legacy en esta entrega. Microsoft actual conserva issuer/app/configuración/usuarios/UserId; Google usa External ID. [Runbook futuro](../migration.md), [alcance beta](010-a-scope-review.md), [ADR-004](../../../docs/adr/ADR-004-ciam-identity.md).
+
+Se conservan tests, runner, journal/reservation e infraestructura técnica; preparación de un objeto CIAM no acredita login ni migración. Futura iteración debe resolver la colisión por vía segura, probar origen inmutable y preservar exactamente UserId/referencias/rollback, nunca email matching. Recursos QA inventariados mantienen revisión/retiro previsto06/11, sin cambios cloud por esta decisión.
+
+## Evidencia histórica íntegra
+
+<details>
+<summary>Intentos y límites previos al cambio de alcance: no son gates beta</summary>
+
 # Ensayo de traslado Microsoft — estado 31/10/2026
 
 **PARTIAL; sin cutover real.** [Diseño aprobado](../migration.md), [recursos](010a-qa-resource-plan.md), [validación técnica](validation.md).
@@ -23,3 +36,5 @@ El segundo acceso real, nuevamente aprobado por el titular, vuelve a la colisió
 **Restauración verificada tras recargar portal:** Microsoft010AQA no seleccionado; Google seleccionado; OTP anterior seleccionado. Después se restaura ProvisioningPaused=false y health200 en Users QA. Microsoft Web continúa por legacy. El helper inicial agotó su espera de arranque en frío; la lectura independiente posterior confirma health200 y la configuraciónfalse, sin confundir timeout del helper con fallo del servicio. Sin cambios CA/G3/defaults, licencias, métodos MFA ni credenciales nuevas en esta continuación.
 
 PostgreSQL7/7 (verificador externo sustituido): reserva repetida idempotente; cambios de destino/aprobación rechazados; fallo de Graph previo a apply conserva origen y reserva y permite retry; rollback preserva nuevo perfil/grupo/membresía/suspensión y es idempotente, además de las cuatro regresiones previas. No se acreditan con ellos compras/gastos/listas reales tras traslado. T019/T048 y A-AC06/07 permanecen abiertos. Próximo paso indispensable: resolver el login del destino federado QA sin adoptar por email; solo entonces reservar, ejecutar y comparar manifiestos completos antes/después/rollback. Sin cutover productivo.
+
+</details>
