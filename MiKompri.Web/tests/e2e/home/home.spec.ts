@@ -29,6 +29,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
       await menu.click()
       await expect(page.getByRole('dialog')).toBeVisible()
       await expect(page.getByRole('dialog').locator(':focus')).toHaveCount(1)
+      await page.getByRole('navigation', { name: 'Navegación móvil', exact: true }).getByRole('link', { name: 'Cómo funciona', exact: true }).focus()
       await page.keyboard.press('Escape')
       await expect(menu).toBeFocused()
       await menu.click()

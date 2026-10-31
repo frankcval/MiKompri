@@ -1,9 +1,12 @@
-﻿import { useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { Link, useLinkClickHandler } from 'react-router-dom'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, useRestoreFocusTarget } from '@fluentui/react-components'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Button, useRestoreFocusTarget } from '@fluentui/react-components'
 import { exampleList } from './exampleList'
 import s from './HomePage.module.css'
 import { ShoppingListView } from '../../shared/ui/ShoppingListView'
+import { IconAction } from '../../shared/ui/icons/IconAction'
+
+const MobileNavigationDrawer = lazy(() => import('../../app/layout/MobileNavigationDrawer'))
 
 function CreateListLink({ children = 'Crear mi primera lista' }: { children?: React.ReactNode }) {
   const onClick = useLinkClickHandler<HTMLAnchorElement>('/personal-lists?create=1')
@@ -13,15 +16,14 @@ function CreateListLink({ children = 'Crear mi primera lista' }: { children?: Re
 function HomeHeader() {
   const [open, setOpen] = useState(false)
   const restoreFocusTarget = useRestoreFocusTarget()
+  const menuTrigger = useRef<HTMLButtonElement>(null)
+  const closeMenu = () => { setOpen(false); requestAnimationFrame(() => menuTrigger.current?.focus()) }
   const links = <><a href="#como-funciona" onClick={() => setOpen(false)}>Cómo funciona</a><a href="#para-compartir" onClick={() => setOpen(false)}>Para compartir</a><a href="#preguntas" onClick={() => setOpen(false)}>Preguntas</a><Link to="/login">Entrar</Link></>
   return <header className={s.header}><div className={s.headerInner}>
     <Link className={s.brand} to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</Link>
     <nav className={s.desktopNav} aria-label="Navegación de portada">{links}</nav>
-    <div className={s.headerActions}><CreateListLink>Crear una lista</CreateListLink><Button {...restoreFocusTarget} className={s.menuButton} aria-label="Abrir menú" aria-expanded={open} onClick={event => { event.currentTarget.focus(); setOpen(true) }}>☰</Button></div>
-    <Drawer open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="small">
-      <DrawerHeader><DrawerHeaderTitle action={<Button className={s.closeMenu} aria-label="Cerrar menú" onClick={() => setOpen(false)}>✕</Button>}>MiKompri</DrawerHeaderTitle></DrawerHeader>
-      <DrawerBody><nav className={s.mobileNav} aria-label="Navegación móvil">{links}</nav></DrawerBody>
-    </Drawer>
+    <div className={s.headerActions}><CreateListLink>Crear una lista</CreateListLink><IconAction {...restoreFocusTarget} ref={menuTrigger} name="menu" className={s.menuButton} label="Abrir menú" aria-expanded={open} onKeyDown={event => { if (event.key === 'Escape' && open) closeMenu() }} onClick={event => { event.currentTarget.focus(); setOpen(true) }} /></div>
+    {open ? <Suspense fallback={<span className={s.menuLoading} role="status">Preparando menú…</span>}><MobileNavigationDrawer onClose={closeMenu} navClassName={s.mobileNav} navLabel="Navegación móvil" closeClassName={s.closeMenu}>{links}</MobileNavigationDrawer></Suspense> : null}
   </div></header>
 }
 

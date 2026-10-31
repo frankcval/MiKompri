@@ -2,20 +2,22 @@ import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { ids, modernFixtures, openHarness } from '../fixtures/modernization'
 
-test('@smoke 011 cancelling a loading navigation drawer does not reopen it', async ({ page }) => {
+for (const anonymous of [false, true]) {
+test(`@smoke 011 cancelling a loading navigation drawer does not reopen it (anonymous=${anonymous})`, async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await modernFixtures(page)
   let release!: () => void
   const gate = new Promise<void>(resolve => { release = resolve })
   await page.route('**/src/app/layout/MobileNavigationDrawer.tsx*', async route => { await gate; await route.continue() })
-  await openHarness(page, '/lists')
+  if (anonymous) await page.goto('/tests/visual/index.html?anonymous&route=%2F'); else await openHarness(page, '/lists')
   const menu = page.getByRole('button', { name: 'Abrir menú', exact: true })
   await menu.focus()
   await expect(page.getByRole('tooltip')).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(page.getByRole('tooltip')).toHaveCount(0)
   await page.keyboard.press('Enter')
-  await expect(page.getByRole('status')).toContainText('Preparando menú')
+  await expect(page.getByRole('status').filter({ hasText: 'Preparando menú' })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.keyboard.press('Escape')
   await expect(menu).toHaveAttribute('aria-expanded', 'false')
   await expect(menu).toBeFocused()
@@ -24,6 +26,8 @@ test('@smoke 011 cancelling a loading navigation drawer does not reopen it', asy
   await expect(page.getByRole('dialog')).toHaveCount(0)
   await expect(menu).toHaveAttribute('aria-expanded', 'false')
 })
+
+}
 
 for (const width of [320, 390, 430, 768, 1280]) {
   test(`@smoke 011 navigation, notes, history and reflow ${width}px`, async ({ page }) => {
