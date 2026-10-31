@@ -40,7 +40,7 @@ it('keeps Microsoft on its accredited route when Google CIAM is enabled', () => 
     expect(getProviderSettings('microsoft')).not.toHaveProperty('domainHint')
   } finally { Object.assign(env, before) }
 })
-it('sends the CIAM scope to MSAL without domainHint or domain_hint for Google', async () => {
+it('opens hosted CIAM sign-in without a hint or a cached email account shortcut for Google', async () => {
   Object.assign(env, { ciamEnabled: true, ciamClientId: 'qa-spa', ciamTenantId: 'qa-tenant',
     ciamAuthority: 'https://qa.ciamlogin.com/qa-tenant', ciamApiScope: 'api://qa-backend/access_as_user' })
   sessionStorage.setItem('mikompri.auth-provider', 'google')
@@ -50,6 +50,6 @@ it('sends the CIAM scope to MSAL without domainHint or domain_hint for Google', 
   } }) } as unknown as IPublicClientApplication
   await createAuthSessionService(msal).login(['legacy-scope'], 'google')
   expect(loginRedirect).toHaveBeenCalledExactlyOnceWith({
-    scopes: ['api://qa-backend/access_as_user'], prompt: 'select_account',
+    scopes: ['api://qa-backend/access_as_user'], prompt: 'login',
   })
 })

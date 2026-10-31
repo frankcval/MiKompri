@@ -16,6 +16,89 @@ public sealed class PostgresFactAttribute : FactAttribute
 public class PostgresIdentityTests
 {
     [PostgresFact]
+    public async Task ReservationRetry_ReturnsSameJournal_AndRejectsChangedTargetOrApproval()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var source = new User("Owned", null, "entra", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "legacy");
+        await using (var seed = database.Open()) { seed.Users.Add(source); await seed.SaveChangesAsync(); }
+        var targetTid = Guid.NewGuid().ToString(); var targetOid = Guid.NewGuid().ToString();
+        var verifier = Substitute.For<IFederatedOriginVerifier>();
+        verifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new string('b', 64));
+        Guid journalId;
+        await using (var db = database.Open()) journalId = (await new MicrosoftIdentityMigrationService(db, verifier, TimeProvider.System)
+            .ReserveAsync(source.Id, targetTid, targetOid, new string('a', 64))).Id;
+        await using (var retry = database.Open()) Assert.Equal(journalId, (await new MicrosoftIdentityMigrationService(retry, verifier, TimeProvider.System)
+            .ReserveAsync(source.Id, targetTid, targetOid, new string('a', 64))).Id);
+        await using (var conflict = database.Open()) await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            new MicrosoftIdentityMigrationService(conflict, verifier, TimeProvider.System).ReserveAsync(source.Id, targetTid, Guid.NewGuid().ToString(), new string('a', 64)));
+        await using (var conflict = database.Open()) await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            new MicrosoftIdentityMigrationService(conflict, verifier, TimeProvider.System).ReserveAsync(source.Id, targetTid, targetOid, new string('c', 64)));
+        await using var verify = database.Open();
+        Assert.Equal("Reserved", (await verify.IdentityMigrations.SingleAsync()).State);
+        Assert.Equal(source.ObjectId, (await verify.Users.SingleAsync()).ObjectId);
+    }
+
+    [PostgresFact]
+    public async Task OriginVerificationFailureBeforeCutover_PreservesLegacyAndAllowsSafeRetry()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var source = new User("Owned", null, "entra", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "legacy");
+        await using (var seed = database.Open()) { seed.Users.Add(source); await seed.SaveChangesAsync(); }
+        var verifier = Substitute.For<IFederatedOriginVerifier>();
+        verifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new string('b', 64));
+        Guid journalId;
+        await using (var reserve = database.Open()) journalId = (await new MicrosoftIdentityMigrationService(reserve, verifier, TimeProvider.System)
+            .ReserveAsync(source.Id, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), new string('a', 64))).Id;
+        verifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<string>(new HttpRequestException("QA Graph unavailable")));
+        await using (var attempt = database.Open()) await Assert.ThrowsAsync<HttpRequestException>(() =>
+            new MicrosoftIdentityMigrationService(attempt, verifier, TimeProvider.System).ChangeAsync(journalId, 0, false));
+        await using (var unchanged = database.Open())
+        {
+            Assert.Equal("Reserved", (await unchanged.IdentityMigrations.SingleAsync()).State);
+            Assert.Equal("entra", (await unchanged.Users.SingleAsync()).IdentityProvider);
+            Assert.Equal(source.ObjectId, (await unchanged.Users.SingleAsync()).ObjectId);
+        }
+        verifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new string('b', 64));
+        await using (var retry = database.Open()) await new MicrosoftIdentityMigrationService(retry, verifier, TimeProvider.System).ChangeAsync(journalId, 0, false);
+        await using var verify = database.Open();
+        Assert.Equal(source.Id, (await verify.Users.SingleAsync()).Id);
+        Assert.Equal("Applied", (await verify.IdentityMigrations.SingleAsync()).State);
+    }
+
+    [PostgresFact]
+    public async Task Rollback_PreservesNewProfileGroupsAndSuspension_AndIsIdempotent()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var source = new User("Before", null, "entra", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "legacy");
+        await using (var seed = database.Open()) { seed.Users.Add(source); await seed.SaveChangesAsync(); }
+        var verifier = Substitute.For<IFederatedOriginVerifier>();
+        verifier.VerifyAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(new string('b', 64));
+        Guid journalId;
+        await using (var reserve = database.Open()) journalId = (await new MicrosoftIdentityMigrationService(reserve, verifier, TimeProvider.System)
+            .ReserveAsync(source.Id, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), new string('a', 64))).Id;
+        await using (var apply = database.Open()) await new MicrosoftIdentityMigrationService(apply, verifier, TimeProvider.System).ChangeAsync(journalId, 0, false);
+        await using (var business = database.Open())
+        {
+            var user = await business.Users.SingleAsync();
+            user.UpdateDetails(new("After", "qa_after_cutover", null, null, "es", "name"), user.ProfileVersion);
+            user.SetSuspended(true, DateTimeOffset.UtcNow);
+            business.Groups.Add(new Group("Created after cutover", user.Id));
+            await business.SaveChangesAsync();
+        }
+        await using (var rollback = database.Open()) await new MicrosoftIdentityMigrationService(rollback, verifier, TimeProvider.System).ChangeAsync(journalId, 1, true);
+        await using (var retry = database.Open()) Assert.Equal(2, (await new MicrosoftIdentityMigrationService(retry, verifier, TimeProvider.System).ChangeAsync(journalId, 1, true)).Version);
+        await using var verify = database.Open();
+        var restored = await verify.Users.SingleAsync();
+        Assert.Equal(source.Id, restored.Id); Assert.Equal(source.ObjectId, restored.ObjectId);
+        Assert.Equal("After", restored.DisplayName); Assert.Equal("qa_after_cutover", restored.Username);
+        Assert.Equal("name", restored.DefaultListSort); Assert.True(restored.IsSuspended);
+        Assert.Equal(source.Id, (await verify.Groups.SingleAsync()).OwnerId);
+        Assert.Equal(source.Id, (await verify.GroupMemberships.SingleAsync()).UserId);
+        Assert.Equal(1, await verify.Users.CountAsync());
+    }
+
+    [PostgresFact]
     public async Task ConcurrentUsernameEdits_EnforceUniqueIndexAcrossDifferentUsers()
     {
         await using var database = await TestDatabase.CreateAsync();

@@ -53,5 +53,8 @@ jobs:
       - name: Build QA identity migration runner
         run: dotnet build tools/identity-migration/IdentityMigration.csproj --configuration Release
 
+      - name: Build isolated identity QA harness
+        run: dotnet build tools/spikes/010-external-id/ExternalIdSpike.csproj --configuration Release
+
       - name: Docker build Users API (TP4)
         run: docker build -t mikompri.users.api -f MiKompri.Users.Api/Dockerfile .

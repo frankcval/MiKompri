@@ -9,6 +9,7 @@
     <Content Include="google-direct.html" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
     <ProjectReference Include="../../../MiKompri.Users.Infrastructure/MiKompri.Users.Infrastructure.csproj" />
+    <ProjectReference Include="../../../MiKompri.Identity/MiKompri.Identity.csproj" />
     <Compile Include="../../../MiKompri.Users.Api/Security/UsersJwtValidation.cs" Link="Current/UsersJwtValidation.cs" />
     <Compile Include="../../../MiKompri.ShoppingList.Api/Security/ShoppingListJwtValidation.cs" Link="Current/ShoppingListJwtValidation.cs" />
     <Compile Include="../../../MiKompri.ProductCatalog.Api/Security/ProductCatalogJwtValidation.cs" Link="Current/ProductCatalogJwtValidation.cs" />
