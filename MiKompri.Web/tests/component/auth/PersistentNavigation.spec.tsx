@@ -1,5 +1,5 @@
 import React from 'react'
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, useLocation, useNavigate, useRoutes } from 'react-router-dom'
 import { InteractionStatus } from '@azure/msal-browser'
@@ -41,9 +41,9 @@ describe('navegación autenticada persistente', () => {
     render(<MemoryRouter initialEntries={['/groups', '/groups/group-qa']}><TestRoutes /></MemoryRouter>)
     const nav = screen.getByRole('navigation', { name: 'Navegación principal' })
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atrás' })) })
-    expect(screen.getByTestId('path')).toHaveTextContent('/groups')
+    await waitFor(() => expect(screen.getByTestId('path').textContent).toBe('/groups'))
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Adelante' })) })
-    expect(screen.getByTestId('path')).toHaveTextContent('/groups/group-qa')
+    await waitFor(() => expect(screen.getByTestId('path').textContent).toBe('/groups/group-qa'))
     expect(within(nav).getByRole('link', { name: 'Grupos' })).toHaveAttribute('aria-current', 'page')
   })
   it('mantiene navegación y contexto con Atrás/Adelante', async () => {
@@ -51,14 +51,14 @@ describe('navegación autenticada persistente', () => {
     const menu = screen.getByRole('navigation', { name: 'Navegación principal' })
     for (const [path, label] of [['/groups', 'Grupos'], ['/product-catalog', 'Productos'], ['/lists', 'Mis listas']]) {
       fireEvent.click(within(menu).getByRole('link', { name: label }))
-      expect(screen.getByTestId('path')).toHaveTextContent(path)
+      await waitFor(() => expect(screen.getByTestId('path').textContent).toBe(path))
       expect(within(menu).getByRole('link', { name: label })).toHaveAttribute('aria-current', 'page')
       expect(screen.getAllByRole('main')).toHaveLength(1)
     }
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atrás' })) })
-    expect(within(menu).getByRole('link', { name: 'Productos' })).toHaveAttribute('aria-current', 'page')
+    await waitFor(() => expect(within(menu).getByRole('link', { name: 'Productos' })).toHaveAttribute('aria-current', 'page'))
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Adelante' })) })
-    expect(within(menu).getByRole('link', { name: 'Mis listas' })).toHaveAttribute('aria-current', 'page')
+    await waitFor(() => expect(within(menu).getByRole('link', { name: 'Mis listas' })).toHaveAttribute('aria-current', 'page'))
     expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBe(menu)
   })
   it.each(directPaths)('conserva enlace directo y navegación en %s', path => {
