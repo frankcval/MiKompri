@@ -1,6 +1,6 @@
 # Mapa semántico011 — React Icons/Phosphor
 
-Todos los exports de esta tabla están comprobados en react-icons5.7.0, `react-icons/pi`; [manifest](evidence/icon-audit.json),31 símbolos,0 ausentes. No instalar hasta la fase de implementación. Nombre semántico estable distinto del componente externo; no crear rutas o acciones para justificar un icono.
+Todos los exports de esta tabla están comprobados en react-icons5.7.0, `react-icons/pi`; [manifest](evidence/icon-audit.json),31 símbolos,0 ausentes. La auditoría original comprobó31; el runtime final importa solo22exports usados. Los nueve restantes se retiran del bundle, sin cambiar familia/versión. Nombre semántico estable distinto del componente externo; no crear rutas o acciones para justificar un icono.
 
 ## Navegación y estados
 
@@ -10,10 +10,9 @@ Todos los exports de esta tabla están comprobados en react-icons5.7.0, `react-i
 | history | PiClockCounterClockwise | PiClockCounterClockwiseFill | Historial | vista local view=history; no destino global nuevo |
 | groups | PiUsersThree | PiUsersThreeFill | Grupos | /groups |
 | products | PiBasket | PiBasketFill | Productos | /product-catalog |
-| markets | PiStorefront | PiStorefrontFill | Mercados | sección existente de catálogo |
-| account | PiUserCircle | PiUserCircleFill | Mi cuenta | /profile |
-| personal-context | PiUser | PiUserFill | Personal | contexto con texto; no es acción |
-| purchased-status | PiCheckCircle | PiCheckCircleFill | Comprado / N de M comprados | badge opcional; checkbox Fluent conserva su glyph nativo |
+| markets | PiStorefront | mismo base | Mercados | sección existente de catálogo |
+| account | PiUserCircle | mismo base | Mi cuenta | /profile |
+| personal-context | PiUser | mismo base | Personal | contexto con texto; no es acción |
 
 Fill solo si representa selección/estado activo definido; label/peso/indicador/aria-current o checked transmiten estado además del color. Iconos de contexto meramente decorativos, no botones. Se puede no renderizar el glyph si el texto existente explica mejor el concepto.
 
@@ -28,10 +27,6 @@ Fill solo si representa selección/estado activo definido; label/peso/indicador/
 | more | PiDotsThree | Más opciones de {nombre} |
 | back | PiArrowLeft | Volver a mis listas |
 | close | PiX | Cerrar {diálogo o menú} |
-| sort | PiSortAscending | Ordenar listas |
-| filter | PiFunnelSimple | Filtrar listas |
-| receipt | PiReceipt | Gastos / Datos de la compra según acción existente |
-| price | PiTag | Precio / Historial de precios según contexto |
 | information | PiInfo | Información de {campo} |
 | error | PiWarningCircle | Texto de error visible |
 | menu | PiList | Abrir menú |
@@ -44,3 +39,5 @@ Misma palabra y acción en toda la Web; no usar receipt como sinónimo de precio
 Marca MiKompri y logos de proveedores no se sustituyen; no añadir SiGoogle/Microsoft genérico ni rediseñar branding. Glyphs internos Checkbox/Select/Spinner/Menu/Drawer de Fluent permanecen del framework; no reimplementar esos controles solo para lograr una familia única. SVG app decorativos aria-hidden/focusable=false. Icon-only usa botón/link/summary real con nombre y tooltip independiente; no div clicable. Historial y Mercados no pasan a ser destinos globales nuevos.
 
 MAUI reutiliza las claves semánticas, labels y significado Regular/Fill. Adaptará su implementación/asset, sin React ni copiar indiscriminadamente todo el paquete.
+
+Optimización final: no se importan purchased-status, sort, filter, receipt ni price sin consumidores productivos; checkbox/Select y texto actuales conservan su semántica. No Fill de account/markets/personal-context porque no hay selección productiva que lo use. Back se utiliza en el detalle de grupo. Los exports retirados siguen acreditados en el manifest histórico, no se presentan como cargados.
