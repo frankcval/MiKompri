@@ -36,6 +36,7 @@ const report = {
   baseCommit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   kind: 'production-build-working-tree-candidate', sourceSha256: sourceHash.digest('hex'),
   lockSha256: sha256(readFileSync('package-lock.json')),
+  buildConfigSha256: sha256(['vite.config.ts', 'vite.chunks.ts'].map(p => p + '\0' + readFileSync(p, 'utf8')).join('\0')),
   package: { name: pkg.name, version: pkg.version, license: pkg.license, integrity: lock.integrity },
   notice: { path: 'licenses/react-icons-phosphor.txt', sha256: sha256(notice) },
   imports, files: payload,
