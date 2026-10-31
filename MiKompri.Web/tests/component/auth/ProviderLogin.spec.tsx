@@ -20,6 +20,7 @@ it('shows accredited Google first and preserves Microsoft with separate routes',
   const buttons = screen.getAllByRole('button')
   expect(buttons[0]).toHaveTextContent('Continuar con Google')
   expect(buttons[1]).toHaveTextContent('Continuar con Microsoft')
+  expect(screen.getByText('En la siguiente pantalla, elige «Usar otra cuenta» si aparece y después «Iniciar sesión con Google».')).toBeInTheDocument()
   fireEvent.click(buttons[0])
   expect(login).toHaveBeenLastCalledWith(expect.any(Array), 'google')
   fireEvent.click(buttons[1])

@@ -1,5 +1,7 @@
 # Research — External ID y decisiones 010
 
+> Continuación31/10/2026: implementación 010-A en rama y QA real parcial, [validación](evidence/validation.md). Reconsultadas las guías oficiales de [métodos](https://learn.microsoft.com/en-us/entra/external-id/customers/concept-authentication-methods-customers) y [Google](https://learn.microsoft.com/en-us/entra/external-id/customers/how-to-google-federation-customers): el valor documentado domain_hint=google produjo AADSTS90023 en este tenant. Se usa el selector alojado sin hint; el navegador de pruebas completa Google SSO sin OTP y Graph acredita identidad Google. El desafío OTP comunicado por el titular sigue pendiente de atribución. No sustituir hint por google.com/B2C ni inferir la causa interna del servicio. [Detalle reproducible](evidence/authentication-recovery-2026-10-31.md). Las secciones siguientes conservan fechas/resultados históricos.
+
 ## Aplicabilidad actual: decisión de alcance 010-A / 010-B
 
 Revisión documental del 30/10/2026: [decisión completa](evidence/010-a-scope-review.md). La prioridad actual es **Microsoft existente + Google sin Microsoft**. Las recomendaciones originales de Google+email obligatorio, G1/G3 antes de implementar y broker de métodos corresponden al alcance completo anterior; no son gates del login básico 010-A. Se conservan como investigación para [010-B](010-b-deferred.md), sin alterar sus resultados.

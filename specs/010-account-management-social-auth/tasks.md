@@ -1,7 +1,7 @@
 # Tasks: 010 — MVP010-A y futuro010-B
 
 **Input**: [spec](spec.md), [plan](plan.md), [modelo](data-model.md), [migración](migration.md), [contratos](contracts/account-and-identity.md).
-**Estado**: alcance revisado30/10/2026; implementación no iniciada por esta ejecución. Todas las tareas permanecen abiertas. Se conservan T001–T055; sus partes de gestión de métodos pasan a B, sin dar por completado nada.
+**Estado**: arquitectura aprobada30/10/2026, TP11 1.2.0 aplicada; implementación en rama y aceptación QA en curso31/10. T007–T010 acreditan aprobación explícita. [Resultados técnicos](evidence/validation.md) y [recuperación/login real](evidence/authentication-recovery-2026-10-31.md) distinguen código, pruebas y aceptación pendiente. Las demás tareas no se cierran por existencia de archivos ni por diferirse a B.
 **Formato**: A=obligatorio para el MVP; A-OPT=opcional y no bloqueante; B=diferido. Tests antes de reglas según TP8; no ejecución paralela/delegación por una etiqueta.
 
 ## 010-A — A0 aprobación y configuración del diseño
@@ -13,50 +13,50 @@
 - [x] T009 [A] Ratificar contrato JWT/tupla, perfil y D1/D2 en `data-model.md`, `contracts/account-and-identity.md`, `architecture-review.md`. D3/broker quedan B.
 - [x] T010 [A][US2] Aprobar coexistencia/cohortes y prueba de origen Microsoft inmutable en `migration.md`; mismo UserId, reserva, rollback/no migrados. Sin linking general ni G3 como prerequisito.
 - [ ] T011 [A] Revisar amenazas de login/provisión/migración/perfil/sesión en `threat-model.md`; takeover/linking/recovery por otro proveedor se revisarán en B antes de ofrecerlos.
-- [ ] T012 [A][US4] Ratificar perfil básico/username/idioma y preferencias tipadas con finalidad actual. Iniciales; sin foto/storage, DOB/teléfono/dirección ni UI de métodos.
+- [x] T012 [A][US4] Ratificar perfil básico/username/idioma y preferencias tipadas con finalidad actual. Iniciales; sin foto/storage, DOB/teléfono/dirección ni UI de métodos.
 
 ## 010-A — A1 login aislado (no habilita negocio protegido)
 
 - [ ] T002 [A][US1] Validar Microsoft existente y Google sin Microsoft con `evidence/provider-capabilities.md`, claims/token del recurso y diferencias de usuario nuevo/existente. Preservar tipos de cuenta ya admitidos; MSA adicional/email no son gate de este ítem.
-- [ ] T005 [A][US5] Verificar/pinar MSAL Web/metadata/Code+PKCE browser-delegated; conservar la auditoría Native Auth sin convertir SDK MAUI en bloqueo.
-- [ ] T020 [A][US5] Tests JWT firmados para pares issuer/tenant/audience/scope/clientes/tid/oid de tres APIs en `test/MiKompri.Users.Api.Tests/Security/ExternalIdValidationTests.cs` y equivalentes; negativos Google/Graph/ID/expired/cruces.
-- [ ] T022 [A][US1] Tras autorización pertinente preparar configuración CIAM/Google y confianza de QA según `quickstart.md`; conservar Microsoft actual. No activar Authentication Context/CA de linking ni modificar defaults para login.
-- [ ] T023 [A][US1] Tests Web de botones Google prioritario/Microsoft disponible, callback, cancelación, errores y aviso de cuenta Microsoft existente en `MiKompri.Web/tests/unit/auth/external-id.spec.ts` y componentes auth.
-- [ ] T024 [A][US1] Integrar Web MSAL/configuración conocida por ruta/proveedor en `MiKompri.Web/src/auth/msal/msalConfig.ts`, `src/shared/config/env.ts` y login; secrets fuera de SPA. No UI de vincular/desvincular. Proveedores opcionales no se muestran hasta QA.
+- [x] T005 [A][US5] Verificar/pinar MSAL Web/metadata/Code+PKCE browser-delegated; conservar la auditoría Native Auth sin convertir SDK MAUI en bloqueo.
+- [x] T020 [A][US5] Tests JWT firmados para pares issuer/tenant/audience/scope/clientes/tid/oid de tres APIs en `test/MiKompri.Users.Api.Tests/Security/ExternalIdValidationTests.cs` y equivalentes; negativos Google/Graph/ID/expired/cruces.
+- [x] T022 [A][US1] Tras autorización pertinente preparar configuración CIAM/Google y confianza de QA según `quickstart.md`; conservar Microsoft actual. No activar Authentication Context/CA de linking ni modificar defaults para login.
+- [x] T023 [A][US1] Tests Web de botones Google prioritario/Microsoft disponible, callback, cancelación, errores y aviso de cuenta Microsoft existente en `MiKompri.Web/tests/unit/auth/external-id.spec.ts` y componentes auth.
+- [x] T024 [A][US1] Integrar Web MSAL/configuración conocida por ruta/proveedor en `MiKompri.Web/src/auth/msal/msalConfig.ts`, `src/shared/config/env.ts` y login; secrets fuera de SPA. No UI de vincular/desvincular. Proveedores opcionales no se muestran hasta QA.
 
 ## 010-A — A2 identidad y transición Microsoft
 
-- [ ] T013 [A][US2] Tests de UserId inmutable, canonical tuple única y traslado acotado en `test/MiKompri.Users.Domain.Tests/`; AccountOperation/ProofReceipt y pruebas de cambio de métodos se conservan en T027[B].
+- [x] T013 [A][US2] Tests de UserId inmutable, canonical tuple única y traslado acotado en `test/MiKompri.Users.Domain.Tests/`; AccountOperation/ProofReceipt y pruebas de cambio de métodos se conservan en T027[B].
 - [ ] T014 [A][US2] Tests de traslado Microsoft administrado en `test/MiKompri.Users.Application.Tests/Commands/MigrateIdentityTests.cs`: origen federado acreditado, reserva, destino ocupado, idempotencia, email collision y fallback sub solo legado; sin doble prueba G3 genérica.
-- [ ] T015 [A][US2] Adaptar resolución/alta en `MiKompri.Users.Domain/Users/` y `MiKompri.Users.Application/Commands/SyncProfile/`: una canónica activa, namespace confiable y registro acotado de migración; no ExternalIdentities[] genérica.
-- [ ] T016 [A][US2/US4] Preparar únicamente schema aditivo necesario para perfil/estado y traslado en `MiKompri.Users.Infrastructure/Persistence/`; backfill fiable, perfiles previos personalizados, sin tablas de broker por anticipación.
-- [ ] T017 [A][US2] Tests PostgreSQL Docker de índices/provisión concurrente/reserva/cutover en `test/MiKompri.Users.Api.Tests/IdentityMigrationTests.cs`, manifiestos antes/después.
-- [ ] T018 [A][US2] Separar resolver/provisión/sync en `MiKompri.Users.Api/Middleware/UserProvisioningMiddleware.cs`; migración reservada/retirada no puede crear User sustituto ni reactivar origen por fallback.
+- [x] T015 [A][US2] Adaptar resolución/alta en `MiKompri.Users.Domain/Users/` y `MiKompri.Users.Application/Commands/SyncProfile/`: una canónica activa, namespace confiable y registro acotado de migración; no ExternalIdentities[] genérica.
+- [x] T016 [A][US2/US4] Preparar únicamente schema aditivo necesario para perfil/estado y traslado en `MiKompri.Users.Infrastructure/Persistence/`; backfill fiable, perfiles previos personalizados, sin tablas de broker por anticipación.
+- [x] T017 [A][US2] Tests PostgreSQL Docker de índices/provisión concurrente/reserva/cutover en `test/MiKompri.Users.Api.Tests/IdentityMigrationTests.cs`, manifiestos antes/después.
+- [x] T018 [A][US2] Separar resolver/provisión/sync en `MiKompri.Users.Api/Middleware/UserProvisioningMiddleware.cs`; migración reservada/retirada no puede crear User sustituto ni reactivar origen por fallback.
 - [ ] T019 [A][US2] Ensayar reintento/timeout/no migrados/rollback de tráfico sin Down ni pérdida de nuevas compras en `evidence/migration-rehearsal.md`; detener cutover si origen no acreditado, conservar Microsoft.
 - [ ] T048 [A][US2] Acreditar cohorte Microsoft en QA que conserva exactamente UserId y referencias al pasar a CIAM y al revertir, A-AC06/07. Conservar acceso legado no acredita por sí solo migración terminada; no habilitar cambio de método autoservicio.
 
 ## 010-A — A3 APIs protegidas y sesión
 
-- [ ] T021 [A][US5] Adaptar `MiKompri.{Users,ShoppingList,ProductCatalog}.Api/Security/*JwtValidation.cs` y Program a confianza explícita por issuer y scopes; sin cambiar permisos de negocio ni aceptar Google directo.
-- [ ] T025 [A][US5] Tests y limpieza de sesión A→B en `MiKompri.Web/tests/unit/auth/session.spec.ts`, `src/auth/session/`; namespaces Microsoft/CIAM, TanStack/borradores y respuestas tardías.
-- [ ] T026 [A][US5] Tests primero e integración mínima D1 access-status: lectura Users local; consumidores por UsersApi/bearer, GET catálogo incluido, resultado solo dentro de request. No Graph/Redis/bus/cache inter-request. Gate antes de liberar negocio, no de primer login aislado.
+- [x] T021 [A][US5] Adaptar `MiKompri.{Users,ShoppingList,ProductCatalog}.Api/Security/*JwtValidation.cs` y Program a confianza explícita por issuer y scopes; sin cambiar permisos de negocio ni aceptar Google directo.
+- [x] T025 [A][US5] Tests y limpieza de sesión A→B en `MiKompri.Web/tests/unit/auth/session.spec.ts`, `src/auth/session/`; namespaces Microsoft/CIAM, TanStack/borradores y respuestas tardías.
+- [x] T026 [A][US5] Tests primero e integración mínima D1 access-status: lectura Users local; consumidores por UsersApi/bearer, GET catálogo incluido, resultado solo dentro de request. No Graph/Redis/bus/cache inter-request. Gate antes de liberar negocio, no de primer login aislado.
 - [ ] T042 [A][US5] AR-01–03: JWT vigente→suspender→siguiente control de tres APIs deniega; Users caído503; carreras autorizadas en vuelo y cortes/reactivación no resucitan tokens. Probar canónica activa/traslado, sin exigir múltiples bindings B.
-- [ ] T043 [A][US2] Regresiones Groups/GroupMembership/Owner/Admin/Member, listas/gastos/participantes/compras/idempotencia005/008/009 y referencias UserId.
+- [x] T043 [A][US2] Regresiones Groups/GroupMembership/Owner/Admin/Member, listas/gastos/participantes/compras/idempotencia005/008/009 y referencias UserId.
 - [ ] T051 [A][US5] A-AC03/04/05/09 y AR-01–03 en tres APIs/Web real: confianza, D1, logout/cambio y browser-delegated. AR-05–06/G3 no bloquean este ítem.
 
 ## 010-A — A4 perfil básico
 
-- [ ] T034 [A][US4] Tests de inicialización/autoridad, personalización/clear, username normalizado/único y edición por versión en `test/MiKompri.Users.Domain.Tests/ProfileAuthorityTests.cs` y `UsernameTests.cs`.
-- [ ] T035 [A][US4] Ampliar User/perfil mínimo en `MiKompri.Users.Domain/Users/User.cs` y Application/UpdateProfile; sin foto, datos personales futuros ni almacén genérico de preferencias.
-- [ ] T036 [A][US4] Tests de regresión login/GET/sync no sobrescribe DisplayName/nombres/idioma propios en `test/MiKompri.Users.Api.Tests/ProfileApiTests.cs` y Application/SyncProfile.
-- [ ] T037 [A][US4] Reutilizar GET/PUT/me y POST/me/sync en `MiKompri.Users.Api/Controllers/ProfileController.cs` y DTOs; compatibilidad legacy/If-Match documentada, sin aceptar IDs/verificationState del cliente.
-- [ ] T038 [A][US4] Tests/UI de perfil propio, username distinto de login e iniciales en `MiKompri.Web/tests/component/profile/` y `src/features/profile/`. Reimportación explícita futura T058[B].
+- [x] T034 [A][US4] Tests de inicialización/autoridad, personalización/clear, username normalizado/único y edición por versión en `test/MiKompri.Users.Domain.Tests/ProfileAuthorityTests.cs` y `UsernameTests.cs`.
+- [x] T035 [A][US4] Ampliar User/perfil mínimo en `MiKompri.Users.Domain/Users/User.cs` y Application/UpdateProfile; sin foto, datos personales futuros ni almacén genérico de preferencias.
+- [x] T036 [A][US4] Tests de regresión login/GET/sync no sobrescribe DisplayName/nombres/idioma propios en `test/MiKompri.Users.Api.Tests/ProfileApiTests.cs` y Application/SyncProfile.
+- [x] T037 [A][US4] Reutilizar GET/PUT/me y POST/me/sync en `MiKompri.Users.Api/Controllers/ProfileController.cs` y DTOs; compatibilidad legacy/If-Match documentada, sin aceptar IDs/verificationState del cliente.
+- [x] T038 [A][US4] Tests/UI de perfil propio, username distinto de login e iniciales en `MiKompri.Web/tests/component/profile/` y `src/features/profile/`. Reimportación explícita futura T058[B].
 - [ ] T050 [A][US4] A-AC10 con proveedor real: personalizar nombre/campos A y repetir login/sync sin sobrescritura. Avatar personalizado solo cuando se implemente T039[B].
 
 ## 010-A — A5 validación y cierre
 
 - [ ] T041 [A] Evidencia negativa de amenazas aplicables A en `evidence/security.md`; matriz separada de métodos B y revisión de seguridad.
-- [ ] T044 [A] Suites Domain/Application/API/PostgreSQL, lint/typecheck/build/Web unit/component/integration/E2E directamente afectados; registrar SHA/comandos/resultados en `evidence/validation.md`.
+- [x] T044 [A] Suites Domain/Application/API/PostgreSQL, lint/typecheck/build/Web unit/component/integration/E2E directamente afectados; registrar SHA/comandos/resultados en `evidence/validation.md`.
 - [ ] T045 [A] Verificar modelo/migraciones EF, Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; no dar por verde CI de otro SHA.
 - [ ] T046 [A] Revisar issuer/audience/scopes/CORS/redirects/configuración por entorno, mínimo privilegio de transición y recuperación en proveedor; sin secretos/PII en evidencia ni Graph en negocio.
 - [ ] T047 [A][US1] Microsoft existente y Google nuevo sin Microsoft en aplicación normal, A-AC01/02/08, `evidence/real-provider-acceptance.md`. Harness es evidencia parcial; email no bloquea.
@@ -107,3 +107,19 @@ Evidencia anterior: acceso Google/email en harness, JWT/scopes y regresiones off
 ## Evidencia de implementación
 
 T007/T008/T009/T010: aprobación explícita del titular y enmienda aplicada, [registro A0](evidence/implementation.md). No cierra implementación ni aceptación funcional.
+
+## Evidencia de cierre técnico — 31/10/2026
+
+Las marcas técnicas anteriores se basan en ejecuciones registradas en [validation.md](evidence/validation.md), no en presencia de archivos. No cierran sus casos reales de aceptación:
+
+| Tareas | Evidencia ejecutada |
+|---|---|
+| T005/022/023/024 | MSAL fijado, QA aislado y rutas; auth49/49, Web138/138. Google real confirmado después de corregir AADSTS90023. Microsoft legacy conservado; T002/T047 siguen abiertos para aceptación completa del candidato |
+| T012/034/035/036/037/038 | Perfil mínimo aprobado implementado, Domain21/Application37/API90, Web perfil; clear/claims/versiones/whitelist/username. T050 mantiene pendiente relogin real personalizado |
+| T013/015/016/017/018 | Invariantes/resolve/provision/journal y PostgreSQL4/4 sobre schema aditivo. Tests reales en `test/MiKompri.Users.Api.Tests/PostgresIdentityTests.cs`, sin cambios EF pendientes. T014/019/048 siguen abiertos; la prueba externa sustituida no acredita traslado real |
+| T020/021/026 | JWT20 casos HTTP por API y17 criptográficos; D1 local/remoto, fallo cerrado y una consulta por petición. T042/T051 siguen abiertos por aceptación completa D1/token social real |
+| T025 | Sesión/tenant/cuenta/respuestas tardías/formularios/borradores,49 tests auth; aceptación A→B completa del candidato sigue en T051 |
+| T043 | Regresiones backend406/406 y controladas Web120/120 previas a hint, más60/60 portada/secciones tras hint. Esto no acredita manifiestos reales de migración |
+| T044 | Suites .NET406, Web138, lint/typecheck/build, E2E60 tras último cambio Web,0 fallos. CI final se conserva en T045 abierto |
+
+T002/014/019/041/042/045/047/048/050/051/053/055 permanecen abiertas. T056 no se habilita. Todas las tareas B permanecen abiertas; no se modifican gates007/008/009. Ver [recuperación](evidence/authentication-recovery-2026-10-31.md) y [ensayo de traslado](evidence/migration-rehearsal.md).

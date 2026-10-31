@@ -3,7 +3,7 @@
 **Feature Branch**: `010-account-management-social-auth`
 **Created / Revised**: 2026-10-30
 **Status**: Approved 010-A — arquitectura y TP11 1.2.0 aprobadas; implementación en curso, aceptación pendiente.
-**Input**: conservar Microsoft existente y añadir Google sin cuenta Microsoft. Esta ejecución modifica documentación, sin implementar ni configurar servicios.
+**Input**: conservar Microsoft existente y añadir Google sin cuenta Microsoft. Implementación 010-A autorizada; código en esta rama y aceptación QA en curso, sin merge ni despliegue productivo. [Progreso y límites](evidence/implementation.md).
 
 ## Contexto, evidencia y alcance
 

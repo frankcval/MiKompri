@@ -1,6 +1,6 @@
 # Aceptación — 010-A y trazabilidad 010-B
 
-**Estado:** pendiente en aplicación integrada. Un PASS en harness no acredita alta Users, propiedad de negocio o migración. Todas las casillas permanecen abiertas. [Spec](../spec.md), [tareas](../tasks.md), [alcance](../evidence/010-a-scope-review.md).
+**Estado31/10:** aceptación integrada parcial; [validación técnica](../evidence/validation.md) y [login Google real confirmado](../evidence/authentication-recovery-2026-10-31.md). Se conservan las casillas de aceptación abiertas hasta cerrar todos los pasos del candidato y su evidencia; el traslado Microsoft real no está acreditado. Un PASS en harness no sustituye esos recorridos. [Spec](../spec.md), [tareas](../tasks.md), [alcance](../evidence/010-a-scope-review.md).
 
 ## Diez casos obligatorios de 010-A
 

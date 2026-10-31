@@ -43,6 +43,8 @@ Prueba reciente por operación <=300s, operación <=600s; doble control aplicabl
 
 ## Evidencia y límites
 
+Estado31/10: código010-A en la rama, [validación técnica](../../specs/010-account-management-social-auth/evidence/validation.md). Navegador de pruebas completa Google SSO sin OTP tras retirar domain_hint y usar selector CIAM alojado; Microsoft permanece legacy. El desafío adicional del titular y atributos iniciales requieren completar diagnóstico. [Traslado real no acreditado](../../specs/010-account-management-social-auth/evidence/migration-rehearsal.md): no ejecutar cutover ni añadir un desvío Web experimental para suplir falta de equivalencia. La configuración/provisión QA no acredita aceptación global ni autoriza producción.
+
 [Resumen del spike](../../specs/010-account-management-social-auth/evidence/spike-summary.md): Google sin Microsoft y OTP básicos funcionan en harness; rechazo de token Google directo acreditado para el caso probado. No hay migración ni propiedad de dominio aceptadas.
 
 Google reauth dio auth_time nuevo con selección/consentimiento: **NOT RELIABLE FOR G3**. OTP G3 **INCONCLUSIVE**. Probes Graph de agregación no prueban control de métodos, evitan por sí solos carreras ni impiden último método. El [ensayo MFA](../../specs/010-account-management-social-auth/evidence/g3-email-mfa-qa.md) no ejecutó desafío social; c1 firmado con política deshabilitada no demuestra MFA. [Restauración](../../specs/010-account-management-social-auth/evidence/g3-restoration-verification.json): defaults activos, políticas deshabilitadas, contexto sin publicar. No retomar transiciones CA para entregar login básico.

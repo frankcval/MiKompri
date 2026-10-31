@@ -1,5 +1,7 @@
 # Auditoría local previa — 010
 
+> Actualización31/10: la tabla siguiente conserva la auditoría **anterior** a implementación. En esta rama se añadieron confianza JWT/D1 compartida, separación resolve/provision/migrate, schema Users aditivo, perfil propio y sesiones MSAL aisladas. MSAL está fijado3.30.0/2.2.0. Ver [validación](evidence/validation.md), [traslado pendiente](evidence/migration-rehearsal.md) y [recuperación QA](evidence/authentication-recovery-2026-10-31.md); no interpretar los gaps históricos como estado actual ni como aceptación cerrada.
+
 Fecha 30/10/2026; base `1a05d8e` (PR #58 integrado). Inspección de archivos, **sin ejecución funcional nueva ni consulta a bases de datos**. Se revisaron constitución/templates Spec Kit, spec/plan/tasks/modelo/contratos 003, identidad/sesión 007, políticas/evidencia 008 y contratos/tareas/evidencia 009. 006 no existe. Los estados históricos de sus tareas no cambian.
 
 | Área | Implementación observada | Gap / consecuencia 010 |

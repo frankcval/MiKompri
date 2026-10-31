@@ -38,7 +38,7 @@ MiKompri es una solución empresarial para la gestión colaborativa de listas de
 
 - **Gestión de Listas de Compras**: Creación, actualización, eliminación y consulta de listas
 - **Gestión de Ítems**: Agregar, modificar, marcar como comprados y eliminar ítems
-- **Identidad y Perfil**: Acceso con Microsoft Entra, aprovisionamiento del perfil local y gestión de grupos; account management y otros proveedores son alcance futuro de 010
+- **Identidad y Perfil**: Microsoft Entra, perfil local y grupos. 010-A añade Google mediante External ID, perfil propio y aislamiento de sesión en su rama; aceptación pendiente, sin despliegue productivo
 - **Gestión de Grupos**: Creación de grupos, membresías y roles (Owner, Admin, Member)
 - **Gestión de Catálogo de Productos**: Alta, actualización y desactivación de productos reutilizables
 - **Gestión de Mercados y Precios**: Registro de precios por mercado y consulta de historial
@@ -705,7 +705,7 @@ Las fuentes de verdad son [tasks 009](specs/009-shopping-experience-completion/t
 
 1. Completar los gates Web pendientes de rendimiento, aceptación integrada y accesibilidad con evidencia sobre el candidato validado.
 2. Reconciliar individualmente las tareas abiertas de 007/008 según sus criterios y evidencia, sin cerrarlas por la presencia de una implementación posterior.
-3. Formalizar, revisar y aprobar las próximas iniciativas antes de implementarlas: [010 — Account Management & Social Auth](specs/010-account-management-social-auth/scope.md) y [011 — Web Iconography](specs/011-web-iconography/scope.md). Hoy contienen solo análisis de alcance. 010 exige revisión TP11; no cambia todavía el proveedor de identidad. 011 no introduce aún un sistema nuevo de iconos.
+3. Completar la aceptación de [010-A — Microsoft existente + Google](specs/010-account-management-social-auth/spec.md): arquitectura aprobada, TP11 1.2.0 aplicada y código en su rama; [validación y límites](specs/010-account-management-social-auth/evidence/validation.md). Migración Microsoft real y cierre global pendientes; linking/G3 quedan en 010-B. [011 — Web Iconography](specs/011-web-iconography/scope.md) conserva solo análisis de alcance.
 4. Retomar **MVP-5 Android/MAUI** después de estabilizar la experiencia Web y sus contratos, con alcance y plan propios. MAUI sigue siendo la tecnología prevista para Android; Web primero es una secuencia de entrega, no su cancelación ni sustitución por otro framework móvil.
 5. Mantener presupuesto, sugerencias, fotos/OCR, promociones y comunidad como [iniciativas futuras del roadmap](specs/001-project-baseline/spec.md#mvps-definidos), sin incorporarlas a 009/010/011 por defecto. Comentarios/chat también quedan para una feature posterior.
 

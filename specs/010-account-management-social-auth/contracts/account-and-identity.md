@@ -1,6 +1,6 @@
 # Contratos mínimos — 010-A
 
-Diseño, no endpoints implementados. [Auditoría](../current-state-audit.md), [migración](../migration.md). Reutilizar perfil/sync y grupos; las APIs no validan Google directamente.
+Contrato 010-A implementado en la rama; aceptación real pendiente. [Auditoría inicial](../current-state-audit.md), [migración](../migration.md), [validación](../evidence/validation.md). Se reutilizan perfil/sync y grupos; las APIs no validan Google directamente.
 
 ## Contrato de token y confianza
 
@@ -26,9 +26,9 @@ No añadir endpoint para cada proveedor. Username de perfil no es alias de login
 
 ## Estado de acceso D1
 
-GET propuesto `/api/v1/users/me/access-status`, bearer ya validado, lectura Users local sin aprovisionar/sync/Graph ni recursión. Respuesta mínima UserId, estado de cuenta/canónica, versión y corte aplicable, Cache-Control:no-store; sin PII/métodos.
+GET `/api/v1/users/me/access-status`, bearer ya validado, lectura Users local sin aprovisionar/sync/Graph ni recursión. HTTP200 y Cache-Control:no-store; JSON obligatorio: `userId` (Guid no vacío), `isSuspended` (bool), `securityVersion` (entero>=0), `tokensValidFromExclusive` (Unix seconds o null). No PII/métodos. HTTP distinto de200, cuerpo inválido/incompleto o dependencia inaccesible fallan cerrado503, salvo401/403 propagados. Tupla desconocida401, sin alta automática.
 
-ShoppingList/ProductCatalog lo consultan antes del handler protegido, GET incluido; solo reutilizan dentro de request. Users aplica lectura local. Deadline configurable propuesta1s y sin retries de escrituras; medir budgets existentes. API inaccesible→503, suspendido→403, JWT anterior/al corte→401. No resucitar tokens al reactivar. No volver catálogo público ni cambiar catálogo global/grupos para eludir dependencia.
+ShoppingList/ProductCatalog lo consultan antes del handler protegido, GET incluido; solo reutilizan dentro de request. Users aplica lectura local. Deadline configurable1s por defecto, sin retries; medir budgets existentes. API inaccesible→503, suspendido→403, iat ausente o anterior/igual al corte→401 cuando existe corte. No resucitar tokens al reactivar. No volver catálogo público ni cambiar catálogo global/grupos para eludir dependencia.
 
 Este contrato se justifica porque GET/me actual crea/sincroniza perfil; no puede usarse así para autorizar cada request. No bloquea primer token validado en harness, sí salida productiva protegida.
 

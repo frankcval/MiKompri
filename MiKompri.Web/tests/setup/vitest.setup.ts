@@ -3,6 +3,8 @@ import { afterEach, beforeEach, vi } from 'vitest'
 
 // Auth tests configure CIAM explicitly; a developer's local QA cutover is not a fixture.
 vi.stubEnv('VITE_CIAM_ENABLED', 'false')
+// Match the synthetic AccountInfo fixtures independently of ignored .env.test files.
+vi.stubEnv('VITE_ENTRA_TENANT_ID', '00000000-0000-0000-0000-000000000000')
 
 // JSDOM has no layout: its zero-sized body makes Tabster treat every modal
 // as being in a hidden iframe. Supply a viewport only; real geometry, focus

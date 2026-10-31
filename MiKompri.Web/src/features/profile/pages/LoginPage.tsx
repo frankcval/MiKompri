@@ -77,6 +77,7 @@ export function LoginPage() {
           <PageHeader title="Inicio de sesión" description="Tu próxima compra empieza aquí. Entra para guardar tus listas y organizarte con los tuyos." />
           <Text role="status">{loginError || message}</Text>
           <p>Si ya utilizas MiKompri con Microsoft, continúa con Microsoft para acceder a tu cuenta. La recuperación del acceso se realiza con tu proveedor original.</p>
+          {googleAvailable() ? <p>En la siguiente pantalla, elige «Usar otra cuenta» si aparece y después «Iniciar sesión con Google».</p> : null}
           <div className={ui.actions}>
             {googleAvailable() ? <Button appearance="primary" onClick={() => void handleLogin('google')} disabled={inProgress !== InteractionStatus.None}>Continuar con Google</Button> : null}
             <Button appearance={googleAvailable() ? "secondary" : "primary"} onClick={() => void handleLogin('microsoft')} disabled={isPlaceholderClientId || inProgress !== InteractionStatus.None}>

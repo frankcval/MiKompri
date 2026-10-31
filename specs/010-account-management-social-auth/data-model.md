@@ -1,6 +1,8 @@
 # Modelo mínimo — 010-A y extensiones010-B
 
-Diseño, no clases/EF/BD modificados. [Auditoría actual](current-state-audit.md), [migración](migration.md), [ADR](../../docs/adr/ADR-004-ciam-identity.md).
+Modelo 010-A implementado en esta rama; sin aplicación a bases originales/productivas. [Auditoría inicial](current-state-audit.md), [migración](migration.md), [ADR](../../docs/adr/ADR-004-ciam-identity.md). La aceptación de traslado real sigue abierta.
+
+Migración aditiva `20261030212332_AccountExperience010A`: nueve columnas Users (Username, GivenName, FamilyName, PreferredLanguage, DefaultListSort, ProfileVersion, IsSuspended, SecurityVersion, TokensValidFromExclusive) y journal IdentityMigrations con FK restrictiva e índices únicos origen/destino. No reescribe UserId/ownership. DefaultListSort admite newest/oldest/name/updated; PreferredLanguage admite es o null. ProfileVersion controla concurrencia; solo el alta inicial importa claims, por lo que no hace falta almacenar snapshots del IdP ni flags de autoridad por campo.
 
 ## Invariantes
 
@@ -53,4 +55,4 @@ AccountOperation, ProofReceipt, inventario/último método, avatar/storage y est
 
 ## Persistencia y validación futura
 
-Cambios aditivos en Users, PostgreSQL/Docker y constraints de canónica/username/reserva; backfill fiable de legacy y perfil. Conservar columnas necesarias para rollback sin Down destructivo. El estado transitorio no se lee directamente desde otros contextos. No migración EF ejecutada aquí.
+Cambios aditivos en Users, PostgreSQL/Docker y constraints de canónica/username/reserva. Aplicados únicamente en bases QA/tests aisladas; las tres APIs no tienen cambios de modelo EF pendientes. El rollback administrativo conserva schema/journal/perfil, sin Down destructivo. El estado transitorio no se lee directamente desde otros contextos. [Resultados PostgreSQL](evidence/validation.md).

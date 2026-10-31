@@ -21,7 +21,7 @@ Email OTP es un adicional elegible de A: login básico probado en harness y mism
 | Persistencia | Users PostgreSQL propio; registro de migración acotado, no ExternalIdentities[] genérica ni almacén ProofReceipt en A |
 | Clientes | Web Code+PKCE+MSAL browser-delegated. Mantener configuración Microsoft actual y CIAM conocida para Google; separar cachés/sesión. MAUI futuro, sin gate Native Auth para A |
 | Confianza APIs | Una matriz compartida por las tres APIs: issuer/tenant/audience/scopes/clientes fijados por entorno; forwarding ShoppingList→Users compatible |
-| Infraestructura | Reutilizar CIAM QA de spike; esta revisión no configura nada. Nuevas configuraciones/migración productivas requieren su autorización |
+| Infraestructura | CIAM QA del spike reutilizado bajo autorización 010-A y [plan acotado](evidence/010a-qa-resource-plan.md). Sin configuración/migración productiva |
 | Rendimiento | Conservar budgets003/007/008/009; medir D1 para acceso protegido. Sin Graph en requests de negocio, Redis, bus ni CAE |
 
 ## Constitution Check
@@ -41,7 +41,9 @@ PASS de aprobación arquitectónica explícita del titular para 010-A; TP11 1.2.
 
 Documentación: spec/plan/tasks, [modelo](data-model.md), [migración](migration.md), [contratos](contracts/account-and-identity.md), research/architecture-review, checklists y evidencia histórica; 010-b-deferred delimita futuro.
 
-Código futuro A: Users Domain/Users, Application/Commands/SyncProfile, Infrastructure/Persistence y resolución/migración acotada; Users Api middleware/ProfileController; Security/Program de tres APIs; Web auth/msal/session y perfil. Ninguna de esas rutas se cambia ahora. Harness aislado previo no es implementación.
+Código A implementado en la rama: Users Domain/Users, Application/Commands/SyncProfile y UpdateProfile, Infrastructure/Persistence y migración acotada; Users Api middleware/ProfileController; Security/Program de tres APIs; Web auth/msal/session y perfil. `MiKompri.Identity` comparte únicamente validación técnica JWT/D1; no dominio ni acceso cross-DB. `tools/identity-migration` es un runner QA administrativo, sin endpoint público. [Validación y límites](evidence/validation.md). El harness previo sigue siendo evidencia histórica distinta.
+
+Ruta actual: Microsoft legacy, Google por selector CIAM alojado, sin domain_hint tras AADSTS90023 reproducido. Se retiró el desvío experimental Microsoft→CIAM; no se expone cutover hasta acreditar origen y rollback. [Recuperación QA](evidence/authentication-recovery-2026-10-31.md).
 
 ## Entregas y orden
 

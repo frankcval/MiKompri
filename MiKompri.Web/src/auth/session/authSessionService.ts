@@ -43,8 +43,7 @@ export function createAuthSessionService(msalInstance: IPublicClientApplication)
       selectProvider(route)
       const client = changed ? new PublicClientApplication(configurationFor(route)) : msalInstance
       if (changed) { await msalInstance.clearCache?.(); await client.initialize(); await client.handleRedirectPromise(); await client.clearCache() }
-      await client.loginRedirect({ scopes: provider ? [settings.scope] : scopes,
-        ...(settings.domainHint ? { domainHint: settings.domainHint } : {}), prompt: 'select_account' })
+      await client.loginRedirect({ scopes: provider ? [settings.scope] : scopes, prompt: 'select_account' })
     },
 
     async logout(account?: AccountInfo): Promise<void> {
