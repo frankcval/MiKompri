@@ -10,12 +10,14 @@ vi.mock('@azure/msal-react', () => ({ useIsAuthenticated: vi.fn(), useMsal: vi.f
 vi.mock('../../../src/features/profile/pages/ProfilePage', () => ({ ProfilePage: () => <h1>Perfil de prueba</h1> }))
 vi.mock('../../../src/features/profile/pages/LoginPage', () => ({ LoginPage: () => <h1>Acceso de prueba</h1> }))
 vi.mock('../../../src/features/groups/pages/GroupsPage', () => ({ GroupsPage: () => <h1>Grupos de prueba</h1> }))
+vi.mock('../../../src/features/groups/pages/GroupDetailPage', () => ({ GroupDetailPage: () => <h1>Detalle de grupo de prueba</h1> }))
 vi.mock('../../../src/features/shopping-lists/pages/ListsPage', () => ({ ListsPage: () => <h1>Mis listas de prueba</h1> }))
 vi.mock('../../../src/features/shopping-lists/pages/PersonalListsPage', () => ({ PersonalListsPage: () => <h1>Personales de prueba</h1> }))
 vi.mock('../../../src/features/shared-lists/pages/SharedListsPage', () => ({ SharedListsPage: () => <h1>Compartidas de prueba</h1> }))
+vi.mock('../../../src/features/shared-lists/pages/SharedListDetailPage', () => ({ SharedListDetailPage: () => <h1>Detalle compartido de prueba</h1> }))
 vi.mock('../../../src/features/product-catalog/pages/ProductCatalogPage', () => ({ ProductCatalogPage: () => <h1>Catálogo de prueba</h1> }))
 
-const directPaths = ['/profile', '/groups', '/personal-lists', '/shared-lists', '/product-catalog', '/lists']
+const directPaths = ['/profile', '/groups', '/groups/group-qa', '/personal-lists', '/shared-lists', '/product-catalog', '/lists']
 function TestRoutes() {
   const navigate = useNavigate(); const location = useLocation(); const content = useRoutes(appRoutes)
   return <><output data-testid="path">{location.pathname}</output><button onClick={() => navigate(-1)}>Atrás</button><button onClick={() => navigate(1)}>Adelante</button>{content}</>
@@ -27,13 +29,22 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('navegación autenticada persistente', () => {
-  it('identifica Mis listas como destino padre del detalle con icono decorativo y etiqueta', () => {
-    render(<MemoryRouter initialEntries={['/personal-lists/example']}><TestRoutes /></MemoryRouter>)
+  it.each([['/personal-lists/example', 'Mis listas'], ['/shared-lists/example', 'Mis listas'], ['/groups/group-qa', 'Grupos']])('identifica el destino padre de %s con icono decorativo y etiqueta', (path, label) => {
+    render(<MemoryRouter initialEntries={[path]}><TestRoutes /></MemoryRouter>)
     const nav = screen.getByRole('navigation', { name: 'Navegación principal' })
-    const lists = within(nav).getByRole('link', { name: 'Mis listas' })
+    const lists = within(nav).getByRole('link', { name: label })
     expect(lists).toHaveAttribute('aria-current', 'page')
     expect(lists.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
     expect(lists.querySelector('svg')).toHaveAttribute('focusable', 'false')
+  })
+  it('conserva la sección y el detalle de grupo con Atrás y Adelante', async () => {
+    render(<MemoryRouter initialEntries={['/groups', '/groups/group-qa']}><TestRoutes /></MemoryRouter>)
+    const nav = screen.getByRole('navigation', { name: 'Navegación principal' })
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atrás' })) })
+    expect(screen.getByTestId('path')).toHaveTextContent('/groups')
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Adelante' })) })
+    expect(screen.getByTestId('path')).toHaveTextContent('/groups/group-qa')
+    expect(within(nav).getByRole('link', { name: 'Grupos' })).toHaveAttribute('aria-current', 'page')
   })
   it('mantiene navegación y contexto con Atrás/Adelante', async () => {
     render(<MemoryRouter initialEntries={['/']}><TestRoutes /></MemoryRouter>)

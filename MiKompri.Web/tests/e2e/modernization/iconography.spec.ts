@@ -2,6 +2,29 @@ import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { ids, modernFixtures, openHarness } from '../fixtures/modernization'
 
+test('@smoke 011 cancelling a loading navigation drawer does not reopen it', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await modernFixtures(page)
+  let release!: () => void
+  const gate = new Promise<void>(resolve => { release = resolve })
+  await page.route('**/src/app/layout/MobileNavigationDrawer.tsx*', async route => { await gate; await route.continue() })
+  await openHarness(page, '/lists')
+  const menu = page.getByRole('button', { name: 'Abrir menú', exact: true })
+  await menu.focus()
+  await expect(page.getByRole('tooltip')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('tooltip')).toHaveCount(0)
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('status')).toContainText('Preparando menú')
+  await page.keyboard.press('Escape')
+  await expect(menu).toHaveAttribute('aria-expanded', 'false')
+  await expect(menu).toBeFocused()
+  release()
+  await page.waitForLoadState('networkidle')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(menu).toHaveAttribute('aria-expanded', 'false')
+})
+
 for (const width of [320, 390, 430, 768, 1280]) {
   test(`@smoke 011 navigation, notes, history and reflow ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
