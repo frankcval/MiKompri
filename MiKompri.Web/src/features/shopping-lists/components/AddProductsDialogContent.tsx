@@ -1,3 +1,4 @@
+import { accountSessionKey } from '../../../auth/session/accountIdentity'
 import { useEffect, useState } from 'react'
 import { Button, Spinner } from '@fluentui/react-components'
 import { useQuery } from '@tanstack/react-query'
@@ -18,14 +19,14 @@ export function AddProductsDialogContent({ returnTo, onAdd, pending, setPending,
   const [search, setSearch] = useState('')
   const [creating, setCreating] = useState(false)
   const { account, token } = useListSession()
-  const products = useQuery({ queryKey: ['catalog-products', account?.homeAccountId], enabled: Boolean(account), retry: false,
+  const products = useQuery({ queryKey: ['catalog-products', accountSessionKey(account)], enabled: Boolean(account), retry: false,
     queryFn: async () => getCatalogProducts(env.productCatalogApiBaseUrl, await token()) })
   return <>
         <div className={ui.actions}><Button disabled={pending} appearance={!creating ? 'primary' : 'secondary'} onClick={() => setCreating(false)}>Elegir producto</Button><Button disabled={pending} appearance={creating ? 'primary' : 'secondary'} onClick={() => setCreating(true)}>Crear producto aquí</Button></div>
         {creating ? <InlineProductCreation scope={returnTo} initialName={search.trim()} onPendingChange={setPending} onAdd={onAdd} /> : <>
         <ProductSearch value={search} onChange={setSearch} disabled={pending} />
         {products.isPending ? <Spinner label="Cargando productos…" /> : products.isError ? <div role="alert">No fue posible cargar los productos del catálogo. <Button onClick={() => void products.refetch()}>Reintentar</Button></div>
-          : products.data.some(p => p.isActive !== false) ? <ListItemsPanel accountKey={account?.homeAccountId} draftScope={`add:${returnTo}`} products={products.data.filter(p => p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()))} onAddItem={async item => {
+          : products.data.some(p => p.isActive !== false) ? <ListItemsPanel accountKey={accountSessionKey(account)} draftScope={`add:${returnTo}`} products={products.data.filter(p => p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()))} onAddItem={async item => {
             setPending(true); try { await onAdd(item) } finally { setPending(false) }
           }} /> : <p>No hay productos disponibles en el catálogo. Crea un producto aquí para añadirlo a tu lista.</p>}
         </>}

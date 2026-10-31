@@ -14,7 +14,7 @@ export function resetPrivateSession() {
   generation++
   controller.abort()
   controller = new AbortController()
-  for (const reset of resets) reset()
+  for (const reset of [...resets]) reset()
 }
 // Same-tab and cross-tab account changes invalidate in-flight private work.
 if (typeof window !== 'undefined') window.addEventListener('storage', event => {

@@ -11,10 +11,11 @@ export function googleAvailable() {
 export function getProviderSettings(provider: AuthProvider) {
   if (provider === 'google') {
     if (!googleAvailable()) throw new Error('Google no está disponible en este entorno.')
-    return { clientId: env.ciamClientId, authority: env.ciamAuthority, scope: env.ciamApiScope,
-      knownAuthorities: [new URL(env.ciamAuthority).hostname, `${env.ciamTenantId}.ciamlogin.com`], domainHint: 'google' }
+    return { clientId: env.ciamClientId, tenantId: env.ciamTenantId, authority: env.ciamAuthority, scope: env.ciamApiScope,
+      knownAuthorities: [new URL(env.ciamAuthority).hostname, `${env.ciamTenantId}.ciamlogin.com`],
+      domainHint: 'google' }
   }
-  return { clientId: env.entraClientId, authority: env.entraAuthority, scope: env.apiScope,
+  return { clientId: env.entraClientId, tenantId: env.entraTenantId, authority: env.entraAuthority, scope: env.apiScope,
     knownAuthorities: [] as string[], domainHint: undefined }
 }
 export function selectProvider(provider: AuthProvider) {

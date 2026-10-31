@@ -3,14 +3,14 @@ import { useSearchParams } from 'react-router-dom'
 import { estimatedTotal, listHistoryReason, type ListPresentation } from '../listPresentation'
 import ui from '../../../shared/ui/AppSurface.module.css'
 
-export function ListOverviewControls() {
+export function ListOverviewControls({ defaultSort = 'newest' }: { defaultSort?: string }) {
   const [params, setParams] = useSearchParams()
   const change = (key: string, value: string) => { const next = new URLSearchParams(params); next.set(key, value); setParams(next) }
   return <div className={ui.actions}>
     <Field label="Mostrar listas"><Select value={params.get('view') === 'history' ? 'history' : 'active'} onChange={(_, data) => change('view', data.value)}>
       <option value="active">Activas</option><option value="history">Historial</option>
     </Select></Field>
-    <Field label="Ordenar listas"><Select value={params.get('sort') ?? 'newest'} onChange={(_, data) => change('sort', data.value)}>
+    <Field label="Ordenar listas"><Select value={params.get('sort') ?? defaultSort} onChange={(_, data) => change('sort', data.value)}>
       <option value="newest">Más recientes</option><option value="oldest">Más antiguas</option><option value="updated">Última modificación</option><option value="name">Nombre</option>
     </Select></Field>
   </div>

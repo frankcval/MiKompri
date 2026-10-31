@@ -1,4 +1,5 @@
-﻿import { Button, Spinner, Select, Field } from '@fluentui/react-components'
+import { accountSessionKey } from '../../../auth/session/accountIdentity'
+import { Button, Spinner, Select, Field } from '@fluentui/react-components'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { getMyGroups } from '../../groups/api/groupsApi'
@@ -15,7 +16,7 @@ export function SharedListsPage() {
   const { account, token } = useListSession()
   const [params, setParams] = useSearchParams()
   const requested = params.get('groupId') ?? ''
-  const groups = useQuery({ queryKey: ['groups', account?.homeAccountId], enabled: Boolean(account), retry: false,
+  const groups = useQuery({ queryKey: ['groups', accountSessionKey(account)], enabled: Boolean(account), retry: false,
     queryFn: async () => getMyGroups(env.usersApiBaseUrl, await token()) })
   const group = groups.isSuccess ? groups.data.find(g => g.id === requested) : undefined
   if (!account) return <p>No hay sesión activa.</p>
@@ -26,7 +27,7 @@ export function SharedListsPage() {
         <Field label="Grupo"><Select value={group?.id ?? ''} onChange={(_, data) => { const next = new URLSearchParams(params); if (data.value) next.set('groupId', data.value); else next.delete('groupId'); setParams(next) }}>
           <option value="">Selecciona uno de tus grupos</option>{groups.data.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
         </Select></Field>
-        {group ? <GroupLists key={`${account.homeAccountId}:${group.id}`} group={group} /> : <p role={requested ? 'alert' : undefined}>{requested ? 'El grupo indicado no está disponible entre tus grupos. Selecciona otro grupo.' : 'Selecciona un grupo para ver y crear sus listas compartidas.'}</p>}
+        {group ? <GroupLists key={`${accountSessionKey(account)}:${group.id}`} group={group} /> : <p role={requested ? 'alert' : undefined}>{requested ? 'El grupo indicado no está disponible entre tus grupos. Selecciona otro grupo.' : 'Selecciona un grupo para ver y crear sus listas compartidas.'}</p>}
       </>}
   </section>
 }
@@ -35,7 +36,7 @@ function GroupLists({ group }: { group: { id: string; name: string } }) {
   const { account, token, write } = useListSession()
   const client = useQueryClient()
   const navigate = useNavigate()
-  const key = ['shared-lists', group.id, account?.homeAccountId]
+  const key = ['shared-lists', group.id, accountSessionKey(account)]
   const lists = useQuery({ queryKey: key, enabled: Boolean(account), retry: false,
     queryFn: async () => getSharedListsByGroup(env.shoppingListApiBaseUrl, await token(), group.id) })
   const visible = visibleLists(lists.data ?? [], params.get('view') === 'history', params.get('sort') ?? 'newest')

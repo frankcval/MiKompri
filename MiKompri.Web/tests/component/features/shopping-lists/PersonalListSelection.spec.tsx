@@ -1,3 +1,4 @@
+import '../../../../src/features/shopping-lists/components/AddProductsDialogContent'
 import '../../../setup/jsdom-dialogs'
 import userEvent from '@testing-library/user-event'
 import { FluentProvider } from '@fluentui/react-components'
@@ -10,7 +11,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PersonalListsPage } from '../../../../src/features/shopping-lists/pages/PersonalListsPage'
 import { ListsPage } from '../../../../src/features/shopping-lists/pages/ListsPage'
 
-const account = vi.hoisted(() => ({ homeAccountId: 'account-1' }))
+const account = vi.hoisted(() => ({ homeAccountId: 'account-1', tenantId: '00000000-0000-0000-0000-000000000000' }))
 vi.mock('@azure/msal-react', () => ({
   useMsal: () => ({ accounts: [account], instance: { acquireTokenSilent: async () => ({ accessToken: 'test-token' }) } }),
 }))
@@ -45,6 +46,7 @@ beforeEach(() => {
   fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
     if (url.endsWith('/groups')) return Response.json([])
     if (url.endsWith('/purchaselists/mine')) return Response.json(lists)
+    if (url.endsWith('/users/me')) return Response.json({ id: 'owned-profile', displayName: 'QA', defaultListSort: 'newest', profileVersion: 0 })
     if (url.endsWith('/catalog-products')) return Response.json(products)
     if (url.endsWith('/items')) {
       if (failure) return Response.json({ errors: { Quantity: ['La cantidad no es válida.'] } }, { status: 400 })

@@ -1,10 +1,11 @@
-﻿import { useMsal } from '@azure/msal-react'
+import { currentAccount } from '../../../auth/session/accountIdentity'
+import { useMsal } from '@azure/msal-react'
 import { loginRequest } from '../../../auth/msal/msalConfig'
 import { createAuthSessionService, executeAuthenticatedWrite } from '../../../auth/session/authSessionService'
 
 export function useListSession() {
   const { instance, accounts } = useMsal()
-  const account = accounts[0]
+  const account = currentAccount(instance, accounts)
   const session = createAuthSessionService(instance)
   return {
     account,

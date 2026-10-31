@@ -1,7 +1,8 @@
+import { sessionFetch } from '../../shared/api/request'
 import { mapHttpError, type AppHttpError } from '../errors/httpErrorMapper'
 
 export async function httpGet<T>(url: string, token?: string): Promise<T> {
-  const response = await fetch(url, {
+  const response = await sessionFetch(url, {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       Accept: 'application/json',

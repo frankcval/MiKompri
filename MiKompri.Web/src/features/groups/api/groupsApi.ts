@@ -1,3 +1,4 @@
+import { sessionFetch } from '../../../shared/api/request'
 import { responseError } from '../../../shared/api/request'
 export type GroupSummary = {
   id: string
@@ -26,7 +27,7 @@ async function parseError(response: Response): Promise<Error & { status?: number
 }
 
 export async function getMyGroups(usersApiBaseUrl: string, accessToken: string): Promise<GroupSummary[]> {
-  const response = await fetch(`${usersApiBaseUrl}/api/v1/groups`, {
+  const response = await sessionFetch(`${usersApiBaseUrl}/api/v1/groups`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -46,7 +47,7 @@ export async function createGroup(
   accessToken: string,
   input: CreateGroupInput,
 ): Promise<GroupSummary> {
-  const response = await fetch(`${usersApiBaseUrl}/api/v1/groups`, {
+  const response = await sessionFetch(`${usersApiBaseUrl}/api/v1/groups`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -68,7 +69,7 @@ export async function getGroupMembers(
   accessToken: string,
   groupId: string,
 ): Promise<GroupMember[]> {
-  const response = await fetch(`${usersApiBaseUrl}/api/v1/groups/${groupId}/members`, {
+  const response = await sessionFetch(`${usersApiBaseUrl}/api/v1/groups/${groupId}/members`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -89,7 +90,7 @@ export async function addGroupMember(
   groupId: string,
   input: AddGroupMemberInput,
 ): Promise<GroupMember> {
-  const response = await fetch(`${usersApiBaseUrl}/api/v1/groups/${groupId}/members`, {
+  const response = await sessionFetch(`${usersApiBaseUrl}/api/v1/groups/${groupId}/members`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,

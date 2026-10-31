@@ -1,3 +1,4 @@
+import { sessionFetch } from '../../../shared/api/request'
 import { responseError } from '../../../shared/api/request'
 export type SharedListSummary = {
   id: string
@@ -18,7 +19,7 @@ export type SharedListDetail = SharedListSummary & {
 }
 
 export async function getSharedListById(baseUrl: string, token: string, listId: string): Promise<SharedListDetail> {
-  const response = await fetch(`${baseUrl}/api/v1/shared-lists/${listId}`, {
+  const response = await sessionFetch(`${baseUrl}/api/v1/shared-lists/${listId}`, {
     headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
   })
   if (!response.ok) throw await parseError(response)
@@ -50,7 +51,7 @@ export async function getSharedListsByGroup(
   const url = new URL(`${shoppingListApiBaseUrl}/api/v1/shared-lists`)
   url.searchParams.set('groupId', groupId)
 
-  const response = await fetch(url.toString(), {
+  const response = await sessionFetch(url.toString(), {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -70,7 +71,7 @@ export async function createSharedList(
   accessToken: string,
   input: CreateSharedListInput,
 ): Promise<string> {
-  const response = await fetch(`${shoppingListApiBaseUrl}/api/v1/shared-lists`, {
+  const response = await sessionFetch(`${shoppingListApiBaseUrl}/api/v1/shared-lists`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -93,7 +94,7 @@ export async function addSharedListItem(
   sharedListId: string,
   input: AddSharedListItemInput,
 ): Promise<string> {
-  const response = await fetch(`${shoppingListApiBaseUrl}/api/v1/shared-lists/${sharedListId}/items`, {
+  const response = await sessionFetch(`${shoppingListApiBaseUrl}/api/v1/shared-lists/${sharedListId}/items`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,

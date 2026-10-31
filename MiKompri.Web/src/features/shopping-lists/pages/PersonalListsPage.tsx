@@ -1,3 +1,5 @@
+import { useProfileListSort } from '../../profile/hooks/useProfileListSort'
+import { accountSessionKey } from '../../../auth/session/accountIdentity'
 import { lazy, Suspense, useRef, useState } from 'react'
 import { Button, Spinner, Tab, TabList } from '@fluentui/react-components'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -20,7 +22,7 @@ const PersonalExpenses = lazy(() => import('../../settlements/components/Purchas
 export function PersonalListsPage() {
   const { listId } = useParams<{ listId: string }>()
   const { account } = useListSession()
-  return <PersonalListScreen key={`${account?.homeAccountId}:${listId ?? 'index'}`} />
+  return <PersonalListScreen key={`${accountSessionKey(account)}:${listId ?? 'index'}`} />
 }
 
 function PersonalListScreen() {
@@ -28,6 +30,7 @@ function PersonalListScreen() {
   const client = useQueryClient()
   const navigate = useNavigate()
   const { listId } = useParams<{ listId: string }>()
+  const defaultSort = useProfileListSort(account, token, !listId)
   const [params, setParams] = useSearchParams()
   const [capture, setCapture] = useState('')
   const captureTrigger = useRef<HTMLElement | null>(null)
@@ -36,11 +39,11 @@ function PersonalListScreen() {
   const pending = useRef(new Set<string>())
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-  const key = ['personal-lists', account?.homeAccountId]
+  const key = ['personal-lists', accountSessionKey(account)]
   const lists = useQuery({ queryKey: key, enabled: Boolean(account), retry: false,
     queryFn: async () => getMyPersonalLists(env.shoppingListApiBaseUrl, await token()) })
   const selected = lists.data?.find(list => list.id === listId)
-  const visible = visibleLists(lists.data ?? [], params.get('view') === 'history', params.get('sort') ?? 'newest')
+  const visible = visibleLists(lists.data ?? [], params.get('view') === 'history', params.get('sort') ?? defaultSort)
   if (!account) return <p>No hay sesión activa.</p>
   const refresh = async () => { await client.invalidateQueries({ queryKey: key }); await client.invalidateQueries({ queryKey: ['all-lists'] }) }
   return <section className={ui.page}>
@@ -52,7 +55,7 @@ function PersonalListScreen() {
         }} />
       </div>
       {lists.isSuccess ? <section aria-label="Mis listas personales" className={ui.stack}>
-        <ListOverviewControls />
+        <ListOverviewControls defaultSort={defaultSort} />
         {visible.map(list => <Link className={ui.listCard} key={list.id} to={`/personal-lists/${list.id}`}><strong>{list.name}</strong><ListOverview list={list} /></Link>)}
         {lists.data.length > 0 && !visible.length ? <p>No hay listas personales en esta vista. Cambia entre Activas e Historial.</p> : null}
         {!lists.data.length ? <p>Sin listas personales todavía. Crea una lista para empezar.</p> : <p>Selecciona una lista para ver sus productos y preparar la compra.</p>}
@@ -63,11 +66,11 @@ function PersonalListScreen() {
     {listId && lists.isSuccess && !selected ? <p role="alert">Esta lista no está disponible en tus listas personales.</p> : null}
     {selected ? <section className={ui.shoppingDetail} aria-label={`Detalle de ${selected.name}`}>
       <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{selected.name}</h1><p>Lista personal</p></div>
-        <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${account.homeAccountId}:${selected.id}`} returnTo={`/personal-lists/${selected.id}`} onAdd={async item => {
+        <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${accountSessionKey(account)}:${selected.id}`} returnTo={`/personal-lists/${selected.id}`} onAdd={async item => {
           await write(token => addPersonalListItem(env.shoppingListApiBaseUrl, token, selected.id, item)); await refresh()
         }} />
       </div>
-      <div className={ui.actions}><RenameListAction name={selected.name} accountKey={account.homeAccountId} scope={selected.id} onRename={async name => { await write(t => renamePersonalList(env.shoppingListApiBaseUrl, t, selected.id, name)); await refresh() }} />
+      <div className={ui.actions}><RenameListAction name={selected.name} accountKey={accountSessionKey(account)} scope={selected.id} onRename={async name => { await write(t => renamePersonalList(env.shoppingListApiBaseUrl, t, selected.id, name)); await refresh() }} />
         <ConfirmAction label="Eliminar lista" description={`Se eliminarán «${selected.name}» y sus productos. Esta acción no se puede deshacer. Las listas con gastos registrados se conservan para proteger su historial.`} onConfirm={async () => { await write(t => deletePersonalList(env.shoppingListApiBaseUrl, t, selected.id)); await refresh(); navigate('/lists') }} />
       </div>
       {error ? <p role="alert">{error} <Button onClick={() => void lists.refetch()}>Actualizar lista</Button></p> : null}{message ? <p role="status">{message}</p> : null}
@@ -81,10 +84,10 @@ function PersonalListScreen() {
         finally { pending.current.delete(itemId); setPendingIds([...pending.current]) }
       }} actions={item => <ProductOptions name={item.productName}>
         <Button onClick={event => { captureTrigger.current = event.currentTarget; setCapture(item.id) }}>Datos de compra de {item.productName}</Button>
-        <EditItemAction item={item} accountKey={account.homeAccountId} onEdit={async (quantity, price) => { await write(t => editPersonalItem(env.shoppingListApiBaseUrl, t, selected.id, item.id, quantity, price)); await refresh() }} />
+        <EditItemAction item={item} accountKey={accountSessionKey(account)} onEdit={async (quantity, price) => { await write(t => editPersonalItem(env.shoppingListApiBaseUrl, t, selected.id, item.id, quantity, price)); await refresh() }} />
         <ConfirmAction label={`Eliminar ${item.productName}`} text="Eliminar" description="Se eliminará este producto de la lista." onConfirm={async () => { await write(t => deletePersonalItem(env.shoppingListApiBaseUrl, t, selected.id, item.id)); await refresh(); document.getElementById('main-content')?.focus() }} />
       </ProductOptions>} />}
-      {selected.items?.find(item => item.id === capture) ? <PurchaseCapture key={`${account.homeAccountId}:${capture}`} listId={selected.id} item={selected.items.find(item => item.id === capture)!} restoreFocusRef={captureTrigger} onClose={closeCapture} /> : null}
+      {selected.items?.find(item => item.id === capture) ? <PurchaseCapture key={`${accountSessionKey(account)}:${capture}`} listId={selected.id} item={selected.items.find(item => item.id === capture)!} restoreFocusRef={captureTrigger} onClose={closeCapture} /> : null}
     </section> : null}
   </section>
 }

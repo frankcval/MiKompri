@@ -1,3 +1,4 @@
+import '../../../../src/features/shopping-lists/components/AddProductsDialogContent'
 import '../../../setup/jsdom-dialogs'
 import userEvent from '@testing-library/user-event'
 import { FluentProvider } from '@fluentui/react-components'
@@ -10,7 +11,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ProductCatalogPage } from '../../../../src/features/product-catalog/pages/ProductCatalogPage'
 import { PersonalListsPage } from '../../../../src/features/shopping-lists/pages/PersonalListsPage'
 
-const account = vi.hoisted(() => ({ homeAccountId: 'catalog-user' }))
+const account = vi.hoisted(() => ({ homeAccountId: 'catalog-user', tenantId: '00000000-0000-0000-0000-000000000000' }))
 vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [account], instance: { acquireTokenSilent: async () => ({ accessToken: 'token' }) } }) }))
 const listId = '11111111-1111-4111-8111-111111111111'
 const productId = '22222222-2222-4222-8222-222222222222'
@@ -26,6 +27,7 @@ beforeEach(() => {
   status = 201
   errorBody = {}
   fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+    if (url.endsWith('/users/me')) return Response.json({ id: 'owned-profile', displayName: 'QA', defaultListSort: 'newest', profileVersion: 0 })
     if (url.endsWith('/catalog-products')) {
       if (init?.method === 'POST') {
         if (status !== 201) return Response.json(errorBody, { status })

@@ -7,6 +7,27 @@ public class ProfileOwnershipApiTests : IClassFixture<CustomWebApplicationFactor
 {
     private readonly CustomWebApplicationFactory _factory;
     public ProfileOwnershipApiTests(CustomWebApplicationFactory factory) { _factory = factory; factory.ResetDatabase(); }
+    [Theory]
+    [InlineData("userId")]
+    [InlineData("tenantId")]
+    [InlineData("objectId")]
+    [InlineData("identityProvider")]
+    [InlineData("isSuspended")]
+    [InlineData("securityVersion")]
+    [InlineData("emailVerified")]
+    public async Task ProfileCannotAssignIdentityOrSecurityFields(string field)
+    {
+        using var client = _factory.CreateAuthenticatedClient("profile-field-guard", "Owned");
+        var before = await client.GetFromJsonAsync<JsonElement>("/api/v1/users/me");
+        client.DefaultRequestHeaders.TryAddWithoutValidation("If-Match", "\"0\"");
+        var response = await client.PutAsJsonAsync("/api/v1/users/me", new Dictionary<string, object?> {
+            ["displayName"] = "Do not save", [field] = "untrusted-client-value"
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var after = await client.GetFromJsonAsync<JsonElement>("/api/v1/users/me");
+        Assert.Equal(before.GetProperty("id").GetGuid(), after.GetProperty("id").GetGuid());
+        Assert.Equal("Owned", after.GetProperty("displayName").GetString());
+    }
     [Fact]
     public async Task ExtendedProfile_RequiresVersionAndKeepsLegacyNameOnlyCompatible()
     {

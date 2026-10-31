@@ -1,3 +1,4 @@
+import { accountSessionKey } from '../../../auth/session/accountIdentity'
 import { useRef, useState } from 'react'
 import { Button, Field, Input } from '@fluentui/react-components'
 import { useQueryClient } from '@tanstack/react-query'
@@ -13,7 +14,7 @@ type Draft = { name: string; unit: string; quantity: string; price: string; crea
 export function InlineProductCreation({ scope, onAdd, onPendingChange, initialName = '' }: { scope: string; onAdd: (item: ListItemInput) => Promise<void>; onPendingChange?: (pending: boolean) => void; initialName?: string }) {
   const { account, token, write } = useListSession()
   const client = useQueryClient()
-  const [draft, setDraft] = useDraft<Draft>(account?.homeAccountId ?? '', `new-product:${scope}`, { name: initialName, unit: 'unidad', quantity: '1', price: '', createdId: '', createdName: '', uncertain: false })
+  const [draft, setDraft] = useDraft<Draft>(accountSessionKey(account) ?? '', `new-product:${scope}`, { name: initialName, unit: 'unidad', quantity: '1', price: '', createdId: '', createdName: '', uncertain: false })
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')

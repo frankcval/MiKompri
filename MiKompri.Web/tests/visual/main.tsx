@@ -9,8 +9,9 @@ import { InteractionStatus, type AccountInfo, type IPublicClientApplication } fr
 import { appTheme } from '../../src/shared/ui/theme'
 import { appRoutes } from '../../src/app/router/routes'
 import '../../src/index.css'
+import { getProviderSettings, selectedProvider } from '../../src/auth/msal/providerSettings'
 
-const account: AccountInfo = { homeAccountId: 'visual-test', localAccountId: 'visual-test', environment: 'test', tenantId: 'test', username: 'visual@example.test', name: 'Persona de prueba' }
+const account: AccountInfo = { homeAccountId: 'visual-test', localAccountId: 'visual-test', environment: 'test', tenantId: getProviderSettings(selectedProvider()).tenantId, username: 'visual@example.test', name: 'Persona de prueba' }
 const params = new URLSearchParams(location.search)
 const route = params.get('route') ?? '/personal-lists'
 const anonymous = params.has('anonymous')

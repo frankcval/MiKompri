@@ -6,7 +6,9 @@ import { InteractionStatus } from '@azure/msal-browser'
 import { LoginPage } from '../../../src/features/profile/pages/LoginPage'
 import { rememberReturnTo } from '../../../src/auth/session/returnIntent'
 
-vi.mock('@azure/msal-react', () => ({ useIsAuthenticated: () => true, useMsal: () => ({ accounts: [{ homeAccountId: 'login-test' }], instance: {}, inProgress: InteractionStatus.None }) }))
+vi.mock('@azure/msal-react', () => ({ useIsAuthenticated: () => true, useMsal: () => ({ accounts: [{ homeAccountId: 'login-test', tenantId: '00000000-0000-0000-0000-000000000000' }], instance: {}, inProgress: InteractionStatus.None }) }))
+vi.mock('../../../src/auth/session/authSessionService', () => ({ createAuthSessionService: () => ({ getAccessToken: async () => 'test-only' }) }))
+vi.mock('../../../src/features/profile/api/profileApi', () => ({ syncMyProfile: async () => ({ id: 'test-user' }) }))
 afterEach(cleanup)
 it('conserva intención de creación incluso con efectos repetidos de StrictMode', async () => {
   rememberReturnTo('/personal-lists?create=1')
