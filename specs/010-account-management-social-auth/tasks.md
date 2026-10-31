@@ -6,13 +6,13 @@
 
 ## 010-A — A0 aprobación y configuración del diseño
 
-- [ ] T001 [A] Ratificar auditoría/evidencia/fuentes y alcance Microsoft existente+Google en `current-state-audit.md`, `research.md` y `evidence/010-a-scope-review.md`; harness no equivale a aceptación productiva.
-- [ ] T006 [A] Aprobar coste/configuración mínima y minimización de perfil/recuperación en proveedor en `research.md` y `privacy-and-deletion.md`; sin SMS/trials/credenciales propios.
+- [x] T001 [A] Ratificar auditoría/evidencia/fuentes y alcance Microsoft existente+Google en `current-state-audit.md`, `research.md` y `evidence/010-a-scope-review.md`; harness no equivale a aceptación productiva.
+- [x] T006 [A] Aprobar coste/configuración mínima y minimización de perfil/recuperación en proveedor en `research.md` y `privacy-and-deletion.md`; sin SMS/trials/credenciales propios.
 - [x] T007 [A] Revisar/aprobar `docs/adr/ADR-004-ciam-identity.md` incremental: CIAM para Google y transición Microsoft, sin exigir prueba de linking A ni elegir Alternative B.
 - [x] T008 [A] Aprobar `constitution-amendment-proposal.md` por gobernanza; solo tras autorización explícita aplicar TP11/version/templates. No editar constitución por esta tarea documental.
 - [x] T009 [A] Ratificar contrato JWT/tupla, perfil y D1/D2 en `data-model.md`, `contracts/account-and-identity.md`, `architecture-review.md`. D3/broker quedan B.
 - [x] T010 [A][US2] Aprobar coexistencia/cohortes y prueba de origen Microsoft inmutable en `migration.md`; mismo UserId, reserva, rollback/no migrados. Sin linking general ni G3 como prerequisito.
-- [ ] T011 [A] Revisar amenazas de login/provisión/migración/perfil/sesión en `threat-model.md`; takeover/linking/recovery por otro proveedor se revisarán en B antes de ofrecerlos.
+- [x] T011 [A] Revisar amenazas de login/provisión/migración/perfil/sesión en `threat-model.md`; takeover/linking/recovery por otro proveedor se revisarán en B antes de ofrecerlos.
 - [x] T012 [A][US4] Ratificar perfil básico/username/idioma y preferencias tipadas con finalidad actual. Iniciales; sin foto/storage, DOB/teléfono/dirección ni UI de métodos.
 
 ## 010-A — A1 login aislado (no habilita negocio protegido)
@@ -27,7 +27,7 @@
 ## 010-A — A2 identidad y transición Microsoft
 
 - [x] T013 [A][US2] Tests de UserId inmutable, canonical tuple única y traslado acotado en `test/MiKompri.Users.Domain.Tests/`; AccountOperation/ProofReceipt y pruebas de cambio de métodos se conservan en T027[B].
-- [ ] T014 [A][US2] Tests de traslado Microsoft administrado en `test/MiKompri.Users.Application.Tests/Commands/MigrateIdentityTests.cs`: origen federado acreditado, reserva, destino ocupado, idempotencia, email collision y fallback sub solo legado; sin doble prueba G3 genérica.
+- [x] T014 [A][US2] Tests de traslado Microsoft administrado en `test/MiKompri.Users.Application.Tests/Commands/IdentityResolutionTests.cs`, `test/MiKompri.Users.Api.Tests/PostgresIdentityTests.cs` y `FederatedOriginVerifierTests.cs`: origen federado acreditado, reserva, destino ocupado, idempotencia, email collision y fallback sub solo legado; sin doble prueba G3 genérica.
 - [x] T015 [A][US2] Adaptar resolución/alta en `MiKompri.Users.Domain/Users/` y `MiKompri.Users.Application/Commands/SyncProfile/`: una canónica activa, namespace confiable y registro acotado de migración; no ExternalIdentities[] genérica.
 - [x] T016 [A][US2/US4] Preparar únicamente schema aditivo necesario para perfil/estado y traslado en `MiKompri.Users.Infrastructure/Persistence/`; backfill fiable, perfiles previos personalizados, sin tablas de broker por anticipación.
 - [x] T017 [A][US2] Tests PostgreSQL Docker de índices/provisión concurrente/reserva/cutover en `test/MiKompri.Users.Api.Tests/IdentityMigrationTests.cs`, manifiestos antes/después.
@@ -51,14 +51,14 @@
 - [x] T036 [A][US4] Tests de regresión login/GET/sync no sobrescribe DisplayName/nombres/idioma propios en `test/MiKompri.Users.Api.Tests/ProfileApiTests.cs` y Application/SyncProfile.
 - [x] T037 [A][US4] Reutilizar GET/PUT/me y POST/me/sync en `MiKompri.Users.Api/Controllers/ProfileController.cs` y DTOs; compatibilidad legacy/If-Match documentada, sin aceptar IDs/verificationState del cliente.
 - [x] T038 [A][US4] Tests/UI de perfil propio, username distinto de login e iniciales en `MiKompri.Web/tests/component/profile/` y `src/features/profile/`. Reimportación explícita futura T058[B].
-- [ ] T050 [A][US4] A-AC10 con proveedor real: personalizar nombre/campos A y repetir login/sync sin sobrescritura. Avatar personalizado solo cuando se implemente T039[B].
+- [x] T050 [A][US4] A-AC10 con proveedor real: personalizar nombre/campos A y repetir login/sync sin sobrescritura. Avatar personalizado solo cuando se implemente T039[B].
 
 ## 010-A — A5 validación y cierre
 
 - [ ] T041 [A] Evidencia negativa de amenazas aplicables A en `evidence/security.md`; matriz separada de métodos B y revisión de seguridad.
 - [x] T044 [A] Suites Domain/Application/API/PostgreSQL, lint/typecheck/build/Web unit/component/integration/E2E directamente afectados; registrar SHA/comandos/resultados en `evidence/validation.md`.
-- [ ] T045 [A] Verificar modelo/migraciones EF, Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; no dar por verde CI de otro SHA.
-- [ ] T046 [A] Revisar issuer/audience/scopes/CORS/redirects/configuración por entorno, mínimo privilegio de transición y recuperación en proveedor; sin secretos/PII en evidencia ni Graph en negocio.
+- [x] T045 [A] Verificar modelo/migraciones EF, Docker y workflows Users/ShoppingList/ProductCatalog/Web/Resource del HEAD candidato; no dar por verde CI de otro SHA.
+- [x] T046 [A] Revisar issuer/audience/scopes/CORS/redirects/configuración por entorno, mínimo privilegio de transición y recuperación en proveedor; sin secretos/PII en evidencia ni Graph en negocio.
 - [ ] T047 [A][US1] Microsoft existente y Google nuevo sin Microsoft en aplicación normal, A-AC01/02/08, `evidence/real-provider-acceptance.md`. Harness es evidencia parcial; email no bloquea.
 - [ ] T053 [A] Web320/390/430, teclado/lector/zoom, errores/return intent y budgets existentes; evidencia manual real cuando corresponda.
 - [ ] T055 [A] Revisión final FR/SC y10 A-AC, aprobación ADR/TP11, coexistencia/migración/rollback y autorización de despliegue. A-AC11 solo si T056 se habilita. No exigir tareas B ni cerrar007/008/009.
@@ -123,3 +123,36 @@ Las marcas técnicas anteriores se basan en ejecuciones registradas en [validati
 | T044 | Suites .NET406, Web138, lint/typecheck/build, E2E60 tras último cambio Web,0 fallos. CI final se conserva en T045 abierto |
 
 T002/014/019/041/042/045/047/048/050/051/053/055 permanecen abiertas. T056 no se habilita. Todas las tareas B permanecen abiertas; no se modifican gates007/008/009. Ver [recuperación](evidence/authentication-recovery-2026-10-31.md) y [ensayo de traslado](evidence/migration-rehearsal.md).
+
+## Reconciliación individual del candidato a9ca37d — 31/10
+
+Esta tabla actualiza el estado histórico anterior; no convierte preparación cloud o tests sustituidos en aceptación real.
+
+| Tarea A revisada | Resultado y evidencia |
+|---|---|
+| T001 | Cerrada: auditoría de base remota46cf, comparación main, Spec Kit010, fuentes vigentes y límites A/B revisados en implementation.md y research.md; CI del nuevo HEAD se verifica por separado |
+| T006 | Cerrada para alcance aprobado: reutilización QA sin compras/trials/SMS; pricing core/MAU y add-ons revalidados, sin prometer factura cero; perfil mínimo y recovery en proveedor. research.md, privacy-and-deletion.md y plan QA |
+| T011 | Cerrada la revisión de amenazas A; threat-model.md y security.md conservan pruebas pendientes sin certificar aceptación |
+| T014 | Cerrada técnicamente: Application37, verificador Graph7 controlados y PostgreSQL7 reales, negativos origen/reserva/destino/sub/email/idempotencia/retry. No es T019/T048 ni federación real |
+| T019 | Abierta: no hay manifiesto completo ni compras posteriores a un traslado real/rollback; pruebas técnicas de retry/rollback ampliadas, migration-rehearsal.md |
+| T048 | Abierta: CIAM devuelve colisión y no acredita login al destino federado; no se cambia UserId ni se ejecuta cutover/rollback |
+| T055 | Abierta: depende de aceptación real Microsoft y revisión final/manual; no hay autorización de despliegue ni merge |
+| T056 y B | Todas abiertas; email opcional no habilitado en Web, ninguna implementación B ni nuevo ensayo G3/CA |
+
+T002/T041/T042/T045/T046/T047/T050/T051/T053 se contrastan con los resultados detallados del candidato en validation.md, real-provider-acceptance.md y security.md. Las casillas se actualizan únicamente cuando su criterio entero quede acreditado; la presencia de esta tabla no las cierra.
+
+T050 cerrada por recorrido real completo de campos A y clear con dos logout/login Google en a9ca37d, registrado en real-provider-acceptance.md. No incluye foto ni acredita importación de nombres de una cuenta nueva. La continuidad inicial unknown se documenta sin backfill administrativo.
+
+| Otras tareas revisadas | Estado actual y comprobación concreta restante |
+|---|---|
+| T002 | Abierta: ambos proveedores y sus access tokens funcionan; falta alta Google nueva en el flow actualizado para comparar claims iniciales/nuevo-existente, sin sobrescribir perfiles previos |
+| T041 | Abierta: negativos reales Google/Graph/ID y matriz técnica ejecutados; revisar negativos de cohorte externa y matriz real de sesión al completar aceptación, security.md |
+| T042 | Abierta parcialmente: secuencia real D1 completa y503 acreditados; traslado de canónica real aún bloqueado por T048, no se exige bindings B |
+| T045 | Cerrada sobre código a9ca37d: EF sin cambios, cuatro Docker, runner/harness, cinco workflows success con URLs en validation.md. Commit documental posterior requiere nueva comprobación de SHA, entregada al cierre |
+| T046 | Cerrada: matriz issuer/tenant/aud/scope/clientes/redirects y CORS contrastada con configuración y tokens reales; mínimo privilegio del piloto, recuperación original,67 archivos sin JWT/email personal y cero artefactos privados versionados. security.md y validation.md |
+| T047 | Abierta parcialmente: Microsoft actual conserva Guid y Google sin Microsoft funciona; nueva alta del candidato/flow y A-AC08 aún requieren comprobación actual explícita |
+| T050 | Cerrada: personalizaciones y clear de campos A sobreviven a dos relogin Google reales, sin Graph/backfill |
+| T051 | Abierta parcialmente: JWT/D1 y ambas direcciones reales pasan; falta matriz real completa multi-tab/respuestas tardías y caso de token Microsoft después del traslado |
+| T053 | Abierta:320/390/430 sin overflow, botones44px/Tab observados y suites de errores/loading/cancelación; faltan lector/zoom y aceptación manual completa |
+
+T044 conserva los resultados ejecutados, incluidos timeout inicial Web y119/120 E2E seguido de1/1 en repetición; no se afirma cero fallos en la primera ejecución. CI del código actual pasó el gate controlado de tres navegadores. No cambia criterio de rendimiento.

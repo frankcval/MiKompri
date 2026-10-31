@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-31",
+  "codeCandidate": "a9ca37d",
+  "environment": "isolated-010a-QA",
+  "credentialStoredOrPrinted": false,
+  "clockSkewOrCutoffLowered": false,
+  "statusMutation": "User.SetSuspended with TimeProvider.System.GetUtcNow; disposable QA database only",
+  "sequence": [
+    {
+      "step": "valid access token",
+      "iat": 1793461754,
+      "statuses": {
+        "Users": 200,
+        "ShoppingList": 200,
+        "ProductCatalog": 200
+      }
+    },
+    {
+      "step": "suspended",
+      "cutoff": 1793462157,
+      "securityVersion": 1,
+      "statuses": {
+        "Users": 403,
+        "ShoppingList": 403,
+        "ProductCatalog": 403
+      }
+    },
+    {
+      "step": "reactivated; previous token",
+      "cutoff": 1793462173,
+      "securityVersion": 2,
+      "statuses": {
+        "Users": 401,
+        "ShoppingList": 401,
+        "ProductCatalog": 401
+      }
+    },
+    {
+      "step": "newly requested token still predates cutoff",
+      "iat": 1793461903,
+      "Users": 401
+    },
+    {
+      "step": "Users temporarily stopped",
+      "statuses": {
+        "ShoppingList": 503,
+        "ProductCatalog": 503
+      }
+    },
+    {
+      "step": "really newer token after natural wait",
+      "iat": 1793462190,
+      "strictlyGreaterThanCutoff": true,
+      "statuses": {
+        "Users": 200,
+        "ShoppingList": 200,
+        "ProductCatalog": 200
+      }
+    }
+  ],
+  "accountLeftSuspended": false,
+  "usersRestartedAndHealthy": true,
+  "provesMicrosoftMigrationOrG3": false
+}

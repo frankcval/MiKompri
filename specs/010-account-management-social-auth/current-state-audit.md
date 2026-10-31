@@ -28,3 +28,7 @@ Fecha 30/10/2026; base `1a05d8e` (PR #58 integrado). Inspección de archivos, **
 - ResourceAuthorizationTests y compras de 008/009 conservan referencias UserId. La evidencia técnica anterior no cubre cambio de IdP, linking ni migración 010.
 
 No se han acreditado pruebas nuevas de autenticación/Graph/tenant. Las siguientes rutas/entidades de los artefactos son **propuestas**, no código existente. Ningún dato/registro/credencial real se ha modificado.
+
+## Ratificación010-A — 31/10/2026
+
+El estado previo de este documento es histórico. El titular aprobó010-A/ADR-004/TP11 el30/10; implementación y validación se revisan ahora sobre a9ca37d, manteniendo010-B diferida. Auditoría remota inicial46cf coincidente con origin,0/9 respecto a main; fuentes vigentes en research.md, evidencia actual en implementation.md/validation.md/real-provider-acceptance.md. No se usa la aprobación para cerrar migración real ni accesibilidad, y no se modifica aceptación007/008/009. T001 ratifica auditoría/alcance, no certifica entrega.

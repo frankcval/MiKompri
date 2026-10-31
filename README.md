@@ -1,6 +1,6 @@
 # MiKompri
 
-> **Estado al 30/10/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
+> **Estado al 31/10/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
 
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
@@ -763,4 +763,10 @@ Para preguntas o sugerencias, por favor abrir un [issue](https://github.com/fran
 
 ### Identidad010-A
 
-Arquitectura aprobada en [ADR-004](docs/adr/ADR-004-ciam-identity.md), [TP11 v1.2.0](.specify/memory/constitution.md). Implementación en curso: Microsoft existente + Google mediante External ID sin cuenta Microsoft, UserId inmutable y transición acotada. Email OTP opcional; linking/G3/MAUI diferidos. Aprobación no significa aceptación, merge ni despliegue.
+Arquitectura aprobada en [ADR-004](docs/adr/ADR-004-ciam-identity.md), [TP11 v1.2.0](.specify/memory/constitution.md). Código de 010-A implementado en `010-account-management-social-auth`: Google mediante External ID, Microsoft legacy conservado, `UserId` interno inmutable, JWT explícito/D1 en las tres APIs, perfil propio e aislamiento de sesión. Google real accede a Users/ShoppingList/ProductCatalog; los tokens Google directos, Graph e ID de CIAM son rechazados. [Validación y límites](specs/010-account-management-social-auth/evidence/validation.md).
+
+La spec todavía **no está completada**: CIAM devuelve una colisión de cuenta en el piloto Microsoft; no se ha acreditado su migración ni rollback federado real y no se ha cambiado su identidad canónica. La asociación experimental Microsoft al flujo QA se ha retirado; la Web sigue usando Microsoft legacy. [Ensayo de migración](specs/010-account-management-social-auth/evidence/migration-rehearsal.md). También permanece pendiente la aceptación manual de accesibilidad. No hay merge ni despliegue productivo.
+
+La ruta Google abre el acceso alojado de CIAM; allí hay que pulsar «Iniciar sesión con Google». No usa `domain_hint=google`, rechazado por este tenant. El selector QA conserva email OTP del spike; T056 es opcional y no habilita una opción email en la Web. Los perfiles ya creados con `unknown` se editan desde Perfil; no se rellenan administrativamente ni se sobrescriben al iniciar sesión. Los atributos de nombre del flujo QA se han preparado, pero una alta Google nueva debe confirmar su importación.
+
+010-B (linking/unlinking, segundo método, G3, recuperación entre proveedores, avatar storage y otros proveedores) continúa diferida. MAUI productivo sigue aplazado; Web es el cliente prioritario.

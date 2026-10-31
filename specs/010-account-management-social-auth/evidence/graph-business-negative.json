@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-31",
+  "graphContractStatus": 200,
+  "results": [
+    {
+      "api": "Users",
+      "status": 401
+    },
+    {
+      "api": "ShoppingList",
+      "status": 401
+    },
+    {
+      "api": "ProductCatalog",
+      "status": 401
+    }
+  ],
+  "allRejected": true,
+  "credentialStoredOrPrinted": false,
+  "kind": "REAL_GRAPH_TOKEN_AGAINST_NORMAL_QA_APIS"
+}

@@ -6,7 +6,7 @@ Cliente Web SPA de MiKompri (MVP-4), construido con React + TypeScript + Vite, F
 
 007 aporta el cliente full-stack; 008 moderniza UX y autorización; 009 completa preparación, compra y consulta. Las tres tienen implementación en `main` (008/009 integradas por PR #56/#57), con aceptación global todavía pendiente. En 009, T009 está cerrada con evidencia técnica y T010/T011 siguen abiertas. [Estado y roadmap](../README.md#-estado-actual-del-proyecto), [tareas 009](../specs/009-shopping-experience-completion/tasks.md) y [evidencia](../specs/009-shopping-experience-completion/evidence/review-corrections.md).
 
-010-A está implementándose en su rama: Google mediante External ID, Microsoft legacy conservado, perfil propio e aislamiento de sesión; [aceptación pendiente](../specs/010-account-management-social-auth/evidence/validation.md). CIAM permanece deshabilitado por defecto en configuración fuente. 010-B y 011 siguen futuros. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista.
+010-A tiene código implementado en su rama: Google mediante External ID, Microsoft legacy conservado, perfil propio, D1 e aislamiento de sesión; [aceptación pendiente](../specs/010-account-management-social-auth/evidence/validation.md). CIAM permanece deshabilitado por defecto en configuración fuente. 010-B y 011 siguen futuros. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista.
 
 ## Requisitos
 
@@ -95,3 +95,13 @@ Configurar en **Settings → Secrets and variables → Actions**:
 `http://localhost:5173` del equipo de desarrollo no es accesible desde un runner hospedado de GitHub. Para la ejecución hospedada preparar QA accesible; para validar el entorno local usar `npm run test:e2e:integrated` con las sesiones locales y las variables anteriores (los defaults de API local se conservan).
 
 El workflow de aceptación ya está incorporado a `main`; se puede iniciar desde Actions y seleccionar la rama a validar, con los recursos QA anteriores configurados. También se puede ejecutar la suite localmente. Su presencia no configura credenciales ni acredita la aceptación pendiente.
+
+## Acceso y límites actuales de 010-A
+
+«Continuar con Google» abre el acceso alojado de External ID con `prompt=login`; en esa pantalla hay que pulsar «Iniciar sesión con Google». Microsoft conserva `select_account` y su configuración legacy. No se usa el hint Google rechazado en QA y `prompt=login` no acredita G3 ni reautenticación Google reciente.
+
+El selector QA aún ofrece email OTP heredado del spike, pero la Web no lo anuncia: T056 sigue opcional y pendiente. No retirarlo sin evaluar la evidencia y las cuentas QA existentes. El perfil permite personalizar nombre, username, nombres/apellidos, idioma y orden inicial; los datos propios y los borrados explícitos prevalecen en accesos posteriores. Un `unknown` previo no se corrige mediante Graph.
+
+La migración Microsoft federada real y su rollback siguen sin acreditarse por colisión de cuenta en CIAM. El proveedor experimental está retirado del flujo y no se ejecutó cutover. La aceptación manual de lector/zoom también permanece pendiente. [Resultados del candidato](../specs/010-account-management-social-auth/evidence/validation.md), [proveedores reales](../specs/010-account-management-social-auth/evidence/real-provider-acceptance.md) y [migración](../specs/010-account-management-social-auth/evidence/migration-rehearsal.md). Estas limitaciones impiden declarar el cierre global de010-A; no reabren010-B ni cambian007/008/009.
+
+Al terminar este ensayo se restauró `.env.local` original byte por byte. La configuración QA permanece solo en `.env.010a.local` ignorado; npm run dev -- --mode010a permite retomarla voluntariamente mientras los recursos QA sigan vigentes. No usar esos puertos/tenant como configuración de producción ni versionar el archivo. Revisar inventario/retirada QA antes del06/11/2026.

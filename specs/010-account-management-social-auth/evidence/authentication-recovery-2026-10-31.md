@@ -36,3 +36,9 @@ Sobre `78b4a23`, Users/ShoppingList/ProductCatalog/Resource terminaron success. 
 - Validación final D1 tras corte, CI exacto y accesibilidad manual pendiente. G3/010-B siguen diferidos.
 
 La Web se mantiene temporalmente en QA mientras el titular repite la prueba. Los datos QA son independientes. Tras el ensayo se restaura el respaldo original de `.env.local`; las claves CIAM de ejemplo siguen deshabilitadas por defecto en fuente.
+
+## Actualización del candidato a9ca37d
+
+Las observaciones anteriores sobre select_account y flow solo Email corresponden al diagnóstico previo. Google ahora solicita prompt=login, sin hint; Microsoft conserva select_account. El flujo QA incorpora nombres opcionales pero falta alta nueva real para acreditar importación. No se modifica unknown por Graph.
+
+Se completan negativos Google/Graph/ID CIAM contra tres APIs normales, perfil propio y clear con relogin Google, y D1 positivo con iat posterior al corte; [resultado vigente](real-provider-acceptance.md), [secuencia](d1-real-cutoff.json). Microsoft legacy sigue conservando su Guid y respondiendo200. Migración federada devuelve colisión, se cancela y restaura asociación/provisioning; [estado exacto](migration-rehearsal.md). EmailT056 sigue opcional no habilitado en Web. No se reabren G3/CA.

@@ -41,3 +41,7 @@ Activos: UserId/ownership, métodos, perfil privado, pruebas, tokens, membresía
 - Riesgos humanos (soporte, secretos, roles administradores) requieren responsables y runbook tras aprobación. No se han creado credenciales ni instalado controles en esta ejecución.
 
 Salida 010-A: negativos de amenazas aplicables A, revisión de seguridad, migración/rollback, privacidad y D1 antes de negocio productivo. No se publica gestión de métodos ni recuperación alternativa, de modo que G3/último método se conservan como gates B. Email OTP opcional requiere sus negativos básicos antes de habilitarse. Tests de fixtures no sustituyen proveedores reales ni revisión manual.
+
+## Revisión010-A del31/10/2026
+
+Se contrasta la matriz A con el candidato a9ca37d y [evidencia ejecutada](evidence/security.md). Tokens de Google directo, Graph e ID CIAM no son access tokens MiKompri y se rechazan en las tres APIs normales. D1 falla cerrado y la reactivación no resucita tokens; se espera iat posterior sin rebajar corte. No se presenta prompt=login como control G3. La colisión Microsoft en CIAM se cancela y no adopta la identidad mail; el origen inmutable sin login acreditado no autoriza traslado. Claims de nombre ausentes no se reparan con Graph ni sobrescriben personalizaciones. Se conservan pendientes la aceptación completa de migración, sesiones y accesibilidad, sin convertir la revisión de amenazas en PASS funcional. Recuperación sigue en proveedor original; linking, MFA social, account takeover por asociación de métodos y eliminación siguen en010-B antes de ofrecerlas.

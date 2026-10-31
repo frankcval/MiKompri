@@ -81,3 +81,7 @@ El spike sigue mostrando Google G3 **NOT RELIABLE FOR G3**, candidato MFA social
 Archivos de esta revisión: spec, plan, tasks, scope, research, architecture-review, data-model, migration, contracts/account-and-identity, ADR-004, propuesta constitucional, quickstart, privacy-and-deletion, threat-model, checklists/acceptance y requirements, ampliación final de spike-summary, nuevo010-b-deferred y este informe. No producción, cloud, BD, EF, secretos o configuración nueva; sin cambios de completitud007/008/009.
 
 **010-A NOT READY FOR IMPLEMENTATION** — único bloqueo indispensable previo: aprobación explícita de ADR-004/propuesta TP11 y transición Microsoft acotada descrita en ellos. G3, linking, email opcional y MAUI no bloquean Microsoft+Google.
+
+## Ratificación010-A — 31/10/2026
+
+El estado previo de este documento es histórico. El titular aprobó010-A/ADR-004/TP11 el30/10; implementación y validación se revisan ahora sobre a9ca37d, manteniendo010-B diferida. Auditoría remota inicial46cf coincidente con origin,0/9 respecto a main; fuentes vigentes en research.md, evidencia actual en implementation.md/validation.md/real-provider-acceptance.md. No se usa la aprobación para cerrar migración real ni accesibilidad, y no se modifica aceptación007/008/009. T001 ratifica auditoría/alcance, no certifica entrega.

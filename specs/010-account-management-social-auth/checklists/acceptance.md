@@ -17,11 +17,11 @@
 | A-AC09 Logout/cambio no mezcla datos | A→B, respuesta tardía, multi-tab/recarga y cambio de issuer; limpiar tokens/caché/borradores y generación de sesión | US5; FR-018/023/024; T025/051 |
 | A-AC10 Perfil personalizado prevalece | Claims inicializan; cambiar DisplayName/nombres/idioma propios, repetir login/GET/sync, conservar personalizaciones y borrados voluntarios | US4; FR-013/014/017; T034/036/038/050 |
 
-- [ ] A-AC01
+- [x] A-AC01
 - [ ] A-AC02
 - [ ] A-AC03
-- [ ] A-AC04
-- [ ] A-AC05
+- [x] A-AC04
+- [x] A-AC05
 - [ ] A-AC06
 - [ ] A-AC07
 - [ ] A-AC08
@@ -80,3 +80,9 @@ AR-05–06 y ampliación G3 contexto/MFA quedan pendientes B/T004: prueba recien
 | FR-025 | Minimización T006/012/046[A]; eliminación T040[B] |
 
 SC-001→10 A-AC; SC-002→06/07; SC-003→04/05/08 y negativos; SC-004→10; SC-005→03/04+D1/regresiones; SC-006→09 y gate UX; SC-007→limitación de recovery en proveedor(A)/AC-12(B); SC-008→ADR/TP11/transición. Ninguna aceptación B condiciona cerrar A.
+
+## Reconciliación del candidato a9ca37d — 31/10
+
+A-AC01: Microsoft legacy normal, tres APIs200, Guid esperado; A-AC04: Google directo/Graph/ID CIAM reales401 en las mismas APIs, además de matriz firmada; A-AC05: resolución exclusivamente Users, tests ejecutados Application37/API93/PG7 y negativos de adopción/sub/target/estado. [Evidencia](../evidence/real-provider-acceptance.md), [seguridad](../evidence/security.md), [validación](../evidence/validation.md).
+
+Las demás casillas conservan sus criterios completos: alta nueva tras actualizar atributos, traslado/rollback con manifiestos, token Microsoft tras traslado, matriz real completa de sesiones y perfil inicial no se cierran por los positivos parciales. T050 sí acredita específicamente personalización/clear con relogin; no equivale a certificar nueva importación. D1 real postcorte y ambas direcciones de cambio ejecutados. Lector y zoom manual pendientes. EmailT056 y toda010-B siguen fuera del cierre obligatorio de Microsoft+Google.

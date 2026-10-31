@@ -18,3 +18,9 @@ Fuentes reconsultadas: [federación Entra](https://learn.microsoft.com/en-us/ent
 La federación Microsoft no acreditó el origen/objeto destino requerido: no se ejecutó reserva/cutover/rollback real. Su asociación al flujo QA se retiró conservando app/proveedor/credencial QA inventariados hasta limpieza; Google y OTP del spike permanecen. Microsoft Web usa exclusivamente legacy. No hubo cambios CA/G3/defaults.
 
 Tras perder los fixtures tmpfs al reiniciar, se sustituye exclusivamente el PostgreSQL QA por un volumen dedicado `mikompri-010a-postgres-data`. Contenedores QA usan restart unless-stopped; datos originales intactos. No asumir continuidad de usuarios/historia QA del30/10. [Diagnóstico y estado actual](authentication-recovery-2026-10-31.md). Se mantiene fecha de revisión/retirada QA2026-11-06, sin borrado automático ni ampliación de credenciales.
+
+### Continuación acotada del31/10
+
+Se reutilizan tenant/apps/credenciales anteriores. Se conserva un nuevo destino federado Microsoft QA sin correo/credenciales/roles, inventariado privadamente para diagnóstico y retiro antes del06/11; no acreditado por login y no vinculado en Users. El proveedor Microsoft temporal se retira del flujo y se restaura provisioning. No borrar ese destino ni otros objetos por una coincidencia de email.
+
+En el flujo QA se seleccionan únicamente Display Name/Given Name/Surname además de Email: guardado/relectura tras recarga y layout comprueban los tres opcionales. Reversión: retirar solo esos tres atributos si fuese necesaria; no tocar cuentas/perfiles existentes. Falta alta Google nueva para acreditar importación; unknown anterior no se rellena automáticamente. No se amplía PII ni permisos Graph de negocio. Email OTP del spike se conserva porque retirarlo afectaría los consumidores/evidencia anteriores; la Web no ofrece email como ruta propia y T056 sigue abierto.

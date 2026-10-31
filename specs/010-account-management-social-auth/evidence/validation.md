@@ -1,67 +1,92 @@
-# Validación técnica 010-A — 31/10/2026
+# Validación010-A — 31/10/2026
 
-Código backend `de89da5`, Web/perfil `78b4a23` y corrección posterior AADSTS90023 en esta entrega. [Registro](implementation.md), [recuperación y aceptación humana](authentication-recovery-2026-10-31.md). No es cierre de 010-A.
+Código candidato **a9ca37d4f8130b2a29ad017a075839257942a5f6**, posterior a la auditoría inicial de46cf0ba. Los cambios posteriores de cierre son documentación/evidencia; el informe final identifica el SHA publicado y sus cinco workflows. No usar los resultados anteriores de406 como si fueran los de esta ejecución. No cierre global de010-A ni aceptación de producción.
 
-## Resultados ejecutados
+## Ejecuciones del candidato
 
-| Suite | Resultado |
+| Suite/control | Resultado observado |
 |---|---|
-| Users Domain / Application / API | 21 / 37 / 90 PASS |
-| ShoppingList Domain / Application / API | 43 / 36 / 97 PASS |
-| ProductCatalog Domain / Application / API | 22 / 21 / 39 PASS |
-| Total .NET | 406 PASS, 0 fallos, 0 omitidos |
-| PostgreSQL16 Docker | 4 PASS incluidos en Users API; concurrencia de provisión/username, reserva/cutover/rollback y negativos de origen/destino |
-| Web unit/component/integration tras corrección | 138 PASS, 0 fallos/omitidos; auth49 incluidos |
-| Web lint / typecheck / build | Exit0 |
-| Playwright controlado antes de retirar hint | 120 PASS, 0 fallos/flaky/skips, Chromium/Firefox/WebKit; no sesiones IdP reales |
-| Regresión portada tras guard de cuenta | 15 PASS, tres motores, 0 fallos/flaky/skips |
-| Playwright tras retirar hint: portada y secciones/login | 60 PASS, Chromium/Firefox/WebKit; 0 fallos/flaky/skips |
-| EF pending-model-changes | False, exit0 en las tres APIs |
-| Docker APIs | Tres builds PASS con SDK8.0-noble; imagen SDK local predeterminada fallaba exec format antes de ejecutar código |
-| Runner administrativo QA | Build PASS; no traslado real ejecutado |
-| Docker Web tras retirar hint | Build PASS y configuración pública de compilación comprobada en assets; CI final pendiente |
+| Users Domain/Application/API | 21/37/93 PASS |
+| ShoppingList Domain/Application/API | 43/36/97 PASS |
+| ProductCatalog Domain/Application/API | 22/21/39 PASS |
+| Total solución .NET | **409 PASS**,0 fallos,0 omitidos; nueve TRX010a-closure-final |
+| PostgreSQL16 aislado | **7 PASS**, incluidos en Users API; cuatro previos + reserva idempotente, fallo de origen antes de aplicar/retry y rollback que conserva nuevas escrituras/suspensión |
+| Web unit/component/integration | Primera ejecución137PASS+1timeout5000ms en CatalogCreation; segunda ejecución completa **138/138PASS**, sin cambiar timeout/retry ni código de catálogo |
+| Auth Web |49/49PASS incluidos; test primero falla con select_account para Google y pasa con prompt=login |
+| Preflight CI config |6/6PASS |
+| Lint/typecheck/build |Exit0 |
+| Playwright Chromium/Firefox/WebKit | Completa: **119/120PASS**, un timeout del heading Balance por persona en contexto430px WebKit. Repetición aislada del mismo caso **1/1PASS**. Sin aumentar budgets ni retries. No se presenta la primera ejecución como120/120 |
+| CI Web del código a9ca37d |success, incluido gate obligatorio de tres navegadores, build y Docker; [run41217508141](https://github.com/frankcval/MiKompri/actions/runs/41217508141) |
+| EF pending-model-changes |Tres APIs exit0/No changes; sin nuevas migraciones/modelo EF en esta continuación |
+| Docker Users/ShoppingList/ProductCatalog/Web |Cuatro builds exit0; imágenes locales010a-closure, sin sustituir contenedores originales |
+| Runner administrativo QA |Build exit0; no traslado real ejecutado |
+| Harness QA Release |0warnings/0errores. Un rebuild intermedio falló porque el proceso diagnóstico mantenía su DLL abierta; se detuvo únicamente ese proceso, después buildPASS. No defecto productivo |
 
-Los TRX locales `test/*/TestResults/010a-final.trx` acreditan406. Los cuatro tests PostgreSQL no se omitieron: `MIKOMPRI_TEST_POSTGRES` apuntaba al contenedor exclusivo de pruebas. El verificador de federación se sustituye en esos cuatro tests; no son prueba del proveedor Microsoft real. No se alteraron presupuestos de rendimiento, retries ni timeouts de tests para lograr PASS.
+Los warnings nullable backend preexistentes se conservan: no afirmar que toda la solución compila sin warnings. El fallo inicial Web de catálogo y el timeout aislado WebKit se conservan como variabilidad local; no se ajustan criterios de rendimiento ni se corrigen funcionalidades008/009 para ocultarlos. La CI del código candidato completó sus gates sin esos fallos.
 
-## Reproducción
+## Reproducción local
 
-Desde la raíz, con PostgreSQL Docker QA aislado disponible; no usar bases originales/productivas:
+Desde raíz, PostgreSQL QA Docker16 disponible en55432; no usar las bases anteriores/productivas:
 
 ```powershell
 $env:MIKOMPRI_TEST_POSTGRES='Host=127.0.0.1;Port=55432;Database=postgres;Username=qa'
-dotnet test MiKompri.sln --logger 'trx;LogFileName=010a-final.trx'
+dotnet test MiKompri.sln --logger 'trx;LogFileName=010a-closure-final.trx'
 dotnet build tools/identity-migration
+dotnet build tools/spikes/010-external-id/ExternalIdSpike.csproj --configuration Release
 dotnet ef migrations has-pending-model-changes --project MiKompri.Users.Infrastructure --startup-project MiKompri.Users.Api
 dotnet ef migrations has-pending-model-changes --project MiKompri.ShoppingList.Infrastructure --startup-project MiKompri.ShoppingList.Api
 dotnet ef migrations has-pending-model-changes --project MiKompri.ProductCatalog.Infrastructure --startup-project MiKompri.ProductCatalog.Api
 ```
 
-Las suites se ejecutaron por proyecto, con los resultados anteriores; el comando de solución permite reproducirlas conjuntamente. La factoría PostgreSQL crea/retira únicamente sus bases de test. La migración de schema Users se ejecutó en QA/tests, no en las bases previas.
+El verificador Graph de los siete tests PostgreSQL se sustituye; persistencia/índices/transacciones son reales, no equivalencia del proveedor Microsoft. La factoría crea/retira solo sus bases de prueba. Ninguna migración se ejecutó en las bases originales.
 
-Desde `MiKompri.Web`:
+Desde MiKompri.Web:
 
 ```powershell
-npm test
+npm test -- --reporter=json --outputFile=../tools/spikes/010-external-id/.local/closure-web-rerun.json
 npm run test:ci-config
 npm run lint
 npm run typecheck
 npm run build
+$env:PLAYWRIGHT_BROWSERS_PATH='../.playwright-browsers'
 $env:PLAYWRIGHT_ALL_BROWSERS='1'
-npm run test:e2e:smoke -- --workers=2 --reporter=line,html
+npm run test:e2e:smoke -- --workers=2 --reporter=json
+# Repetición que resolvió el único fallo observado:
+npm run test:e2e:smoke -- --project=webkit --grep 'preparar y comprar con contexto 430px' --workers=1 --reporter=json
 ```
 
-Para reproducir solo el cambio de Google: `npx vitest run tests/unit/auth tests/component/auth tests/integration/auth`. La ejecución final138/138 fijó un tenant externo distinto al de fixtures antes de arrancar Vitest, y setup fijó el tenant sintético correcto. `.env.test` ignorado ya no es requisito oculto de CI. Resultados brutos se guardan en `.local/` ignorado, fuera de `test-results` que Playwright limpia.
+Reportes privados closure-web*.json,closure-e2e*.json,TRX y logs quedan ignorados. Vitest fija tenant sintético explícito, sin depender de.env.test privado. Los escenarios controlados no autentican proveedores reales. No ejecutar build de harness sobre la DLL que esté sirviendo el diagnóstico en Windows.
 
-## Cobertura de seguridad y límites
+Docker, desde raíz: docker build -t mikompri.<context>.api:010a-closure --build-arg SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:8.0-noble -f MiKompri.<Context>.Api/Dockerfile . para Users/ShoppingList/ProductCatalog; docker build -t mikompri.web:010a-closure -f MiKompri.Web/Dockerfile . . El SDK local predeterminado había fallado exec format antes de ejecutar código; no se cambia Dockerfile ni ese argumento en CI. CI Linux usa su configuración normal.
 
-JWT: matriz HTTP firmada20 casos por API y17 controles criptográficos; pares issuer/tenant/audience/clientes/scopes, RS256/firma/exp/nbf/tid/oid y negativos Google/Graph/ID/ausencia/cruces. Tokens sintéticos firmados para tests; el negativo con token Google real contra las tres APIs normales sigue pendiente.
+## Resultados reales y límites
 
-D1: pruebas HTTP y manuales QA históricas verificaron200→403 al suspender,401 tras reactivar con token anterior y503 con Users caído. ProductCatalog GET/mutaciones cubiertos; respuesta incompleta/HTTP201/202 no permiten acceso. Sin caché entre requests; resultado/UserId reutilizado dentro de una request. Medición local25 muestras: Users status p50/p95=8.2/12.4ms; catálogo con D1=14.1/24.4ms. No es comparación causal sin D1 ni SLO cloud. Un JWT obtenido tras reactivación conservaba iat anterior al corte; falta positivo real cuando iat sea estrictamente posterior. No se rebajó el corte ni se interpretó iat como G3.
+- [Tres APIs y perfil](real-provider-acceptance.md): Google sin Microsoft, Microsoft legacy, access token CIAM200; ID token CIAM401. Dos relogin Google conservan nombre/username/nombres/idioma/orden y posteriormente clear explícito. Sin backfill por Graph.
+- [Seguridad](security.md): token Google directo y Graph reales401 en tres APIs normales, [D1 real200→403→401→200](d1-real-cutoff.json), consumidores503 con Users caído. Ningún corte/reloj/skew se reduce. La cuenta termina activa y Users saludable.
+- [Migración Microsoft](migration-rehearsal.md): **INCONCLUSIVE**, colisión CIAM después de origen autorizado. No Reserve/Apply/Rollback, no nuevo User sustituto, no manifestación ficticia de conservación de referencias. Proveedor experimental retirado del flujo y provisioningfalse comprobados.
+- UI real de login a320/390/430: scrollWidth igual a viewport, botones Google/Microsoft de44px de alto, primerTab enfoca enlace visible. Google primero y selector explicado. Suites cubren errores/loading/cancelación/return intent; lector real y zoom manual **no acreditados**. T053 sigue abierta.
+- D1 local previo25 muestras: Users p50/p95=8.2/12.4ms; catálogo conD1=14.1/24.4ms. Histórica local, sin SLO cloud ni comparación causal; no cambia budgets.
 
-Perfil: campos propios/versiones/conflictos/whitelist, clear y ausencia de sobrescritura por claims; username concurrente único. Sesión: cuenta activa, tenant ajeno, silent token tardío, frontera de generación, cancelación, remount de formulario privado, borradores y namespace por entorno/cliente/tenant/cuenta. Pruebas automatizadas no acreditan lector/zoom manual ni todos los cambios de proveedor reales.
+## Revisión de seguridad/artefactos
 
-## CI y cierre
+Escaneo de67 archivos versionables010/ADR y los nuevos JSON: sin JWT completos ni email personal detectado. No archivos.env.local/.local/TestResults/test-results/Playwright privados versionados. gitignore y dockerignore excluyen esos artefactos; los logs/TRX/traces locales no se publican. Revisión del diff de código confirma solo configuración SPA pública, ninguna credencial o nuevo secreto. No se elimina evidencia antigua por nombres de campos. Enlaces locales de Markdown modificados sin rotos,58 tareas/58IDs únicos, git diff --check y Spec Kit -Json -RequireTasks -IncludeTasks exit0/feature010.
 
-Sobre `78b4a23`: Users, ShoppingList, ProductCatalog y Resource terminaron success; [Web falló por configuración de fixtures](https://github.com/frankcval/MiKompri/actions/runs/41194726785), corregida en esta entrega. El estado final debe consultarse para el SHA nuevo. Sonar sigue fuera. No se cierran T045/T055 ni los gates de aceptación basándose en resultados de un SHA anterior.
+## CI remota por SHA
 
-Bloqueos de aceptación: [traslado Microsoft y rollback](migration-rehearsal.md), negativo Google real contra tres APIs, recorridos actuales Microsoft/cambio de cuenta y perfil con relogin, positivo D1 tras corte, CI final y accesibilidad manual aplicable. Email T056 y 010-B no bloquean el núcleo por sí mismos.
+Los cinco workflows de **a9ca37d4f8130b2a29ad017a075839257942a5f6** finalizaron success:
+
+| Workflow | Ejecución |
+|---|---|
+| Users |[41217508075](https://github.com/frankcval/MiKompri/actions/runs/41217508075)|
+| ShoppingList |[41217508156](https://github.com/frankcval/MiKompri/actions/runs/41217508156)|
+| ProductCatalog |[41217508089](https://github.com/frankcval/MiKompri/actions/runs/41217508089)|
+| Resource authorization/persistence |[41217508002](https://github.com/frankcval/MiKompri/actions/runs/41217508002)|
+| Web |[41217508141](https://github.com/frankcval/MiKompri/actions/runs/41217508141)|
+
+Después de publicar el commit documental se reconsulta su SHA exacto; su estado se entrega con el cierre al titular. Los PASS anteriores no certifican automáticamente ese HEAD. Sonar fuera de alcance.
+
+**No se declara READY FOR PR:** faltan ensayo Microsoft federado/rollback con manifiestos y aceptación manual aplicable. Alta nueva para atributos y matriz de sesión completa conservan sus tareas abiertas. T056 y010-B no son bloqueos del núcleo por sí mismos. README raíz/Web actualizados, sin modificar completitud007/008/009.
+
+## Estado local al terminar QA
+
+`.env.local` Web restaurado byte a byte desde respaldo original (hash igual); configuración QA conservada exclusivamente en `.env.010a.local` ignorado, activable voluntariamente con npm run dev -- --mode010a. La Web normal vuelve al entorno anterior; fuentes CIAM siguen deshabilitadas por defecto. Se cierra sesión Google QA antes de restaurar. Harness loopback55412 detenido; build final0warnings/0errores después de liberar su DLL. APIs/volumen QA se conservan separados, Usershealth200/ProvisioningPaused=false, proveedor Microsoft experimental fuera del flujo. Nuevo destino federado preparado queda inventariado para diagnóstico/retirada antes del06/11; ningún usuario MiKompri se migra. Bases originales y datos reales intactos.
