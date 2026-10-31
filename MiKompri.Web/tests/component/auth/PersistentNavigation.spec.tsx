@@ -27,6 +27,14 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('navegación autenticada persistente', () => {
+  it('identifica Mis listas como destino padre del detalle con icono decorativo y etiqueta', () => {
+    render(<MemoryRouter initialEntries={['/personal-lists/example']}><TestRoutes /></MemoryRouter>)
+    const nav = screen.getByRole('navigation', { name: 'Navegación principal' })
+    const lists = within(nav).getByRole('link', { name: 'Mis listas' })
+    expect(lists).toHaveAttribute('aria-current', 'page')
+    expect(lists.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    expect(lists.querySelector('svg')).toHaveAttribute('focusable', 'false')
+  })
   it('mantiene navegación y contexto con Atrás/Adelante', async () => {
     render(<MemoryRouter initialEntries={['/']}><TestRoutes /></MemoryRouter>)
     const menu = screen.getByRole('navigation', { name: 'Navegación principal' })

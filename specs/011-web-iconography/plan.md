@@ -1,7 +1,7 @@
 # Implementation Plan: 011 — Web Iconography & Fridge Notes
 
 **Branch**: `011-web-iconography` | **Date**:2026-10-31 | **Spec**: [spec.md](spec.md)
-**Estado**: propuesta formal, sin implementación. Fuente main9597af5 con PR59 integrado. ADR-005 propuesto; diseño se revisa antes del primer cambio productivo.
+**Estado**: implementación frontend en validación. Fuente main9597af5/PR59 y formalización3bee0ec. Diseño/ADR-005 ratificados al autorizar el titular la siguiente fase el31/10/2026; evidencias de implementación separadas de las referencias estáticas.
 
 ## Summary
 
@@ -11,8 +11,8 @@ Aplicar Nevera compartida a la capa visual existente: React Icons/Phosphor para 
 
 | Campo | Decisión |
 |---|---|
-| Language/Version | React18.3.1, TypeScript6.0.3, Vite8.3.4 existentes; sin upgrade paralelo |
-| Primary Dependencies | @fluentui/react-components actual, react-icons5.7.0 propuesta (solo pi); MSAL/TanStack no cambian |
+| Language/Version | React18.3.1, TypeScript6.0.3, Vite8.3.5 del lock existente; sin upgrade paralelo |
+| Primary Dependencies | @fluentui/react-components actual, react-icons5.7.0 fijada (solo pi); MSAL/TanStack no cambian |
 | Storage | Ninguno nuevo; sin persistencia de tema/layout, dominio ni schema EF |
 | Testing | Vitest/Testing Library, Playwright Chromium/Firefox/WebKit, axe y controles manuales de foco/toque/lector/zoom |
 | Target Platform | Web responsive320/390/430/768/1280+, teclado y coarse pointer; MAUI solo semántica futura |
@@ -24,7 +24,7 @@ Aplicar Nevera compartida a la capa visual existente: React Icons/Phosphor para 
 
 PASS para formalización: PP1/PP3 prioriza leer/marcar listas, PP5 mobile-first; TP1/TP2 no backend nuevo ni cruce de contextos; TP3/TP4 conserva monorepo y Docker; TP6 MAUI aplazado con semántica adaptable. TP7 sin endpoints/DTOs nuevos. TP8 tests funcionales primero para wrappers y cambios de interacción; no tests de dominio repetidos para pintura. TP9 ADR-005 documenta dependencia/estilo. TP10 spec/plan/tasks antes de producción. TP11/1.2.0 intacta: no correlación, providers, scopes, caché o identidad nueva.
 
-Revisar de nuevo antes de implementar y tras validar UI. Las referencias/contrastes calculados no son PASS de implementación ni aprobación estética ya recibida. No cambian completitud007/008/009 ni010-B/012.
+Revisar de nuevo antes de implementar y tras validar UI. Las referencias/contrastes calculados no son PASS de implementación; la aprobación de dirección visual se registra en ADR-005. No cambian completitud007/008/009 ni010-B/012.
 
 ## Phase0 — Research (esta formalización)
 
@@ -34,7 +34,7 @@ Paquete oficial5.7.0 descargado solo para lectura, SRI comprobado y31exports rea
 
 Propuesta de modelo de presentación sin EF/API; contrato AppIcon/acciones/tokens y [data-model](data-model.md). Documentar estados y excepciones de iconos internos/brand. No comenzar React/CSS productivos en esta fase.
 
-## Phase2 — Implementación futura por historias
+## Phase2 — Implementación por historias
 
 1. Ratificar diseño/ADR y capturas baseline, asegurar CI Web para rama011.
 2. Instalar solo react-icons5.7.0 con lock actualizado; no nuevo UI kit. Tests antes de registry/AppIcon/IconAction; entonces implementar módulos compartidos tipados.

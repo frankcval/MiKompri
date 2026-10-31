@@ -1,6 +1,6 @@
 # Dirección visual011 — Nevera compartida
 
-Propuesta fijada para revisión31/10/2026. **No implementada.** La inspiración del usuario es papel, notas y pizarra de la nevera para apuntar compras. La aplicación se siente doméstica y cercana, con claridad de producto actual y controles previsibles.
+Dirección ratificada el31/10/2026 al autorizar el titular la siguiente fase. **Implementación en validación**, sin declarar cierre por las referencias estáticas. La inspiración del usuario es papel, notas y pizarra de la nevera para apuntar compras. La aplicación se siente doméstica y cercana, con claridad de producto actual y controles previsibles.
 
 ## Idea y contención
 
@@ -25,7 +25,7 @@ Complementarios funcionales: texto secundario#56645E; borde necesario de control
 
 MiKompri Sans existente (derivada de Source Sans3, licencia ya conservada) + fallback Segoe UI/sans-serif. Sin descargas de fuentes nuevas. Títulos28/34px móvil y32/40px escritorio, peso600/700; título nota22/28; producto16/24 con peso500; metadatos14/20 solo secundarios, nunca acciones principales diminutas. Importes tabulares. Alineación izquierda, líneas legibles y wrap; nombres no se cortan para proteger un layout rígido.
 
-Espaciado4/8/12/16/24/32. Margen móvil16 y escritorio32/40; anchura principal existente1440. Papel12px de radio, control8px y pizarra16px: formas con función. Sombra corta0 3px 0 con tinta al6%; no sombra difusa en cada control ni blur caro. Regla fina entre productos para recordar una lista en papel, sin rayado detrás del texto.
+Espaciado4/8/12/16/24/32. Margen móvil16 y escritorio32/40; anchura principal existente1440. Papel12px de radio, control8px y pizarra16px: formas con función. Sombra corta0 2px 4px con tinta al8%; no sombra difusa en cada control ni blur caro. Regla fina entre productos para recordar una lista en papel, sin rayado detrás del texto.
 
 ## Estructura de pantallas
 
@@ -84,4 +84,4 @@ Datos ficticios y SVG estáticos, sin interacción, servidor ni credenciales. Il
 
 ## Secuencia visual y reversión
 
-Primero registro/acciones/navegación, después Mis listas/detalle y finalmente adaptación común de catálogo/grupos/perfil. Comparar capturas y pruebas antes de ampliar. Revertir cambios de CSS/tokens/componentes de011 si es necesario; nunca auth/BD/env como efecto colateral. Diseño listo para revisión; implementación solo en la siguiente fase del trabajo solicitado.
+Primero registro/acciones/navegación, después Mis listas/detalle y finalmente adaptación común de catálogo/grupos/perfil. Comparar capturas y pruebas antes de ampliar. Revertir cambios de CSS/tokens/componentes de011 si es necesario; nunca auth/BD/env como efecto colateral. La implementación actual se compara con estas referencias; las verificaciones pendientes figuran en tasks.md y evidencia.

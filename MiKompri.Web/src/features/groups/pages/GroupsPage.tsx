@@ -44,7 +44,7 @@ export function GroupsPage() {
 
   return (
     <section className={ui.page}>
-      <PageHeader title="Grupos" description="Para tu casa, tu piso y los planes que compartís. Organiza aquí tus grupos." />
+      <PageHeader icon="groups" title="Grupos" description="Para tu casa, tu piso y los planes que compartís. Organiza aquí tus grupos." />
       <Card className={ui.panel}>
         <CardHeader header={<h2>Crear grupo</h2>} />
         <div className={ui.form}>

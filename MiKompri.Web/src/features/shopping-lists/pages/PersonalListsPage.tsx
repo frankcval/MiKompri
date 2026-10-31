@@ -48,7 +48,7 @@ function PersonalListScreen() {
   const refresh = async () => { await client.invalidateQueries({ queryKey: key }); await client.invalidateQueries({ queryKey: ['all-lists'] }) }
   return <section className={ui.page}>
     {!listId ? <>
-      <div className={ui.detailHeader}><PageHeader title="Listas personales" description="Elige una lista o prepara tu próxima compra." />
+      <div className={`${ui.detailHeader} ${ui.board}`}><PageHeader title="Listas personales" description="Elige una lista o prepara tu próxima compra." />
         <CreateListDialog title="Crear lista personal" initialOpen={params.get('create') === '1'} onCreate={async name => {
           const id = await write(token => createPersonalList(env.shoppingListApiBaseUrl, token, { name }))
           await refresh(); navigate(`/personal-lists/${id}`)
@@ -65,7 +65,7 @@ function PersonalListScreen() {
     {lists.isPending ? <Spinner label="Cargando listas…" /> : lists.isError ? <div role="alert">{describeError(lists.error)} <Button onClick={() => void lists.refetch()}>Reintentar</Button></div> : null}
     {listId && lists.isSuccess && !selected ? <p role="alert">Esta lista no está disponible en tus listas personales.</p> : null}
     {selected ? <section className={ui.shoppingDetail} aria-label={`Detalle de ${selected.name}`}>
-      <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{selected.name}</h1><p>Lista personal</p></div>
+      <div className={`${ui.detailHeader} ${ui.board}`}><div className={ui.detailTitle}><h1>{selected.name}</h1><p>Lista personal</p></div>
         <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${accountSessionKey(account)}:${selected.id}`} returnTo={`/personal-lists/${selected.id}`} onAdd={async item => {
           await write(token => addPersonalListItem(env.shoppingListApiBaseUrl, token, selected.id, item)); await refresh()
         }} />

@@ -1,10 +1,10 @@
-# Quickstart011 — revisar y después implementar
+# Quickstart011 — revisar la implementación
 
-## Revisar esta propuesta
+## Contexto de diseño y Spec Kit
 
 1. Confirmar rama011 y base main9597af5/PR59 integrado; leer constitution, spec, design, icon-map, ADR005 y acceptance.
 2. Abrir design/mobile-lists.png, mobile-shopping.png y desktop-lists.png. Son referencias estáticas con datos ficticios, no pantallas instaladas ni prueba de accesibilidad.
-3. Revisar manifest icon-audit.json (31 exports,5.7.0) y contrast.json (11 pares). El paquete no está instalado; no escribir código de producción durante esta revisión.
+3. Revisar manifest icon-audit.json (31 exports,5.7.0) y contrast.json (11 pares). Ese manifest registra la auditoría previa a instalar; bundle-after.json acredita la dependencia instalada y sus imports.
 4. Spec Kit desde raíz:
 
 ```powershell
@@ -15,13 +15,14 @@ git diff --check
 
 Debe resolver specs/011-web-iconography, mantener documentos/IDs y dejar intactas tareas de otras specs.
 
-## Próxima fase de implementación
+## Ejecutar y validar el candidato
 
-Seguir tasks.md. Instalar solo versión exacta auditada; guardar lockfile y licencia correspondiente. Tests funcionales primero para registry/acciones/foco/tooltip. Probar un corte de navegación/listas antes de adaptar otras pantallas. Capturar baseline y después con los mismos datos, fuente, viewport y motor.
+Seguir tasks.md y las evidencias de implementación/validación. Usar npm ci con el lockfile, versión exacta auditada y licencia conservada. Tests funcionales primero para registry/acciones/foco/tooltip. Probar un corte de navegación/listas antes de adaptar otras pantallas. Capturar baseline y después con los mismos datos, fuente, viewport y motor.
 
 Desde MiKompri.Web:
 
 ```powershell
+npm ci
 npm run dev:010a
 npm run test:unit
 npm run test:component
@@ -39,4 +40,4 @@ Validar320/390/430/768/1280, teclado, tooltip hover/foco/Escape, coarse pointer,
 
 Aplicar protocolo de métricas008/009:20muestras por ruta, LCPp75<=2500ms, interacción<=200ms, CLS<=0.1; documentar baseline/post y chunks/gzip sin ampliar budgets/retries. No cerrar tareas anteriores al pasar011. Tres motores de CI no acreditan todos los navegadores/dispositivos: indicar exactamente los entornos usados.
 
-Entrega futura: CI Web del SHA final, iconos/imports/licencias, tablas de aceptación y capturas reales. Backend/EF no cambian; si aparecen cambios fuera de scope, detener esa ampliación y documentar causa. Reversión solo visual; no merge/deploy automático.
+Cierre requerido: CI Web del SHA final, iconos/imports/licencias, tablas de aceptación y capturas reales. Backend/EF no cambian; si aparecen cambios fuera de scope, detener esa ampliación y documentar causa. Reversión solo visual; no merge/deploy automático.

@@ -1,6 +1,6 @@
 # Contrato de UI011 — iconos y superficies
 
-Contrato frontend propuesto, no endpoint ni implementación. Propietario: capa shared/ui; backend y persistencia permanecen iguales.
+Contrato frontend aplicado en shared/ui/icons; no añade endpoints. Propietario: capa shared/ui; backend y persistencia permanecen iguales.
 
 ## AppIcon
 

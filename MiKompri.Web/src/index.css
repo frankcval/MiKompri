@@ -5,9 +5,32 @@
 @font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-600-latin.woff2') format('woff2'); font-weight: 600; font-display: swap; unicode-range: U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-21FF,U+2600-27BF; }
 @font-face { font-family: 'MiKompri Sans'; src: url('./assets/fonts/mikompri-sans-700-latin.woff2') format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-21FF,U+2600-27BF; }
 :root {
+  --mk-fridge: #F2F4EE;
+  --mk-paper: #FFFDF6;
+  --mk-ink: #20312C;
+  --mk-board: #23483D;
+  --mk-teal: #006B68;
+  --mk-lemon: #F3E6A3;
+  --mk-muted: #56645E;
+  --mk-line: #D6DDD2;
+  --mk-control: #6B7B70;
+  --mk-selected: #DDEBE1;
+  --mk-danger: #A52C2C;
+  --mk-white: #FFFFFF;
+  --mk-note-shadow: 0 2px 4px rgb(32 49 44 / 8%);
+  --mk-space-1: 4px;
+  --mk-space-2: 8px;
+  --mk-space-3: 12px;
+  --mk-space-4: 16px;
+  --mk-space-6: 24px;
+  --mk-space-8: 32px;
+  --mk-radius-control: 8px;
+  --mk-radius-paper: 12px;
+  --mk-radius-board: 16px;
+
   font-family: 'MiKompri Sans', 'Segoe UI', system-ui, sans-serif;
-  color: #1f2937;
-  background-color: #f8fafc;
+  color: var(--mk-ink);
+  background-color: var(--mk-fridge);
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;

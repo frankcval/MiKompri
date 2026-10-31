@@ -2,7 +2,9 @@
 
 **Base:** main/origin main9597af5, limpio y0/0 antes de crear rama. Merge commit de PR59 visible; a1cf0a0 de010-A es ancestro de origin/main (exit0). Rama011-web-iconography creada desde esa base, sin upstream main; Spec Kit create-new-feature con Number11/AllowExistingBranch conserva scope existente y guarda feature.json011. setup-plan y setup-tasks resuelven011. No AGENTS.md encontrado en inventario del repo.
 
-## Inventario de implementación actual
+## Inventario previo a la implementación011
+
+Instantánea de formalización3bee0ec, no estado del candidato posterior. Véase [implementación](implementation.md) para los cambios aplicados y [validación](validation.md) para sus pruebas.
 
 | Superficie | Estado real inspeccionado | Cambio propuesto |
 |---|---|---|

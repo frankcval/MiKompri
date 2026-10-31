@@ -21,7 +21,7 @@ export function SharedListsPage() {
   const group = groups.isSuccess ? groups.data.find(g => g.id === requested) : undefined
   if (!account) return <p>No hay sesión activa.</p>
   return <section className={ui.page}>
-    <PageHeader title="Listas compartidas" description="Elige tu grupo y prepara la compra en compañía." />
+    <div className={ui.board}><PageHeader title="Listas compartidas" description="Elige tu grupo y prepara la compra en compañía." /></div>
     {groups.isPending ? <Spinner label="Cargando tus grupos" /> : groups.isError ? <div role="alert">No fue posible cargar tus grupos. <Button onClick={() => void groups.refetch()}>Reintentar</Button></div>
       : !groups.data.length ? <p>Todavía no perteneces a ningún grupo. <Link to="/groups">Crear grupo</Link></p> : <>
         <Field label="Grupo"><Select value={group?.id ?? ''} onChange={(_, data) => { const next = new URLSearchParams(params); if (data.value) next.set('groupId', data.value); else next.delete('groupId'); setParams(next) }}>

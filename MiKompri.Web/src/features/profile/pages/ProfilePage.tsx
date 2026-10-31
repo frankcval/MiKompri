@@ -1,5 +1,6 @@
 import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import ui from '../../../shared/ui/AppSurface.module.css'
+import { AppIcon } from '../../../shared/ui/icons/AppIcon'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import { Avatar, Button, Card, Field, Input, Select, Spinner, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
@@ -23,7 +24,7 @@ export function ProfilePage() {
     queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await session.getAccessToken(loginRequest.scopes, account)) })
   const status = (profile.error as { status?: number } | null)?.status
   return <section className={ui.page}>
-    <PageHeader title="Perfil" description="Tus datos en MiKompri. Elige cómo te ven las personas con las que compartes tus compras." />
+    <PageHeader icon="account" title="Perfil" description="Tus datos en MiKompri. Elige cómo te ven las personas con las que compartes tus compras." />
     {!account ? <Text>No hay sesión activa.</Text> : <>
       {profile.isPending ? <Spinner label="Cargando perfil" /> : profile.isError ? <div role="alert">
         <p>{status === 401 ? 'Vuelve a iniciar sesión para consultar tu perfil.' : describeError(profile.error)}</p>
@@ -35,7 +36,7 @@ export function ProfilePage() {
           client.setQueryData(['profile', key], saved)
         }} /> : <Text>Perfil vacío.</Text>}
       <div className={ui.actions}><Button onClick={() => void profile.refetch()}>Actualizar datos</Button>
-        <Button onClick={async () => { await session.logout(account); navigate('/login', { replace: true }) }}>Cerrar sesión</Button></div>
+        <Button icon={<AppIcon name="logout" />} onClick={async () => { await session.logout(account); navigate('/login', { replace: true }) }}>Cerrar sesión</Button></div>
       <p>Para recuperar el acceso, utiliza la recuperación de tu proveedor original, Google o Microsoft. Cambiar de proveedor no recupera tu cuenta existente.</p>
     </>}
   </section>

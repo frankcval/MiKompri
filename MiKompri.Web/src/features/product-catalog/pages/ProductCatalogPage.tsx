@@ -1,3 +1,4 @@
+import { AppIcon } from '../../../shared/ui/icons/AppIcon'
 import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import ui from '../../../shared/ui/AppSurface.module.css'
@@ -16,7 +17,7 @@ import { CatalogEditor, MarketManagement, RegisterPriceForm } from '../component
 import { withViewState } from '../../../shared/ui/states/withViewState'
 
 export function ProductCatalogPage() {
-  return <section className={ui.page}><PageHeader title="Catálogo de productos" description="Los productos de tus listas, sus unidades y el historial de precios." /><ProductCatalogContent /></section>
+  return <section className={ui.page}><PageHeader icon="products" title="Catálogo de productos" description="Los productos de tus listas, sus unidades y el historial de precios." /><ProductCatalogContent /></section>
 }
 
 function ProductCatalogContent() {
@@ -114,7 +115,7 @@ function ProductCatalogContent() {
 
         <Card className={ui.panel}>
           <CardHeader header={<h2>Productos</h2>} />
-          <Field label="Buscar en el catálogo"><Input type="search" value={search} onChange={(_, d) => setSearch(d.value)} /></Field>
+          <Field label="Buscar en el catálogo"><Input contentBefore={<AppIcon name="search" size={20} />} type="search" value={search} onChange={(_, d) => setSearch(d.value)} /></Field>
           {productsQuery.data?.length ? (
             <section className={ui.stack}>
               {productsQuery.data.map((product) => (
@@ -125,10 +126,10 @@ function ProductCatalogContent() {
                   <Text style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                     {product.name} ({product.purchaseUnit ?? 'N/A'})
                   </Text>
-                  <Button appearance="secondary" onClick={() => setSelectedProductId(product.id)}>
+                  <Button icon={<AppIcon name="history" />} appearance="secondary" onClick={() => setSelectedProductId(product.id)}>
                     Ver historial
                   </Button>
-                  <Button onClick={() => setEditing(editing === product.id ? '' : product.id)}>Editar producto {product.name}</Button>
+                  <Button icon={<AppIcon name="edit" />} onClick={() => setEditing(editing === product.id ? '' : product.id)}>Editar producto {product.name}</Button>
                   {editing === product.id ? <CatalogEditor key={product.id} product={product} onDone={() => setEditing('')} /> : null}
                 </div>
               ))}
@@ -144,7 +145,7 @@ function ProductCatalogContent() {
         </Card>
 
         <Card className={ui.panel}>
-          <CardHeader header={<h2>Mercados</h2>} />
+          <CardHeader header={<h2 className={ui.iconHeading}><AppIcon name="markets" />Mercados</h2>} />
           <Field label="Filtrar por mercado (opcional)">
             <Select value={selectedMarketId} onChange={(_, data) => setSelectedMarketId(data.value)}>
               <option value="">Todos los mercados</option>

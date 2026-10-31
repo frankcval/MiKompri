@@ -2,7 +2,7 @@
 
 **Feature Branch**: `011-web-iconography`
 **Created**: 2026-10-31
-**Status**: Draft — diseño y Spec Kit para revisión; sin implementación.
+**Status**: Implementación en validación — diseño ratificado; cierre sujeto a evidencia y gates pendientes.
 **Input**: React Icons, una experiencia fluida/intuitiva/actual inspirada en papeles, notas y pizarra de la nevera para listas de compra. Primero especificar y fijar diseño; implementación posterior.
 
 ## Contexto y alcance
@@ -114,6 +114,6 @@ Solo presentación: SemanticIcon, IconTreatment, SurfaceToken y ScreenVisualStat
 
 ## Assumptions, Dependencies & Out of Scope
 
-React Icons se interpreta literalmente como react-icons; una sola familia Phosphor y Fluent UI existente para controles. Es una propuesta de diseño para revisar antes de implementación, no una afirmación de aprobación visual ya recibida. MAUI reutiliza semántica después.
+React Icons se interpreta literalmente como react-icons; una sola familia Phosphor y Fluent UI existente para controles. La instrucción del titular de pasar a la siguiente fase ratifica la dirección visual y ADR-005 el31/10/2026; la aceptación de la implementación se verifica por separado en evidencia. MAUI reutiliza semántica después.
 
 Depende de007(shell/Fluent/MSAL),008(UX/roles/foco/budgets),009(listas/historial/precios/compra) y010-A(auth/perfil/sesión). No cambia sus tareas ni reabre010-B.012/invitaciones, chat, notas libres, arrastrar/pinear listas, OCR/fotos, offline nuevo, temas personalizables/dark-mode global, fuente nueva, rebranding/logos, rediseño completo de landing, pagos, nuevos proveedores/backend/migraciones y despliegue quedan fuera.

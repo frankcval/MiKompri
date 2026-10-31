@@ -55,7 +55,7 @@ export function SharedListDetailPage() {
   if (!account) return <p>No hay sesión activa.</p>
   return <section className={ui.page}><Link to={back}>Volver a listas compartidas</Link>
     {detail.isPending ? <><h1>Lista compartida</h1><Spinner label="Cargando lista…" /></> : detail.isError ? <><h1>Lista no disponible</h1><p role="alert">{describeError(detail.error)}</p><Button onClick={() => void detail.refetch()}>Reintentar</Button></> : <section className={ui.shoppingDetail}>
-      <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{detail.data.name}</h1><p>Lista compartida{group ? ` · ${group.name}` : ''}{!active ? ' · Cerrada' : ''}</p></div>
+      <div className={`${ui.detailHeader} ${ui.board}`}><div className={ui.detailTitle}><h1>{detail.data.name}</h1><p>Lista compartida{group ? ` · ${group.name}` : ''}{!active ? ' · Cerrada' : ''}</p></div>
         {active ? <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${accountSessionKey(account)}:${listId}`} returnTo={`/shared-lists/${listId}?tab=${tab}`} onAdd={async item => {
           await write(t => addSharedListItem(env.shoppingListApiBaseUrl, t, listId, { productId: item.productId, name: item.productName, quantity: item.quantity, estimatedPrice: item.price })); await refresh()
         }} /> : null}

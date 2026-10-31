@@ -1,0 +1,72 @@
+[
+  {
+    "browser": "chromium",
+    "screen": "lists-mobile",
+    "width": 390,
+    "file": "after-chromium-lists-mobile.png",
+    "overflow": false
+  },
+  {
+    "browser": "chromium",
+    "screen": "detail-mobile",
+    "width": 390,
+    "file": "after-chromium-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "browser": "chromium",
+    "screen": "lists-desktop",
+    "width": 1280,
+    "file": "after-chromium-lists-desktop.png",
+    "overflow": false
+  },
+  {
+    "browser": "chromium",
+    "screen": "local-QA-login",
+    "googleVisible": true,
+    "microsoftVisible": true,
+    "authenticationAttempted": false
+  },
+  {
+    "browser": "firefox",
+    "screen": "lists-mobile",
+    "width": 390,
+    "file": "after-firefox-lists-mobile.png",
+    "overflow": false
+  },
+  {
+    "browser": "firefox",
+    "screen": "detail-mobile",
+    "width": 390,
+    "file": "after-firefox-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "browser": "firefox",
+    "screen": "lists-desktop",
+    "width": 1280,
+    "file": "after-firefox-lists-desktop.png",
+    "overflow": false
+  },
+  {
+    "browser": "webkit",
+    "screen": "lists-mobile",
+    "width": 390,
+    "file": "after-webkit-lists-mobile.png",
+    "overflow": false
+  },
+  {
+    "browser": "webkit",
+    "screen": "detail-mobile",
+    "width": 390,
+    "file": "after-webkit-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "browser": "webkit",
+    "screen": "lists-desktop",
+    "width": 1280,
+    "file": "after-webkit-lists-desktop.png",
+    "overflow": false
+  }
+]

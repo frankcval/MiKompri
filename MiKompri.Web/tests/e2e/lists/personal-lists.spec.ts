@@ -9,7 +9,7 @@ test('CRUD personal, compra reversible y recarga contra backend real', async ({ 
     await page.reload()
     await expect(page.getByRole('checkbox', { name: 'Desmarcar comprado: Pan QA' })).toBeChecked()
     await page.getByRole('checkbox', { name: 'Desmarcar comprado: Pan QA' }).uncheck()
-    await page.getByText('Más opciones', { exact: true }).first().click()
+    await page.getByLabel('Opciones de Pan QA', { exact: true }).click()
     await page.getByRole('button', { name: 'Editar Pan QA' }).click()
     await page.getByRole('dialog').getByRole('spinbutton', { name: 'Cantidad' }).fill('3')
     await page.getByRole('dialog').getByRole('button', { name: 'Guardar producto' }).click()
