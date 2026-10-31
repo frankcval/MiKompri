@@ -1,3 +1,4 @@
+import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Card, CardHeader, Spinner, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
@@ -19,10 +20,10 @@ const money = (amount: number) => new Intl.NumberFormat('es-ES', { style: 'curre
 
 export function SettlementPage({ sharedListId }: SettlementPageProps) {
   const { instance, accounts } = useMsal()
-  const account = accounts[0]
+  const account = currentAccount(instance, accounts)
   const authSession = createAuthSessionService(instance)
   const queryClient = useQueryClient()
-  const detailKey = ['shared-list-detail', sharedListId, account?.homeAccountId]
+  const detailKey = ['shared-list-detail', sharedListId, accountSessionKey(account)]
   const detailQuery = useQuery({
     queryKey: detailKey,
     enabled: Boolean(account && sharedListId),
@@ -31,13 +32,13 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
   })
   const groupId = detailQuery.isSuccess ? detailQuery.data.groupId : undefined
   const membersQuery = useQuery({
-    queryKey: ['group-members', groupId, account?.homeAccountId],
+    queryKey: ['group-members', groupId, accountSessionKey(account)],
     enabled: Boolean(account && groupId),
     retry: false,
     queryFn: async () => getGroupMembers(env.usersApiBaseUrl, await authSession.getAccessToken(loginRequest.scopes, account), groupId!),
   })
   const profileQuery = useQuery({
-    queryKey: ['profile', account?.homeAccountId],
+    queryKey: ['profile', accountSessionKey(account)],
     enabled: Boolean(account && sharedListId),
     retry: false,
     queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await authSession.getAccessToken(loginRequest.scopes, account)),
@@ -45,8 +46,8 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
   const members = membersQuery.isSuccess ? membersQuery.data : []
   const currentMember = members.find((member) => member.userId === profileQuery.data?.id)
   const canRead = Boolean(account && detailQuery.isSuccess && membersQuery.isSuccess && profileQuery.isSuccess && currentMember)
-  const summaryKey = ['settlement-summary', sharedListId, account?.homeAccountId]
-  const proposalKey = ['settlement-proposal', sharedListId, account?.homeAccountId]
+  const summaryKey = ['settlement-summary', sharedListId, accountSessionKey(account)]
+  const proposalKey = ['settlement-proposal', sharedListId, accountSessionKey(account)]
   const summaryQuery = useQuery({
     queryKey: summaryKey,
     enabled: canRead,
@@ -89,7 +90,7 @@ export function SettlementPage({ sharedListId }: SettlementPageProps) {
       {detailQuery.data.items.length === 0 ? <p>Esta lista no tiene ítems. Añade un ítem a la lista antes de registrar un gasto.</p>
         : payerIds.length === 0 ? <p>No tienes permiso para registrar gastos con tu rol actual.</p>
         : detailQuery.data.status && detailQuery.data.status !== 'Active' ? <p>La lista está cerrada. Puedes consultar sus gastos.</p>
-        : <ExpenseForm key={`${account.homeAccountId}:${sharedListId}`} items={detailQuery.data.items} members={members} payerIds={payerIds} accountKey={account.homeAccountId} scope={`expense:${sharedListId}`} defaultPayerId={payerIds.includes(currentMember.userId) ? currentMember.userId : ''}
+        : <ExpenseForm key={`${accountSessionKey(account)}:${sharedListId}`} items={detailQuery.data.items} members={members} payerIds={payerIds} accountKey={accountSessionKey(account)} scope={`expense:${sharedListId}`} defaultPayerId={payerIds.includes(currentMember.userId) ? currentMember.userId : ''}
           onSubmit={async ({ itemId, ...input }) => {
             if (!detailQuery.data.items.some((item) => item.id === itemId)) throw new Error('Selecciona un ítem de esta lista.')
             await executeAuthenticatedWrite(

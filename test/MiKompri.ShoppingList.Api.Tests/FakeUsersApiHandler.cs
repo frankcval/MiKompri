@@ -141,11 +141,14 @@ namespace MiKompri.ShoppingList.Application.Tests.IntegrationTest
 
             var callerUserId = _state.EnsureUser(externalSub);
 
-            if (HttpMethod.Get == request.Method && path.Equals("/api/v1/users/me", StringComparison.OrdinalIgnoreCase))
+            if (HttpMethod.Get == request.Method && path.Equals("/api/v1/users/me/access-status", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult(Json(HttpStatusCode.OK, new
                 {
-                    id = callerUserId,
+                    userId = callerUserId,
+                    isSuspended = false,
+                    securityVersion = 0,
+                    tokensValidFromExclusive = (long?)null,
                     displayName = externalSub,
                     identityProvider = "test",
                     externalUserId = externalSub

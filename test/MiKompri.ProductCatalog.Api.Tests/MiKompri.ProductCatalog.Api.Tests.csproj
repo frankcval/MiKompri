@@ -39,4 +39,5 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup><Compile Include="../IdentityTestSupport/SignedAuthentication.cs" Link="Security/SignedAuthentication.cs" /></ItemGroup>
 </Project>

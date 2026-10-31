@@ -1,3 +1,4 @@
+import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Card, CardHeader, Field, Input, Select, Text } from '@fluentui/react-components'
@@ -20,7 +21,7 @@ export function ProductCatalogPage() {
 
 function ProductCatalogContent() {
   const { instance, accounts } = useMsal()
-  const account = accounts[0]
+  const account = currentAccount(instance, accounts)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
   const requestedReturn = searchParams.get('returnTo') ?? ''
@@ -36,7 +37,7 @@ function ProductCatalogContent() {
 
   const productsQuery = useQuery({
     placeholderData: previous => previous,
-    queryKey: ['catalog-products', account?.homeAccountId, search],
+    queryKey: ['catalog-products', accountSessionKey(account), search],
     enabled: Boolean(account),
     retry: false,
     queryFn: async () => {
@@ -46,7 +47,7 @@ function ProductCatalogContent() {
   })
 
   const marketsQuery = useQuery({
-    queryKey: ['catalog-markets', account?.homeAccountId, 'all'],
+    queryKey: ['catalog-markets', accountSessionKey(account), 'all'],
     enabled: Boolean(account),
     retry: false,
     queryFn: async () => {
@@ -56,7 +57,7 @@ function ProductCatalogContent() {
   })
 
   const historyQuery = useQuery({
-    queryKey: ['catalog-price-history', selectedProductId, selectedMarketId, account?.homeAccountId, from, to],
+    queryKey: ['catalog-price-history', selectedProductId, selectedMarketId, accountSessionKey(account), from, to],
     enabled: Boolean(account && selectedProductId && !(from && to && from > to)),
     retry: false,
     queryFn: async () => {
@@ -100,13 +101,13 @@ function ProductCatalogContent() {
 
         <Card className={ui.panel}>
           <CardHeader header={<h2 style={{ margin: 0 }}>Crear producto</h2>} />
-          <CreateCatalogProductForm key={account.homeAccountId} onCreate={async (input) => {
+          <CreateCatalogProductForm key={accountSessionKey(account)} onCreate={async (input) => {
             const product = await executeAuthenticatedWrite(
               (token) => createCatalogProduct(env.productCatalogApiBaseUrl, token, input),
               () => authSession.getAccessToken(loginRequest.scopes, account),
               async () => authSession.login(loginRequest.scopes),
             )
-            await queryClient.invalidateQueries({ queryKey: ['catalog-products', account.homeAccountId] })
+            await queryClient.invalidateQueries({ queryKey: ['catalog-products', accountSessionKey(account)] })
             return product
           }} />
         </Card>

@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
+using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using MiKompri.ProductCatalog.Api.Security;
 
@@ -55,12 +55,11 @@ public class CommonAudienceValidationTests
             new JwtSecurityTokenHandler().ValidateToken(token, parameters, out _));
     }
 
-    private static SymmetricSecurityKey BuildSigningKey() =>
-        new(Encoding.UTF8.GetBytes("12345678901234567890123456789012"));
+    private static RsaSecurityKey BuildSigningKey() => new(RSA.Create(2048)) { KeyId = "audience-test" };
 
-    private static string BuildToken(string issuer, string audience, SymmetricSecurityKey key)
+    private static string BuildToken(string issuer, string audience, RsaSecurityKey key)
     {
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,

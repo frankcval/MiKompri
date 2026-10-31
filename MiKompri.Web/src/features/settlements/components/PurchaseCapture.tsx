@@ -1,3 +1,4 @@
+import { accountSessionKey } from '../../../auth/session/accountIdentity'
 import { useState } from 'react'
 import { Button, Spinner } from '@fluentui/react-components'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -21,9 +22,9 @@ export function PurchaseCaptureContent({ listId, item, groupId, onClose, onPendi
   const [another, setAnother] = useState(false)
   const personal = !groupId
   const base = `${env.shoppingListApiBaseUrl}/api/v1/${personal ? 'purchaselists' : 'shared-lists'}/${listId}`
-  const profile = useQuery({ queryKey: ['profile', account?.homeAccountId], queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()), retry: false })
-  const members = useQuery({ queryKey: ['group-members', groupId, account?.homeAccountId], enabled: Boolean(groupId), queryFn: async () => getGroupMembers(env.usersApiBaseUrl, await token(), groupId!), retry: false })
-  const records = useQuery({ queryKey: ['expenses', listId, account?.homeAccountId], retry: false, queryFn: async () => request<PurchaseRecord[]>(`${base}/${personal ? 'purchases' : 'expenses'}`, await token()) })
+  const profile = useQuery({ queryKey: ['profile', accountSessionKey(account)], queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()), retry: false })
+  const members = useQuery({ queryKey: ['group-members', groupId, accountSessionKey(account)], enabled: Boolean(groupId), queryFn: async () => getGroupMembers(env.usersApiBaseUrl, await token(), groupId!), retry: false })
+  const records = useQuery({ queryKey: ['expenses', listId, accountSessionKey(account)], retry: false, queryFn: async () => request<PurchaseRecord[]>(`${base}/${personal ? 'purchases' : 'expenses'}`, await token()) })
   const people = personal && profile.data ? [{ userId: profile.data.id, displayName: profile.data.displayName, role: 'Owner', joinedAt: '' }] : members.data ?? []
   const member = people.find(m => m.userId === profile.data?.id)
   const manager = ['owner', 'admin'].includes(member?.role.toLowerCase() ?? '')
@@ -38,9 +39,9 @@ export function PurchaseCaptureContent({ listId, item, groupId, onClose, onPendi
         : existing.length && !another ? <><p>Este producto ya tiene {existing.length} {existing.length === 1 ? 'registro' : 'registros'}. Consúltalos en Gastos para evitar duplicados.</p>
           <Link to={personal ? `/personal-lists/${listId}?tab=expenses` : `/shared-lists/${listId}?tab=expenses`} onClick={onClose}>Ver gastos registrados</Link>
           <Button onClick={() => setAnother(true)}>Registrar otra compra distinta</Button></>
-        : <ExpenseForm key={`${account?.homeAccountId}:${listId}:${item.id}`} items={[item]} defaultItemId={item.id} members={people} payerIds={payers} personal={personal} defaultPayerId={profile.data!.id} accountKey={account?.homeAccountId} scope={`capture:${listId}:${item.id}`} submitLabel="Guardar datos de compra" onPendingChange={onPendingChange} onSubmit={async ({ itemId, ...input }) => {
+        : <ExpenseForm key={`${accountSessionKey(account)}:${listId}:${item.id}`} items={[item]} defaultItemId={item.id} members={people} payerIds={payers} personal={personal} defaultPayerId={profile.data!.id} accountKey={accountSessionKey(account)} scope={`capture:${listId}:${item.id}`} submitLabel="Guardar datos de compra" onPendingChange={onPendingChange} onSubmit={async ({ itemId, ...input }) => {
           await write(async t => { if (personal) await request<string>(`${base}/items/${itemId}/purchases`, t, 'POST', input); else await registerItemExpense(env.shoppingListApiBaseUrl, t, listId, itemId, input) })
-          if (account) discardDraft(account.homeAccountId, `capture:${listId}:${item.id}`)
+          if (account) discardDraft(accountSessionKey(account), `capture:${listId}:${item.id}`)
           for (const prefix of ['expenses', 'settlement-summary', 'settlement-proposal']) await client.invalidateQueries({ queryKey: [prefix, listId] })
           onClose()
         }} />}
@@ -50,7 +51,7 @@ export function PurchaseCaptureContent({ listId, item, groupId, onClose, onPendi
 export function PersonalExpenses({ listId, items }: { listId: string; items: SharedListItem[] }) {
   const { account, token } = useListSession()
   const [selected, setSelected] = useState('')
-  const profile = useQuery({ queryKey: ['profile', account?.homeAccountId], queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()), enabled: Boolean(account) })
+  const profile = useQuery({ queryKey: ['profile', accountSessionKey(account)], queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()), enabled: Boolean(account) })
   const member = profile.data ? [{ userId: profile.data.id, displayName: profile.data.displayName, role: 'Owner', joinedAt: '' }] : []
   return <section aria-label="Gastos personales"><h2>Gastos</h2><p>Consulta y registra compras de esta lista sin repartirlas entre otras personas.</p>
     {items.map(item => <Button key={item.id} onClick={() => setSelected(item.id)}>Registrar compra de {item.productName}</Button>)}

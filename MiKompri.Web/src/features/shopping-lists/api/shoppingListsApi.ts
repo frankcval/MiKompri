@@ -1,3 +1,4 @@
+import { sessionFetch } from '../../../shared/api/request'
 import { responseError } from '../../../shared/api/request'
 import { request } from '../../../shared/api/request'
 
@@ -32,7 +33,7 @@ export async function getMyPersonalLists(
   shoppingListApiBaseUrl: string,
   accessToken: string,
 ): Promise<PersonalListSummary[]> {
-  const response = await fetch(`${shoppingListApiBaseUrl}/api/v1/purchaselists/mine`, {
+  const response = await sessionFetch(`${shoppingListApiBaseUrl}/api/v1/purchaselists/mine`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -52,7 +53,7 @@ export async function createPersonalList(
   accessToken: string,
   input: CreatePersonalListInput,
 ): Promise<string> {
-  const response = await fetch(`${shoppingListApiBaseUrl}/api/v1/purchaselists`, {
+  const response = await sessionFetch(`${shoppingListApiBaseUrl}/api/v1/purchaselists`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -75,7 +76,7 @@ export async function addPersonalListItem(
   listId: string,
   item: ListItemInput,
 ): Promise<string> {
-  const response = await fetch(`${shoppingListApiBaseUrl}/api/v1/purchaselists/${listId}/items`, {
+  const response = await sessionFetch(`${shoppingListApiBaseUrl}/api/v1/purchaselists/${listId}/items`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -95,7 +96,7 @@ export async function addPersonalListItem(
 // Only called for a list and item resolved from the authenticated /mine response.
 // The generic backend handler still requires ownership hardening; never reuse for shared lists.
 export async function markPersonalListItem(baseUrl: string, token: string, listId: string, itemId: string): Promise<void> {
-  const response = await fetch(`${baseUrl}/api/v1/purchaselists/${listId}/items/${itemId}/mark-as-purchased`, {
+  const response = await sessionFetch(`${baseUrl}/api/v1/purchaselists/${listId}/items/${itemId}/mark-as-purchased`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
   })
   if (!response.ok) throw await parseError(response)

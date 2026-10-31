@@ -1,4 +1,6 @@
 ﻿import '../../../setup/jsdom-dialogs'
+// This suite tests form validation/submission. Real lazy loading is covered in Playwright.
+import '../../../../src/features/shopping-lists/components/CreateListDialogContent'
 import React from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'

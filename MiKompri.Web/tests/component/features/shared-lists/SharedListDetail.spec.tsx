@@ -1,5 +1,6 @@
 import '../../../setup/jsdom-dialogs'
 import userEvent from '@testing-library/user-event'
+import '../../../../src/features/shopping-lists/components/AddProductsDialogContent'
 import { FluentProvider } from '@fluentui/react-components'
 import { appTheme } from '../../../../src/shared/ui/theme'
 import React from 'react'
@@ -9,7 +10,7 @@ import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-rou
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SharedListDetailPage } from '../../../../src/features/shared-lists/pages/SharedListDetailPage'
 
-vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [{ homeAccountId: 'private-test' }], instance: { acquireTokenSilent: async () => ({ accessToken: 'test-token' }) } }) }))
+vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [{ homeAccountId: 'private-test', tenantId: '00000000-0000-0000-0000-000000000000' }], instance: { acquireTokenSilent: async () => ({ accessToken: 'test-token' }) } }) }))
 vi.mock('../../../../src/features/settlements/pages/SettlementPage', () => ({ SettlementPage: ({ sharedListId }: { sharedListId: string }) => <h2>Gastos de {sharedListId}</h2> }))
 const listId = '11111111-1111-4111-8111-111111111111'
 const groupId = '22222222-2222-4222-8222-222222222222'

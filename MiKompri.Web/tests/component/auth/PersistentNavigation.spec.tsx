@@ -22,7 +22,7 @@ function TestRoutes() {
 }
 beforeEach(() => {
   vi.mocked(useIsAuthenticated).mockReturnValue(true)
-  vi.mocked(useMsal).mockReturnValue({ accounts: [], inProgress: InteractionStatus.None } as never)
+  vi.mocked(useMsal).mockReturnValue({ accounts: [{ homeAccountId: 'nav-user', tenantId: '00000000-0000-0000-0000-000000000000' }], inProgress: InteractionStatus.None } as never)
 })
 afterEach(cleanup)
 
@@ -50,12 +50,13 @@ describe('navegación autenticada persistente', () => {
   })
   it.each(directPaths)('protege el acceso directo a %s', path => {
     vi.mocked(useIsAuthenticated).mockReturnValue(false)
+    vi.mocked(useMsal).mockReturnValue({ accounts: [], inProgress: InteractionStatus.None } as never)
     render(<MemoryRouter initialEntries={[path]}><TestRoutes /></MemoryRouter>)
     expect(screen.getByRole('heading', { name: 'Acceso de prueba' })).toBeInTheDocument()
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
   })
   it('muestra carga durante bootstrap', () => {
-    vi.mocked(useMsal).mockReturnValue({ accounts: [], inProgress: InteractionStatus.Startup } as never)
+    vi.mocked(useMsal).mockReturnValue({ accounts: [{ homeAccountId: 'nav-user', tenantId: '00000000-0000-0000-0000-000000000000' }], inProgress: InteractionStatus.Startup } as never)
     render(<MemoryRouter initialEntries={['/groups']}><TestRoutes /></MemoryRouter>)
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
     expect(screen.getByText('Recuperando tu sesión…')).toBeInTheDocument()

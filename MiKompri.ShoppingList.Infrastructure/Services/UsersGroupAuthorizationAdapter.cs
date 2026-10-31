@@ -28,7 +28,9 @@ namespace MiKompri.ShoppingList.Infrastructure.Services
 
         public async Task<Guid?> ResolveCurrentUserIdAsync(CancellationToken cancellationToken)
         {
-            using var request = CreateRequest(HttpMethod.Get, "/api/v1/users/me");
+            if (_httpContextAccessor.HttpContext?.Items["UserId"] is Guid resolved && resolved != Guid.Empty)
+                return resolved; // D1 middleware already resolved this request.
+            using var request = CreateRequest(HttpMethod.Get, "/api/v1/users/me/access-status");
             if (request is null)
             {
                 return null;
@@ -52,7 +54,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Services
                 }
 
                 var profile = await response.Content.ReadFromJsonAsync<UserProfileResponse>(JsonOptions, cancellationToken);
-                return profile?.Id;
+                return profile?.UserId;
             }
             catch (DependencyUnavailableException)
             {
@@ -163,7 +165,7 @@ namespace MiKompri.ShoppingList.Infrastructure.Services
             return request;
         }
 
-        private sealed record UserProfileResponse(Guid Id);
+        private sealed record UserProfileResponse(Guid UserId);
         private sealed record GroupMemberResponse(Guid UserId, string Role);
     }
 }

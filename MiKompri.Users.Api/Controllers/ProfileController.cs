@@ -24,6 +24,15 @@ namespace MiKompri.Users.Api.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet("me/access-status")]
+        [ProducesResponseType(typeof(MiKompri.Identity.AccessStatus), StatusCodes.Status200OK)]
+        public ActionResult<MiKompri.Identity.AccessStatus> GetAccessStatus()
+        {
+            Response.Headers.CacheControl = "no-store";
+            return HttpContext.Items["MiKompri.AccessStatus"] is MiKompri.Identity.AccessStatus status
+                ? Ok(status) : StatusCode(503);
+        }
+
         // GET /api/v1/users/me
         [HttpGet("me")]
         [ProducesResponseType(typeof(UserProfileDto), StatusCodes.Status200OK)]
@@ -31,6 +40,8 @@ namespace MiKompri.Users.Api.Controllers
         public async Task<ActionResult<UserProfileDto>> GetMyProfile(CancellationToken ct)
         {
             var dto = await _sender.Send(new GetMyProfileQuery(), ct);
+            Response.Headers.ETag = $"\"{dto.ProfileVersion}\"";
+            Response.Headers.CacheControl = "no-store";
             return Ok(dto);
         }
 
@@ -43,7 +54,30 @@ namespace MiKompri.Users.Api.Controllers
             [FromBody] UpdateProfileRequest request,
             CancellationToken ct)
         {
-            var dto = await _sender.Send(new UpdateProfileCommand(request.DisplayName), ct);
+            var fields = request.Fields ?? new Dictionary<string, System.Text.Json.JsonElement>();
+            var allowed = new[] { "username", "givenName", "familyName", "preferredLanguage", "defaultListSort" };
+            if (fields.Keys.Any(key => !allowed.Contains(key, StringComparer.Ordinal)))
+                return BadRequest(new { status = 400, error = "Campo de perfil no permitido." });
+            long? version = null;
+            var match = Request.Headers.IfMatch.ToString();
+            if (fields.Count > 0 && string.IsNullOrWhiteSpace(match))
+                return StatusCode(428, new { status = 428, error = "Actualiza el perfil antes de guardar." });
+            if (!string.IsNullOrEmpty(match))
+            {
+                if (!long.TryParse(match.Trim('"'), out var parsed) || parsed < 0) return BadRequest();
+                version = parsed;
+            }
+            string? Read(string field)
+            {
+                if (!fields.TryGetValue(field, out var value) || value.ValueKind == System.Text.Json.JsonValueKind.Null) return null;
+                if (value.ValueKind != System.Text.Json.JsonValueKind.String) throw new InvalidOperationException("Campo de perfil no válido.");
+                return value.GetString();
+            }
+            var details = fields.Count == 0 ? null : new MiKompri.Users.Domain.Users.ProfileDetails(request.DisplayName,
+                Read("username"), Read("givenName"), Read("familyName"), Read("preferredLanguage"), Read("defaultListSort") ?? "");
+            var dto = await _sender.Send(new UpdateProfileCommand(request.DisplayName, details, fields.Keys.ToHashSet(StringComparer.Ordinal), version), ct);
+            Response.Headers.ETag = $"\"{dto.ProfileVersion}\"";
+            Response.Headers.CacheControl = "no-store";
             return Ok(dto);
         }
 
@@ -55,29 +89,14 @@ namespace MiKompri.Users.Api.Controllers
         public async Task<ActionResult<UserProfileDto>> SyncProfile()
         {
             var ct = HttpContext.RequestAborted;
-            var tid = User.FindFirstValue("tid");
-            var oid = User.FindFirstValue("oid");
-            if (string.IsNullOrWhiteSpace(tid) || string.IsNullOrWhiteSpace(oid))
-            {
-                return Unauthorized(new { status = StatusCodes.Status401Unauthorized, error = "Authentication failed.", traceId = HttpContext.TraceIdentifier });
-            }
-
-            var sub = User.FindFirstValue("sub");
-            var displayName = User.FindFirstValue("name") ?? User.FindFirstValue(ClaimTypes.Name);
-            var emailClaim = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email);
-            var email = string.IsNullOrEmpty(emailClaim) ? null : emailClaim;
-            var identityProvider = _configuration["Authentication:IdentityProvider"] ?? "entra";
-
-            var command = new SyncProfileCommand(identityProvider, tid, oid, sub, displayName, email);
-            var (_, createdByEndpoint) = await _sender.Send(command, ct);
-
+            // Middleware has already resolved/provisioned exactly once under its policy.
             var createdByMiddleware = HttpContext.Items.TryGetValue("ProfileCreatedInMiddleware", out var middlewareValue)
                 && middlewareValue is bool created
                 && created;
 
             var profile = await _sender.Send(new GetMyProfileQuery(), ct);
 
-            return (createdByEndpoint || createdByMiddleware)
+            return createdByMiddleware
                 ? CreatedAtAction(nameof(GetMyProfile), profile)
                 : Ok(profile);
         }

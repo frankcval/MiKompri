@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SettlementPage } from '../../../../src/features/settlements/pages/SettlementPage'
 
-const account = vi.hoisted(() => ({ homeAccountId: 'expense-user' }))
+const account = vi.hoisted(() => ({ homeAccountId: 'expense-user', tenantId: '00000000-0000-0000-0000-000000000000' }))
 vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [account], instance: { acquireTokenSilent: async () => ({ accessToken: 'token' }) } }) }))
 const listId = '11111111-1111-4111-8111-111111111111'
 const groupId = '22222222-2222-4222-8222-222222222222'

@@ -1,0 +1,17 @@
+{
+  "kind": "REAL_QA_GOOGLE_FEDERATION_REQUEST_NOT_CALLBACK_EVIDENCE",
+  "observedOn": "2026-10-30",
+  "testerWithoutMicrosoftAccountConfirmedByHolder": true,
+  "testerAddedConfirmedByHolder": true,
+  "testingGridRowsIncludingHeader": 2,
+  "priorEmailSessionClearedBeforeGoogleSelection": true,
+  "providerButtonSelected": "Google",
+  "authorizationHost": "accounts.google.com",
+  "redirectHostAlias": "isolated-qa-tenant.ciamlogin.com",
+  "requestedScopes": ["openid", "email", "profile", "address"],
+  "promptPresent": false,
+  "maxAgePresent": false,
+  "claimsParameterPresent": false,
+  "callbackValidated": true,
+  "containsTokenOrPersonalAttributes": false
+}

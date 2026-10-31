@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ProductCatalog.App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.ProductCatalog.Api.Tests", "test\MiKompri.ProductCatalog.Api.Tests\MiKompri.ProductCatalog.Api.Tests.csproj", "{C28E5779-0DDD-408F-92F8-570D8968AA97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiKompri.Identity", "MiKompri.Identity\MiKompri.Identity.csproj", "{59C70D0A-32FF-4136-BF4A-3A1153EA198A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -319,6 +321,18 @@ Global
 		{C28E5779-0DDD-408F-92F8-570D8968AA97}.Release|x64.Build.0 = Release|Any CPU
 		{C28E5779-0DDD-408F-92F8-570D8968AA97}.Release|x86.ActiveCfg = Release|Any CPU
 		{C28E5779-0DDD-408F-92F8-570D8968AA97}.Release|x86.Build.0 = Release|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Debug|x64.Build.0 = Debug|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Debug|x86.Build.0 = Debug|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Release|x64.ActiveCfg = Release|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Release|x64.Build.0 = Release|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Release|x86.ActiveCfg = Release|Any CPU
+		{59C70D0A-32FF-4136-BF4A-3A1153EA198A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

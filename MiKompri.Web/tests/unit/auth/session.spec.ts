@@ -4,7 +4,7 @@ import { createAuthSessionService } from '../../../src/auth/session/authSessionS
 
 describe('authSessionService', () => {
   it('getAccessToken usa acquireTokenSilent con la cuenta recibida', async () => {
-    const account = { homeAccountId: 'acc-1', username: 'ana@demo.com' } as AccountInfo
+    const account = { homeAccountId: 'acc-1', tenantId: '00000000-0000-0000-0000-000000000000', username: 'ana@demo.com' } as AccountInfo
     const acquireTokenSilent = vi.fn(async () => ({ accessToken: 'token-abc' }))
 
     const msal = {
@@ -37,7 +37,7 @@ describe('authSessionService', () => {
   })
 
   it('login y logout delegan en MSAL redirect', async () => {
-    const account = { homeAccountId: 'acc-1', username: 'ana@demo.com' } as AccountInfo
+    const account = { homeAccountId: 'acc-1', tenantId: '00000000-0000-0000-0000-000000000000', username: 'ana@demo.com' } as AccountInfo
     const loginRedirect = vi.fn(async () => undefined)
     const logoutRedirect = vi.fn(async () => undefined)
 
@@ -54,7 +54,7 @@ describe('authSessionService', () => {
     await service.login(['scope-a'])
     await service.logout(account)
 
-    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ['scope-a'] })
+    expect(loginRedirect).toHaveBeenCalledWith({ scopes: ['scope-a'], prompt: 'select_account' })
     expect(logoutRedirect).toHaveBeenCalledWith({ account })
   })
 })

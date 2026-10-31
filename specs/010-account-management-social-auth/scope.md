@@ -1,7 +1,17 @@
-# 010 — Account Management & Social Auth (solo alcance)
+# 010 — Alcance incremental aprobado para beta
 
-Sin implementación. UserId GUID interno inmutable; Users posee correlación y perfil. Evaluar Entra External ID CIAM, Google/otros y registro email (preferentemente en IdP, no contraseñas propias en Users), migración/federación de Entra actual preservando ownership/membresías/historia. Linking explícito con prueba reciente de ambas identidades; nunca por coincidencia email. Desvinculación/recuperación sin perder último método.
+Revisión31/10/2026. [Spec](spec.md), [plan](plan.md), [tasks](tasks.md), [decisión/evidencia](evidence/010-a-scope-review.md), [ADR-004](../../docs/adr/ADR-004-ciam-identity.md).
 
-Separar claims externos y datos propios: username/display name, nombre/apellidos, avatar propio/proveedor, nacimiento opcional, email/verificación/procedencia, teléfono/verificación, dirección opcional, preferencias. No sobrescribir personalizaciones al sincronizar claims. Relación varias identidades externas → UserId. ADR y revisión TP11 antes de cambiar proveedor/tenant/correlación; tokens/audience/scopes, Web y MAUI, migración y rollback probados.
+**010-A beta:** Google prioritario sin cuenta Microsoft mediante External ID→token MiKompri→Users→UserId Guid inmutable; Microsoft legacy conserva issuer/registro/configuración/UserId actuales. Web MSAL/Code+PKCE browser-delegated, tres APIs/JWT explícito, D1, perfil propio, logout/cambio y regresiones de ownership. La beta **no necesita migrar Microsoft a External ID**.
 
-Referencia investigada: https://learn.microsoft.com/en-us/entra/external-id/customers/concept-authentication-methods-customers . External ID ofrece email/password u OTP y proveedores sociales; social requiere autenticación delegada navegador. Revalidar disponibilidad/configuración al formalizar 010.
+**DEFERRED — Microsoft External ID migration:** A-AC06/07, T019/T048, federación/destino/reserva/cutover/rollback reales/manifiestos/retiro legacy. Ensayo INCONCLUSIVE por colisión CIAM, sin PASS/FAIL reinterpretado; runner/tests/journal/reservation/infraestructura y evidencia conservados. La futura migración deberá preservar exactamente UserId/referencias. Coexistencia transitoria por rollout con un único CIAM, no múltiples CIAM permanentes.
+
+**A-OPT:** email OTP/T056 opcional y no anunciado en Web. Selector QA puede conservarlo para no afectar evidencia compartida; no habilitar para cerrar beta.
+
+**DEFERRED NON-BLOCKING QA:** lector/zoom manual completosT053, alta Google adicional para nuevos atributosT059 y matriz manual exhaustiva multi-tabT060. Básicos320/390/430/teclado/targets/errores/loading/cancelación, ambos cambios reales y cobertura automatizada adecuada sí son gate beta.
+
+**010-B:** linking/unlinking/cambio de proveedor/segundo método/G3/Authentication Context/recovery entre proveedores/MFA avanzada/passkeys/SMS/Apple/Facebook/avatar storage/MAUI. Alternative B solo por insuficiencia demostrada y otro ADR. Merging sigue fuera. [Backlog](010-b-deferred.md).
+
+**012 independiente prevista:** group-invitations-collaboration — búsqueda/invitar/aceptar/rechazar/notificar/enlace no registrado/incorporación a listas compartidas. No implementación en010 ni bloqueo de autenticación.
+
+Users posee correlación; ownership/GroupMembership/AddedBy/PaidBy/PurchasedBy/auditoría usan UserId interno, nunca email/Google/sub global. Perfil propio y clear prevalecen; no DOB/teléfono/dirección/foto futuros. TP11 **1.2.0 permanece intacta**. Cierre beta habilita PR para revisión; no merge, deploy, cutover ni configuración cloud nuevos. Entorno local010-A funcional se conserva, sin restauración automática de API anterior.

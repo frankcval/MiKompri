@@ -1,35 +1,21 @@
-﻿<!--
-=============================================================================
+<!--
 SYNC IMPACT REPORT
-=============================================================================
-Version change   : 1.0.0 → 1.1.0 (adición de política de Identidad y Autenticación)
-Modified         : Se añadió el principio técnico TP11 y se aclararon reglas de correlación
-
-Modified principles:
-  - TP2: aclarada la comunicación entre bounded contexts respecto a identidad
-
-Added sections:
-  - § 3. Principios Técnicos (TP11 · Identidad y Autenticación Transversal)
-
-Templates requiring review:
-  ⚠ .specify/templates/plan-template.md   — revisar alineación con la política de identidad
-  ⚠ .specify/templates/spec-template.md   — asegurar requisitos de seguridad y scopes
-  ⚠ .specify/templates/tasks-template.md  — actualizar categorías relacionadas con auth/identity
-  ⚠ .specify/templates/commands/          — revisar comandos de hooks que interactúen con auth
-
-Follow-up TODOs:
-  - TODO(AUTHOR_LIST): Confirmar lista oficial de maintainers/autores del proyecto.
-  - TODO(REVIEW_CADENCE): Definir cadencia periódica formal de revisión constitucional
-    (sugerido: trimestral o al inicio de cada bounded context nuevo).
-  - TODO(COVERAGE_THRESHOLD): Validar umbral obligatorio de cobertura de dominio contra
-    la línea base real del proyecto antes de hacerlo vinculante en CI.
-  - TODO(CONTRACT_006): Aplicar esta política obligatoria a la spec `006-android-maui-client`
-=============================================================================
+Version change: 1.1.0 -> 1.2.0 (MINOR; expansión CIAM/consumidores preservando garantías)
+Modified principles: TP11 · Identidad y Autenticación Transversal
+Added/removed sections: ninguna; TP11 ampliado
+Approval: titular autoriza expresamente ADR-004/TP11 y ejecución 010-A el 2026-10-30.
+El PR de esta rama conserva revisión; no se afirma merge/aprobación de PR inexistentes.
+Templates: updated .specify/templates/plan-template.md, spec-template.md, tasks-template.md
+Commands: .github/agents/speckit.constitution.agent.md revisado; sin proveedor rígido.
+.specify/templates/commands/ no existe; prompts delegan en agentes.
+Runtime guidance: README.md y ADR-004 alineados.
+Deferred TODOs: AUTHOR_LIST, REVIEW_CADENCE, COVERAGE_THRESHOLD, CONTRACT_006 conservados.
+No aprobación de 010-B, merge a main, despliegue ni retiro definitivo legacy.
 -->
 
 # Constitución del Proyecto: MiKompri
 
-**Versión**: 1.1.0 | **Ratificada**: 2026-06-30 | **Última Enmienda**: 2026-09-30
+**Versión**: 1.2.0 | **Ratificada**: 2026-06-30 | **Última Enmienda**: 2026-10-30
 
 ---
 
@@ -245,9 +231,9 @@ Reglas obligatorias:
 
 - La identidad externa persistente del usuario NO DEBE correlacionarse globalmente usando únicamente el claim `sub`. (MUST NOT)
 
-- Para Microsoft Entra, la identidad canónica entre aplicaciones DEBE ser la tupla (tid, oid). Los mapeos y correlaciones canónicas del proveedor deben usar `(tid, oid)` para identificar de forma única una identidad externa. (MUST)
+- Para Microsoft Entra, la identidad canónica entre aplicaciones DEBE ser la tupla (tid, oid). Bajo issuer y tenant explícitamente validados, los mapeos y correlaciones canónicas del proveedor DEBEN usar `(tid, oid)` para identificar de forma única una identidad externa. (MUST)
 
-- MiKompri DEBE mantener un `UserId` interno propio (GUID) como identidad canónica dentro del dominio, independiente de cualquier proveedor externo. (MUST)
+- MiKompri DEBE mantener un `UserId` interno propio (GUID) como identidad canónica e inmutable dentro del dominio, independiente de cualquier proveedor externo. (MUST)
 
 - El bounded context `Users` ES el propietario exclusivo de la correlación `(tid, oid) -> MiKompri UserId`. Ningún otro bounded context puede escribir ni leer directamente la base de datos de `Users` para propósitos de correlación. (MUST)
 
@@ -264,6 +250,18 @@ Reglas obligatorias:
 - La arquitectura DEBE permitir añadir nuevos clientes Web, iOS u otros sin crear usuarios duplicados ni cambiar el identificador interno de MiKompri. El proyecto DEBE documentar el flujo de onboarding de nuevos clientes para evitar duplicados. (MUST)
 
 - Si en el futuro se separan las audiences por microservicio, la organización DEBE definir explícitamente OAuth On-Behalf-Of (OBO) o una estrategia equivalente para llamadas API-to-API y documentarla mediante ADR. (SHOULD)
+
+- Microsoft Entra External ID ES el CIAM aprobado para consumidores. Google DEBE permitir acceso sin cuenta Microsoft mediante tokens MiKompri emitidos por External ID. Las APIs MUST NOT aceptar tokens Google/sociales directos. Email OTP es opcional y requiere QA antes de habilitarlo.
+
+- El issuer Microsoft actual y el issuer External ID PUEDEN coexistir temporalmente bajo un plan acotado de población, confianza, transición y rollback. Cada combinación issuer/tenant/audience/scopes/clientes DEBE ser explícita; NO se permite el producto cartesiano de allowlists ni múltiples CIAM permanentes.
+
+- La transición cross-tenant DEBE acreditar el mismo origen inmutable, reservar destino y preservar exactamente UserId y referencias, con bloqueo de auto-provisión duplicada y rollback probado. MUST NOT correlacionar automáticamente por email, username, nombre, teléfono, avatar o sub global. Microsoft existente permanece disponible hasta acreditar cutover de su cohorte.
+
+- Users PUEDE mantener una única tupla canónica activa. Linking/unlinking, colección genérica de identidades, G3, Authentication Context y recuperación entre proveedores NO son requisitos para cerrar 010-A. Si se ofrecen después, requieren consentimiento/control reciente, anti-replay y no eliminar el último método válido.
+
+- Credenciales y recuperación del método original pertenecen al proveedor/CIAM. Claims PUEDEN inicializar perfil, pero MUST NOT sobrescribir personalizaciones posteriores ni clears explícitos. MiKompri no almacena contraseñas propias para este alcance.
+
+- Antes de habilitar negocio productivo protegido, D1 DEBE comprobar estado autoritativo Users por request en las tres APIs, reutilizable solo en esa petición. Users/estado inaccesible falla cerrado503; suspendido403; token inválido401. Sin Graph por request, Redis, bus, CAE supuesto ni claims como sustituto del estado. Esto no bloquea el primer ensayo aislado de login.
 
 Rationale:
 

@@ -41,7 +41,7 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - Confirm TP8: tests are mandatory for domain, use-case, and API coverage when applicable.
-- Confirm TP11: identity/auth flows use Microsoft Entra ID, canonical (tid, oid), internal UserId, and no global correlation by sub.
+- Confirm TP11: identity/auth flows use Entra legacy/External ID under an approved transition, issuer/tenant-validated (tid, oid), immutable internal UserId; no global sub or automatic email/profile correlation. APIs reject direct social tokens; issuer/audience/scope combinations are explicit.
 - Confirm bounded-context boundaries: no direct access to Users database from other contexts.
 
 [Gates determined based on constitution file]
@@ -52,12 +52,12 @@
 
 ```text
 specs/[###-feature]/
-├── plan.md              # This file (/speckit.plan command output)
-├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase 1 output (/speckit.plan command)
-├── quickstart.md        # Phase 1 output (/speckit.plan command)
-├── contracts/           # Phase 1 output (/speckit.plan command)
-└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
+â”œâ”€â”€ plan.md              # This file (/speckit.plan command output)
+â”œâ”€â”€ research.md          # Phase 0 output (/speckit.plan command)
+â”œâ”€â”€ data-model.md        # Phase 1 output (/speckit.plan command)
+â”œâ”€â”€ quickstart.md        # Phase 1 output (/speckit.plan command)
+â”œâ”€â”€ contracts/           # Phase 1 output (/speckit.plan command)
+â””â”€â”€ tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
 ### Source Code (repository root)
@@ -71,37 +71,37 @@ specs/[###-feature]/
 ```text
 # [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+â”œâ”€â”€ models/
+â”œâ”€â”€ services/
+â”œâ”€â”€ cli/
+â””â”€â”€ lib/
 
 tests/
-├── contract/
-├── integration/
-└── unit/
+â”œâ”€â”€ contract/
+â”œâ”€â”€ integration/
+â””â”€â”€ unit/
 
 # [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ models/
+â”‚   â”œâ”€â”€ services/
+â”‚   â””â”€â”€ api/
+â””â”€â”€ tests/
 
 frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ pages/
+â”‚   â””â”€â”€ services/
+â””â”€â”€ tests/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
 api/
-└── [same as backend above]
+â””â”€â”€ [same as backend above]
 
 ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+â””â”€â”€ [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real

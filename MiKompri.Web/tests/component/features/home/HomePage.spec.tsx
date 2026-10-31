@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -21,8 +21,13 @@ describe('entrada de portada', () => {
     expect(screen.getAllByRole('link', { name: /Crear mi primera lista/ })[0]).toHaveAttribute('href', '/personal-lists?create=1')
   })
   it.each([true, false])('abre listas con sesión o cuentas MSAL (%s)', authenticated => {
-    renderEntry(authenticated, authenticated ? [] : [{ homeAccountId: 'account' }])
+    renderEntry(authenticated, [{ homeAccountId: 'account', tenantId: '00000000-0000-0000-0000-000000000000' }])
     expect(screen.getByRole('heading', { name: 'Mis listas reales' })).toBeInTheDocument()
+  })
+  it('does not treat a cached account from another tenant as the selected session', () => {
+    renderEntry(true, [{ homeAccountId: 'other-tenant', tenantId: '22222222-2222-4222-8222-222222222222' }])
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('La compra, mejor')
+    expect(screen.queryByRole('heading', { name: 'Mis listas reales' })).not.toBeInTheDocument()
   })
   it('espera la restauración de MSAL sin mostrar una portada transitoria', () => {
     renderEntry(false, [], InteractionStatus.Startup)

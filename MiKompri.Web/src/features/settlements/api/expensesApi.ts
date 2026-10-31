@@ -1,3 +1,4 @@
+import { sessionFetch } from '../../../shared/api/request'
 import { localDateHeaders } from '../../../shared/dates/localDate'
 import { responseError } from '../../../shared/api/request'
 export type RegisterExpenseInput = {
@@ -27,7 +28,7 @@ export async function registerItemExpense(
   itemId: string,
   input: RegisterExpenseInput,
 ): Promise<RegisteredExpense> {
-  const response = await fetch(
+  const response = await sessionFetch(
     `${shoppingListApiBaseUrl}/api/v1/shared-lists/${sharedListId}/items/${itemId}/expenses`,
     {
       method: 'POST',

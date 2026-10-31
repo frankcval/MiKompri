@@ -1,4 +1,9 @@
 type Env = {
+  ciamEnabled: boolean
+  ciamClientId: string
+  ciamTenantId: string
+  ciamAuthority: string
+  ciamApiScope: string
   environment: string
   usersApiBaseUrl: string
   shoppingListApiBaseUrl: string
@@ -26,6 +31,11 @@ const localhostOrigin = typeof window === 'undefined' ? 'http://localhost:5173' 
 const entraTenantId = getEnv('VITE_ENTRA_TENANT_ID', import.meta.env.VITE_ENTRA_TENANT_ID, 'a6b72a33-ade4-45d3-a2a7-52b88d96f5eb')
 
 export const env: Env = {
+  ciamEnabled: import.meta.env.VITE_CIAM_ENABLED === 'true',
+  ciamClientId: import.meta.env.VITE_CIAM_CLIENT_ID ?? '',
+  ciamTenantId: import.meta.env.VITE_CIAM_TENANT_ID ?? '',
+  ciamAuthority: import.meta.env.VITE_CIAM_AUTHORITY ?? '',
+  ciamApiScope: import.meta.env.VITE_CIAM_API_SCOPE ?? '',
   environment: import.meta.env.VITE_ENVIRONMENT ?? 'local',
   usersApiBaseUrl: getEnv('VITE_USERS_API_BASE_URL', import.meta.env.VITE_USERS_API_BASE_URL, 'http://localhost:8082'),
   shoppingListApiBaseUrl: getEnv(

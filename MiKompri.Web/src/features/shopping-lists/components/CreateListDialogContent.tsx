@@ -1,3 +1,4 @@
+import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { useMsal } from '@azure/msal-react'
@@ -15,8 +16,8 @@ export function CreateListDialogContent({ title, onCreate, label = 'Crear lista'
   const [pending, setPending] = useState(false)
   const submitting = useRef(false)
   const trigger = useRef<HTMLButtonElement>(null)
-  const { accounts } = useMsal()
-  const account = accounts[0]?.homeAccountId
+  const { instance, accounts } = useMsal()
+  const account = accountSessionKey(currentAccount(instance, accounts))
   const scope = `create-list:${draftScope ?? title}`
   const { control, handleSubmit, reset, setError: fieldError, formState: { errors } } = useForm<{ name: string }>({ defaultValues: account ? readDraft(account, scope, { name: '' }) : { name: '' } })
   const draft = useWatch({ control })

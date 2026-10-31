@@ -21,7 +21,7 @@ public class SyncProfileCommandHandlerTests
             .Returns((User?)null);
 
         var handler = new SyncProfileCommandHandler(_userRepository);
-        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana", "ana@demo.com");
+        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana", "ana@demo.com", AllowLegacyFallback: true);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -31,7 +31,7 @@ public class SyncProfileCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_UserExistsByCanonicalIdentity_UpdatesAndReturnsCreatedFalse()
+    public async Task Handle_UserExistsByCanonicalIdentity_ResolvesWithoutOverwriting()
     {
         var existing = new User("Ana", "ana@demo.com", "entra", "tenant-1", "object-1", "legacy-sub-1");
         _userRepository
@@ -44,9 +44,9 @@ public class SyncProfileCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         result.Created.Should().BeFalse();
-        existing.DisplayName.Should().Be("Ana Maria");
-        existing.Email.Should().Be("ana.maria@demo.com");
-        await _userRepository.Received(1).UpdateAsync(existing, Arg.Any<CancellationToken>());
+        existing.DisplayName.Should().Be("Ana");
+        existing.Email.Should().Be("ana@demo.com");
+        await _userRepository.DidNotReceive().UpdateAsync(existing, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class SyncProfileCommandHandlerTests
             .Returns(existing);
 
         var handler = new SyncProfileCommandHandler(_userRepository);
-        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana", "ana@demo.com");
+        var command = new SyncProfileCommand("entra", "tenant-1", "object-1", "legacy-sub-1", "Ana", "ana@demo.com", AllowLegacyFallback: true);
 
         var result = await handler.Handle(command, CancellationToken.None);
 

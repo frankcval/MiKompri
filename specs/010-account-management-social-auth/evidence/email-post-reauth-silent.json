@@ -1,0 +1,23 @@
+{
+  "kind": "REAL_EMAIL_QA_SILENT_REFRESH_AFTER_MAX_AGE_ZERO",
+  "accessTokenValidation": {
+    "kind": "REAL_QA_API_ACCESS_TOKEN_VALIDATED",
+    "accepted": true,
+    "issuerSha256": "d32d1d4c1daf0eb8fb2d1cee85d0d9f92da4c738a60d087255884643e30c57fb",
+    "tenantSha256": "389dca61fa54aeda267b8b793b01f0e4a39c4a113280cd6291dcfc09a8bdca20",
+    "objectSha256": "793a9e4d93cd8ffc4ac257dccec266cfa46c11737a7abd8664b2b89d6ee8cbaf",
+    "subjectSha256": "417afd1c7e9221b99180e30331764c621de9225ee32da97df46c9bdebc6ac335",
+    "audienceSha256": "2707ce0395c5da12f7aff043dcf552ccef63bddcae47760222af3924cbd03c77",
+    "requiredScopePresent": true,
+    "authTime": 1793365309,
+    "issuedAt": 1793365260,
+    "expiresAt": 1793370743,
+    "challengeStartedAt": null,
+    "observedAt": 1793365560,
+    "withinG3TimestampBounds": false,
+    "provesG3": false
+  },
+  "idTokenAsApiBearerStatus": 401,
+  "idTokenAuthTimeClientObservationOnly": 1793365309,
+  "provesFreshChallenge": false
+}

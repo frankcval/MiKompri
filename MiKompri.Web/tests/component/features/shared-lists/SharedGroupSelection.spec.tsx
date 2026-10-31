@@ -9,7 +9,7 @@ import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SharedListsPage } from '../../../../src/features/shared-lists/pages/SharedListsPage'
 
-const account = vi.hoisted(() => ({ homeAccountId: 'group-user' }))
+const account = vi.hoisted(() => ({ homeAccountId: 'group-user', tenantId: '00000000-0000-0000-0000-000000000000' }))
 vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [account], instance: { acquireTokenSilent: async () => ({ accessToken: 'token' }) } }) }))
 vi.mock('../../../../src/features/settlements/pages/SettlementPage', () => ({ SettlementPage: ({ sharedListId }: { sharedListId: string }) => <div role="region" aria-label={`Settlement ${sharedListId}`} /> }))
 const first = '11111111-1111-4111-8111-111111111111'

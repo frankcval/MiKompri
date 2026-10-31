@@ -1,3 +1,4 @@
+import { sessionFetch } from '../../../shared/api/request'
 import { responseError } from '../../../shared/api/request'
 import { request } from '../../../shared/api/request'
 export type CatalogProduct = {
@@ -10,7 +11,7 @@ export type CatalogProduct = {
 export type CreateCatalogProductInput = { name: string; purchaseUnit: string }
 
 export async function createCatalogProduct(baseUrl: string, token: string, input: CreateCatalogProductInput): Promise<CatalogProduct> {
-  const response = await fetch(`${baseUrl}/api/v1/catalog-products`, {
+  const response = await sessionFetch(`${baseUrl}/api/v1/catalog-products`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(input),
@@ -60,7 +61,7 @@ async function parseCatalogError(response: Response): Promise<Error & { status?:
 }
 
 export async function getCatalogProducts(productCatalogApiBaseUrl: string, accessToken: string, search?: string): Promise<CatalogProduct[]> {
-  const response = await fetch(`${productCatalogApiBaseUrl}/api/v1/catalog-products${search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : ''}`, {
+  const response = await sessionFetch(`${productCatalogApiBaseUrl}/api/v1/catalog-products${search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : ''}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -76,7 +77,7 @@ export async function getCatalogProducts(productCatalogApiBaseUrl: string, acces
 }
 
 export async function getMarkets(productCatalogApiBaseUrl: string, accessToken: string, includeInactive = false): Promise<Market[]> {
-  const response = await fetch(`${productCatalogApiBaseUrl}/api/v1/markets${includeInactive ? '?includeInactive=true' : ''}`, {
+  const response = await sessionFetch(`${productCatalogApiBaseUrl}/api/v1/markets${includeInactive ? '?includeInactive=true' : ''}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -106,7 +107,7 @@ export async function getProductPriceHistory(
   if (from) url.searchParams.set('from', from)
   if (to) url.searchParams.set('to', to)
 
-  const response = await fetch(url.toString(), {
+  const response = await sessionFetch(url.toString(), {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,

@@ -1,10 +1,14 @@
 import { LogLevel, type Configuration } from '@azure/msal-browser'
+import { getProviderSettings, selectedProvider, type AuthProvider } from './providerSettings'
 import { env } from '../../shared/config/env'
 
-export const msalConfig: Configuration = {
+export function configurationFor(provider: AuthProvider): Configuration {
+ const route = getProviderSettings(provider)
+ return {
   auth: {
-    clientId: env.entraClientId,
-    authority: env.entraAuthority,
+    clientId: route.clientId,
+    authority: route.authority,
+    knownAuthorities: route.knownAuthorities,
     redirectUri: env.entraRedirectUri,
     postLogoutRedirectUri: env.entraPostLogoutRedirectUri,
   },
@@ -20,6 +24,9 @@ export const msalConfig: Configuration = {
   },
 }
 
+}
+
+export const msalConfig = configurationFor(selectedProvider())
 export const loginRequest = {
-  scopes: [env.apiScope],
+  scopes: [getProviderSettings(selectedProvider()).scope],
 }

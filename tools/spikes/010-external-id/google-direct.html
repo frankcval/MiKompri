@@ -1,0 +1,27 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>010 — Negativo Google directo QA</title>
+<style>body{font:18px system-ui;max-width:850px;margin:2rem auto;padding:1rem}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f3f3;padding:1rem}</style>
+<h1>Google directo — control negativo QA</h1>
+<p>Este ensayo no inicia sesión MiKompri. Obtiene un ID token Google real y verifica que la API QA con confianza exclusiva CIAM lo rechaza. No muestra ni guarda el token.</p>
+<div id="button"></div><pre id="result" aria-live="polite">Preparando Google Identity Services…</pre>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+window.addEventListener('load', async () => {
+  const output=document.getElementById('result');
+  try {
+    const config=await (await fetch('/spike/config')).json();
+    if (!config.googleClientId) { output.textContent='Cliente Google QA no configurado.'; return; }
+    google.accounts.id.initialize({client_id:config.googleClientId,callback:async result=>{
+      try {
+        const headers={Authorization:'Bearer '+result.credential};
+        const inspected=await fetch('/spike/google-negative-observation',{method:'POST',headers});
+        const observation=inspected.ok?await inspected.json():{diagnosticStatus:inspected.status};
+        const rejected=await fetch('/spike/claims',{method:'POST',headers});
+        output.textContent=JSON.stringify({kind:'REAL_GOOGLE_DIRECT_TOKEN_NEGATIVE',observation,
+          ciamApiStatus:rejected.status,expectedCiamApiStatus:401,provesG3:false},null,2);
+      } catch {output.textContent='Error del control QA; sin resultado acreditado.';}
+    }});
+    google.accounts.id.renderButton(document.getElementById('button'),{type:'standard',size:'large'});
+  } catch {output.textContent='No se pudo preparar Google Identity Services QA.';}
+});
+</script></html>

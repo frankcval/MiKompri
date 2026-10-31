@@ -1,0 +1,163 @@
+{
+  "kind": "QA_TRANSITION_DIAGNOSTICS_NOT_G3_ASSURANCE",
+  "date": "2026-10-30",
+  "baselineDefaultsEnabled": true,
+  "baselinePoliciesDisabled": true,
+  "earlierAttempt": {
+    "disableDefaultsStatus": 204,
+    "adminBaselineEnableStatus": 400,
+    "adminErrorDetailCaptured": false,
+    "rollbackContextStatus": 204,
+    "rollbackGooglePolicyStatus": 204,
+    "rollbackAdminPolicyStatus": 204,
+    "restoreDefaultsAttempts": [
+      {
+        "status": 429,
+        "retryAfterSeconds": 60,
+        "actualWaitSecondsBeforeRetry": 30
+      },
+      {
+        "status": 204
+      }
+    ],
+    "retryWaitingCorrectedAfterThisAttempt": true
+  },
+  "boundedPreflight": {
+    "transitionCompleted": false,
+    "preflightNotReady": true,
+    "actions": [
+      {
+        "action": "read_original_defaults",
+        "status": 429,
+        "retryAfter": "60"
+      }
+    ]
+  },
+  "lastDiagnostic": {
+    "completed": false,
+    "diagnosticCause": "Too many requests.",
+    "actions": [
+      {
+        "action": "disable_defaults_diagnostic",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "enable_admin_diagnostic",
+        "attempt": 1,
+        "status": 429,
+        "code": "TooManyRequests",
+        "message": "Too many requests.",
+        "retryAfter": "60"
+      },
+      {
+        "action": "rollback_context",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "rollback_g3",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "rollback_admin",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "restore_defaults",
+        "attempt": 1,
+        "status": 204
+      }
+    ]
+  },
+  "noSmsOrNewFactors": true,
+  "noUserIdentityOrDomainDataChanged": true,
+  "assignmentScopeRevision": {
+    "assignmentRevisionCompleted": true,
+    "actions": [
+      {
+        "policy": "MiKompri010G3BaselineQA-AdminMfa",
+        "status": 204
+      },
+      {
+        "policy": "MiKompri010G3EmailOtpQA",
+        "status": 204
+      }
+    ],
+    "readStatus": 200,
+    "scopes": [
+      {
+        "policy": "MiKompri010G3EmailOtpQA",
+        "state": "disabled",
+        "includeAll": true,
+        "excludedCount": 2,
+        "effectiveRecipientCount": 1,
+        "effectiveRecipientMatchesIntended": true
+      },
+      {
+        "policy": "MiKompri010G3BaselineQA-AdminMfa",
+        "state": "disabled",
+        "includeAll": true,
+        "excludedCount": 2,
+        "effectiveRecipientCount": 1,
+        "effectiveRecipientMatchesIntended": true
+      }
+    ],
+    "securityDefaultsChanged": false
+  },
+  "activationAfterAssignmentRevision": {
+    "completed": false,
+    "preflightDefaultsStatus": 429,
+    "retryAfter": "60",
+    "actions": []
+  },
+  "canonicalPortalApiActivation": {
+    "completed": false,
+    "cause": "Too many requests.",
+    "actions": [
+      {
+        "action": "disable_defaults_from_recent_verified_snapshot",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "enable_admin_baseline_canonical_portal_api",
+        "attempt": 1,
+        "status": 429,
+        "code": "TooManyRequests",
+        "message": "Too many requests.",
+        "retryAfter": "60"
+      },
+      {
+        "action": "rollback_context",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "rollback_g3",
+        "attempt": 1,
+        "status": 204
+      },
+      {
+        "action": "rollback_admin",
+        "attempt": 1,
+        "status": 429,
+        "code": "TooManyRequests",
+        "message": "Too many requests.",
+        "retryAfter": "60"
+      },
+      {
+        "action": "rollback_admin",
+        "attempt": 2,
+        "status": 204
+      },
+      {
+        "action": "restore_defaults",
+        "attempt": 1,
+        "status": 204
+      }
+    ]
+  }
+}

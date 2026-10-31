@@ -1,3 +1,4 @@
+import { sessionFetch } from '../../../shared/api/request'
 import { responseError } from '../../../shared/api/request'
 export type ParticipantBalance = {
   userId: string
@@ -33,7 +34,7 @@ export async function getSettlementSummary(
   accessToken: string,
   sharedListId: string,
 ): Promise<SettlementSummary> {
-  const response = await fetch(
+  const response = await sessionFetch(
     `${shoppingListApiBaseUrl}/api/v1/shared-lists/${sharedListId}/settlement/summary`,
     {
       method: 'GET',
@@ -56,7 +57,7 @@ export async function getSettlementProposal(
   accessToken: string,
   sharedListId: string,
 ): Promise<SettlementProposal> {
-  const response = await fetch(
+  const response = await sessionFetch(
     `${shoppingListApiBaseUrl}/api/v1/shared-lists/${sharedListId}/settlement/proposal`,
     {
       method: 'GET',

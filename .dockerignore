@@ -36,3 +36,7 @@ README.md
 **/*.log*
 **/coverage/
 **/test-results*/
+
+# Never send private QA inventories/credentials to build contexts
+**/.local
+**/.local/**

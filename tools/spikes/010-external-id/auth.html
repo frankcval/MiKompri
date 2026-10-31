@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>010 — QA aislado de identidad</title>
+<style>body{font:18px system-ui;max-width:850px;margin:2rem auto;padding:1rem}button{font:inherit;min-height:48px;margin:6px;padding:10px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f3f3;padding:1rem}</style>
+<h1>010 — Prueba aislada de External ID</h1>
+<p>Entorno QA. No accede a datos MiKompri. Introduce email/OTP solamente en la página de External ID. No pegues credenciales aquí.</p>
+<button id="login" disabled>Registro / acceso QA</button>
+<button id="fresh" disabled>Reautenticación: prompt=login, max_age=0</button>
+<button id="stepUp" disabled>Probar contexto MFA QA</button>
+<button id="select" disabled>Selector de cuenta (control SSO)</button>
+<button id="silent" disabled>Renovar token sin interacción</button>
+<button id="negativeScope" disabled>Probar scope incorrecto QA</button>
+<button id="logout" disabled>Cerrar sesión QA</button>
+<p>El resultado muestra exclusivamente hashes y timestamps. Un token aceptado o un timestamp reciente no acreditan por sí solos G3.</p>
+<pre id="result" aria-live="polite">Inicializando MSAL…</pre>
+<script src="/spike/msal.js"></script>
+<script>
+(async () => {
+  const output = document.getElementById('result');
+  const config = await (await fetch('/spike/config')).json();
+  const diagnosticClient = location.pathname === '/negative.html';
+  if (diagnosticClient) config.scope = config.scope.replace('/access_as_user','/diagnostic_only');
+  const client = new msal.PublicClientApplication({
+    auth: { clientId: diagnosticClient ? config.diagnosticClientId : config.clientId, authority: config.authority,
+      knownAuthorities: ['mikompri010qa20261030.ciamlogin.com'], redirectUri: location.origin + location.pathname },
+    cache: { cacheLocation: 'sessionStorage' },
+    system: { loggerOptions: { loggerCallback: () => {}, piiLoggingEnabled: false } }
+  });
+  const safeError = e => { output.textContent = JSON.stringify({ error: e.errorCode || 'qa_operation_failed' }); };
+  async function show(result) {
+    const response = await fetch('/spike/claims', { method: 'POST', headers: {
+      Authorization: 'Bearer ' + result.accessToken, 'X-Spike-Attempt': result.state || '' } });
+    const evidence = response.ok ? await response.json() : { accepted: false, status: response.status };
+    const inspected = await fetch('/spike/scope-observation', { method: 'POST', headers: { Authorization: 'Bearer ' + result.accessToken } });
+    const scopeObservation = inspected.ok ? await inspected.json() : { status: inspected.status };
+    const idNegative = await fetch('/spike/claims', { method: 'POST', headers: { Authorization: 'Bearer ' + result.idToken } });
+    output.textContent = JSON.stringify({ accessTokenValidation: evidence, scopeObservation,
+      idTokenAsApiBearerStatus: idNegative.status,
+      idTokenAuthTimeClientObservationOnly: result.idTokenClaims?.auth_time ?? null,
+      idTokenConfiguredContextClientObservationOnly: !!config.g3ContextId &&
+        Array.isArray(result.idTokenClaims?.acrs) && result.idTokenClaims.acrs.includes(config.g3ContextId),
+      provesFreshChallenge: false }, null, 2);
+  }
+  try {
+    await client.initialize();
+    const returned = await client.handleRedirectPromise();
+    if (returned) { client.setActiveAccount(returned.account); await show(returned); }
+    else output.textContent = 'Preparado. Usa una cuenta QA que controles.';
+    for (const button of document.querySelectorAll('button')) button.disabled = false;
+    document.getElementById('stepUp').disabled = !config.g3ContextId || diagnosticClient;
+    async function login(extra) {
+      const start = await (await fetch('/spike/start', { method: 'POST' })).json();
+      await client.loginRedirect({ scopes: [config.scope], state: start.attempt, ...extra });
+    }
+    document.getElementById('login').onclick = () => login({}).catch(safeError);
+    document.getElementById('fresh').onclick = () => login({ prompt: 'login', extraQueryParameters: { max_age: '0' } }).catch(safeError);
+    document.getElementById('stepUp').onclick = () => login({
+      prompt: 'select_account',
+      claims: JSON.stringify({ access_token: { acrs: { essential: true, value: config.g3ContextId } } })
+    }).catch(safeError);
+    document.getElementById('select').onclick = () => login({ prompt: 'select_account' }).catch(safeError);
+    document.getElementById('silent').onclick = async () => { try {
+      const account = client.getActiveAccount() || client.getAllAccounts()[0];
+      await show(await client.acquireTokenSilent({ account, scopes: [config.scope], forceRefresh: true }));
+    } catch (e) { safeError(e); } };
+    document.getElementById('negativeScope').onclick = async () => { try {
+      output.textContent = 'Solicitando token de control QA…';
+      const account = client.getActiveAccount() || client.getAllAccounts()[0];
+      await show(await client.acquireTokenSilent({ account, scopes: [config.scope.replace('/access_as_user','/diagnostic_only')], forceRefresh: true }));
+    } catch (e) { safeError(e); } };
+    document.getElementById('logout').onclick = () => client.logoutRedirect({ postLogoutRedirectUri: location.origin + location.pathname }).catch(safeError);
+  } catch (e) { safeError(e); }
+})();
+</script></html>

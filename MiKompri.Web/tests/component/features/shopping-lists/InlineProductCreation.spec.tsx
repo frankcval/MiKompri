@@ -6,7 +6,7 @@ import { FluentProvider } from '@fluentui/react-components'
 import { InlineProductCreation } from '../../../../src/features/shopping-lists/components/InlineProductCreation'
 import { appTheme } from '../../../../src/shared/ui/theme'
 
-vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [{ homeAccountId: 'inline-test' }], instance: { acquireTokenSilent: async () => ({ accessToken: 'test-token' }) } }) }))
+vi.mock('@azure/msal-react', () => ({ useMsal: () => ({ accounts: [{ homeAccountId: 'inline-test', tenantId: '00000000-0000-0000-0000-000000000000' }], instance: { acquireTokenSilent: async () => ({ accessToken: 'test-token' }) } }) }))
 const id = '88888888-8888-4888-8888-888888888888'
 let fetchMock: ReturnType<typeof vi.fn>
 beforeEach(() => {

@@ -1,0 +1,87 @@
+{
+  "Kind": "SYNTHETIC_CONTROLS_NOT_EXTERNAL_ID_EVIDENCE",
+  "Cases": [
+    {
+      "Name": "valid_synthetic_access",
+      "Expected": true,
+      "Accepted": true
+    },
+    {
+      "Name": "google_issuer_synthetic",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "graph_audience_synthetic",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "id_token_spa_audience_synthetic",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "wrong_audience",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "wrong_scope",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "missing_scope",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "missing_tid",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "wrong_tid",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "missing_oid",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "expired",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "wrong_signature",
+      "Expected": false,
+      "Accepted": false
+    }
+  ],
+  "ExistingJwtHelpersOnly": [
+    {
+      "Api": "Users",
+      "AcceptsWrongScope": true,
+      "AcceptsNoScope": true,
+      "AcceptsNoTidOid": true
+    },
+    {
+      "Api": "ShoppingList",
+      "AcceptsWrongScope": true,
+      "AcceptsNoScope": true,
+      "AcceptsNoTidOid": true
+    },
+    {
+      "Api": "ProductCatalog",
+      "AcceptsWrongScope": true,
+      "AcceptsNoScope": true,
+      "AcceptsNoTidOid": true
+    }
+  ],
+  "Passed": 12,
+  "Total": 12
+}

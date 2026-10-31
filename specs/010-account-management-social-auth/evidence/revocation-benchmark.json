@@ -1,0 +1,110 @@
+{
+  "Kind": "LOCAL_PROXY_NOT_PRODUCTION_D1_ACCEPTANCE",
+  "FixtureRows": 10000,
+  "Runtime": "8.0.32",
+  "Measures": [
+    {
+      "Name": "users_canonical_lookup_ef",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 1,
+      "P50Ms": 3.072,
+      "P95Ms": 5.178,
+      "P99Ms": 6.653,
+      "MeanMs": 3.371,
+      "MaxMs": 51.545,
+      "WallMs": 3386.802
+    },
+    {
+      "Name": "http_baseline",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 1,
+      "P50Ms": 0.369,
+      "P95Ms": 0.716,
+      "P99Ms": 1.119,
+      "MeanMs": 0.418,
+      "MaxMs": 4.738,
+      "WallMs": 421.703
+    },
+    {
+      "Name": "http_users_lookup",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 1,
+      "P50Ms": 3.467,
+      "P95Ms": 6.155,
+      "P99Ms": 8.783,
+      "MeanMs": 3.737,
+      "MaxMs": 33.508,
+      "WallMs": 3740.829
+    },
+    {
+      "Name": "http_consumer_extra_users_hop",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 1,
+      "P50Ms": 3.168,
+      "P95Ms": 6.072,
+      "P99Ms": 7.818,
+      "MeanMs": 3.486,
+      "MaxMs": 51.462,
+      "WallMs": 3488.646
+    },
+    {
+      "Name": "users_canonical_lookup_ef",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 8,
+      "P50Ms": 3.187,
+      "P95Ms": 7.098,
+      "P99Ms": 25.664,
+      "MeanMs": 4.433,
+      "MaxMs": 103.191,
+      "WallMs": 557.838
+    },
+    {
+      "Name": "http_baseline",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 8,
+      "P50Ms": 0.114,
+      "P95Ms": 0.203,
+      "P99Ms": 0.511,
+      "MeanMs": 0.13,
+      "MaxMs": 1.382,
+      "WallMs": 16.556
+    },
+    {
+      "Name": "http_users_lookup",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 8,
+      "P50Ms": 3.052,
+      "P95Ms": 5.081,
+      "P99Ms": 25.428,
+      "MeanMs": 3.782,
+      "MaxMs": 51.642,
+      "WallMs": 474.715
+    },
+    {
+      "Name": "http_consumer_extra_users_hop",
+      "Samples": 1000,
+      "Warmup": 100,
+      "Concurrency": 8,
+      "P50Ms": 3.92,
+      "P95Ms": 8.241,
+      "P99Ms": 50.312,
+      "MeanMs": 6.129,
+      "MaxMs": 156.41,
+      "WallMs": 767.168
+    }
+  ],
+  "PostgreSql": {
+    "NodeType": "Index Scan",
+    "PlanningMs": 0.135,
+    "ExecutionMs": 0.053,
+    "ActualRows": 1,
+    "SharedHitBlocks": 3
+  }
+}

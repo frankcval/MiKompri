@@ -374,3 +374,6 @@ MiKompri.Web/test-results-*/
 MiKompri.Web/playwright-report/
 dist/
 *.swp
+
+# Private QA/migration inventories and local credentials
+**/.local/

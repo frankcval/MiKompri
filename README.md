@@ -1,6 +1,6 @@
 # MiKompri
 
-> **Estado al 30/10/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
+> **Estado al 31/10/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
 
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
@@ -38,7 +38,7 @@ MiKompri es una solución empresarial para la gestión colaborativa de listas de
 
 - **Gestión de Listas de Compras**: Creación, actualización, eliminación y consulta de listas
 - **Gestión de Ítems**: Agregar, modificar, marcar como comprados y eliminar ítems
-- **Identidad y Perfil**: Acceso con Microsoft Entra, aprovisionamiento del perfil local y gestión de grupos; account management y otros proveedores son alcance futuro de 010
+- **Identidad y Perfil**: Microsoft Entra, perfil local y grupos. 010-A añade Google mediante External ID, perfil propio y aislamiento de sesión en su rama; aceptación pendiente, sin despliegue productivo
 - **Gestión de Grupos**: Creación de grupos, membresías y roles (Owner, Admin, Member)
 - **Gestión de Catálogo de Productos**: Alta, actualización y desactivación de productos reutilizables
 - **Gestión de Mercados y Precios**: Registro de precios por mercado y consulta de historial
@@ -705,7 +705,7 @@ Las fuentes de verdad son [tasks 009](specs/009-shopping-experience-completion/t
 
 1. Completar los gates Web pendientes de rendimiento, aceptación integrada y accesibilidad con evidencia sobre el candidato validado.
 2. Reconciliar individualmente las tareas abiertas de 007/008 según sus criterios y evidencia, sin cerrarlas por la presencia de una implementación posterior.
-3. Formalizar, revisar y aprobar las próximas iniciativas antes de implementarlas: [010 — Account Management & Social Auth](specs/010-account-management-social-auth/scope.md) y [011 — Web Iconography](specs/011-web-iconography/scope.md). Hoy contienen solo análisis de alcance. 010 exige revisión TP11; no cambia todavía el proveedor de identidad. 011 no introduce aún un sistema nuevo de iconos.
+3. Revisar el PR de [010-A beta — Google CIAM + Microsoft legacy](specs/010-account-management-social-auth/spec.md): arquitectura aprobada, TP11 1.2.0 aplicada y código en su rama; [validación y límites](specs/010-account-management-social-auth/evidence/validation.md). La migración Microsoft real queda diferida y no bloquea beta; linking/G3 quedan en010-B. QA ampliada de lector/zoom y multi-tab se conserva como no bloqueante. [011 — Web Iconography](specs/011-web-iconography/scope.md) conserva solo análisis de alcance.
 4. Retomar **MVP-5 Android/MAUI** después de estabilizar la experiencia Web y sus contratos, con alcance y plan propios. MAUI sigue siendo la tecnología prevista para Android; Web primero es una secuencia de entrega, no su cancelación ni sustitución por otro framework móvil.
 5. Mantener presupuesto, sugerencias, fotos/OCR, promociones y comunidad como [iniciativas futuras del roadmap](specs/001-project-baseline/spec.md#mvps-definidos), sin incorporarlas a 009/010/011 por defecto. Comentarios/chat también quedan para una feature posterior.
 
@@ -760,3 +760,17 @@ Para preguntas o sugerencias, por favor abrir un [issue](https://github.com/fran
 ---
 
 ⭐ Si este proyecto te resulta útil, considera darle una estrella en GitHub!
+
+### Identidad010-A
+
+Arquitectura aprobada en [ADR-004](docs/adr/ADR-004-ciam-identity.md), [TP11 v1.2.0](.specify/memory/constitution.md). Código de 010-A implementado en `010-account-management-social-auth`: Google mediante External ID, Microsoft legacy conservado, `UserId` interno inmutable, JWT explícito/D1 en las tres APIs, perfil propio e aislamiento de sesión. Google real accede a Users/ShoppingList/ProductCatalog; los tokens Google directos, Graph e ID de CIAM son rechazados. [Validación y límites](specs/010-account-management-social-auth/evidence/validation.md).
+
+**Alcance beta aprobado31/10:** Google sin Microsoft vía External ID y Microsoft legacy operativo. Los gates funcionales están acreditados; la CI del SHA final se verifica al publicar el PR. Microsoft→External ID deja de ser requisito beta: A-AC06/07 y T019/T048 permanecen diferidos, con [ensayo INCONCLUSIVE](specs/010-account-management-social-auth/evidence/migration-rehearsal.md) conservado. No se cambia identidad ni se ejecuta cutover. Lector/zoom completos y matriz manual exhaustiva multi-tab quedan como QA posterior no bloqueante. No hay merge ni despliegue productivo.
+
+La ruta Google abre el acceso alojado de CIAM; allí hay que pulsar «Iniciar sesión con Google». No usa `domain_hint=google`, rechazado por este tenant. El selector QA conserva email OTP del spike; T056 es opcional y no habilita una opción email en la Web. Los perfiles ya creados con `unknown` se editan desde Perfil; no se rellenan administrativamente ni se sobrescriben al iniciar sesión. Los atributos de nombre del flujo QA se han preparado, pero una alta Google nueva debe confirmar su importación.
+
+010-B (linking/unlinking, segundo método, G3, recuperación entre proveedores, avatar storage y otros proveedores) continúa diferida. MAUI productivo sigue aplazado; Web es el cliente prioritario.
+
+Para probar010-A localmente se mantiene el entorno QA con Microsoft y Google; desde `MiKompri.Web`, usar `npm run dev:010a` con `.env.010a.local` privado ya preparado. Las APIs compatibles usan28082/28080/28083 y datos QA separados. Restaurar la configuración previa de la Web ocultaba Google y conectaba su preparación de cuenta a una API anterior que responde401 al sync Microsoft. [Arranque y límites](MiKompri.Web/README.md#acceso-y-límites-actuales-de-010-a). No se actualizan ni migran las bases anteriores por cambiar este modo.
+
+Grupos/invitaciones (buscar, invitar, aceptar/rechazar, notificar y enlaces para no registrados) se tratarán en la iniciativa independiente prevista `012-group-invitations-collaboration`; no bloquean autenticación010-A.

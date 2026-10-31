@@ -5,7 +5,7 @@ import { fetchMyProfile } from '../../../src/features/profile/api/profileApi'
 
 describe('session integration', () => {
   it('obtiene token con MSAL y consulta /users/me', async () => {
-    const account = { homeAccountId: 'acc-1', username: 'ana@demo.com' } as AccountInfo
+    const account = { homeAccountId: 'acc-1', tenantId: '00000000-0000-0000-0000-000000000000', username: 'ana@demo.com' } as AccountInfo
 
     const msal = {
       loginRedirect: vi.fn(),

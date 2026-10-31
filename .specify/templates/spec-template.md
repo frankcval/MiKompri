@@ -21,7 +21,7 @@
   - Tested independently
   - Deployed independently
   - Demonstrated to users independently
-  For authentication/identity features, align with TP11 of the constitution: Microsoft Entra ID, canonical (tid, oid), internal UserId, and no global correlation by sub.
+  For authentication/identity features, align with TP11 of the constitution: Entra legacy/External ID under an approved transition, issuer/tenant-validated (tid, oid), immutable internal UserId; no global sub or automatic email/profile correlation. APIs reject direct social tokens; issuer/audience/scope combinations are explicit.
 -->
 
 ### User Story 1 - [Brief Title] (Priority: P1)

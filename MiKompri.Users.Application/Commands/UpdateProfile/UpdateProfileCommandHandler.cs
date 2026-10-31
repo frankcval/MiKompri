@@ -25,7 +25,27 @@ namespace MiKompri.Users.Application.Commands.UpdateProfile
             var user = await _userRepository.GetByIdAsync(_currentUser.UserId, cancellationToken)
                 ?? throw new KeyNotFoundException("Perfil de usuario no encontrado.");
 
-            user.UpdateProfile(request.DisplayName);
+            if (request.ExpectedVersion is not null && user.ProfileVersion != request.ExpectedVersion)
+                throw new ProfileConflictException();
+            if (request.Details is { } details)
+            {
+                if (request.ExpectedVersion is null) throw new ProfileConflictException();
+                var fields = request.Fields ?? new HashSet<string>();
+                var patch = new ProfileDetails(request.DisplayName,
+                    fields.Contains("username") ? details.Username : user.Username,
+                    fields.Contains("givenName") ? details.GivenName : user.GivenName,
+                    fields.Contains("familyName") ? details.FamilyName : user.FamilyName,
+                    fields.Contains("preferredLanguage") ? details.PreferredLanguage : user.PreferredLanguage,
+                    fields.Contains("defaultListSort") ? details.DefaultListSort : user.DefaultListSort);
+                if (patch.Username is not null)
+                {
+                    var username = patch.Username.Trim().ToLowerInvariant();
+                    var existing = await _userRepository.GetByUsernameAsync(username, cancellationToken);
+                    if (existing is not null && existing.Id != user.Id) throw new UserConflictException();
+                }
+                user.UpdateDetails(patch, request.ExpectedVersion.Value);
+            }
+            else user.UpdateProfile(request.DisplayName);
             await _userRepository.UpdateAsync(user, cancellationToken);
 
             return ToDto(user);
@@ -37,7 +57,13 @@ namespace MiKompri.Users.Application.Commands.UpdateProfile
             DisplayName = user.DisplayName,
             Email = user.Email,
             IdentityProvider = user.IdentityProvider,
-            ExternalUserId = user.ExternalUserId,
+            ExternalUserId = user.ExternalUserId ?? string.Empty,
+            Username = user.Username,
+            GivenName = user.GivenName,
+            FamilyName = user.FamilyName,
+            PreferredLanguage = user.PreferredLanguage,
+            DefaultListSort = user.DefaultListSort,
+            ProfileVersion = user.ProfileVersion,
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt
         };

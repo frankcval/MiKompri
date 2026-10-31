@@ -1,0 +1,57 @@
+{
+  "Kind": "OFFLINE_TIMESTAMP_BOUNDARIES_NOT_PROVIDER_G3_EVIDENCE",
+  "Cases": [
+    {
+      "Name": "age_exactly_300",
+      "Expected": true,
+      "Accepted": true
+    },
+    {
+      "Name": "age_301_rejected_without_extending_by_skew",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "operation_exactly_600",
+      "Expected": true,
+      "Accepted": true
+    },
+    {
+      "Name": "operation_601_rejected",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "future_30_within_skew",
+      "Expected": true,
+      "Accepted": true
+    },
+    {
+      "Name": "future_31_rejected",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "before_challenge_30_within_skew",
+      "Expected": true,
+      "Accepted": true
+    },
+    {
+      "Name": "before_challenge_31_rejected",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "missing_auth_time_rejected",
+      "Expected": false,
+      "Accepted": false
+    },
+    {
+      "Name": "missing_challenge_rejected",
+      "Expected": false,
+      "Accepted": false
+    }
+  ],
+  "Passed": 10,
+  "Total": 10
+}

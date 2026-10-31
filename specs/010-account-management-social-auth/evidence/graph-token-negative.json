@@ -1,0 +1,11 @@
+{
+  "Validation": {
+    "Kind": "REAL_ISSUED_TOKEN_VALIDATION",
+    "Accepted": false,
+    "FailureType": "SecurityTokenInvalidSignatureException",
+    "ProvesG3": false
+  },
+  "ExpectedAccepted": false,
+  "Kind": "REAL_QA_MICROSOFT_GRAPH_ACCESS_TOKEN_NEGATIVE",
+  "Result": "PASS"
+}

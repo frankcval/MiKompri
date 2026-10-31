@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-31",
+  "baseCommit": "46cf0ba",
+  "environment": "isolated-010a-QA",
+  "kind": "REAL_GOOGLE_DIRECT_TOKEN_AGAINST_NORMAL_APIS",
+  "realGoogleSignatureAndClientContractValid": true,
+  "credentialStoredOrPrinted": false,
+  "normalApiTrustChanged": false,
+  "results": [
+    { "api": "Users", "method": "GET", "path": "/api/v1/users/me", "status": 401 },
+    { "api": "ShoppingList", "method": "GET", "path": "/api/v1/purchaselists/mine", "status": 401 },
+    { "api": "ProductCatalog", "method": "GET", "path": "/api/v1/catalog-products", "status": 401 }
+  ],
+  "allRejected": true,
+  "provesMigrationOrG3": false
+}

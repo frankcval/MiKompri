@@ -12,6 +12,10 @@ namespace MiKompri.Users.Application.Commands.SyncProfile
         string ObjectId,
         string? ExternalUserId,
         string? DisplayName,
-        string? Email
+        string? Email,
+        bool AllowProvision = true,
+        bool AllowLegacyFallback = false,
+        string? GivenName = null,
+        string? FamilyName = null
     ) : IRequest<(Guid UserId, bool Created)>;
 }

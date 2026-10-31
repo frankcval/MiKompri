@@ -1,0 +1,15 @@
+{
+  "kind": "REAL_GOOGLE_DIRECT_TOKEN_NEGATIVE",
+  "observation": {
+    "googleSignatureAndClientContractValid": true,
+    "subjectSha256": "5141e4353dada7a8a76b01b42b056de6cd25fdda7c221d216ba010bf627cb3a0",
+    "authTimeClaimPresent": false,
+    "domainAccessGrantedByThisDiagnostic": false,
+    "provesG3": false
+  },
+  "ciamApiStatus": 401,
+  "expectedCiamApiStatus": 401,
+  "provesG3": false,
+  "tokenType": "Google Identity Services ID token; not a Google API access token",
+  "googleSubjectMatchesCiamFederatedIdentity": true
+}

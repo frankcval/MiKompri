@@ -1,0 +1,158 @@
+{
+  "jwtControls": {
+    "Total": 12,
+    "Passed": 12
+  },
+  "powerShellSyntax": [
+    {
+      "SyntaxErrors": 0,
+      "Script": "get-google-qa-inventory.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "get-qa-inventory.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-auth-harness.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-benchmark.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-graph-probes.ps1"
+    },
+    {
+      "SyntaxErrors": 0,
+      "Script": "run-graph-token-negative.ps1"
+    }
+  ],
+  "productionChanges": [],
+  "branch": "010-account-management-social-auth",
+  "baseCommit": "b02947f5f624cd0b1326018982967cae5325ab03",
+  "g3TimingControls": {
+    "Total": 10,
+    "Passed": 10
+  },
+  "domainProductionSchemaChanged": false,
+  "htmlJavaScriptSyntax": "PASS",
+  "sourceFiles": [
+    {
+      "Path": "tools/spikes/010-external-id/.gitignore",
+      "Sha256": "01c9c7cf0f94237049af1ffb52110b959311cb4afe36ae333e2436a09ff1cddf"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/auth.html",
+      "Sha256": "9121acc35e3eaa2321b7dae78d2152bf14f40cb0b5e0db638123e86421b5cd17"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/AuthHarness.cs",
+      "Sha256": "6de7be96a17faaec776d52a68e58be70a5b5a3e0e40a59834685e9ff0474399c"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/ExternalIdSpike.csproj",
+      "Sha256": "567f7a276f198fe61dc5761bd81a036e1e35677154c575b85d659e3bbedb3dcc"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/get-google-qa-inventory.ps1",
+      "Sha256": "1d5b0550c971b41b701a972446da844d4ebcbd1f09ed8f8e1cef260f425a9519"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/get-qa-inventory.ps1",
+      "Sha256": "30eb9c7d52a0cbf086f37681c168e1e909416c6e0ee26ae9ce761044bebadbb0"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/google-direct.html",
+      "Sha256": "87378d1cc55edcc11aa444649f476ee4b04af4aa8ae8555dbd7b5eeeaed8d8db"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/Program.cs",
+      "Sha256": "49db482eb1dafca7ea12eccad35fb4febe664ca8cdf1eb23d385722246c9c9f0"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/README.md",
+      "Sha256": "4f6c58338ddbdc8b9097fd0ba1948196f058604bae535d5be71faed3016674ee"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-auth-harness.ps1",
+      "Sha256": "7ed8aca631e61e6406f0080fe7c3d8c60ee8fa5c24fb14faaf7b1997e30b4772"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-benchmark.ps1",
+      "Sha256": "5c501dd547028d5f40c8eac43fc89a201601f7269716ddc0885758289b7b02a4"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-graph-probes.ps1",
+      "Sha256": "4861445a1f17769b4fbf7e575758468ba25feae842501bc06c592c26a552e07b"
+    },
+    {
+      "Path": "tools/spikes/010-external-id/run-graph-token-negative.ps1",
+      "Sha256": "5cfe1a4ffa9ae6fd7800471d2cacfc232dde0f475cd2d5633b8ed406ca235924"
+    }
+  ],
+  "kind": "ISOLATED_SPIKE_SOURCE_VALIDATION",
+  "changedFilesInScope": 17,
+  "trailingWhitespaceIssues": [],
+  "htmlJavaScriptFilesChecked": 2,
+  "googleDirectNegative": "PASS_REAL_GOOGLE_ID_TOKEN_REJECTED_401",
+  "googleQaSetup": "PASS_REAL_GOOGLE_SIGN_IN_AND_CIAM_TOKEN_VALIDATION",
+  "continuationValidation": {
+    "jsonFilesParsed": 24,
+    "date": "2026-10-30",
+    "localLinksChecked": 179,
+    "emailG3": "INCONCLUSIVE",
+    "completedTasks": 0,
+    "brokenLocalLinks": 0,
+    "sourceHashMismatches": 0,
+    "googleG3ObservedRoute": "NOT RELIABLE FOR G3",
+    "googleDirectSubjectMatchesCiamFederatedIdentity": true,
+    "sensitivePatternFiles": 0
+  },
+  "g3StepUpDocumentaryReview": {
+    "completedTasks": 0,
+    "observedGoogleRouteClassification": "NOT RELIABLE FOR G3",
+    "uniqueOpenTasks": 55,
+    "cloudConfigurationChanged": false,
+    "jsonFilesParsed": 24,
+    "date": "2026-10-30",
+    "kind": "OFFICIAL_DOCUMENTATION_REVIEW_NOT_RUNTIME_EVIDENCE",
+    "newRuntimeTestsExecuted": false,
+    "decision": "ALTERNATIVE A REQUIRES CHANGES",
+    "brokenLocalLinks": 0,
+    "candidateClassification": "INCONCLUSIVE",
+    "localLinksChecked": 189,
+    "unchangedHarnessSourceHashes": 13,
+    "artifact": "g3-step-up-review.md"
+  },
+  "g3AdditionalQa": {
+    "isolatedHarnessChanged": true,
+    "activeEmailMfaStepUpExecuted": false,
+    "timingControls": "10/10",
+    "releaseBuild": "PASS_0_WARNINGS_0_ERRORS",
+    "configuredContextClaimObservedWithPolicyDisabled": true,
+    "baseCommit": "010d298daae4815e6db00b88ab00e507b4c78b3e",
+    "productionChanged": false,
+    "date": "2026-10-30",
+    "classification": "INCONCLUSIVE",
+    "runnerPowerShellSyntax": "PASS",
+    "smsEnabled": false,
+    "javascriptSyntax": "PASS",
+    "restorationFinalRead": "VERIFIED_DEFAULTS_ENABLED_POLICIES_DISABLED_CONTEXT_UNPUBLISHED",
+    "jwtControls": "12/12",
+    "finalValidation": {
+      "localLinksChecked": 210,
+      "sourceHashesUpdated": 13,
+      "jsonFilesParsed": 28,
+      "powerShellScriptsParsed": 6,
+      "uniqueTaskIds": 55,
+      "completedTasks": 0,
+      "sensitivePatternFiles": 0,
+      "temporaryAdministrativeReferenceCleared": true,
+      "brokenLinks": 0,
+      "htmlJavaScriptFilesParsed": 2,
+      "taskCount": 55
+    }
+  }
+}

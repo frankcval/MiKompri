@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ExpenseForm } from '../../../../src/features/settlements/components/ExpenseForm'
 
-vi.mock('../../../../src/features/shopping-lists/hooks/useListSession', () => ({ useListSession: () => ({ account: { homeAccountId: 'recovery' }, token: async () => 'test' }) }))
+vi.mock('../../../../src/features/shopping-lists/hooks/useListSession', () => ({ useListSession: () => ({ account: { homeAccountId: 'recovery', tenantId: '00000000-0000-0000-0000-000000000000' }, token: async () => 'test' }) }))
 const actor = '11111111-1111-4111-8111-111111111111'
 const item = '22222222-2222-4222-8222-222222222222'
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })

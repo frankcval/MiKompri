@@ -1,3 +1,4 @@
+import { accountSessionKey } from '../../../auth/session/accountIdentity'
 import { useRef, useState } from 'react'
 import { Spinner, Button, TabList, Tab } from '@fluentui/react-components'
 import { lazy, Suspense } from 'react'
@@ -35,12 +36,12 @@ export function SharedListDetailPage() {
   const captureTrigger = useRef<HTMLElement | null>(null)
   const closeCapture = () => { setCapture(''); requestAnimationFrame(() => { if (captureTrigger.current?.isConnected) captureTrigger.current.focus() }) }
   const pending = useRef(new Set<string>())
-  const key = ['shared-list-detail', listId, account?.homeAccountId]
+  const key = ['shared-list-detail', listId, accountSessionKey(account)]
   const detail = useQuery({ queryKey: key, enabled: Boolean(account && listId), retry: false, queryFn: async () => getSharedListById(env.shoppingListApiBaseUrl, await token(), listId) })
-  const groups = useQuery({ queryKey: ['groups', account?.homeAccountId], enabled: Boolean(account), retry: false, queryFn: async () => getMyGroups(env.usersApiBaseUrl, await token()) })
+  const groups = useQuery({ queryKey: ['groups', accountSessionKey(account)], enabled: Boolean(account), retry: false, queryFn: async () => getMyGroups(env.usersApiBaseUrl, await token()) })
   const groupId = detail.data?.groupId ?? ''
-  const members = useQuery({ queryKey: ['group-members', groupId, account?.homeAccountId], enabled: Boolean(account && groupId), retry: false, queryFn: async () => getGroupMembers(env.usersApiBaseUrl, await token(), groupId) })
-  const profile = useQuery({ queryKey: ['profile', account?.homeAccountId], enabled: Boolean(account), retry: false, queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()) })
+  const members = useQuery({ queryKey: ['group-members', groupId, accountSessionKey(account)], enabled: Boolean(account && groupId), retry: false, queryFn: async () => getGroupMembers(env.usersApiBaseUrl, await token(), groupId) })
+  const profile = useQuery({ queryKey: ['profile', accountSessionKey(account)], enabled: Boolean(account), retry: false, queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()) })
   const group = groups.data?.find(g => g.id === groupId)
   const role = (group?.myRole || members.data?.find(m => m.userId === profile.data?.id)?.role || '').toLowerCase()
   const manager = role === 'owner' || role === 'admin'
@@ -55,11 +56,11 @@ export function SharedListDetailPage() {
   return <section className={ui.page}><Link to={back}>Volver a listas compartidas</Link>
     {detail.isPending ? <><h1>Lista compartida</h1><Spinner label="Cargando lista…" /></> : detail.isError ? <><h1>Lista no disponible</h1><p role="alert">{describeError(detail.error)}</p><Button onClick={() => void detail.refetch()}>Reintentar</Button></> : <section className={ui.shoppingDetail}>
       <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{detail.data.name}</h1><p>Lista compartida{group ? ` · ${group.name}` : ''}{!active ? ' · Cerrada' : ''}</p></div>
-        {active ? <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${account.homeAccountId}:${listId}`} returnTo={`/shared-lists/${listId}?tab=${tab}`} onAdd={async item => {
+        {active ? <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${accountSessionKey(account)}:${listId}`} returnTo={`/shared-lists/${listId}?tab=${tab}`} onAdd={async item => {
           await write(t => addSharedListItem(env.shoppingListApiBaseUrl, t, listId, { productId: item.productId, name: item.productName, quantity: item.quantity, estimatedPrice: item.price })); await refresh()
         }} /> : null}
       </div>
-      {manager && active ? <div className={ui.actions}><RenameListAction name={detail.data.name} accountKey={account.homeAccountId} scope={listId} onRename={async name => { await write(t => updateSharedList(env.shoppingListApiBaseUrl, t, listId, name)); await refresh() }} />
+      {manager && active ? <div className={ui.actions}><RenameListAction name={detail.data.name} accountKey={accountSessionKey(account)} scope={listId} onRename={async name => { await write(t => updateSharedList(env.shoppingListApiBaseUrl, t, listId, name)); await refresh() }} />
         <ConfirmAction label="Cerrar lista" description="La lista quedará disponible para consulta. Sus gastos se conservarán." onConfirm={async () => { await write(t => closeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh() }} />
         <ConfirmAction label="Eliminar lista" description={`Se eliminará «${detail.data.name}» si no tiene gastos asociados. Si tiene gastos, ciérrala para conservar las cuentas.`} onConfirm={async () => { await write(t => removeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh(); navigate(back) }} />
       </div> : null}
@@ -78,12 +79,12 @@ export function SharedListDetailPage() {
         } : undefined} actions={active ? item => <ProductOptions name={item.productName}>
           <Button onClick={event => { captureTrigger.current = event.currentTarget; setCapture(item.id) }}>Datos de compra de {item.productName}</Button>
           {manager || item.addedBy === profile.data?.id ? <>
-          <EditItemAction item={item} accountKey={account.homeAccountId} onEdit={async (quantity, price) => { await write(t => updateSharedItem(env.shoppingListApiBaseUrl, t, listId, item.id, quantity, price)); await refresh() }} />
+          <EditItemAction item={item} accountKey={accountSessionKey(account)} onEdit={async (quantity, price) => { await write(t => updateSharedItem(env.shoppingListApiBaseUrl, t, listId, item.id, quantity, price)); await refresh() }} />
           <ConfirmAction label={`Eliminar ${item.productName}`} text="Eliminar" description="Se eliminará este producto si no tiene gastos asociados." onConfirm={async () => { await write(t => removeSharedItem(env.shoppingListApiBaseUrl, t, listId, item.id)); await refresh(); document.getElementById('main-content')?.focus() }} />
           </> : null}
         </ProductOptions> : undefined} />
       </div> : tab === 'people' ? <div id="people-panel" role="tabpanel" aria-labelledby="people-tab"><GroupPeople groupId={groupId} /></div> : <div id="expenses-panel" role="tabpanel" aria-labelledby="expenses-tab"><Suspense fallback={<Spinner label="Cargando reparto…" />}><SettlementPage key={listId} sharedListId={listId} /></Suspense></div>}
-      {detail.data.items.find(item => item.id === capture) ? <PurchaseCapture key={`${account.homeAccountId}:${listId}:${capture}`} listId={listId} groupId={groupId} item={detail.data.items.find(item => item.id === capture)!} restoreFocusRef={captureTrigger} onClose={closeCapture} /> : null}
+      {detail.data.items.find(item => item.id === capture) ? <PurchaseCapture key={`${accountSessionKey(account)}:${listId}:${capture}`} listId={listId} groupId={groupId} item={detail.data.items.find(item => item.id === capture)!} restoreFocusRef={captureTrigger} onClose={closeCapture} /> : null}
     </section>}
   </section>
 }

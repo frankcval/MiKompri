@@ -1,9 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore, type Dispatch, type SetStateAction } from 'react'
+import { onSessionReset, sessionStamp } from './sessionBoundary'
 const prefix = 'mikompri.draft.'
 let currentAccount: string | undefined
 
 export function clearDrafts() {
-  try { for (const key of Object.keys(sessionStorage)) if (key.startsWith(prefix)) sessionStorage.removeItem(key) } catch { /* Optional storage. */ }
+  currentAccount = undefined
+  try {
+    for (const key of Object.keys(sessionStorage)) if (key.startsWith(prefix)) sessionStorage.removeItem(key)
+    sessionStorage.removeItem('mikompri.draft-account')
+  } catch { /* Optional storage. */ }
 }
 
 export function selectDraftAccount(account: string) {
@@ -30,7 +35,21 @@ export function writeDraft<T>(account: string, scope: string, value: T) {
 export function discardDraft(account: string, scope: string) { try { sessionStorage.removeItem(`${prefix}${account}.${scope}`) } catch { /* Optional storage. */ } }
 
 export function useDraft<T>(account: string, scope: string, fallback: T) {
-  const [value, setValue] = useState(() => account ? readDraft(account, scope, fallback) : fallback)
-  useEffect(() => { if (account) writeDraft(account, scope, value) }, [account, scope, value])
-  return [value, setValue] as const
+  const generation = useSyncExternalStore(onSessionReset, sessionStamp, sessionStamp)
+  const key = JSON.stringify([account, scope])
+  const [state, setState] = useState(() => ({ key, generation, value: account ? readDraft(account, scope, fallback) : fallback }))
+  let current = state
+  if (state.key !== key || state.generation !== generation) {
+    current = { key, generation, value: state.generation !== generation ? fallback : account ? readDraft(account, scope, fallback) : fallback }
+    setState(current)
+  }
+  useEffect(() => {
+    if (account && current.key === key && current.generation === generation && sessionStamp() === generation)
+      writeDraft(account, scope, current.value)
+  }, [account, scope, key, generation, current])
+  const setValue: Dispatch<SetStateAction<T>> = value => setState(before => {
+    if (sessionStamp() !== generation || before.key !== key || before.generation !== generation) return before
+    return { ...before, value: typeof value === 'function' ? (value as (previous: T) => T)(before.value) : value }
+  })
+  return [current.value, setValue] as const
 }

@@ -27,4 +27,5 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup><ProjectReference Include="..\MiKompri.Identity\MiKompri.Identity.csproj" /></ItemGroup>
 </Project>

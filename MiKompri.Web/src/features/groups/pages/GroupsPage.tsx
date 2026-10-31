@@ -1,3 +1,4 @@
+import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Card, CardHeader, Field, Input, Spinner, Text } from '@fluentui/react-components'
@@ -12,13 +13,13 @@ import { createGroup, getMyGroups } from '../api/groupsApi'
 
 export function GroupsPage() {
   const { instance, accounts } = useMsal()
-  const account = accounts[0]
+  const account = currentAccount(instance, accounts)
   const authSession = createAuthSessionService(instance)
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
 
   const groupsQuery = useQuery({
-    queryKey: ['groups', account?.homeAccountId],
+    queryKey: ['groups', accountSessionKey(account)],
     enabled: Boolean(account),
     queryFn: async () => {
       const token = await authSession.getAccessToken(loginRequest.scopes, account)
