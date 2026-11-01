@@ -88,3 +88,5 @@ Estado vigente: [revisión final](evidence/final-review.md), [CI código final](
 ## Evidencia de cierre actual
 
 T031: run41327776290/0923a0c y diff; SHA de publicación contrastado después del commit en PR/entrega. T032: gates/DoD/reversión y PR preparado tras CI. T033: Groups red/green, Owner/Admin/Member, datos reales/creación/foco/22capturas. T034: cuatro elementos LCP/waterfalls/JS/fuentes/render, sin cambiar runner. T035:22exports, ambos Drawer diferidos, compresión inicial y80muestras;3FAIL LCP/deuda previa explícita. T036:160local/192CI, Docker/HTTP y QA humana diferida. T037:13tests del área y15E2E nuevos, error/retry/pending/draft/returnTo conservados y CI completo. T038:17vistas/68capturas, inspección por secciones/motores/escritorio y correcciones de notas compartidas/Gastos/copy sin negocio.
+
+Publicación: el CI de fc3e2ca tuvo191/192 por foco temprano del test de compra WebKit. [Revisión](evidence/publication-review.md): prueba reforzada sin cambio productivo,3/3 dirigido y15/15 de estabilidad. T031/T032 exigen comprobar el siguiente SHA completo antes de PR; el resultado se publica en PR/entrega. T019/T025 no cambian.

@@ -85,6 +85,9 @@ test('@smoke 009 purchase cancellation keeps its focus while the purchase form l
   await page.getByRole('checkbox', { name: 'Marcar comprado: Tomates' }).click()
   const dialog = page.getByRole('dialog', { name: 'Datos de compra de Tomates' })
   const dismiss = dialog.getByRole('button', { name: 'Ahora no', exact: true })
+  // Establish keyboard intent only after the real modal is interactable.
+  // focus() alone does not wait for its entrance/activation to settle in WebKit.
+  await dismiss.click({ trial: true })
   await dismiss.focus()
   await expect(dismiss).toBeFocused()
   release()

@@ -63,6 +63,10 @@ Deuda LCP previa de3rutas no empeorada materialmente; payload/mitigación declar
 
 **Group lifecycle and invitations intentionally out of scope for 011.** Sin invitación/búsqueda de usuarios/eliminar/abandonar/transferir/cambiar rol ni012/010-B.
 
+## Verificación de publicación
+
+El primer commit documental fc3e2ca detectó una carrera de interactuabilidad del test de compra WebKit:191/192, no PASS. [Investigación y corrección](publication-review.md). Se añade espera de actionability sin tocar producción ni rebajar aserciones;3/3 dirigido y15/15 de estabilidad. Se exige CI completo del siguiente SHA antes del PR. El servidor QA temporal del agente se retiró al terminar; la sesión Vite del titular queda intacta.
+
 ## Publicación y reversión
 
 Este registro identifica código0923a0c y huella. Un commit no puede contener su propio SHA: el SHA que publica esta documentación y su run se verifican después del push y se informan en PR/entrega; no se atribuye al SHA nuevo el run de otro SHA. Abrir PR solo tras comprobarlo. Sin merge/deploy.
