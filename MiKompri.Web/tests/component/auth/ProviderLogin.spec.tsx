@@ -13,23 +13,22 @@ vi.mock('../../../src/auth/session/authSessionService', () => ({ createAuthSessi
 const before = { ...env }
 beforeEach(() => { login.mockClear(); Object.assign(env, before); sessionStorage.clear() })
 afterEach(() => { cleanup(); Object.assign(env, before) })
-it('shows accredited Google first and preserves Microsoft with separate routes', () => {
+it('offers only Google without exposing Microsoft or account linking', () => {
   Object.assign(env, { entraClientId: 'legacy-spa', ciamEnabled: true, ciamClientId: 'qa-spa',
     ciamAuthority: 'https://qa.ciamlogin.com/qa', ciamTenantId: 'qa', ciamApiScope: 'api://qa/access_as_user' })
   render(<MemoryRouter><LoginPage /></MemoryRouter>)
   const buttons = screen.getAllByRole('button')
   expect(buttons[0]).toHaveTextContent('Continuar con Google')
-  expect(buttons[1]).toHaveTextContent('Continuar con Microsoft')
+  expect(screen.queryByRole('button', { name: 'Continuar con Microsoft' })).not.toBeInTheDocument()
   expect(screen.getByText('En la siguiente pantalla, pulsa «Iniciar sesión con Google» para continuar con Google.')).toBeInTheDocument()
   fireEvent.click(buttons[0])
   expect(login).toHaveBeenLastCalledWith(expect.any(Array), 'google')
-  fireEvent.click(buttons[1])
-  expect(login).toHaveBeenLastCalledWith(expect.any(Array), 'microsoft')
   expect(screen.queryByRole('button', { name: /email|Apple|Vincular/i })).not.toBeInTheDocument()
 })
 it('does not advertise an unconfigured Google route', () => {
   env.ciamEnabled = false
   render(<MemoryRouter><LoginPage /></MemoryRouter>)
   expect(screen.queryByRole('button', { name: 'Continuar con Google' })).not.toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Continuar con Microsoft' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Continuar con Microsoft' })).not.toBeInTheDocument()
+  expect(screen.getByRole('status')).toHaveTextContent('El acceso con Google no está disponible en este entorno.')
 })

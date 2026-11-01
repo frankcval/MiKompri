@@ -37,7 +37,7 @@ export function ProfilePage() {
         }} /> : <Text>Perfil vacío.</Text>}
       <div className={ui.actions}><Button onClick={() => void profile.refetch()}>Actualizar datos</Button>
         <Button icon={<AppIcon name="logout" />} onClick={async () => { await session.logout(account); navigate('/login', { replace: true }) }}>Cerrar sesión</Button></div>
-      <p>Para recuperar el acceso, utiliza la recuperación de tu proveedor original, Google o Microsoft. Cambiar de proveedor no recupera tu cuenta existente.</p>
+      <p>Para recuperar el acceso, utiliza la recuperación de tu proveedor original. Cambiar de proveedor no recupera tu cuenta existente.</p>
     </>}
   </section>
 }

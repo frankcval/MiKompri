@@ -38,7 +38,7 @@ MiKompri es una solución empresarial para la gestión colaborativa de listas de
 
 - **Gestión de Listas de Compras**: Creación, actualización, eliminación y consulta de listas
 - **Gestión de Ítems**: Agregar, modificar, marcar como comprados y eliminar ítems
-- **Identidad y Perfil**: Microsoft Entra, perfil local y grupos. 010-A añade Google mediante External ID, perfil propio y aislamiento de sesión en su rama; aceptación pendiente, sin despliegue productivo
+- **Identidad y Perfil**: Google mediante External ID, perfil propio y grupos; 010-A beta integrada, sin despliegue productivo acreditado. La Web ofrece temporalmente solo Google; Microsoft legacy conserva su configuración interna ([ADR-006](docs/adr/ADR-006-temporary-google-only-web-login.md)).
 - **Gestión de Grupos**: Creación de grupos, membresías y roles (Owner, Admin, Member)
 - **Gestión de Catálogo de Productos**: Alta, actualización y desactivación de productos reutilizables
 - **Gestión de Mercados y Precios**: Registro de precios por mercado y consulta de historial
@@ -775,6 +775,8 @@ La ruta Google abre el acceso alojado de CIAM; allí hay que pulsar «Iniciar se
 
 010-B (linking/unlinking, segundo método, G3, recuperación entre proveedores, avatar storage y otros proveedores) continúa diferida. MAUI productivo sigue aplazado; Web es el cliente prioritario.
 
-Para probar010-A localmente se mantiene el entorno QA con Microsoft y Google; desde `MiKompri.Web`, usar `npm run dev:010a` con `.env.010a.local` privado ya preparado. Las APIs compatibles usan28082/28080/28083 y datos QA separados. Restaurar la configuración previa de la Web ocultaba Google y conectaba su preparación de cuenta a una API anterior que responde401 al sync Microsoft. [Arranque y límites](MiKompri.Web/README.md#acceso-y-límites-actuales-de-010-a). No se actualizan ni migran las bases anteriores por cambiar este modo.
+**Decisión posterior, 01/11/2026:** la Web de la rama011 ofrece únicamente Google y oculta temporalmente el botón Microsoft por instrucción del titular. No elimina trust legacy ni migra cuentas; un usuario Microsoft sin sesión activa no tiene entrada visible. [ADR-006 y reversión](docs/adr/ADR-006-temporary-google-only-web-login.md), [diagnóstico y comprobaciones](specs/011-web-iconography/evidence/authentication-recovery-2026-11-01.md). La aceptación histórica de ambos proveedores del31/10 no se presenta como política UI vigente.
+
+Para probar010-A localmente, desde `MiKompri.Web`, usar `npm run dev:010a` con `.env.010a.local` privado ya preparado. Requiere CIAM configurado y APIs compatibles en28082/28080/28083 con datos QA separados. Restaurar la configuración previa conecta a una API anterior incompatible; mantener el mismo origen `http://localhost:5173` durante login y callback. [Arranque y límites](MiKompri.Web/README.md#acceso-y-límites-actuales-de-010-a). No se actualizan ni migran las bases anteriores por cambiar este modo.
 
 Grupos/invitaciones (buscar, invitar, aceptar/rechazar, notificar y enlaces para no registrados) se tratarán en la iniciativa independiente prevista `012-group-invitations-collaboration`; no bloquean autenticación010-A.

@@ -87,6 +87,14 @@ Estado vigente: [revisión final](evidence/final-review.md), [CI código final](
 
 ## Evidencia de cierre actual
 
+Corrección posterior autorizada,01/11/2026 ([ADR-006](../../docs/adr/ADR-006-temporary-google-only-web-login.md)):
+
+- [x] T039 Diagnosticar acceso sin cambiar trust: cuatro contenedores QA detenidos; recuperados y tres health200. Entorno privado compatible conservado, sin migraciones ni nuevos recursos.
+- [x] T040 Ocultar Microsoft de la entrada y probar Google/configuración ausente; detener reintentos automáticos de preparación y ofrecer reintento explícito con sesión existente. Pruebas rojas1/5 y verdes5/5, más162/162Web y21/21E2E ejecutados; no se acredita por presencia de tests.
+- [x] T041 Comprobar Google real→Mis listas→Perfil→recarga→logout→ruta protegida→nuevo Google con retorno; comprobar además503 inyectado→reintento→Users200 con sesión real. Documentar excepción UI legacy, límites y recuperación en README/ADR/evidencia. Sin cierre de tareas previas ni publicación implícita.
+
+Resultados y límites de este diff en [recuperación de acceso](evidence/authentication-recovery-2026-11-01.md). T024 conserva el resultado histórico de ambos proveedores; el nuevo acceso visible solo Google sustituye su política de presentación, sin afirmar un nuevo ensayo Microsoft ni cutover. CI citada a continuación corresponde al candidato anterior.
+
 T031: run41327776290/0923a0c y diff; SHA de publicación contrastado después del commit en PR/entrega. T032: gates/DoD/reversión y PR preparado tras CI. T033: Groups red/green, Owner/Admin/Member, datos reales/creación/foco/22capturas. T034: cuatro elementos LCP/waterfalls/JS/fuentes/render, sin cambiar runner. T035:22exports, ambos Drawer diferidos, compresión inicial y80muestras;3FAIL LCP/deuda previa explícita. T036:160local/192CI, Docker/HTTP y QA humana diferida. T037:13tests del área y15E2E nuevos, error/retry/pending/draft/returnTo conservados y CI completo. T038:17vistas/68capturas, inspección por secciones/motores/escritorio y correcciones de notas compartidas/Gastos/copy sin negocio.
 
 Publicación: el CI de fc3e2ca tuvo191/192 por foco temprano del test de compra WebKit. [Revisión](evidence/publication-review.md): prueba reforzada sin cambio productivo,3/3 dirigido y15/15 de estabilidad. T031/T032 exigen comprobar el siguiente SHA completo antes de PR; el resultado se publica en PR/entrega. T019/T025 no cambian.

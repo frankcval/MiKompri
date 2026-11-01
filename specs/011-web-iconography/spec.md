@@ -63,7 +63,7 @@ Como usuario habitual, encuentro el mismo lenguaje de iconos, espaciado, colores
 **Independent Test**: revisar matriz de rutas actuales en móvil/escritorio y comprobar el mapa semántico y tokens compartidos.
 **Acceptance Scenarios**:
 1. **Given** mismo significado, **Then** usa el mismo icono/etiqueta; Regular/Fill se reserva a selección/estado definido, no a variaciones decorativas.
-2. **Given** login/logout/cambio Google↔Microsoft, **Then** botones010-A, rutas, perfil y aislamiento permanecen; no se restaura configuración antigua ni se cambia trust.
+2. **Given** login/logout con Google o una sesión legacy ya existente, **Then** rutas, perfil y aislamiento permanecen; solo Google se ofrece como nuevo acceso visible según ADR-006. No se restaura configuración antigua ni se cambia trust.
 3. **Given** un futuro cliente MAUI, **Then** puede reutilizar significado/etiquetas/tamaños de toque; no requiere dependencias React ni una implementación MAUI en011.
 
 ### Refinamiento autorizado de Grupos y gates
@@ -99,7 +99,7 @@ La QA humana no ejecutada puede clasificarse DEFERRED NON-BLOCKING MANUAL QA, co
 - **FR-017** MUST reutilizar Fluent Button/Tooltip/Menu/Dialog/Checkbox y tokens; sin reescritura de componentes accesibles desde cero.
 - **FR-018** MUST incluir prueba de exports reales, licencia y manifest del paquete fijado antes de instalarlo durante implementación; medir tree-shaking/bundle, no prometer tamaño por intuición.
 - **FR-019** MUST conservar budgets008/009: protocolo20 muestras/ruta, LCPp75<=2500ms, interacción<=200ms, CLS<=0.1. Incumplimientos heredados se documentan; no se rebajan ni se cierran tareas anteriores por esta feature.
-- **FR-020** MUST preservar login Google/legacy Microsoft, D1, UserId, cachés/drafts/return intent; ningún cambio de configuración/identidad/BD por iconografía.
+- **FR-020** MUST preservar login Google, sesiones/ruta interna legacy Microsoft, D1, UserId, cachés/drafts/return intent; ningún cambio de configuración/identidad/BD por iconografía. La instrucción posterior de ocultar Microsoft autoriza exclusivamente la excepción de presentación de ADR-006.
 - **FR-021** MUST separar significado/presentación en un catálogo reutilizable por MAUI, sin entregar MAUI ni assets de otras marcas como iconos genéricos.
 - **FR-022** MUST adoptar diseño por fases con capturas antes/después y reversión solo de capa visual; no restaurar.env.local ni retirar funciones para conseguir un mockup.
 
