@@ -20,3 +20,7 @@ Fluent Icons era la preferencia inicial y ofrece correspondencia directa con el 
 Imports estáticos y chequeo de exports/licencia; tamaños/bundle/reflow/foco/contraste se prueban durante implementación. Referencias estáticas no acreditan accesibilidad real. Se preservan budgets y rollback de capa visual; no auth/BD/env como reversión. Sin cambios constitucionales/TP11 ni despliegue. Aprobación registrada por la instrucción explícita de pasar a la siguiente fase; el cierre de implementación requiere evidencia, no esta aprobación.
 
 Refinamiento autorizado de cierre:22exports efectivamente usados de los31auditados; sin símbolos/Fill sin consumidor en runtime. Drawer Fluent se carga al abrirlo, con cancelación/foco probados; no se cambia UI kit ni contratos. Grupos utiliza tarjetas de espacio compartido y formulario en diálogo, con myRole/memberCount ya emitidos por Users. Ciclo de vida e invitaciones siguen fuera.
+
+## Refinamiento de jerarquía aprobado — 01/11/2026
+
+Contenido primero y administración bajo demanda para Grupos/Catálogo. Dialog Fluent reutiliza formularios y semántica existentes; tabs locales Productos/Mercados separan administración sin nueva ruta/contrato. Historial es acción textual contextual; edición secundaria usa IconAction. La decisión mantiene familia, tokens y límites de negocio. Revisión transversal en specs/011-web-iconography/evidence/all-sections-review.md; no amplía012 ni010-B.

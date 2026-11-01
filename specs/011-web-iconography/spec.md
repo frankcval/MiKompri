@@ -2,7 +2,7 @@
 
 **Feature Branch**: `011-web-iconography`
 **Created**: 2026-10-31
-**Status**: Implementación en validación — diseño ratificado; cierre sujeto a evidencia y gates pendientes.
+**Status**: Implementación preparada para revisión de PR; validación/diferidos/deuda autorizados en evidence/final-review.md. Sin merge/despliegue ni aceptación humana completa.
 **Input**: React Icons, una experiencia fluida/intuitiva/actual inspirada en papeles, notas y pizarra de la nevera para listas de compra. Primero especificar y fijar diseño; implementación posterior.
 
 ## Contexto y alcance

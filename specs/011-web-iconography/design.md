@@ -1,6 +1,6 @@
 # Dirección visual011 — Nevera compartida
 
-Dirección ratificada el31/10/2026 al autorizar el titular la siguiente fase. **Implementación en validación**, sin declarar cierre por las referencias estáticas. La inspiración del usuario es papel, notas y pizarra de la nevera para apuntar compras. La aplicación se siente doméstica y cercana, con claridad de producto actual y controles previsibles.
+Dirección ratificada el31/10/2026 al autorizar el titular la siguiente fase. **Implementación revisada para PR**, con QA humana/deuda explícitas, sin declarar cierre por las referencias estáticas. La inspiración del usuario es papel, notas y pizarra de la nevera para apuntar compras. La aplicación se siente doméstica y cercana, con claridad de producto actual y controles previsibles.
 
 ## Idea y contención
 
@@ -95,3 +95,5 @@ Cabecera con CTA Crear grupo; diálogo Fluent reutiliza el formulario sencillo y
 ## Catálogo: contenido primero
 
 La metáfora de papel se expresa en una superficie de consulta limpia: título + CTA Crear producto, tabs Productos/Mercados, búsqueda y filas de productos. Historial conserva acción textual; edición usa el icono edit con nombre accesible y tooltip. El formulario aparece en Dialog, sin expandir cada fila. Mercados usa el mismo lenguaje de filas y CTA Añadir mercado; sus formularios son bajo demanda. Filtros y registro de precio se agrupan bajo el producto seleccionado, sin bloque vacío global de historial. No se añaden campos ni pantallas de administración nuevas.
+
+Revisión transversal: el listado contextual de compartidas reutiliza la nota existente con resumen separado y Gastos como enlace hermano, sin interactivos anidados. Gastos personales usa el ritmo ui.stack. La ayuda de portada habla de cuenta MiKompri; el flujo de acceso y sus proveedores no se modifican.

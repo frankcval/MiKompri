@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-31",
+  "branch": "011-web-iconography",
+  "baseCommit": "3bee0ecbaec52e3d66e9c0d7810d3ee5cc56e984",
+  "sourceSha256": "3de5c7523414668cb54c1ce0f0dac20f08c3409b38263c21abf6f09de0d534df",
+  "lockSha256": "340fa96788a5507057924fa5521516aec15aaa48a224d0e8d936745dfa067b17",
+  "vitest": {
+    "passed": 150,
+    "failed": 0,
+    "success": true,
+    "testFiles": 46,
+    "authAssertions": 50
+  },
+  "configPrerequisites": {
+    "passed": 6,
+    "failed": 0
+  },
+  "lint": "PASS",
+  "typecheck": "PASS",
+  "productionBuild": "PASS",
+  "e2e": {
+    "passed": 144,
+    "failed": 0,
+    "engines": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "scenariosPerEngine": 48,
+    "duration": "7.7m"
+  },
+  "docker": "PASS_BUILD_NGINX_AND_RUNTIME_CONTENT",
+  "manualAcceptance": [
+    "screen-reader",
+    "real-zoom",
+    "touch-virtual-keyboard-safe-area"
+  ],
+  "remoteCI": "PENDING_REMOTE_VERIFICATION",
+  "performance": {
+    "samples": 80,
+    "samplesPerRoute": 20,
+    "budgetsPass": false,
+    "routes": [
+      {
+        "route": "home",
+        "samples": 20,
+        "lcpBudgetPass": false,
+        "clsBudgetPass": true,
+        "interactionBudgetPass": true,
+        "p75LcpMs": 2668,
+        "p75TransferBytesDelta": 21063
+      },
+      {
+        "route": "lists",
+        "samples": 20,
+        "lcpBudgetPass": false,
+        "clsBudgetPass": true,
+        "interactionBudgetPass": true,
+        "p75LcpMs": 2880,
+        "p75TransferBytesDelta": 21204
+      },
+      {
+        "route": "personal",
+        "samples": 20,
+        "lcpBudgetPass": false,
+        "clsBudgetPass": true,
+        "interactionBudgetPass": true,
+        "p75LcpMs": 3196,
+        "p75TransferBytesDelta": 21256
+      },
+      {
+        "route": "shared",
+        "samples": 20,
+        "lcpBudgetPass": false,
+        "clsBudgetPass": true,
+        "interactionBudgetPass": true,
+        "p75LcpMs": 3052,
+        "p75TransferBytesDelta": 21190
+      }
+    ]
+  },
+  "manualAuthentication": {
+    "date": "2026-10-31",
+    "status": "PASS_USER_REPORTED",
+    "source": "User reply: Ambos funcionan",
+    "scope": [
+      "Google login",
+      "logout then Microsoft login",
+      "Mis listas accessible with both providers",
+      "Perfil accessible with both providers"
+    ],
+    "instrumented": false
+  }
+}

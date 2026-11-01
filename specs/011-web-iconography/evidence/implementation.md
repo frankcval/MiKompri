@@ -39,3 +39,7 @@ Revertir exclusivamente commits/componentes/CSS/dependencia de011 y su workflow 
 Comprobación local adicional de la página QA `/login`: Google y Microsoft visibles simultáneamente, sin intentar autenticación ni leer/exportar sesión. Esto acredita disponibilidad de botones, no un login real nuevo.
 
 El31/10/2026 el titular confirma después el recorrido real Google→logout→Microsoft con acceso a Mis listas y Perfil: «Ambos funcionan». [Registro y límites](validation.md#confirmación-manual-de-acceso--31102026). T024/AC08 quedan acreditadas con la confirmación y regresiones automáticas; permanecen los demás gates.
+
+## Revisión transversal posterior — 01/11/2026
+
+La primera evidencia anterior corresponde al corte cf83bff. El refinamiento posterior incluye [Grupos](groups-refinement.md), [Catálogo](catalog-refinement.md) y [todas las secciones](all-sections-review.md), con68capturas nuevas y22comparativas de Grupos. El manifest identifica fuente/configuración; no se reutiliza una captura previa como si acreditara un cambio posterior.

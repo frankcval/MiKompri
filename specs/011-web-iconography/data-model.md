@@ -11,3 +11,5 @@ Sin cambios de dominio, contratos HTTP, BD, migraciones EF ni persistencia de pr
 | ListNoteView | nombre/contexto/pending/known estimate/unknown count/createdAt/to | Proyección de009; query params, orden e historial mantienen reglas existentes |
 
 Transiciones de compra, historial, perfil, grupo/permiso y sesión siguen siendo las actuales. Purchased=false/true continúa en el checkbox; un aspecto de papel no cambia comando, OperationId ni gastos. No nuevos endpoints/DTOs o fotos/notas libres. [Contrato UI](contracts/ui-iconography.md).
+
+Estado adicional de presentación: CatalogView(products/markets), CatalogDialog(open/pending/restoreFocus) y selectedProductId existente. Son estados locales efímeros; no se guardan en backend. GroupSummary proyecta myRole/memberCount ya existentes en el DTO efectivo; los ausentes se omiten, sin suponer rol o count. No modelo EF ni contrato nuevo.

@@ -9,3 +9,5 @@ El alcance preliminar prefería @fluentui/react-icons. Se sustituye esa elecció
 Se preservan rutas, filtros/orden/historial, compra/Gastos, permisos, precios, identidad y configuración010-A. La metáfora no añade notas libres, arrastrar/pinear listas, dibujo o nuevo modelo de tablero.012/invitaciones,010-B, fotos/OCR, chat, themes persistidos y rediseño completo de landing fuera. No cambiar tareas/gates anteriores.
 
 La formalización entregó documentación, auditoría y tres referencias visuales estáticas. La fase siguiente autorizada aplica React/CSS y la dependencia al Web; [validación](evidence/validation.md). No introduce endpoints/BD/cloud ni declara cierre de gates pendientes.
+
+Revisión de cierre01/11: registro reducido a22exports realmente usados, con la auditoría inicial31 conservada. Grupos se refina con metadatos efectivos y creación bajo demanda. Catálogo prioriza contenido y separa Productos/Mercados con formularios en diálogo e historial contextual. Revisión transversal por secciones y límites humanos documentados en evidence/all-sections-review.md. Sin cambios de negocio ni de las specs anteriores.

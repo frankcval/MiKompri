@@ -1,0 +1,178 @@
+[
+  {
+    "label": "head",
+    "browser": "chromium",
+    "screen": "groups-mobile",
+    "width": 390,
+    "file": "groups-head-chromium-groups-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "head",
+    "browser": "chromium",
+    "screen": "groups-desktop",
+    "width": 1280,
+    "file": "groups-head-chromium-groups-desktop.png",
+    "overflow": false
+  },
+  {
+    "label": "head",
+    "browser": "chromium",
+    "screen": "group-detail-mobile",
+    "width": 390,
+    "file": "groups-head-chromium-group-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "head",
+    "browser": "chromium",
+    "screen": "groups-empty",
+    "width": 390,
+    "file": "groups-head-chromium-groups-empty.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "chromium",
+    "screen": "groups-mobile",
+    "width": 390,
+    "file": "groups-final-chromium-groups-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "chromium",
+    "screen": "groups-desktop",
+    "width": 1280,
+    "file": "groups-final-chromium-groups-desktop.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "chromium",
+    "screen": "group-detail-mobile",
+    "width": 390,
+    "file": "groups-final-chromium-group-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "chromium",
+    "screen": "groups-empty",
+    "width": 390,
+    "file": "groups-final-chromium-groups-empty.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "chromium",
+    "screen": "lists-mobile",
+    "width": 390,
+    "file": "groups-final-chromium-lists-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "chromium",
+    "screen": "catalog-mobile",
+    "width": 390,
+    "file": "groups-final-chromium-catalog-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "firefox",
+    "screen": "groups-mobile",
+    "width": 390,
+    "file": "groups-final-firefox-groups-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "firefox",
+    "screen": "groups-desktop",
+    "width": 1280,
+    "file": "groups-final-firefox-groups-desktop.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "firefox",
+    "screen": "group-detail-mobile",
+    "width": 390,
+    "file": "groups-final-firefox-group-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "firefox",
+    "screen": "groups-empty",
+    "width": 390,
+    "file": "groups-final-firefox-groups-empty.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "firefox",
+    "screen": "lists-mobile",
+    "width": 390,
+    "file": "groups-final-firefox-lists-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "firefox",
+    "screen": "catalog-mobile",
+    "width": 390,
+    "file": "groups-final-firefox-catalog-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "webkit",
+    "screen": "groups-mobile",
+    "width": 390,
+    "file": "groups-final-webkit-groups-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "webkit",
+    "screen": "groups-desktop",
+    "width": 1280,
+    "file": "groups-final-webkit-groups-desktop.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "webkit",
+    "screen": "group-detail-mobile",
+    "width": 390,
+    "file": "groups-final-webkit-group-detail-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "webkit",
+    "screen": "groups-empty",
+    "width": 390,
+    "file": "groups-final-webkit-groups-empty.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "webkit",
+    "screen": "lists-mobile",
+    "width": 390,
+    "file": "groups-final-webkit-lists-mobile.png",
+    "overflow": false
+  },
+  {
+    "label": "final",
+    "browser": "webkit",
+    "screen": "catalog-mobile",
+    "width": 390,
+    "file": "groups-final-webkit-catalog-mobile.png",
+    "overflow": false
+  }
+]

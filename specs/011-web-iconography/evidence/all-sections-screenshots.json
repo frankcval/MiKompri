@@ -1,0 +1,484 @@
+{
+  "kind": "synthetic-harness-captures",
+  "sourceCommit": "0923a0c37012e26f9a998732250f57c04ab0ae31",
+  "sourceSha256": "cf8d87e788a3b6c75ff45cbe989b2958c1481d4bc8c2abffa04fb85deff3bcf6",
+  "buildConfigSha256": "d5de2fe92ef74d59f1c31a3807d6497ffe1a9ccbaa44a6072a13df421badfdcf",
+  "results": [
+    {
+      "browser": "chromium",
+      "screen": "home",
+      "width": 390,
+      "file": "review-chromium-home-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "login",
+      "width": 390,
+      "file": "review-chromium-login-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "lists",
+      "width": 390,
+      "file": "review-chromium-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "history",
+      "width": 390,
+      "file": "review-chromium-history-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "personal-lists",
+      "width": 390,
+      "file": "review-chromium-personal-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "personal",
+      "width": 390,
+      "file": "review-chromium-personal-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "personal-expenses",
+      "width": 390,
+      "file": "review-chromium-personal-expenses-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "shared-lists",
+      "width": 390,
+      "file": "review-chromium-shared-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "shared",
+      "width": 390,
+      "file": "review-chromium-shared-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "expenses",
+      "width": 390,
+      "file": "review-chromium-expenses-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "people",
+      "width": 390,
+      "file": "review-chromium-people-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "groups",
+      "width": 390,
+      "file": "review-chromium-groups-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "group-detail",
+      "width": 390,
+      "file": "review-chromium-group-detail-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "catalog",
+      "width": 390,
+      "file": "review-chromium-catalog-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "markets",
+      "width": 390,
+      "file": "review-chromium-markets-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "price-history",
+      "width": 390,
+      "file": "review-chromium-price-history-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "profile",
+      "width": 390,
+      "file": "review-chromium-profile-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "home",
+      "width": 1280,
+      "file": "review-chromium-home-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "login",
+      "width": 1280,
+      "file": "review-chromium-login-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "lists",
+      "width": 1280,
+      "file": "review-chromium-lists-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "history",
+      "width": 1280,
+      "file": "review-chromium-history-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "personal-lists",
+      "width": 1280,
+      "file": "review-chromium-personal-lists-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "personal",
+      "width": 1280,
+      "file": "review-chromium-personal-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "personal-expenses",
+      "width": 1280,
+      "file": "review-chromium-personal-expenses-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "shared-lists",
+      "width": 1280,
+      "file": "review-chromium-shared-lists-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "shared",
+      "width": 1280,
+      "file": "review-chromium-shared-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "expenses",
+      "width": 1280,
+      "file": "review-chromium-expenses-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "people",
+      "width": 1280,
+      "file": "review-chromium-people-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "groups",
+      "width": 1280,
+      "file": "review-chromium-groups-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "group-detail",
+      "width": 1280,
+      "file": "review-chromium-group-detail-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "catalog",
+      "width": 1280,
+      "file": "review-chromium-catalog-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "markets",
+      "width": 1280,
+      "file": "review-chromium-markets-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "price-history",
+      "width": 1280,
+      "file": "review-chromium-price-history-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "screen": "profile",
+      "width": 1280,
+      "file": "review-chromium-profile-1280.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "home",
+      "width": 390,
+      "file": "review-firefox-home-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "login",
+      "width": 390,
+      "file": "review-firefox-login-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "lists",
+      "width": 390,
+      "file": "review-firefox-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "history",
+      "width": 390,
+      "file": "review-firefox-history-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "personal-lists",
+      "width": 390,
+      "file": "review-firefox-personal-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "personal",
+      "width": 390,
+      "file": "review-firefox-personal-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "personal-expenses",
+      "width": 390,
+      "file": "review-firefox-personal-expenses-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "shared-lists",
+      "width": 390,
+      "file": "review-firefox-shared-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "shared",
+      "width": 390,
+      "file": "review-firefox-shared-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "expenses",
+      "width": 390,
+      "file": "review-firefox-expenses-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "people",
+      "width": 390,
+      "file": "review-firefox-people-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "groups",
+      "width": 390,
+      "file": "review-firefox-groups-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "group-detail",
+      "width": 390,
+      "file": "review-firefox-group-detail-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "catalog",
+      "width": 390,
+      "file": "review-firefox-catalog-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "markets",
+      "width": 390,
+      "file": "review-firefox-markets-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "price-history",
+      "width": 390,
+      "file": "review-firefox-price-history-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "firefox",
+      "screen": "profile",
+      "width": 390,
+      "file": "review-firefox-profile-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "home",
+      "width": 390,
+      "file": "review-webkit-home-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "login",
+      "width": 390,
+      "file": "review-webkit-login-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "lists",
+      "width": 390,
+      "file": "review-webkit-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "history",
+      "width": 390,
+      "file": "review-webkit-history-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "personal-lists",
+      "width": 390,
+      "file": "review-webkit-personal-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "personal",
+      "width": 390,
+      "file": "review-webkit-personal-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "personal-expenses",
+      "width": 390,
+      "file": "review-webkit-personal-expenses-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "shared-lists",
+      "width": 390,
+      "file": "review-webkit-shared-lists-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "shared",
+      "width": 390,
+      "file": "review-webkit-shared-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "expenses",
+      "width": 390,
+      "file": "review-webkit-expenses-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "people",
+      "width": 390,
+      "file": "review-webkit-people-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "groups",
+      "width": 390,
+      "file": "review-webkit-groups-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "group-detail",
+      "width": 390,
+      "file": "review-webkit-group-detail-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "catalog",
+      "width": 390,
+      "file": "review-webkit-catalog-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "markets",
+      "width": 390,
+      "file": "review-webkit-markets-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "price-history",
+      "width": 390,
+      "file": "review-webkit-price-history-390.png",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "screen": "profile",
+      "width": 390,
+      "file": "review-webkit-profile-390.png",
+      "overflow": false
+    }
+  ]
+}

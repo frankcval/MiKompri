@@ -1,6 +1,6 @@
 # MiKompri
 
-> **Estado al 31/10/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
+> **Estado al 01/11/2026:** Web es el cliente prioritario y ya está implementado mediante las specs [007](specs/007-web-react-client/spec.md), [008](specs/008-web-ux-modernization/spec.md) y [009](specs/009-shopping-experience-completion/spec.md). El PR [#57](https://github.com/frankcval/MiKompri/pull/57) está integrado en `main`. En 009, T009 está cerrada con evidencia técnica; T010/T011 y la aceptación global siguen pendientes. El cliente Android con .NET MAUI está aplazado. Ver [estado y próximos pasos](#-estado-actual-del-proyecto).
 
 [![CI - MiKompri ShoppingList](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-shoppinglist.yml)
 [![CI - MiKompri Users](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml/badge.svg)](https://github.com/frankcval/MiKompri/actions/workflows/ci-mikompri-users.yml)
@@ -676,15 +676,15 @@ git push origin v1.0.0
 
 ## 📊 Estado Actual del Proyecto
 
-Estado al **30/10/2026**, con PR #56 (008) y PR #57 (009) integrados en `main`. «Implementado» y «aceptación completa» son estados distintos. El detalle de tareas y evidencia en cada spec prevalece sobre este resumen; no se cierran tareas por actualizar el roadmap.
+Estado al **01/11/2026**, con PR #56 (008), #57 (009) y #59 (010-A) integrados en `main`; 011 está preparada en su rama para revisión de PR. «Implementado» y «aceptación completa» son estados distintos. El detalle de tareas y evidencia en cada spec prevalece sobre este resumen; no se cierran tareas por actualizar el roadmap.
 
 | MVP | Capacidad | Estado actual | Specs / evidencia |
 | --- | --- | --- | --- |
 | MVP-0 | Listas personales y core ShoppingList | Base backend entregada | [001](specs/001-project-baseline/spec.md), [002](specs/002-shopping-list-core/spec.md) |
-| MVP-1 | Usuarios, identidad y grupos | Base backend entregada; TP11 vigente | [003](specs/003-users-authentication/spec.md) |
+| MVP-1 | Usuarios, identidad y grupos | Base backend y 010-A beta integradas; TP11 vigente | [003](specs/003-users-authentication/spec.md), [010-A](specs/010-account-management-social-auth/spec.md) |
 | MVP-2 | Catálogo, mercados y precios | Backend entregado; gestión conectada en Web por 009 | [004](specs/004-product-catalog/spec.md), [contratos 009](specs/009-shopping-experience-completion/contracts/api.md) |
 | MVP-3 | Listas compartidas y reparto | Backend entregado y consumido por Web | [005](specs/005-shared-lists-settlement/spec.md) |
-| MVP-4 | Cliente Web full-stack | Implementado e integrado; aceptación global abierta | [007 tareas](specs/007-web-react-client/tasks.md), [008 tareas](specs/008-web-ux-modernization/tasks.md), [009 tareas](specs/009-shopping-experience-completion/tasks.md) |
+| MVP-4 | Cliente Web full-stack | Base integrada; 011 en revisión de PR; aceptación global abierta | [007 tareas](specs/007-web-react-client/tasks.md), [008 tareas](specs/008-web-ux-modernization/tasks.md), [009 tareas](specs/009-shopping-experience-completion/tasks.md) |
 | MVP-5 | Android con .NET MAUI | Planificado y aplazado, sin fecha; identificador 006 reservado, sin artefactos ni proyecto | [Roadmap baseline](specs/001-project-baseline/spec.md#mvp-5--cliente-android-con-net-maui-estado--planned--deferred) |
 
 La numeración de MVP no coincide con la de specs. 008 y 009 amplían el MVP-4 y reutilizan las capacidades backend; no son nuevos MVP-8/MVP-9. El roadmap de MVP-6 en adelante es futuro y no implica implementación ni un calendario comprometido.
@@ -694,6 +694,9 @@ La numeración de MVP no coincide con la de specs. 008 y 009 amplían el MVP-4 y
 - **007 — Cliente React:** SPA con MSAL, rutas protegidas, perfil, grupos, listas, gastos/reparto y catálogo; base de navegación y arquitectura por features. Conserva tareas compuestas y aceptación pendiente: [tareas](specs/007-web-react-client/tasks.md).
 - **008 — Modernización UX:** Mis listas, compra reversible, CRUD personal/compartido, personas/roles, corrección de gastos y autorización por recurso. [Validación](specs/008-web-ux-modernization/evidence/validation.md) y [aceptación](specs/008-web-ux-modernization/checklists/acceptance.md).
 - **009 — Experiencia de compra:** estimaciones con precios desconocidos, orden, Activas/Historial, selección directa/alta contextual, edición de productos, mercados e historial de precios. Captura opcional de importe real, mercado y fecha desde el marcado; Gastos conserva acceso independiente y el mismo registro financiero, con idempotencia y control de concurrencia. Fechas civiles con contexto local y auditoría UTC. [Spec](specs/009-shopping-experience-completion/spec.md), [contratos](specs/009-shopping-experience-completion/contracts/api.md) y [revisión técnica](specs/009-shopping-experience-completion/evidence/review-corrections.md).
+
+- **010-A — Cuenta beta:** Google mediante CIAM y Microsoft legacy, perfil propio y UserId interno preservado; integrado por PR #59. Migración Microsoft y linking/G3 conservan sus diferidos. [Spec y límites](specs/010-account-management-social-auth/spec.md).
+- **011 — Iconografía y Nevera compartida:** implementación en su rama, con notas/pizarra, Grupos/detalle y Catálogo/Mercados bajo demanda. Revisión de 17 vistas, 160 tests Web y 192 escenarios en tres motores. [Cierre para PR y límites](specs/011-web-iconography/evidence/final-review.md).
 
 ### Qué sigue pendiente
 
@@ -705,9 +708,10 @@ Las fuentes de verdad son [tasks 009](specs/009-shopping-experience-completion/t
 
 1. Completar los gates Web pendientes de rendimiento, aceptación integrada y accesibilidad con evidencia sobre el candidato validado.
 2. Reconciliar individualmente las tareas abiertas de 007/008 según sus criterios y evidencia, sin cerrarlas por la presencia de una implementación posterior.
-3. Consultar el cierre integrado de [010-A beta — Google CIAM + Microsoft legacy](specs/010-account-management-social-auth/spec.md): arquitectura aprobada, TP11 1.2.0 aplicada e integración mediante PR59; [validación y límites](specs/010-account-management-social-auth/evidence/validation.md). La migración Microsoft real queda diferida y no bloquea beta; linking/G3 quedan en010-B. QA ampliada de lector/zoom y multi-tab se conserva como no bloqueante. [011 — Web Iconography & Fridge Notes](specs/011-web-iconography/spec.md) dispone de implementación en su rama: React Icons/Phosphor, navegación con etiquetas y diseño de pizarra/notas, con [dirección visual](specs/011-web-iconography/design.md) y [validación](specs/011-web-iconography/evidence/validation.md). 150 pruebas Web y144 E2E pasan localmente. Accesibilidad manual, LCP y CI final mantienen sus gates; todavía no se declara cierre.
-4. Retomar **MVP-5 Android/MAUI** después de estabilizar la experiencia Web y sus contratos, con alcance y plan propios. MAUI sigue siendo la tecnología prevista para Android; Web primero es una secuencia de entrega, no su cancelación ni sustitución por otro framework móvil.
-5. Mantener presupuesto, sugerencias, fotos/OCR, promociones y comunidad como [iniciativas futuras del roadmap](specs/001-project-baseline/spec.md#mvps-definidos), sin incorporarlas a 009/010/011 por defecto. Comentarios/chat también quedan para una feature posterior.
+3. Consultar el cierre integrado de [010-A beta — Google CIAM + Microsoft legacy](specs/010-account-management-social-auth/spec.md) y sus [límites](specs/010-account-management-social-auth/evidence/validation.md). Migración Microsoft real, linking/G3 y QA ampliada conservan sus diferidos; 010-B no está implementada.
+4. Revisar el PR de [011 — Web Iconography & Fridge Notes](specs/011-web-iconography/spec.md): iconografía Phosphor, Grupos, Catálogo con formularios bajo demanda y coherencia transversal. [Cierre para PR](specs/011-web-iconography/evidence/final-review.md): 160 tests Web, 192 escenarios y Docker/CI del código final verificados. Lector/zoom/dispositivo quedan diferidos no bloqueantes autorizados; LCP mantiene deuda previa en tres rutas, sin PASS global ni cierre de 007/008/009. 011 sigue en su rama; no se afirma integración ni despliegue.
+5. Retomar **MVP-5 Android/MAUI** después de estabilizar la experiencia Web y sus contratos, con alcance y plan propios. MAUI sigue siendo la tecnología prevista para Android; Web primero es una secuencia de entrega, no su cancelación ni sustitución por otro framework móvil.
+6. Mantener presupuesto, sugerencias, fotos/OCR, promociones y comunidad como [iniciativas futuras del roadmap](specs/001-project-baseline/spec.md#mvps-definidos), sin incorporarlas a 009/010/011 por defecto. Comentarios/chat también quedan para una feature posterior.
 
 El [análisis documental del 30/10](docs/documentation-review-2026-10-30.md) explica las discrepancias corregidas. Los análisis y planes fechados conservan su contexto histórico; para el estado actual usar esta sección y las tareas de cada spec.
 

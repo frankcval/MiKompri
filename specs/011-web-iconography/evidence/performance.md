@@ -1,10 +1,12 @@
 # Rendimiento011 — comparación sin rebajar gates
 
+> Registro histórico de la primera implementación (31/10). La revisión posterior y el estado publicable se registran en [final-review.md](final-review.md); estos resultados no certifican el candidato posterior.
+
 31/10/2026. Baseline documental3bee0ec y candidato identificado por [huella de fuentes/lock](bundle-after.json). Mismos budgets008/009: LCPp75<=2500ms, interacción<=200ms, CLS<=0.1. Este análisis no cierra tareas de specs anteriores.
 
 ## Protocolo
 
-Runner existente `MiKompri.Web/scripts/measure-performance.mjs`, Chromium390x844, CPU4x, red1.6Mbps/150ms, caché deshabilitada,50ítems,20navegaciones por ruta (80total). Las respuestas API son fixtures, no red/backend real. No ejecutar builds, suites ni otro navegador de QA simultáneamente a la medición. No se amplía budget/retries ni se escogen solo muestras rápidas.
+Runner existente `MiKompri.Web/scripts/measure-performance.mjs`, Chromium390x844, CPU4x, red1.6Mbps/150ms, caché deshabilitada, modernFixtures(page,50),20navegaciones por ruta (80total). Las respuestas API son fixtures, no red/backend real. No ejecutar builds, suites ni otro navegador de QA simultáneamente a la medición. No se amplía budget/retries ni se escogen solo muestras rápidas.
 
 El build previo se conservó inmutable antes de instalar React Icons y modificar fuentes; servidor5176. El candidato usa otro directorio/servidor, sin sobrescribir el baseline. Prefijo `009-` en labels mantiene el manejo de la compra opcional que ya incluye el runner; no significa cambio o aceptación de009. No usar label literal `baseline`, que selecciona una ruta antigua distinta.
 
@@ -68,3 +70,9 @@ La suma abarca todos los chunks/rutas, no la descarga inicial de una página. No
 La transferencia p75 aumenta21063/21204/21256/21190bytes respectivamente para portada/listas/personal/compartida, aproximadamente21KB por ruta del laboratorio. El registro/Tooltip compartidos añaden peso también a portada: no se presume coste cero por icono ni se presenta el mejor valor de otra ruta para ocultarlo. Una pasada por candidato no aísla causas de variación temporal del host.
 
 T027 completa la **medición y documentación**, no el cumplimiento de presupuestos. **SC006/AC11 y cierre de011 siguen abiertos**. Siguiente trabajo acotado: perfilar carga crítica/chunks y waterfall de las rutas actuales antes de proponer optimizaciones; conservar estas muestras/budgets y comprobar la intervención con el mismo protocolo. No ampliar funcionalidad ni cerrar007/008/009 como efecto colateral.
+
+Aclaración del conjunto histórico: modernFixtures(page,50) genera50ítems personales y1compartido. Esto se aplica a las mediciones anteriores y posteriores; no se cambia el fixture/runner para esta revisión y no se afirma aceptación de rendimiento compartido con50ítems. La prueba funcional100ítems no sustituye esa medición.
+
+## Estado actual — 01/11/2026
+
+[Comparación final](performance-comparison.md): portada2392PASS; listas2660/personal3096/compartida2964FAIL LCP como deuda previa no bloqueante autorizada para011. No PASS global ni cambio de budgets. CLS/interacciones cumplen; todas las rutas mejoran frente a baseline. Payload, atribución y límites explícitos.

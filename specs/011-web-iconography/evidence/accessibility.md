@@ -20,3 +20,9 @@
 Las excepciones axe de sentinelas Tabster conservan exactamente el filtro existente, solo `aria-hidden-focus` en `<i data-tabster-dummy=...>`. No se deshabilitan reglas, colores ni componentes para obtener PASS.
 
 T019/T025 y AC09 permanecen abiertos por las comprobaciones humanas indicadas. Las tareas pendientes de007/008/009 no se cierran mediante esta evidencia.
+
+## Revisión de cierre autorizada — 01/11/2026
+
+T019/T025 y AC09 conservan las casillas humanas abiertas como **DEFERRED-NON-BLOCKING-QA**, según autorización expresa de esta revisión. No equivalen a fallos demostrados ni a QA ejecutada. [Inventario de límites](manual-qa-deferred.json): NVDA no encontrado, sin instalarlo; zoom real200/400 y dispositivo/teclado virtual/safe-area no ejecutados. El reflow320 y toque emulado de los tres motores se registran por separado de la prueba física.
+
+Se detectó y corrigió una diferencia real de foco con Tab nativo de WebKit: tabindex=0 explícito en los enlaces Saltar al contenido, sin índices positivos ni foco programático en el test. La prueba mantiene Tab/Enter. El input de creación de Grupos ahora tiene44px efectivos, no solo el contenedor.

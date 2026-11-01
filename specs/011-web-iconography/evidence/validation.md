@@ -1,5 +1,7 @@
 # Validación011 — candidato de implementación
 
+> Registro histórico de la primera implementación (31/10). La revisión posterior y el estado publicable se registran en [final-review.md](final-review.md); estos resultados no certifican el candidato posterior.
+
 31/10/2026, rama `011-web-iconography`, base documental `3bee0ec`. [Build y huellas del candidato](bundle-after.json), [implementación](implementation.md), [accesibilidad y límites](accessibility.md). No se atribuye una ejecución local al CI remoto ni al commit base limpio.
 
 ## Comandos reproducibles
@@ -58,7 +60,7 @@ La primera pasada completa terminó140 PASS/4 FAIL: dos fallos reales de restaur
 ConfirmAction ahora conserva una referencia al disparador y restaura su foco después de cerrar/cancelar/Escape, siempre que siga montado. La prueba separa Escape del Drawer de Escape de un Tooltip abierto, enfocando un enlace con texto antes de cerrar el Drawer. Reejecución dirigida de ese recorrido:3/3 PASS en los tres motores. La pasada completa posterior se registra aparte.
 
 
-[Resumen estructurado final](validation-results.json). Nueva pasada completa Vitest también150/150; no se reutiliza el resultado previo a la corrección para identificar el candidato final.
+[Resumen estructurado del corte inicial](validation-initial.json). Nueva pasada completa Vitest también150/150; no se reutiliza el resultado previo a la corrección para identificar el candidato final.
 
 Estado final local: implementación y regresiones automáticas acreditadas; no cierre de011. Pendientes concretos: LCP<=2500ms en las cuatro rutas, lector/zoom/toque/teclado virtual, más verificación de CI del commit publicado antes de PR. Ningún merge/despliegue realizado.
 
@@ -69,3 +71,7 @@ Se solicitó al titular probar en localhost:5173 el acceso con Google, cerrar se
 Resultado: **PASS reportado por el usuario** para ese recorrido del candidato011; T024 y AC08 cerradas junto con50 regresiones automáticas de autenticación/sesión/perfil/aislamiento ya ejecutadas. No se recopilaron correos, OTP, contraseñas, tokens ni storageState. No se presenta como un nuevo ensayo instrumentado ni como prueba manual de todas las propiedades de autorización, cachés o drafts.
 
 La confirmación no cierra accesibilidad manual, LCP ni CI remoto, ni modifica tareas de007/008/009/010.
+
+## Estado actual — 01/11/2026
+
+[Revisión final](final-review.md) y [resultados actuales](validation-results.json):160/160local,192/192CI exacto,45/45UI y3/3teclado dirigidos. QA humana diferida sin fingir ejecución; deuda globalLCP clasificada según autorización. Los párrafos de31/10 conservan su estado histórico.

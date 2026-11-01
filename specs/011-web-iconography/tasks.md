@@ -1,7 +1,7 @@
 # Tasks011 — implementación posterior a revisión de diseño
 
 **Input**: [spec](spec.md), [plan](plan.md), [research](research.md), [diseño](design.md), [icon-map](icon-map.md), [contrato](contracts/ui-iconography.md).
-**Estado**: implementación frontend validada localmente; cierre pendiente de gates indicados abajo. [Implementación](evidence/implementation.md), [validación](evidence/validation.md), [accesibilidad](evidence/accessibility.md), [rendimiento](evidence/performance.md). Las referencias estáticas no prueban comportamiento. No ejecutar012/010-B ni tocar auth/BD/env.
+**Estado**: código0923a0c validado para PR; QA humana diferida y deuda globalLCP declaradas, sin cerrar tareas anteriores. [Implementación](evidence/implementation.md), [validación final](evidence/final-review.md), [accesibilidad](evidence/accessibility.md), [rendimiento final](evidence/performance-comparison.md). Las referencias estáticas no prueban comportamiento. No ejecutar012/010-B ni tocar auth/BD/env.
 
 ## Phase1 — revisión y baseline
 
@@ -56,8 +56,8 @@
 - [x] T028 Ejecutar suites Web afectadas/completas, lint/typecheck/build y E2E smoke en tres motores; guardar comandos/SHA/resultados en `specs/011-web-iconography/evidence/validation.md`, sin tratar mocks como aceptación real.
 - [x] T029 Construir Docker Web con configuración pública de compilación aplicable y verificar que `MiKompri.Web/Dockerfile` no incluya artifacts/tests/env privados; sin cambios de BD/cloud/backend por la capa visual.
 - [x] T030 Reconciliar `specs/011-web-iconography/checklists/acceptance.md`, `tasks.md` y README según evidencia; no cerrar007/008/009 ni diferidos010 por presencia de iconos.
-- [ ] T031 Verificar CI Web/checks aplicables del SHA final y diff sin APIs/modeloEF/auth/env no autorizados, documentar en `specs/011-web-iconography/evidence/validation.md`.
-- [ ] T032 Revisar DoD/ADR/diseño final con `specs/011-web-iconography/spec.md` y preparar PR si procede, sin merge/deploy automático ni implementación de012/010-B.
+- [x] T031 Verificar CI Web/checks aplicables del SHA final y diff sin APIs/modeloEF/auth/env no autorizados, documentar en `specs/011-web-iconography/evidence/validation.md`.
+- [x] T032 Revisar DoD/ADR/diseño final con `specs/011-web-iconography/spec.md` y preparar PR si procede, sin merge/deploy automático ni implementación de012/010-B.
 
 ## Dependencies & Execution Order
 
@@ -65,27 +65,26 @@ T001→baseline/CI→paquete→tests foundation→wrappers/tokens→US1→US2→
 
 ## Definition of Done
 
-Spec/diseño revisados y todas las aceptaciones aplicables con evidencia del candidato implementado; fuente/familia/licencia/imports correctos; accesibilidad/estados/responsive/rendimiento/CI verificados. Las tareas abiertas siguen bloqueando su aceptación aplicable; no se cierran por haberse aplicado el diseño. No marcar un requisito por existir un test o una captura estática.
+Spec/diseño revisados y todas las aceptaciones aplicables con evidencia del candidato implementado; fuente/familia/licencia/imports correctos; accesibilidad/estados/responsive/rendimiento/CI verificados. T019/T025 siguen abiertas como DEFERRED-NON-BLOCKING-QA por autorización expresa, sin bloquear PR ni implicar ejecución; otras tareas abiertas bloquearían su aceptación aplicable; no se cierran por haberse aplicado el diseño. No marcar un requisito por existir un test o una captura estática.
 
-## Evidencia y continuación
+## Evidencia del primer corte cf83bff (histórica)
 
 T001: instrucción explícita de siguiente fase/ADR005. T002: tres capturas previas, build/gzip y80muestras previas. T003: diff del trigger Web. T004–009: auditoría instalada,31exports renderizados, tests red/green de foundation y tokens. T010–018/T020–023: regresiones ejecutadas de navegación/queries/compra/historial/errores/100ítems y capturas del build final, no presencia de archivos. T026: nueve capturas reales inspeccionadas en los tres motores. T028:150/150 Vitest y144/144 smoke en7.7min, más lint/typecheck/build. T029: Docker final y nginx/runtime sin datos QA/env, aviso de licencia incluido. T030: estado documental reconciliado sin tocar tareas anteriores. Referencias detalladas en evidencia.
 
 T024:50 regresiones auth PASS y recorrido manual Google→logout→Microsoft confirmado por el titular el31/10/2026: «Ambos funcionan», en respuesta a la comprobación de llegada a Mis listas y apertura de Perfil. Evidencia reportada por el usuario, sin captura de tokens ni credenciales; no implica auditoría manual adicional de caché/drafts.
 
-Pendientes concretos:
-
-- T019/T025: lector humano, toque/dispositivo, zoom200/400%, tamaño de texto, teclado virtual/safe-area; automatización no los sustituye.
-- Presupuestos de T027/SC006/AC11: medición completa, pero FAIL LCP en4rutas; interacciones/CLS del candidato PASS. No ampliar budgets para cerrar.
-- T031: verificar CI remoto del commit que publica este candidato; el CI de la formalización no acredita la implementación. El commit/push solicitado no cierra por sí solo este gate.
-- T032: revisión de DoD/PR después de gates; sin merge/deploy.
+Estado vigente: [revisión final](evidence/final-review.md), [CI código final](evidence/ci-source-final.json), [métricas](evidence/performance-comparison.md). T019/T025: DEFERRED-NON-BLOCKING-QA (lector/zoom/dispositivo), casillas sin cerrar. LCP global sigue FAIL3rutas/deuda previa, no bloqueante solo011 por autorización, sin cambiar budgets. No se cierran007/008/009/010. La publicación se contrasta por SHA/run antes de PR, además del CI del código0923a0c ya acreditado.
 
 ## Cierre autorizado desde HEAD remoto cf83bff
 
-- [ ] T033 Refinar listado/creación/detalle de Grupos con myRole/memberCount ya efectivos; tests vacío/uno/diez/texto largo/errores/creación/foco/responsive sin lifecycle ni backend.
-- [ ] T034 Diagnosticar LCP de las cuatro rutas antes de optimizar, con elemento/waterfall/recursos/render y atribución011 documentados.
-- [ ] T035 Reducir porción atribuible a011 y oportunidades seguras de carga crítica; medir80muestras mismo protocolo, imports/gzip y clasificación A/B/C sin manipular budgets.
-- [ ] T036 Verificar candidato final: navegación/icon-actions/teclado/zoom/toque/QA diferida explícita, suites completas/tres motores/Docker/CI exacto; reconciliar gates y preparar PR solo si READY.
+- [x] T033 Refinar listado/creación/detalle de Grupos con myRole/memberCount ya efectivos; tests vacío/uno/diez/texto largo/errores/creación/foco/responsive sin lifecycle ni backend.
+- [x] T034 Diagnosticar LCP de las cuatro rutas antes de optimizar, con elemento/waterfall/recursos/render y atribución011 documentados.
+- [x] T035 Reducir porción atribuible a011 y oportunidades seguras de carga crítica; medir80muestras mismo protocolo, imports/gzip y clasificación A/B/C sin manipular budgets.
+- [x] T036 Verificar candidato final: navegación/icon-actions/teclado/zoom/toque/QA diferida explícita, suites completas/tres motores/Docker/CI exacto; reconciliar gates y preparar PR solo si READY.
 
-- [ ] T037 Refinar catálogo con creación/edición producto/mercado en diálogo, tabs locales y filtros de historial contextual, sin cambiar contratos; tests de conducta antes de implementar.
-- [ ] T038 Revisar visualmente todas las secciones existentes y estados en tres motores; documentar coherencia, correcciones y límites.
+- [x] T037 Refinar catálogo con creación/edición producto/mercado en diálogo, tabs locales y filtros de historial contextual, sin cambiar contratos; tests de conducta antes de implementar.
+- [x] T038 Revisar visualmente todas las secciones existentes y estados en tres motores; documentar coherencia, correcciones y límites.
+
+## Evidencia de cierre actual
+
+T031: run41327776290/0923a0c y diff; SHA de publicación contrastado después del commit en PR/entrega. T032: gates/DoD/reversión y PR preparado tras CI. T033: Groups red/green, Owner/Admin/Member, datos reales/creación/foco/22capturas. T034: cuatro elementos LCP/waterfalls/JS/fuentes/render, sin cambiar runner. T035:22exports, ambos Drawer diferidos, compresión inicial y80muestras;3FAIL LCP/deuda previa explícita. T036:160local/192CI, Docker/HTTP y QA humana diferida. T037:13tests del área y15E2E nuevos, error/retry/pending/draft/returnTo conservados y CI completo. T038:17vistas/68capturas, inspección por secciones/motores/escritorio y correcciones de notas compartidas/Gastos/copy sin negocio.

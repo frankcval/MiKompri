@@ -1,6 +1,6 @@
 // Synthetic harness only: no account sessions, cloud access or storage exports.
 import { chromium, firefox, webkit } from '@playwright/test'
-import { writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { modernFixtures, ids } from '../tests/e2e/fixtures/modernization.ts'
 const base = process.argv[2] || 'http://127.0.0.1:5180'
 const out = new URL('../../specs/011-web-iconography/evidence/', import.meta.url)
@@ -39,5 +39,6 @@ for (const [engine, launcher] of Object.entries({ chromium, firefox, webkit })) 
   results.push({ browser: engine, screen, width, file, overflow }); await page.close()
  } } finally { await browser.close() }
 }
-writeFileSync(new URL('all-sections-screenshots.json',out), JSON.stringify({ kind:'synthetic-harness-captures', results },null,2)+'\n')
+const audit = JSON.parse(readFileSync(new URL('bundle-final.json',out), 'utf8'))
+writeFileSync(new URL('all-sections-screenshots.json',out), JSON.stringify({ kind:'synthetic-harness-captures', sourceCommit: audit.baseCommit, sourceSha256: audit.sourceSha256, buildConfigSha256: audit.buildConfigSha256, results },null,2)+'\n')
 console.log(JSON.stringify({ captures: results.length, overflow: results.filter(r=>r.overflow) }))

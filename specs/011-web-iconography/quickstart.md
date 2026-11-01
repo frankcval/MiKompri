@@ -4,7 +4,7 @@
 
 1. Confirmar rama011 y base main9597af5/PR59 integrado; leer constitution, spec, design, icon-map, ADR005 y acceptance.
 2. Abrir design/mobile-lists.png, mobile-shopping.png y desktop-lists.png. Son referencias estáticas con datos ficticios, no pantallas instaladas ni prueba de accesibilidad.
-3. Revisar manifest icon-audit.json (31 exports,5.7.0) y contrast.json (11 pares). Ese manifest registra la auditoría previa a instalar; bundle-after.json acredita la dependencia instalada y sus imports.
+3. Revisar manifest icon-audit.json (31 exports,5.7.0) y contrast.json (11 pares). Ese manifest registra la auditoría previa a instalar; bundle-after.json acredita la primera instalación; bundle-final.json registra el cierre con22exports realmente usados.
 4. Spec Kit desde raíz:
 
 ```powershell
@@ -41,3 +41,5 @@ Validar320/390/430/768/1280, teclado, tooltip hover/foco/Escape, coarse pointer,
 Aplicar protocolo de métricas008/009:20muestras por ruta, LCPp75<=2500ms, interacción<=200ms, CLS<=0.1; documentar baseline/post y chunks/gzip sin ampliar budgets/retries. No cerrar tareas anteriores al pasar011. Tres motores de CI no acreditan todos los navegadores/dispositivos: indicar exactamente los entornos usados.
 
 Cierre requerido: CI Web del SHA final, iconos/imports/licencias, tablas de aceptación y capturas reales. Backend/EF no cambian; si aparecen cambios fuera de scope, detener esa ampliación y documentar causa. Reversión solo visual; no merge/deploy automático.
+
+Revisión final: usar `npx playwright test --reporter line` con PLAYWRIGHT_ALL_BROWSERS=1 para toda la configuración aplicable. `scripts/capture-ui-review.mjs http://127.0.0.1:5180` captura todas las secciones con fixtures sintéticos, sin sesiones reales. `scripts/diagnose-lcp.mjs http://127.0.0.1:5180 final` es diagnóstico independiente; no cambia el runner de aceptación. Construir primero el lab con la config performance compartida y no medir durante builds/suites/capturas. El fixture histórico crea50ítems personales pero solo1compartido: conservarlo para comparabilidad y declarar este límite, sin afirmar rendimiento compartido50.

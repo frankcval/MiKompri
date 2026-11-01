@@ -1,0 +1,292 @@
+{
+  "baseCommit": "0923a0c37012e26f9a998732250f57c04ab0ae31",
+  "kind": "production-build-working-tree-candidate",
+  "sourceSha256": "cf8d87e788a3b6c75ff45cbe989b2958c1481d4bc8c2abffa04fb85deff3bcf6",
+  "lockSha256": "340fa96788a5507057924fa5521516aec15aaa48a224d0e8d936745dfa067b17",
+  "buildConfigSha256": "d5de2fe92ef74d59f1c31a3807d6497ffe1a9ccbaa44a6072a13df421badfdcf",
+  "package": {
+    "name": "react-icons",
+    "version": "5.7.0",
+    "license": "MIT",
+    "integrity": "sha512-LBLy340Rzqy6+/yVhZKT3B/QpP1BZaesGqasf09HPOBzRarcDIFH0WwXlXQfE7q7ipxK4MSiC5DIBWURCny6fw=="
+  },
+  "notice": {
+    "path": "licenses/react-icons-phosphor.txt",
+    "sha256": "372e9e6c43b9fbf51e1a1a24c89f915ca8bf90134fe32678d80a2be97ff9e71c"
+  },
+  "imports": [
+    {
+      "path": "src/shared/ui/icons/iconRegistry.ts",
+      "names": [
+        "PiClipboardText",
+        "PiClipboardTextFill",
+        "PiClockCounterClockwise",
+        "PiClockCounterClockwiseFill",
+        "PiUsersThree",
+        "PiUsersThreeFill",
+        "PiBasket",
+        "PiBasketFill",
+        "PiStorefront",
+        "PiUserCircle",
+        "PiUser",
+        "PiPlus",
+        "PiMagnifyingGlass",
+        "PiPencilSimple",
+        "PiTrash",
+        "PiDotsThree",
+        "PiArrowLeft",
+        "PiX",
+        "PiInfo",
+        "PiWarningCircle",
+        "PiList",
+        "PiSignOut"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "assets/AddProductsDialogContent-DxGAcJPA.js",
+      "bytes": 7890,
+      "gzip": 2991,
+      "sha256": "41a1253da2cbcb8c9f98aa2a54e9952cb63e1922dc7d79ab486d61f5393fe3fe"
+    },
+    {
+      "path": "assets/Card-ex1TTxVE.js",
+      "bytes": 25345,
+      "gzip": 6883,
+      "sha256": "6a5a12876af718a8c8bc7fc0213e516b04b678d0fbb8c189f0755255da5acc10"
+    },
+    {
+      "path": "assets/CardHeader-4NGbpBUV.js",
+      "bytes": 3726,
+      "gzip": 1468,
+      "sha256": "863b243250c56d4213660c64630afbf1dd28bd2b939d6708444d34f2fb81842e"
+    },
+    {
+      "path": "assets/CreateListDialog-O00tiJlc.js",
+      "bytes": 993,
+      "gzip": 602,
+      "sha256": "794f88e8fc4f2d9d4f2d445eb117d0cbc1379c36bb31a2e0e3cf16c25795293e"
+    },
+    {
+      "path": "assets/CreateListDialogContent-CIOdKctQ.js",
+      "bytes": 2465,
+      "gzip": 1306,
+      "sha256": "4c4fa439a719d43c910c8b608819b4de98c8a9d897567303d9c7a6e66bc4e8f7"
+    },
+    {
+      "path": "assets/DialogContent-DfKkw1Np.js",
+      "bytes": 8597,
+      "gzip": 2701,
+      "sha256": "87b95f3a874f0a60e78381ac3c3798b8bc88489480b222225918e8d2ee5b7260"
+    },
+    {
+      "path": "assets/ExpenseHistoryPanel-CIwNOI-q.js",
+      "bytes": 9423,
+      "gzip": 3661,
+      "sha256": "9f24fc2af048cf80c84eecd63e37447371f78f60f1909f701fd830a36e5c036a"
+    },
+    {
+      "path": "assets/GroupDetailPage-WIV4-yI5.js",
+      "bytes": 1733,
+      "gzip": 901,
+      "sha256": "b43031cd57c69f28285d82550b2eacdfa3cf9d29c04722c7a8f8428656afed6d"
+    },
+    {
+      "path": "assets/GroupMetadata-DK2Fc4-u.js",
+      "bytes": 812,
+      "gzip": 485,
+      "sha256": "123679cc8ae6deb6e0523a354e9e1559c9f8e9150d7a3158a746c54848d9b459"
+    },
+    {
+      "path": "assets/GroupMetadata-DbW-ag5B.css",
+      "bytes": 2356,
+      "gzip": 749,
+      "sha256": "9df06e0903261d8d4db136c3ce99b53c005c5265bef03eed7a6d3c83af158c9b"
+    },
+    {
+      "path": "assets/GroupPeople-C2s9fj_1.js",
+      "bytes": 1160,
+      "gzip": 664,
+      "sha256": "a2aafeae8a1c3af32651d2fc562bddb126fdfc2cbaa8cac4671af017c61c22c4"
+    },
+    {
+      "path": "assets/GroupsPage-vO8p7-aO.js",
+      "bytes": 5905,
+      "gzip": 2339,
+      "sha256": "20a6f1c3bf4567e081e452f4a9df6e44bab2257089d1e642a6fa7e366d8ccb13"
+    },
+    {
+      "path": "assets/Input-CewGYS5U.js",
+      "bytes": 13653,
+      "gzip": 3756,
+      "sha256": "f55e58f77d5c20b76a8797c35c0d879b1ebec433ce72fbae09d2bd47e16919ff"
+    },
+    {
+      "path": "assets/ListsPage-vypSdiGS.js",
+      "bytes": 4041,
+      "gzip": 1753,
+      "sha256": "27d92a29f94caa5607ab5e6c8496ce18d6f95fb9e4504e2a9e5a97fd88168014"
+    },
+    {
+      "path": "assets/ManageListActions-BDgf7naS.js",
+      "bytes": 34373,
+      "gzip": 9640,
+      "sha256": "bfaeda728e0dfa8b8729cb81f13ec926b099c8496bb715c0691a7de1a736794f"
+    },
+    {
+      "path": "assets/MobileNavigationDrawer-CAZ3vZhv.js",
+      "bytes": 16110,
+      "gzip": 5063,
+      "sha256": "0b4162de28959dabc447a491ac3da08bfc02410ecd6db411199cfd8e3be3f3c4"
+    },
+    {
+      "path": "assets/PersonalListsPage-Ew1dXY6H.js",
+      "bytes": 6590,
+      "gzip": 2702,
+      "sha256": "be3405d306b93f7397ef39e1fc83d585d093f90785362ebe594a2e911f0fc83d"
+    },
+    {
+      "path": "assets/ProductCatalogPage-BU5I40bk.css",
+      "bytes": 990,
+      "gzip": 475,
+      "sha256": "86f2c0c7d7c525cf7fd55114697cacf6a94b19a10953e00397746e270eadf9cf"
+    },
+    {
+      "path": "assets/ProductCatalogPage-ctza34L6.js",
+      "bytes": 16227,
+      "gzip": 4994,
+      "sha256": "6d6e60c01b5a855e7cc124bcf162a69c5d9ea42e4ea0ee4d593ca70ee6abf821"
+    },
+    {
+      "path": "assets/ProfilePage-DcRSPmr-.js",
+      "bytes": 38818,
+      "gzip": 11853,
+      "sha256": "411a345dea931ce03443a7dc85d8ebaefaa5c7d162ed8417039eee8884fcba22"
+    },
+    {
+      "path": "assets/PurchaseCapture-OtbZk0Dj.js",
+      "bytes": 3504,
+      "gzip": 1632,
+      "sha256": "70768dcce059e98b6241bfb2818c496ea65667de3c268992539585f6604a2f3a"
+    },
+    {
+      "path": "assets/PurchaseItems-Bdjzs8Oj.js",
+      "bytes": 3733,
+      "gzip": 1525,
+      "sha256": "201f4ce15effac66ec084b0875abb542872b5526daf68ffc5e9f1115297a58ec"
+    },
+    {
+      "path": "assets/SettlementPage-BMKrY21Q.js",
+      "bytes": 5905,
+      "gzip": 2227,
+      "sha256": "52b8c20c36a08a140461c4ab214609fcf74bc1b8d990b661bb8dc13804a48f5d"
+    },
+    {
+      "path": "assets/SharedListDetailPage-DSwKGh79.js",
+      "bytes": 7411,
+      "gzip": 2881,
+      "sha256": "8a733dfc69ed9f4abf04405d0dc27a5814eb646fc16c36ab8c301eefd4a94b24"
+    },
+    {
+      "path": "assets/SharedListsPage-Cze-h4GF.js",
+      "bytes": 3992,
+      "gzip": 1678,
+      "sha256": "ebbf3f131ae52453f5082b4c9b8c0c53d9b5de6ba621e77965f76460cdae8864"
+    },
+    {
+      "path": "assets/groupsApi-B5Wvkf8L.js",
+      "bytes": 733,
+      "gzip": 315,
+      "sha256": "fac4fd51c7663be78879f7e559abf1adaf06d2cecac974cb0274339ec9b376a9"
+    },
+    {
+      "path": "assets/index-CkP0q22Y.js",
+      "bytes": 857666,
+      "gzip": 242432,
+      "sha256": "08786b2bd63b2fb6d148a905e425862a05e8573a31ba67150a8affa2e9acffbe"
+    },
+    {
+      "path": "assets/index-DdNEnaSW.css",
+      "bytes": 26319,
+      "gzip": 5446,
+      "sha256": "56d3961bcffb076386b8ca8b9d8e2910e87dc4f0830a4ecca42103573ef6c67c"
+    },
+    {
+      "path": "assets/index.esm-Bhz4sOcv.js",
+      "bytes": 121657,
+      "gzip": 36321,
+      "sha256": "6adbb1f23312dc9615244b7d25d2434ddb43da5edc166b91f4f051f229e62a53"
+    },
+    {
+      "path": "assets/memberName-CRsDjM9c.js",
+      "bytes": 261,
+      "gzip": 210,
+      "sha256": "e097ce4d961b4e08122c1843a4329a15ac801fe339a3235b4f46bb735cd6ec5d"
+    },
+    {
+      "path": "assets/productCatalogApi-Cpa5rlbm.js",
+      "bytes": 1935,
+      "gzip": 836,
+      "sha256": "142fe6149672958c91e25a257a0b21eb8764137995c3ae7866dff915cbb0df75"
+    },
+    {
+      "path": "assets/sharedListsApi-CZJjLGOr.js",
+      "bytes": 1063,
+      "gzip": 386,
+      "sha256": "054dde71f7bb414b9c345da5977d3ff008ff48aede26a903f1f40e10d1e0a1c8"
+    },
+    {
+      "path": "assets/shoppingListsApi-BAPDozqD.js",
+      "bytes": 1259,
+      "gzip": 468,
+      "sha256": "5df1244cdf338d3150e3618e25ddd5f10d2cb71ba25eedc7cddd04698b0bbac8"
+    },
+    {
+      "path": "assets/useAnimationFrame-CIzBMv6M.js",
+      "bytes": 218,
+      "gzip": 188,
+      "sha256": "bd78b8a70f8ba7f1bdaf107cb8e365b16285c119421c232f14d4d8a2b848d14c"
+    },
+    {
+      "path": "assets/useDialogSurfaceContextValues-LLxCvJkK.js",
+      "bytes": 9222,
+      "gzip": 3326,
+      "sha256": "0012afa118e8e341d61aac17e5b665c0ad3fab379b1e5f1429cfc434b2c5a427"
+    },
+    {
+      "path": "assets/useFocusFinders-BktYgXeg.js",
+      "bytes": 792,
+      "gzip": 333,
+      "sha256": "d384c85c76fa42c9cf717945c0707dba4898d29a7798c3b98e1361a49988e236"
+    },
+    {
+      "path": "assets/useListSession-Cp6KZP-E.js",
+      "bytes": 265,
+      "gzip": 196,
+      "sha256": "4cb061ba965133307cbb6b9852de4123edaeeb385770e28bed5061b4e3b6453a"
+    },
+    {
+      "path": "assets/useLocalToday-DUlRh9Yt.js",
+      "bytes": 531,
+      "gzip": 310,
+      "sha256": "073ad8deb63f427a2b05f818826a701f5b0f40bd69532f2cd6b37afe5bdc086e"
+    },
+    {
+      "path": "assets/useProfileListSort-rnTMkiR-.js",
+      "bytes": 336,
+      "gzip": 274,
+      "sha256": "60e4a6e76f2159372817b9877c98557a9b2ef2f7e957c0209085c58ffe9f8ebc"
+    },
+    {
+      "path": "assets/useQuery-DLONzc95.js",
+      "bytes": 7935,
+      "gzip": 2909,
+      "sha256": "81b2db86a6bfb31494eab17f6465d837c60e28d21c7abed75f4cacc933f67ada"
+    }
+  ],
+  "total": {
+    "bytes": 1255944,
+    "gzip": 368879
+  }
+}

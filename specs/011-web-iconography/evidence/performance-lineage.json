@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-01",
+  "baseline": {
+    "source": "3bee0ec (before product011)",
+    "samples": "performance-before.json",
+    "build": "bundle-before.json"
+  },
+  "initialRemoteHead": {
+    "source": "cf83bff",
+    "samples": "performance-after.json",
+    "freshBuild": "bundle-head.json"
+  },
+  "intermediate": {
+    "source": "e07f5d3 production sources before public drawer defer",
+    "samples": "performance-pre-home.json",
+    "status": "INTERMEDIATE_NOT_ACCEPTANCE"
+  },
+  "final": {
+    "source": "0923a0c37012e26f9a998732250f57c04ab0ae31",
+    "sourceSha256": "cf8d87e788a3b6c75ff45cbe989b2958c1481d4bc8c2abffa04fb85deff3bcf6",
+    "samples": "performance-final.json",
+    "label": "009-011-closure",
+    "build": "bundle-final.json"
+  },
+  "protocolRunnerChangedSinceInitialRemoteHead": false,
+  "sharedDatasetCount": 1,
+  "personalDatasetCount": 50
+}

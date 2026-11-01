@@ -1,94 +1,215 @@
 {
-  "date": "2026-10-31",
+  "date": "2026-11-01",
   "branch": "011-web-iconography",
-  "baseCommit": "3bee0ecbaec52e3d66e9c0d7810d3ee5cc56e984",
-  "sourceSha256": "3de5c7523414668cb54c1ce0f0dac20f08c3409b38263c21abf6f09de0d534df",
+  "codeCommit": "0923a0c37012e26f9a998732250f57c04ab0ae31",
+  "sourceSha256": "cf8d87e788a3b6c75ff45cbe989b2958c1481d4bc8c2abffa04fb85deff3bcf6",
   "lockSha256": "340fa96788a5507057924fa5521516aec15aaa48a224d0e8d936745dfa067b17",
+  "buildConfigSha256": "d5de2fe92ef74d59f1c31a3807d6497ffe1a9ccbaa44a6072a13df421badfdcf",
   "vitest": {
-    "passed": 150,
+    "passed": 160,
     "failed": 0,
-    "success": true,
-    "testFiles": 46,
-    "authAssertions": 50
+    "files": 48,
+    "authDirectoryAssertions": 55,
+    "execution": "local full and exact-source CI"
   },
-  "configPrerequisites": {
+  "configTests": {
     "passed": 6,
     "failed": 0
   },
-  "lint": "PASS",
+  "lint": "PASS_NO_WARNINGS",
   "typecheck": "PASS",
-  "productionBuild": "PASS",
-  "e2e": {
-    "passed": 144,
+  "build": "PASS_WITH_UNCHANGED_LARGE_CHUNK_WARNING",
+  "playwright": {
+    "execution": "exact-source CI full controlled suite",
+    "passed": 192,
     "failed": 0,
+    "perEngine": 64,
     "engines": [
       "chromium",
       "firefox",
       "webkit"
     ],
-    "scenariosPerEngine": 48,
-    "duration": "7.7m"
+    "localHistory": "191/192 before explicit tooltip/drawer synchronization; corrected keyboard3/3 and later affected UI45/45; not presented as a local final192 PASS"
   },
-  "docker": "PASS_BUILD_NGINX_AND_RUNTIME_CONTENT",
-  "manualAcceptance": [
-    "screen-reader",
-    "real-zoom",
-    "touch-virtual-keyboard-safe-area"
-  ],
-  "remoteCI": "PENDING_REMOTE_VERIFICATION",
+  "docker": {
+    "build": "PASS",
+    "nginxConfig": "PASS",
+    "indexHTTP": 200,
+    "licenseHTTP": 200,
+    "privateEnvAndTestsAbsent": true,
+    "network": "none"
+  },
+  "captures": {
+    "allSections": 68,
+    "views": 17,
+    "groupComparison": 22,
+    "overflow": 0,
+    "source": "0923a0c37012e26f9a998732250f57c04ab0ae31"
+  },
+  "ci": {
+    "id": 41327776290,
+    "sha": "0923a0c37012e26f9a998732250f57c04ab0ae31",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/frankcval/MiKompri/actions/runs/41327776290",
+    "jobId": 124911246578,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-node@v4",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm ci",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run test:ci-config",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run lint",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run typecheck",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm test -- --maxWorkers=2",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npx playwright install --with-deps chromium firefox webkit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Mandatory controlled browser scenarios",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run npm run build",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Docker build (TP4)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/upload-artifact@v4",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-node@v4",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "counts": [
+      " Test Files  48 passed (48)",
+      "      Tests  160 passed (160)",
+      "  192 passed (9.3m)"
+    ]
+  },
+  "publicationCI": "Exact publishing SHA checked after documentation commit and reported in PR/final delivery; this file cannot contain its own commit SHA.",
   "performance": {
     "samples": 80,
-    "samplesPerRoute": 20,
-    "budgetsPass": false,
+    "perRoute": 20,
+    "globalLcpBudgetPass": false,
+    "classification": "PRE-EXISTING PERFORMANCE DEBT",
+    "nonBlockingFor011Only": true,
+    "clsPass": true,
+    "interactionsPass": true,
+    "allRoutesImprovedVsBaseline": true,
     "routes": [
       {
         "route": "home",
-        "samples": 20,
-        "lcpBudgetPass": false,
-        "clsBudgetPass": true,
-        "interactionBudgetPass": true,
-        "p75LcpMs": 2668,
-        "p75TransferBytesDelta": 21063
+        "n": 20,
+        "p75LcpMs": 2392,
+        "p75Cls": 0,
+        "p75Bytes": 307053,
+        "interactions": {}
       },
       {
         "route": "lists",
-        "samples": 20,
-        "lcpBudgetPass": false,
-        "clsBudgetPass": true,
-        "interactionBudgetPass": true,
-        "p75LcpMs": 2880,
-        "p75TransferBytesDelta": 21204
+        "n": 20,
+        "p75LcpMs": 2660,
+        "p75Cls": 0.018039427086842915,
+        "p75Bytes": 316343,
+        "interactions": {}
       },
       {
         "route": "personal",
-        "samples": 20,
-        "lcpBudgetPass": false,
-        "clsBudgetPass": true,
-        "interactionBudgetPass": true,
-        "p75LcpMs": 3196,
-        "p75TransferBytesDelta": 21256
+        "n": 20,
+        "p75LcpMs": 3096,
+        "p75Cls": 0,
+        "p75Bytes": 339557,
+        "interactions": {
+          "mark": 96,
+          "add": 104
+        }
       },
       {
         "route": "shared",
-        "samples": 20,
-        "lcpBudgetPass": false,
-        "clsBudgetPass": true,
-        "interactionBudgetPass": true,
-        "p75LcpMs": 3052,
-        "p75TransferBytesDelta": 21190
+        "n": 20,
+        "p75LcpMs": 2964,
+        "p75Cls": 0,
+        "p75Bytes": 341041,
+        "interactions": {
+          "expenses": 32
+        }
       }
-    ]
-  },
-  "manualAuthentication": {
-    "date": "2026-10-31",
-    "status": "PASS_USER_REPORTED",
-    "source": "User reply: Ambos funcionan",
-    "scope": [
-      "Google login",
-      "logout then Microsoft login",
-      "Mis listas accessible with both providers",
-      "Perfil accessible with both providers"
     ],
-    "instrumented": false
+    "sharedFixtureItemCount": 1,
+    "personalFixtureItemCount": 50
+  },
+  "manualQA": {
+    "status": "DEFERRED NON-BLOCKING MANUAL QA",
+    "tasks": [
+      "T019",
+      "T025"
+    ],
+    "acceptance": [
+      "AC09"
+    ],
+    "screenReaderExecuted": false,
+    "realZoomExecuted": false,
+    "physicalDeviceExecuted": false
+  },
+  "scope": {
+    "backendAuthDatabaseEnvChanges": false,
+    "priorSpecsCompletionChanged": false,
+    "groupLifecycleImplemented": false,
+    "mergeOrDeploy": false
   }
 }

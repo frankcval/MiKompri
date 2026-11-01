@@ -61,7 +61,7 @@ Lugares de implementación (lista de planificación original, ya implementada en
 
 [Quickstart](quickstart.md) define pasos. Hacer un corte vertical antes de propagar tokens a todo: menú/navegación → listado/detalle → pantallas relacionadas. Capturas baseline/diseño/resultado etiquetadas, datos ficticios para evidencia y QA real acotada sin tokens. No snapshots masivos que solo copien DOM ni tests de biblioteca; probar conducta/contratos/errores.
 
-Medir imports/chunks y rutas con100ítems, precios desconocidos, texto largo y estados parciales. No fijar un incremento gzip imaginario: registrar baseline/post y justificar solo glyphs requeridos; budgets heredados siguen siendo gate. Si baseline ya incumple, registrar causa/impacto y trabajo necesario sin rebajar umbral ni declarar cerradas tareas previas.
+Comprobar funcionalmente100ítems, precios desconocidos, texto largo y estados parciales; medir imports/chunks y rutas con el protocolo heredado sin confundir datasets (modernFixtures50 genera50personales/1compartido). No fijar un incremento gzip imaginario: registrar baseline/post y justificar solo glyphs requeridos; budgets heredados siguen siendo gate. Si baseline ya incumple, registrar causa/impacto y trabajo necesario sin rebajar umbral ni declarar cerradas tareas previas.
 
 Revertir solo commits de la capa visual011; mantener datos, APIs, fixtures privados, configuración QA010-A y ambos proveedores. No ejecutar migraciones ni cambiar cloud para una regresión de iconos.
 
@@ -89,3 +89,7 @@ Hecho solo con acceptance.md acreditado en implementación final. La formalizaci
 5. QA humana ausente se registra diferida no bloqueante, sin casilla de ejecución ficticia. Clasificación de deuda según autorización de spec; CI exacto tras commit/push, PR si gates aplicables acreditados. No merge/deploy.
 
 6. Refinamiento autorizado de Catálogo y revisión transversal: tabs locales para Productos/Mercados (no nueva ruta), Dialog Fluent reutilizable para formularios existentes, historial contextual y edición secundaria IconAction. Primero regresiones de contenido inicial, creación/error/pending/foco, edición/mercados e historial; después revisión visual de todas las secciones y suites finales.
+
+## Resultado de revisión
+
+Código0923a0c:160tests/192escenariosCI, Docker y80muestras completos. Grupos/Catálogo y todas las secciones revisados. T019/T025/AC09 diferidos humanos no bloqueantes autorizados; LCP3rutasFAIL/deuda previa declarada, sin modificar budgets ni cerrar otras specs. Ver evidence/final-review.md. CI del commit de publicación se comprueba después del push y antes del PR.
