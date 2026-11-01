@@ -25,3 +25,7 @@ Tema único existente de Fluent, extendido con tokens de design.md en theme.ts/c
 ## Compatibilidad y rechazo de ampliaciones
 
 No se cambia /lists?filter=...&view=...&sort=..., rutas de detalle/grupos/productos/perfil, comandos API, cookies/tokens/redirects, namespace de sesión ni.env.local. No nueva entidad/tablero ni notas/drag/pinning/compartir/invitar. Cada prueba de11 debe poder usar los mismos fixtures/contratos007–010. Métricas y gates anteriores no se rebajan.
+
+## Presentación bajo demanda de Catálogo
+
+Productos/Mercados son tabs locales con selección semántica y etiqueta visible. La URL returnTo existente no se cambia. Crear/editar usan Dialog Fluent con trigger real, validación original, pending que impide cerrar durante escritura y foco restaurado tras cerrar. La búsqueda sigue siendo consulta backend existente; historial usa el mismo selectedProductId/queryKey, mercado y fechas. Esos filtros solo se muestran con producto seleccionado. Editar puede usar IconAction con label contextual y tooltip; Historial mantiene texto. No nuevos contratos HTTP, campos ni permisos.

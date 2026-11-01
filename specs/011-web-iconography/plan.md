@@ -32,7 +32,7 @@ Paquete oficial5.7.0 descargado solo para lectura, SRI comprobado y31exports rea
 
 ## Phase1 — Diseño y contratos (esta formalización)
 
-Propuesta de modelo de presentación sin EF/API; contrato AppIcon/acciones/tokens y [data-model](data-model.md). Documentar estados y excepciones de iconos internos/brand. No comenzar React/CSS productivos en esta fase.
+Propuesta de modelo de presentación sin EF/API; contrato AppIcon/acciones/tokens y [data-model](data-model.md). Documentar estados y excepciones de iconos internos/brand. La formalización precedió a los cambios React/CSS autorizados posteriormente.
 
 ## Phase2 — Implementación por historias
 
@@ -49,7 +49,7 @@ Propuesta de modelo de presentación sin EF/API; contrato AppIcon/acciones/token
 
 Documentación: spec/plan/tasks/research/design/icon-map/data-model/quickstart, contracts/ui-iconography, checklists/requirements y acceptance, evidence/icon-audit y contrast/current-state, tres referencias SVG/PNG en design; ADR005 en docs/adr.
 
-Lugares previstos de implementación (todavía sin crear/modificar):
+Lugares de implementación (lista de planificación original, ya implementada en la rama):
 - MiKompri.Web/src/shared/ui/icons/{iconRegistry.ts,AppIcon.tsx,IconAction.tsx}, theme.ts y AppSurface.module.css.
 - src/app/layout/MainLayout.tsx y MainLayout.module.css; shared/ui/AccountMenu.tsx.
 - features/shopping-lists/pages/ListsPage.tsx, components/ListOverview.tsx; shared/ui/ShoppingListView.tsx y páginas de detalle existentes.
@@ -78,7 +78,7 @@ Revertir solo commits de la capa visual011; mantener datos, APIs, fixtures priva
 
 Spec/diseño revisados → foundation → US1/US2/US3 → US4/US5 → a11y/métricas/regresiones/CI/evidencia. Cada historia es comprobable por separado; wrappers comunes no requieren cambiar dominio.
 
-Hecho solo con acceptance.md acreditado en implementación final. Todas las tareas de implementación siguen abiertas; esta formalización no declara funcionalidad implementada ni su CI verde. Actualizar versiones/exports solo con nueva auditoría; respetar licencia. Sin cambiosTP11 ni bloqueos010-B/012, sin instalaciones en esta ejecución.
+Hecho solo con acceptance.md acreditado en implementación final. La formalización original dejó las tareas abiertas. La implementación posterior y su estado actual se registran en tasks.md y en la evidencia final; no se infiere su CI de esta planificación. Actualizar versiones/exports solo con nueva auditoría; respetar licencia. Sin cambiosTP11 ni bloqueos010-B/012, sin instalaciones fuera de las dependencias autorizadas de011.
 
 ## Revisión final autorizada sobre cf83bff
 
@@ -87,3 +87,5 @@ Hecho solo con acceptance.md acreditado en implementación final. Todas las tare
 3. Diagnóstico independiente de LCP por ruta (elemento/waterfall/JS/CSS/fuentes/query/render) antes de optimizar; runner y budgets intactos. Revisar iconos realmente usados y carga crítica.
 4. Validar el candidato final con suites,3motores/Docker y80muestras después, sin carga concurrente; atribuir porción011 vs deuda previa.
 5. QA humana ausente se registra diferida no bloqueante, sin casilla de ejecución ficticia. Clasificación de deuda según autorización de spec; CI exacto tras commit/push, PR si gates aplicables acreditados. No merge/deploy.
+
+6. Refinamiento autorizado de Catálogo y revisión transversal: tabs locales para Productos/Mercados (no nueva ruta), Dialog Fluent reutilizable para formularios existentes, historial contextual y edición secundaria IconAction. Primero regresiones de contenido inicial, creación/error/pending/foco, edición/mercados e historial; después revisión visual de todas las secciones y suites finales.

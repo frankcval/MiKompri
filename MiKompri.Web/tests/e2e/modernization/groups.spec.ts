@@ -4,7 +4,7 @@ import { ids, modernFixtures, openHarness } from '../fixtures/modernization'
 
 async function groupsFixture(page: Page, count: number) {
   await modernFixtures(page)
-  const groups = Array.from({ length: count }, (_, i) => ({ id: i ? `group-${i}` : ids.group, name: i ? `Espacio de compras de la familia y amistades con un nombre muy largo ${i}` : 'Casa y familia', myRole: i % 2 ? 'Member' : 'Owner', memberCount: i + 1 }))
+  const groups = Array.from({ length: count }, (_, i) => ({ id: i ? `group-${i}` : ids.group, name: i ? `Espacio de compras de la familia y amistades con un nombre muy largo ${i}` : 'Casa y familia', myRole: ['Owner', 'Admin', 'Member'][i % 3], memberCount: i + 1 }))
   const writes: unknown[] = []; let failCreate = false
   await page.route('**/api/v1/groups', async route => {
     if (route.request().method() === 'POST') {
@@ -26,6 +26,8 @@ for (const width of [320, 390, 430, 1280]) {
     const list = page.getByRole('list', { name: 'Tus grupos' })
     await expect(list.getByRole('listitem')).toHaveCount(10)
     const first = list.getByRole('link', { name: /Casa y familia/ })
+    await expect(list.getByRole('link').nth(1)).toContainText('Administrador')
+    await expect(list.getByRole('link').nth(2)).toContainText('Miembro')
     await expect(first).toContainText('Propietario'); await expect(first).toContainText('1 persona')
     await expect(list.getByRole('link', { name: /muy largo 9/ })).toContainText('10 personas')
     expect(await first.locator('a,button,input').count()).toBe(0)

@@ -123,3 +123,7 @@ Solo presentación: SemanticIcon, IconTreatment, SurfaceToken y ScreenVisualStat
 React Icons se interpreta literalmente como react-icons; una sola familia Phosphor y Fluent UI existente para controles. La instrucción del titular de pasar a la siguiente fase ratifica la dirección visual y ADR-005 el31/10/2026; la aceptación de la implementación se verifica por separado en evidencia. MAUI reutiliza semántica después.
 
 Depende de007(shell/Fluent/MSAL),008(UX/roles/foco/budgets),009(listas/historial/precios/compra) y010-A(auth/perfil/sesión). No cambia sus tareas ni reabre010-B.012/invitaciones, chat, notas libres, arrastrar/pinear listas, OCR/fotos, offline nuevo, temas personalizables/dark-mode global, fuente nueva, rebranding/logos, rediseño completo de landing, pagos, nuevos proveedores/backend/migraciones y despliegue quedan fuera.
+
+## Refinamiento de catálogo autorizado — 01/11/2026
+
+Contenido primero, administración bajo demanda. Grupos y Catálogo usan cabecera + CTA + contenido; crear/editar producto y crear/editar mercado se presentan en Dialog Fluent conservando campos, validación, errores/pending/invalidation y retorno/foco. Productos y Mercados se separan en tabs locales sin nueva ruta ni contrato; historial y filtros mercado/Desde/Hasta solo aparecen con producto seleccionado. Historial permanece visible por fila, edición secundaria con IconAction y nombre/tooltip. No hover obligatorio ni funciones retiradas. Se revisan también todas las secciones existentes por coherencia de tokens, semántica e iconografía.

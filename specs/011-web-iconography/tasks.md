@@ -86,3 +86,6 @@ Pendientes concretos:
 - [ ] T034 Diagnosticar LCP de las cuatro rutas antes de optimizar, con elemento/waterfall/recursos/render y atribución011 documentados.
 - [ ] T035 Reducir porción atribuible a011 y oportunidades seguras de carga crítica; medir80muestras mismo protocolo, imports/gzip y clasificación A/B/C sin manipular budgets.
 - [ ] T036 Verificar candidato final: navegación/icon-actions/teclado/zoom/toque/QA diferida explícita, suites completas/tres motores/Docker/CI exacto; reconciliar gates y preparar PR solo si READY.
+
+- [ ] T037 Refinar catálogo con creación/edición producto/mercado en diálogo, tabs locales y filtros de historial contextual, sin cambiar contratos; tests de conducta antes de implementar.
+- [ ] T038 Revisar visualmente todas las secciones existentes y estados en tres motores; documentar coherencia, correcciones y límites.

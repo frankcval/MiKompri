@@ -91,3 +91,7 @@ Primero registro/acciones/navegación, después Mis listas/detalle y finalmente 
 Mantener papel#FFFDF6, tinta#20312C y teal#006B68 con la misma sans/ritmo. Cada grupo es un espacio compartido: icono groups sobre acento suave, nombre22px, rol/personas secundarios cuando llegan en el DTO y acción textual Ver grupo. Sin imán de lista ni rayado de compra; banda lateral y paneles planos distinguen colaboración de productos. Móvil una columna; desktop grid según espacio, nombres envueltos. Una sola tarjeta conserva tamaño intencional.
 
 Cabecera con CTA Crear grupo; diálogo Fluent reutiliza el formulario sencillo y feedback existente. Empty state explica crear un primer grupo sin anunciar invitaciones. Detalle: nombre/contexto real → entrada Listas compartidas → Personas del grupo; no acciones duplicadas ni lifecycle ficticio. La revisión visual compara lists/groups/catalog sin igualar sus estructuras.
+
+## Catálogo: contenido primero
+
+La metáfora de papel se expresa en una superficie de consulta limpia: título + CTA Crear producto, tabs Productos/Mercados, búsqueda y filas de productos. Historial conserva acción textual; edición usa el icono edit con nombre accesible y tooltip. El formulario aparece en Dialog, sin expandir cada fila. Mercados usa el mismo lenguaje de filas y CTA Añadir mercado; sus formularios son bajo demanda. Filtros y registro de precio se agrupan bajo el producto seleccionado, sin bloque vacío global de historial. No se añaden campos ni pantallas de administración nuevas.
