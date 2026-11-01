@@ -49,7 +49,7 @@ function HomeHero() {
     <h1 id="home-title">La compra, mejor<br /><span>en compañía.</span></h1>
     <p className={s.description}>Lo que falta en casa. Lo que pone cada uno. Organiza tus listas, compra en equipo y reparte los gastos con MiKompri.</p>
     <div className={s.actions}><CreateListLink /><Button as="a" href="#ejemplo" size="large">Explorar el ejemplo</Button></div>
-    <p className={s.hint}>Para guardar tus listas, entra con tu cuenta de Microsoft.</p>
+    <p className={s.hint}>Para guardar tus listas, entra con tu cuenta de MiKompri.</p>
     <p className={s.heroNote}>Para tu casa, tu piso compartido<br /> y los planes que hacéis juntos.</p>
   </div><ShoppingListPreview /></section>
 }
@@ -72,7 +72,7 @@ function HomeFaq() {
   return <section className={`${s.container} ${s.section} ${s.faq}`} id="preguntas"><div><p className={s.eyebrow}>Antes de empezar</p><h2>Las cosas claras,<br />desde el principio.</h2></div><Accordion collapsible multiple>
     {[
       ['¿Para qué sirve MiKompri?', 'Prepara listas personales o de grupo, organiza la compra y consulta el reparto de gastos.'],
-      ['¿Necesito una cuenta?', 'Sí, para crear y guardar listas debes iniciar sesión con Microsoft. El ejemplo de esta portada se puede explorar sin cuenta.'],
+      ['¿Necesito una cuenta?', 'Sí, para crear y guardar listas debes iniciar sesión en MiKompri. El ejemplo de esta portada se puede explorar sin cuenta.'],
       ['¿Se guardan los cambios del ejemplo?', 'No. Son datos ficticios y temporales, separados de tus listas reales. Puedes restablecerlos en cualquier momento.'],
       ['¿MiKompri realiza pagos?', 'No. El reparto muestra balances y propuestas para saldar cuentas; no realiza transferencias ni cobros.'],
     ].map(([question, answer], i) => <AccordionItem value={String(i)} key={question}><AccordionHeader>{question}</AccordionHeader><AccordionPanel>{answer}</AccordionPanel></AccordionItem>)}
