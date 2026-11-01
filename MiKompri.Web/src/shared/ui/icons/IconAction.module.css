@@ -1,0 +1,5 @@
+.icon { flex-shrink: 0; vertical-align: -.125em; }
+.action { min-inline-size: 44px; min-block-size: 44px; flex-shrink: 0; }
+.link { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--mk-control); border-radius: var(--mk-radius-control); color: var(--mk-ink); background: var(--mk-paper); padding: 10px; }
+.action:focus-visible { outline: 3px solid var(--mk-teal); outline-offset: 3px; }
+@media (forced-colors: active) { .action:focus-visible { outline-color: Highlight; } .link { border-color: ButtonText; color: LinkText; background: Canvas; } }

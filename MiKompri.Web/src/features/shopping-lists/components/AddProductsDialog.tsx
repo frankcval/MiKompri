@@ -1,3 +1,4 @@
+import { AppIcon } from '../../../shared/ui/icons/AppIcon'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Spinner } from '@fluentui/react-components'
 import type { ListItemInput } from '../api/shoppingListsApi'
@@ -18,7 +19,7 @@ export function AddProductsDialog({ returnTo, onAdd, disabled = false }: { retur
     return () => cancelAnimationFrame(frame)
   }, [open])
   return <Dialog open={open} onOpenChange={(_, data) => { if (!pending) { if (data.open) setOpen(true); else close() } }}>
-    <DialogTrigger disableButtonEnhancement><Button ref={trigger} appearance="primary" disabled={disabled} onClick={event => event.currentTarget.focus()}>Añadir productos</Button></DialogTrigger>
+    <DialogTrigger disableButtonEnhancement><Button ref={trigger} icon={<AppIcon name="add" />} appearance="primary" disabled={disabled} onClick={event => event.currentTarget.focus()}>Añadir productos</Button></DialogTrigger>
     <DialogSurface ref={surface} tabIndex={-1} className={`${ui.page} ${ui.panel}`}><DialogBody>
       <DialogTitle>{ready ? 'Añadir productos a la lista' : 'Preparando productos'}</DialogTitle>
       <DialogContent className={ui.stack}>{open ? <Suspense fallback={<Spinner label="Cargando selección de productos…" />}>

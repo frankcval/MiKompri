@@ -21,7 +21,7 @@ export function SharedListsPage() {
   const group = groups.isSuccess ? groups.data.find(g => g.id === requested) : undefined
   if (!account) return <p>No hay sesión activa.</p>
   return <section className={ui.page}>
-    <PageHeader title="Listas compartidas" description="Elige tu grupo y prepara la compra en compañía." />
+    <div className={ui.board}><PageHeader title="Listas compartidas" description="Elige tu grupo y prepara la compra en compañía." /></div>
     {groups.isPending ? <Spinner label="Cargando tus grupos" /> : groups.isError ? <div role="alert">No fue posible cargar tus grupos. <Button onClick={() => void groups.refetch()}>Reintentar</Button></div>
       : !groups.data.length ? <p>Todavía no perteneces a ningún grupo. <Link to="/groups">Crear grupo</Link></p> : <>
         <Field label="Grupo"><Select value={group?.id ?? ''} onChange={(_, data) => { const next = new URLSearchParams(params); if (data.value) next.set('groupId', data.value); else next.delete('groupId'); setParams(next) }}>
@@ -53,8 +53,9 @@ function GroupLists({ group }: { group: { id: string; name: string } }) {
     {lists.isPending ? <Spinner label="Cargando listas compartidas" /> : lists.isError ? <div role="alert">{(lists.error as { status?: number }).status === 403 ? 'No tienes permisos para consultar este grupo.' : 'No fue posible cargar las listas compartidas.'}<Button onClick={() => void lists.refetch()}>Reintentar</Button></div> : <>
       {!lists.data.length ? <p>Este grupo todavía no tiene listas. Crea la primera lista compartida.</p> : null}
       {lists.data.length > 0 && !visible.length ? <p>No hay listas compartidas en esta vista. Cambia entre Activas e Historial.</p> : null}
-      {visible.map(list => <div key={list.id} className={ui.panel}><Link className={ui.listLink} to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(group.id)}`}>{list.name}</Link>
-        <p><ListOverview list={list} /></p>
+      {visible.map(list => <div key={list.id} className={ui.stack}><Link className={ui.listCard} aria-labelledby={`shared-title-${list.id}`} aria-describedby={`shared-summary-${list.id}`} to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(group.id)}`}>
+        <strong id={`shared-title-${list.id}`}>{list.name}</strong><span id={`shared-summary-${list.id}`} className={ui.stack}><ListOverview list={list} /></span>
+      </Link>
         <Link to={`/shared-lists/${list.id}?groupId=${encodeURIComponent(group.id)}&tab=expenses`}>Ver reparto de gastos de {list.name}</Link>
       </div>)}
     </>}

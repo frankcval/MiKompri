@@ -1,0 +1,1242 @@
+{
+  "kind": "diagnostic-not-acceptance-samples",
+  "source": "final",
+  "cpu": "4x",
+  "network": "1.6Mbps,150ms",
+  "viewport": "390x844",
+  "routes": [
+    {
+      "route": "home",
+      "lcp": [
+        {
+          "startTime": 2928,
+          "renderTime": 2928,
+          "loadTime": 0,
+          "size": 27729,
+          "element": {
+            "tag": "P",
+            "text": "Lo que falta en casa. Lo que pone cada uno. Organiza tus listas, compra en equipo y reparte los gastos con MiKompri.",
+            "className": "_description_12bkk_53"
+          }
+        }
+      ],
+      "longTasks": [
+        {
+          "startTime": 2194,
+          "duration": 173
+        },
+        {
+          "startTime": 2373,
+          "duration": 228
+        }
+      ],
+      "render": [
+        {
+          "heading": "La compra, mejoren compañía.",
+          "at": 2601.6999999284744
+        }
+      ],
+      "resources": [
+        {
+          "name": "/assets/mikompri-sans-400-latin-DqPUGnmi.woff2",
+          "startTime": 210,
+          "responseEnd": 1044.0999999046326,
+          "duration": 834.0999999046326,
+          "bytes": 25660,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-600-latin-B1-vjwcj.woff2",
+          "startTime": 212.79999995231628,
+          "responseEnd": 1056.7999999523163,
+          "duration": 844,
+          "bytes": 25656,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-700-latin-CeBABilS.woff2",
+          "startTime": 213.79999995231628,
+          "responseEnd": 1042.8999999761581,
+          "duration": 829.1000000238419,
+          "bytes": 25588,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-C4Be0V3d.js",
+          "startTime": 214.59999990463257,
+          "responseEnd": 1152.3999999761581,
+          "duration": 937.8000000715256,
+          "bytes": 38377,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/rolldown-runtime-WkwZ5CU-.js",
+          "startTime": 215.89999997615814,
+          "responseEnd": 450.39999997615814,
+          "duration": 234.5,
+          "bytes": 668,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Button-pBaK9J2I.js",
+          "startTime": 217,
+          "responseEnd": 888.7999999523163,
+          "duration": 671.7999999523163,
+          "bytes": 16638,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useControllableState-Bfaqq4TW.js",
+          "startTime": 217.89999997615814,
+          "responseEnd": 1090.1999999284744,
+          "duration": 872.2999999523163,
+          "bytes": 623,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/constants-BSelYI7W.js",
+          "startTime": 218.89999997615814,
+          "responseEnd": 1463,
+          "duration": 1244.1000000238419,
+          "bytes": 13488,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useDialogSurfaceContextValues-DG0ryPJa.js",
+          "startTime": 219.89999997615814,
+          "responseEnd": 1913,
+          "duration": 1693.1000000238419,
+          "bytes": 53368,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/chunk-6KYCQHYJ-BKxHO7Ig.js",
+          "startTime": 220.79999995231628,
+          "responseEnd": 1525.1999999284744,
+          "duration": 1304.3999999761581,
+          "bytes": 13504,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/mergeCallbacks-ChLGui_y.js",
+          "startTime": 221.59999990463257,
+          "responseEnd": 1261.0999999046326,
+          "duration": 1039.5,
+          "bytes": 376,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Tooltip-BaSJp6eI.js",
+          "startTime": 222.39999997615814,
+          "responseEnd": 1586.6999999284744,
+          "duration": 1364.2999999523163,
+          "bytes": 13882,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-_Jt54bB6.js",
+          "startTime": 223.19999992847443,
+          "responseEnd": 1540.3999999761581,
+          "duration": 1317.2000000476837,
+          "bytes": 8675,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Field-CoW0srAa.js",
+          "startTime": 223.79999995231628,
+          "responseEnd": 1525.5,
+          "duration": 1301.7000000476837,
+          "bytes": 4252,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useBrowserTimer-9p3wIf9s.js",
+          "startTime": 224.59999990463257,
+          "responseEnd": 1633.1999999284744,
+          "duration": 1408.6000000238419,
+          "bytes": 545,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useAnimationFrame-jIWv2qvH.js",
+          "startTime": 225.29999995231628,
+          "responseEnd": 1694.5999999046326,
+          "duration": 1469.2999999523163,
+          "bytes": 509,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/authSessionService-B-hG83Dq.js",
+          "startTime": 226.39999997615814,
+          "responseEnd": 2176.5999999046326,
+          "duration": 1950.1999999284744,
+          "bytes": 70002,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useFocusWithin-BFgHDil0.js",
+          "startTime": 227.39999997615814,
+          "responseEnd": 1709.6999999284744,
+          "duration": 1482.2999999523163,
+          "bytes": 783,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Select-DD3e7PkE.js",
+          "startTime": 228.09999990463257,
+          "responseEnd": 1851.1999999284744,
+          "duration": 1623.1000000238419,
+          "bytes": 4631,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/AppIcon-5ANS0wLO.js",
+          "startTime": 229.29999995231628,
+          "responseEnd": 1867.3999999761581,
+          "duration": 1638.1000000238419,
+          "bytes": 4493,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-Bgupuq9L.css",
+          "startTime": 230,
+          "responseEnd": 731.0999999046326,
+          "duration": 501.09999990463257,
+          "bytes": 3199,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/AppIcon-DMsZ0bCC.css",
+          "startTime": 230.79999995231628,
+          "responseEnd": 919.5999999046326,
+          "duration": 688.7999999523163,
+          "bytes": 612,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-CFYXHjb_.css",
+          "startTime": 231.59999990463257,
+          "responseEnd": 1105.5,
+          "duration": 873.9000000953674,
+          "bytes": 3328,
+          "kind": "link"
+        }
+      ],
+      "font": "600 40px / 41.6px \"MiKompri Sans\", \"Segoe UI\", sans-serif"
+    },
+    {
+      "route": "lists",
+      "lcp": [
+        {
+          "startTime": 2612,
+          "renderTime": 2612,
+          "loadTime": 0,
+          "size": 3570,
+          "element": {
+            "tag": "A",
+            "text": "✓MiKompri.",
+            "className": ""
+          }
+        },
+        {
+          "startTime": 3060,
+          "renderTime": 3060,
+          "loadTime": 0,
+          "size": 14214,
+          "element": {
+            "tag": "P",
+            "text": "Prepara tu próxima compra o retoma la que ya está en marcha.",
+            "className": ""
+          }
+        }
+      ],
+      "longTasks": [
+        {
+          "startTime": 2174.600000023842,
+          "duration": 132
+        },
+        {
+          "startTime": 2309.5,
+          "duration": 188
+        },
+        {
+          "startTime": 3156.2999999523163,
+          "duration": 50
+        }
+      ],
+      "render": [
+        {
+          "heading": "Mis listas",
+          "at": 2945.600000023842
+        }
+      ],
+      "resources": [
+        {
+          "name": "/assets/mikompri-sans-400-latin-DqPUGnmi.woff2",
+          "startTime": 201.60000002384186,
+          "responseEnd": 1036.2999999523163,
+          "duration": 834.6999999284744,
+          "bytes": 25660,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-600-latin-B1-vjwcj.woff2",
+          "startTime": 203.60000002384186,
+          "responseEnd": 1043.7000000476837,
+          "duration": 840.1000000238419,
+          "bytes": 25656,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-700-latin-CeBABilS.woff2",
+          "startTime": 204.5,
+          "responseEnd": 1021,
+          "duration": 816.5,
+          "bytes": 25588,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-C4Be0V3d.js",
+          "startTime": 205.5,
+          "responseEnd": 1146,
+          "duration": 940.5,
+          "bytes": 38377,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/rolldown-runtime-WkwZ5CU-.js",
+          "startTime": 206.29999995231628,
+          "responseEnd": 443.10000002384186,
+          "duration": 236.80000007152557,
+          "bytes": 668,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Button-pBaK9J2I.js",
+          "startTime": 207.60000002384186,
+          "responseEnd": 881,
+          "duration": 673.3999999761581,
+          "bytes": 16638,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useControllableState-Bfaqq4TW.js",
+          "startTime": 208.70000004768372,
+          "responseEnd": 1083.7999999523163,
+          "duration": 875.0999999046326,
+          "bytes": 623,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/constants-BSelYI7W.js",
+          "startTime": 209.5,
+          "responseEnd": 1334.3999999761581,
+          "duration": 1124.8999999761581,
+          "bytes": 13488,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useDialogSurfaceContextValues-DG0ryPJa.js",
+          "startTime": 210.20000004768372,
+          "responseEnd": 1891.7999999523163,
+          "duration": 1681.5999999046326,
+          "bytes": 53368,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/chunk-6KYCQHYJ-BKxHO7Ig.js",
+          "startTime": 210.70000004768372,
+          "responseEnd": 1473.5,
+          "duration": 1262.7999999523163,
+          "bytes": 13504,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/mergeCallbacks-ChLGui_y.js",
+          "startTime": 211.20000004768372,
+          "responseEnd": 1256.6000000238419,
+          "duration": 1045.3999999761581,
+          "bytes": 376,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Tooltip-BaSJp6eI.js",
+          "startTime": 212.70000004768372,
+          "responseEnd": 1566.5,
+          "duration": 1353.7999999523163,
+          "bytes": 13882,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-_Jt54bB6.js",
+          "startTime": 213.29999995231628,
+          "responseEnd": 1489,
+          "duration": 1275.7000000476837,
+          "bytes": 8675,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Field-CoW0srAa.js",
+          "startTime": 214.39999997615814,
+          "responseEnd": 1519.1000000238419,
+          "duration": 1304.7000000476837,
+          "bytes": 4252,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useBrowserTimer-9p3wIf9s.js",
+          "startTime": 215.29999995231628,
+          "responseEnd": 1519.7000000476837,
+          "duration": 1304.4000000953674,
+          "bytes": 545,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useAnimationFrame-jIWv2qvH.js",
+          "startTime": 215.79999995231628,
+          "responseEnd": 1644.2999999523163,
+          "duration": 1428.5,
+          "bytes": 509,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/authSessionService-B-hG83Dq.js",
+          "startTime": 217,
+          "responseEnd": 2156.399999976158,
+          "duration": 1939.3999999761581,
+          "bytes": 70002,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useFocusWithin-BFgHDil0.js",
+          "startTime": 218.20000004768372,
+          "responseEnd": 1691.2999999523163,
+          "duration": 1473.0999999046326,
+          "bytes": 783,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Select-DD3e7PkE.js",
+          "startTime": 218.70000004768372,
+          "responseEnd": 1784.2000000476837,
+          "duration": 1565.5,
+          "bytes": 4631,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/AppIcon-5ANS0wLO.js",
+          "startTime": 219.39999997615814,
+          "responseEnd": 1799.6000000238419,
+          "duration": 1580.2000000476837,
+          "bytes": 4493,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-Bgupuq9L.css",
+          "startTime": 220.10000002384186,
+          "responseEnd": 724.5,
+          "duration": 504.39999997615814,
+          "bytes": 3199,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/AppIcon-DMsZ0bCC.css",
+          "startTime": 220.89999997615814,
+          "responseEnd": 912.5,
+          "duration": 691.6000000238419,
+          "bytes": 612,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-CFYXHjb_.css",
+          "startTime": 221.70000004768372,
+          "responseEnd": 1098.7999999523163,
+          "duration": 877.0999999046326,
+          "bytes": 3328,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/ListsPage-BQFToQhF.js",
+          "startTime": 2436.899999976158,
+          "responseEnd": 2721.100000023842,
+          "duration": 284.2000000476837,
+          "bytes": 2169,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useQuery-Cz5M8lzU.js",
+          "startTime": 2440.7999999523163,
+          "responseEnd": 2736.5,
+          "duration": 295.7000000476837,
+          "bytes": 3248,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/groupsApi-CG1ScN1P.js",
+          "startTime": 2443.600000023842,
+          "responseEnd": 2690,
+          "duration": 246.39999997615814,
+          "bytes": 623,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useListSession-CS82Epbc.js",
+          "startTime": 2445.2000000476837,
+          "responseEnd": 2690.7000000476837,
+          "duration": 245.5,
+          "bytes": 529,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/sharedListsApi--e0IH1aX.js",
+          "startTime": 2446.2000000476837,
+          "responseEnd": 2694.100000023842,
+          "duration": 247.89999997615814,
+          "bytes": 693,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/shoppingListsApi-DmNl2tAn.js",
+          "startTime": 2447.2000000476837,
+          "responseEnd": 2705.899999976158,
+          "duration": 258.6999999284744,
+          "bytes": 776,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/CreateListDialog-BgxT6AVB.js",
+          "startTime": 2448.5,
+          "responseEnd": 2861.7999999523163,
+          "duration": 413.2999999523163,
+          "bytes": 1036,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useProfileListSort-ajfAGKFR.js",
+          "startTime": 2449.7000000476837,
+          "responseEnd": 2862.2999999523163,
+          "duration": 412.59999990463257,
+          "bytes": 590,
+          "kind": "script"
+        },
+        {
+          "name": "/api/v1/users/me",
+          "startTime": 3076,
+          "responseEnd": 3092.600000023842,
+          "duration": 16.600000023841858,
+          "bytes": 0,
+          "kind": "fetch"
+        },
+        {
+          "name": "/api/v1/purchaselists/mine",
+          "startTime": 3080.600000023842,
+          "responseEnd": 3094.399999976158,
+          "duration": 13.799999952316284,
+          "bytes": 0,
+          "kind": "fetch"
+        },
+        {
+          "name": "/api/v1/groups",
+          "startTime": 3083.7000000476837,
+          "responseEnd": 3094.899999976158,
+          "duration": 11.199999928474426,
+          "bytes": 0,
+          "kind": "fetch"
+        },
+        {
+          "name": "/api/v1/shared-lists",
+          "startTime": 3206,
+          "responseEnd": 3212,
+          "duration": 6,
+          "bytes": 0,
+          "kind": "fetch"
+        }
+      ],
+      "font": "600 28px / 31.36px \"MiKompri Sans\", \"Segoe UI\", sans-serif"
+    },
+    {
+      "route": "personal",
+      "lcp": [
+        {
+          "startTime": 2596,
+          "renderTime": 2596,
+          "loadTime": 0,
+          "size": 3570,
+          "element": {
+            "tag": "A",
+            "text": "✓MiKompri.",
+            "className": ""
+          }
+        },
+        {
+          "startTime": 3708,
+          "renderTime": 3708,
+          "loadTime": 0,
+          "size": 9960,
+          "element": {
+            "tag": "H1",
+            "text": "Compra de la semana",
+            "className": ""
+          }
+        }
+      ],
+      "longTasks": [
+        {
+          "startTime": 2180.3000000715256,
+          "duration": 122
+        },
+        {
+          "startTime": 2304.8000000715256,
+          "duration": 206
+        },
+        {
+          "startTime": 3083.100000023842,
+          "duration": 346
+        }
+      ],
+      "render": [
+        {
+          "heading": "Lista personal",
+          "at": 2992.899999976158
+        }
+      ],
+      "resources": [
+        {
+          "name": "/assets/mikompri-sans-400-latin-DqPUGnmi.woff2",
+          "startTime": 193.20000004768372,
+          "responseEnd": 1020.3999999761581,
+          "duration": 827.1999999284744,
+          "bytes": 25660,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-600-latin-B1-vjwcj.woff2",
+          "startTime": 194.70000004768372,
+          "responseEnd": 1028.8999999761581,
+          "duration": 834.1999999284744,
+          "bytes": 25656,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-700-latin-CeBABilS.woff2",
+          "startTime": 195.60000002384186,
+          "responseEnd": 1017.3999999761581,
+          "duration": 821.7999999523163,
+          "bytes": 25588,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-C4Be0V3d.js",
+          "startTime": 196.10000002384186,
+          "responseEnd": 1129.2000000476837,
+          "duration": 933.1000000238419,
+          "bytes": 38377,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/rolldown-runtime-WkwZ5CU-.js",
+          "startTime": 196.70000004768372,
+          "responseEnd": 423.7000000476837,
+          "duration": 227,
+          "bytes": 668,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Button-pBaK9J2I.js",
+          "startTime": 196.89999997615814,
+          "responseEnd": 861.3999999761581,
+          "duration": 664.5,
+          "bytes": 16638,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useControllableState-Bfaqq4TW.js",
+          "startTime": 197.80000007152557,
+          "responseEnd": 1066.5,
+          "duration": 868.6999999284744,
+          "bytes": 623,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/constants-BSelYI7W.js",
+          "startTime": 198.60000002384186,
+          "responseEnd": 1423.8999999761581,
+          "duration": 1225.2999999523163,
+          "bytes": 13488,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useDialogSurfaceContextValues-DG0ryPJa.js",
+          "startTime": 199.30000007152557,
+          "responseEnd": 1890.3000000715256,
+          "duration": 1691,
+          "bytes": 53368,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/chunk-6KYCQHYJ-BKxHO7Ig.js",
+          "startTime": 200.10000002384186,
+          "responseEnd": 1485.3999999761581,
+          "duration": 1285.2999999523163,
+          "bytes": 13504,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/mergeCallbacks-ChLGui_y.js",
+          "startTime": 200.5,
+          "responseEnd": 1240.2000000476837,
+          "duration": 1039.7000000476837,
+          "bytes": 376,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Tooltip-BaSJp6eI.js",
+          "startTime": 201.20000004768372,
+          "responseEnd": 1563.1000000238419,
+          "duration": 1361.8999999761581,
+          "bytes": 13882,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-_Jt54bB6.js",
+          "startTime": 201.80000007152557,
+          "responseEnd": 1512.6000000238419,
+          "duration": 1310.7999999523163,
+          "bytes": 8675,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Field-CoW0srAa.js",
+          "startTime": 202.20000004768372,
+          "responseEnd": 1501,
+          "duration": 1298.7999999523163,
+          "bytes": 4252,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useBrowserTimer-9p3wIf9s.js",
+          "startTime": 202.70000004768372,
+          "responseEnd": 1593.8999999761581,
+          "duration": 1391.1999999284744,
+          "bytes": 545,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useAnimationFrame-jIWv2qvH.js",
+          "startTime": 203.39999997615814,
+          "responseEnd": 1656.8000000715256,
+          "duration": 1453.4000000953674,
+          "bytes": 509,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/authSessionService-B-hG83Dq.js",
+          "startTime": 204.20000004768372,
+          "responseEnd": 2170.8000000715256,
+          "duration": 1966.6000000238419,
+          "bytes": 70002,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useFocusWithin-BFgHDil0.js",
+          "startTime": 204.80000007152557,
+          "responseEnd": 1687.5,
+          "duration": 1482.6999999284744,
+          "bytes": 783,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Select-DD3e7PkE.js",
+          "startTime": 205.5,
+          "responseEnd": 1827.6000000238419,
+          "duration": 1622.1000000238419,
+          "bytes": 4631,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/AppIcon-5ANS0wLO.js",
+          "startTime": 206.20000004768372,
+          "responseEnd": 1828,
+          "duration": 1621.7999999523163,
+          "bytes": 4493,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-Bgupuq9L.css",
+          "startTime": 206.5,
+          "responseEnd": 705.5,
+          "duration": 499,
+          "bytes": 3199,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/AppIcon-DMsZ0bCC.css",
+          "startTime": 207.39999997615814,
+          "responseEnd": 892.7000000476837,
+          "duration": 685.3000000715256,
+          "bytes": 612,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-CFYXHjb_.css",
+          "startTime": 207.39999997615814,
+          "responseEnd": 1082,
+          "duration": 874.6000000238419,
+          "bytes": 3328,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/PersonalListsPage-D7Ge4ENZ.js",
+          "startTime": 2438.8000000715256,
+          "responseEnd": 2764.600000023842,
+          "duration": 325.7999999523163,
+          "bytes": 3310,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/PurchaseItems-Dj_KdLKf.js",
+          "startTime": 2442.2000000476837,
+          "responseEnd": 2811.100000023842,
+          "duration": 368.89999997615814,
+          "bytes": 10104,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/DialogContent-dMEgtdjc.js",
+          "startTime": 2446.5,
+          "responseEnd": 2749.8000000715256,
+          "duration": 303.3000000715256,
+          "bytes": 3018,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useQuery-Cz5M8lzU.js",
+          "startTime": 2448.7000000476837,
+          "responseEnd": 2780,
+          "duration": 331.2999999523163,
+          "bytes": 3248,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useListSession-CS82Epbc.js",
+          "startTime": 2450.5,
+          "responseEnd": 2718,
+          "duration": 267.5,
+          "bytes": 529,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/ManageListActions-BhSBtUqo.js",
+          "startTime": 2452.8000000715256,
+          "responseEnd": 2752.100000023842,
+          "duration": 299.2999999523163,
+          "bytes": 2076,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/Input-BtBog-aT.js",
+          "startTime": 2454.8000000715256,
+          "responseEnd": 2905.899999976158,
+          "duration": 451.09999990463257,
+          "bytes": 4118,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/shoppingListsApi-DmNl2tAn.js",
+          "startTime": 2457.3000000715256,
+          "responseEnd": 2921.8000000715256,
+          "duration": 464.5,
+          "bytes": 776,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/CreateListDialog-BgxT6AVB.js",
+          "startTime": 2458.8000000715256,
+          "responseEnd": 2922,
+          "duration": 463.1999999284744,
+          "bytes": 1036,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useProfileListSort-ajfAGKFR.js",
+          "startTime": 2460.100000023842,
+          "responseEnd": 2937.7000000476837,
+          "duration": 477.60000002384186,
+          "bytes": 590,
+          "kind": "script"
+        },
+        {
+          "name": "/api/v1/purchaselists/mine",
+          "startTime": 3015.100000023842,
+          "responseEnd": 3019.100000023842,
+          "duration": 4,
+          "bytes": 0,
+          "kind": "fetch"
+        }
+      ],
+      "font": "700 28px / 32.2px \"MiKompri Sans\", \"Segoe UI\", sans-serif"
+    },
+    {
+      "route": "shared",
+      "lcp": [
+        {
+          "startTime": 2736,
+          "renderTime": 2736,
+          "loadTime": 0,
+          "size": 3570,
+          "element": {
+            "tag": "A",
+            "text": "✓MiKompri.",
+            "className": ""
+          }
+        },
+        {
+          "startTime": 3216,
+          "renderTime": 3216,
+          "loadTime": 0,
+          "size": 10902,
+          "element": {
+            "tag": "H1",
+            "text": "Lista compartida",
+            "className": ""
+          }
+        }
+      ],
+      "longTasks": [
+        {
+          "startTime": 2202.399999976158,
+          "duration": 172
+        },
+        {
+          "startTime": 2379,
+          "duration": 247
+        },
+        {
+          "startTime": 3301.7999999523163,
+          "duration": 175
+        }
+      ],
+      "render": [
+        {
+          "heading": "Lista compartida",
+          "at": 3164.5999999046326
+        }
+      ],
+      "resources": [
+        {
+          "name": "/assets/mikompri-sans-400-latin-DqPUGnmi.woff2",
+          "startTime": 197,
+          "responseEnd": 1072.0999999046326,
+          "duration": 875.0999999046326,
+          "bytes": 25660,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-600-latin-B1-vjwcj.woff2",
+          "startTime": 200.19999992847443,
+          "responseEnd": 1072.1999999284744,
+          "duration": 872,
+          "bytes": 25656,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/mikompri-sans-700-latin-CeBABilS.woff2",
+          "startTime": 201.39999997615814,
+          "responseEnd": 1055.8999999761581,
+          "duration": 854.5,
+          "bytes": 25588,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-C4Be0V3d.js",
+          "startTime": 203.59999990463257,
+          "responseEnd": 1182.1999999284744,
+          "duration": 978.6000000238419,
+          "bytes": 38377,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/rolldown-runtime-WkwZ5CU-.js",
+          "startTime": 204.5,
+          "responseEnd": 464.09999990463257,
+          "duration": 259.59999990463257,
+          "bytes": 668,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Button-pBaK9J2I.js",
+          "startTime": 204.79999995231628,
+          "responseEnd": 915.1999999284744,
+          "duration": 710.3999999761581,
+          "bytes": 16638,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useControllableState-Bfaqq4TW.js",
+          "startTime": 207.19999992847443,
+          "responseEnd": 1103.3999999761581,
+          "duration": 896.2000000476837,
+          "bytes": 623,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/constants-BSelYI7W.js",
+          "startTime": 209.39999997615814,
+          "responseEnd": 1461.8999999761581,
+          "duration": 1252.5,
+          "bytes": 13488,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useDialogSurfaceContextValues-DG0ryPJa.js",
+          "startTime": 211.39999997615814,
+          "responseEnd": 1930.6999999284744,
+          "duration": 1719.2999999523163,
+          "bytes": 53368,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/chunk-6KYCQHYJ-BKxHO7Ig.js",
+          "startTime": 212.79999995231628,
+          "responseEnd": 1523.6999999284744,
+          "duration": 1310.8999999761581,
+          "bytes": 13504,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/mergeCallbacks-ChLGui_y.js",
+          "startTime": 214,
+          "responseEnd": 1276.0999999046326,
+          "duration": 1062.0999999046326,
+          "bytes": 376,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Tooltip-BaSJp6eI.js",
+          "startTime": 215.69999992847443,
+          "responseEnd": 1601.7999999523163,
+          "duration": 1386.1000000238419,
+          "bytes": 13882,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-_Jt54bB6.js",
+          "startTime": 217.29999995231628,
+          "responseEnd": 1555.7999999523163,
+          "duration": 1338.5,
+          "bytes": 8675,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Field-CoW0srAa.js",
+          "startTime": 219.89999997615814,
+          "responseEnd": 1539.5999999046326,
+          "duration": 1319.6999999284744,
+          "bytes": 4252,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useBrowserTimer-9p3wIf9s.js",
+          "startTime": 221.59999990463257,
+          "responseEnd": 1634.2999999523163,
+          "duration": 1412.7000000476837,
+          "bytes": 545,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useAnimationFrame-jIWv2qvH.js",
+          "startTime": 223.29999995231628,
+          "responseEnd": 1695.8999999761581,
+          "duration": 1472.6000000238419,
+          "bytes": 509,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/authSessionService-B-hG83Dq.js",
+          "startTime": 224.79999995231628,
+          "responseEnd": 2195.5999999046326,
+          "duration": 1970.7999999523163,
+          "bytes": 70002,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/useFocusWithin-BFgHDil0.js",
+          "startTime": 226.79999995231628,
+          "responseEnd": 1728.3999999761581,
+          "duration": 1501.6000000238419,
+          "bytes": 783,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/Select-DD3e7PkE.js",
+          "startTime": 228.5,
+          "responseEnd": 1867.5,
+          "duration": 1639,
+          "bytes": 4631,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/AppIcon-5ANS0wLO.js",
+          "startTime": 230.19999992847443,
+          "responseEnd": 1867.5999999046326,
+          "duration": 1637.3999999761581,
+          "bytes": 4493,
+          "kind": "other"
+        },
+        {
+          "name": "/assets/draftStore-Bgupuq9L.css",
+          "startTime": 231.29999995231628,
+          "responseEnd": 742.1999999284744,
+          "duration": 510.89999997615814,
+          "bytes": 3199,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/AppIcon-DMsZ0bCC.css",
+          "startTime": 232.89999997615814,
+          "responseEnd": 930.8999999761581,
+          "duration": 698,
+          "bytes": 612,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/index-CFYXHjb_.css",
+          "startTime": 234.69999992847443,
+          "responseEnd": 1134.3999999761581,
+          "duration": 899.7000000476837,
+          "bytes": 3328,
+          "kind": "link"
+        },
+        {
+          "name": "/assets/SharedListDetailPage-DbC2Jhyr.js",
+          "startTime": 2547.399999976158,
+          "responseEnd": 2869,
+          "duration": 321.60000002384186,
+          "bytes": 3482,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/PurchaseItems-Dj_KdLKf.js",
+          "startTime": 2551.0999999046326,
+          "responseEnd": 2916.399999976158,
+          "duration": 365.3000000715256,
+          "bytes": 10104,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/DialogContent-dMEgtdjc.js",
+          "startTime": 2554.6999999284744,
+          "responseEnd": 2853.0999999046326,
+          "duration": 298.39999997615814,
+          "bytes": 3018,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useQuery-Cz5M8lzU.js",
+          "startTime": 2556.6999999284744,
+          "responseEnd": 2885.399999976158,
+          "duration": 328.7000000476837,
+          "bytes": 3248,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/groupsApi-CG1ScN1P.js",
+          "startTime": 2558,
+          "responseEnd": 2822.7999999523163,
+          "duration": 264.7999999523163,
+          "bytes": 623,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/memberName-CRsDjM9c.js",
+          "startTime": 2559.2999999523163,
+          "responseEnd": 2838.1999999284744,
+          "duration": 278.89999997615814,
+          "bytes": 510,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/useListSession-CS82Epbc.js",
+          "startTime": 2560.5,
+          "responseEnd": 2996.7999999523163,
+          "duration": 436.2999999523163,
+          "bytes": 529,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/GroupPeople-BM0Ozr6Z.js",
+          "startTime": 2561.899999976158,
+          "responseEnd": 3012.399999976158,
+          "duration": 450.5,
+          "bytes": 1021,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/ManageListActions-BhSBtUqo.js",
+          "startTime": 2564.399999976158,
+          "responseEnd": 3028.899999976158,
+          "duration": 464.5,
+          "bytes": 2076,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/Input-BtBog-aT.js",
+          "startTime": 2566.1999999284744,
+          "responseEnd": 3060.1999999284744,
+          "duration": 494,
+          "bytes": 4118,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/sharedListsApi--e0IH1aX.js",
+          "startTime": 2567.899999976158,
+          "responseEnd": 3060.5999999046326,
+          "duration": 492.6999999284744,
+          "bytes": 693,
+          "kind": "script"
+        },
+        {
+          "name": "/assets/shoppingListsApi-DmNl2tAn.js",
+          "startTime": 2570.5999999046326,
+          "responseEnd": 3092.5999999046326,
+          "duration": 522,
+          "bytes": 776,
+          "kind": "script"
+        },
+        {
+          "name": "/api/v1/shared-lists/66666666-6666-4666-8666-666666666666",
+          "startTime": 3240.7999999523163,
+          "responseEnd": 3262.6999999284744,
+          "duration": 21.899999976158142,
+          "bytes": 0,
+          "kind": "fetch"
+        },
+        {
+          "name": "/api/v1/groups",
+          "startTime": 3245.7999999523163,
+          "responseEnd": 3263.2999999523163,
+          "duration": 17.5,
+          "bytes": 0,
+          "kind": "fetch"
+        },
+        {
+          "name": "/api/v1/users/me",
+          "startTime": 3255.1999999284744,
+          "responseEnd": 3264.399999976158,
+          "duration": 9.200000047683716,
+          "bytes": 0,
+          "kind": "fetch"
+        },
+        {
+          "name": "/api/v1/groups/22222222-2222-4222-8222-222222222222/members",
+          "startTime": 3476.5999999046326,
+          "responseEnd": 3480.399999976158,
+          "duration": 3.8000000715255737,
+          "bytes": 0,
+          "kind": "fetch"
+        }
+      ],
+      "font": "700 28px / 32.2px \"MiKompri Sans\", \"Segoe UI\", sans-serif"
+    }
+  ]
+}

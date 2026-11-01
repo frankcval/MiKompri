@@ -2,11 +2,11 @@
 
 Cliente Web SPA de MiKompri (MVP-4), construido con React + TypeScript + Vite, Fluent UI v9, MSAL y TanStack Query. Es el cliente prioritario actual; Android/MAUI está aplazado.
 
-## Estado al 31/10/2026
+## Estado al 01/11/2026
 
 007 aporta el cliente full-stack; 008 moderniza UX y autorización; 009 completa preparación, compra y consulta. Las tres tienen implementación en `main` (008/009 integradas por PR #56/#57), con aceptación global todavía pendiente. En 009, T009 está cerrada con evidencia técnica y T010/T011 siguen abiertas. [Estado y roadmap](../README.md#-estado-actual-del-proyecto), [tareas 009](../specs/009-shopping-experience-completion/tasks.md) y [evidencia](../specs/009-shopping-experience-completion/evidence/review-corrections.md).
 
-010-A tiene código implementado en su rama: Google mediante External ID, Microsoft legacy conservado, perfil propio, D1 e aislamiento de sesión; [aceptación beta y riesgos diferidos](../specs/010-account-management-social-auth/evidence/validation.md). CIAM permanece deshabilitado por defecto en configuración fuente. 010-B y 011 siguen futuros. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista.
+010-A beta está integrada en main por PR59: Google mediante External ID, Microsoft legacy conservado, perfil propio, D1 e aislamiento de sesión; [aceptación beta y riesgos diferidos](../specs/010-account-management-social-auth/evidence/validation.md). 011 está implementada en su rama para revisión; 010-B continúa diferida. La presentación actual ofrece solo Google y oculta Microsoft temporalmente por decisión expresa ([ADR-006](../docs/adr/ADR-006-temporary-google-only-web-login.md)). CIAM permanece deshabilitado por defecto en configuración fuente: hay que configurar sus variables públicas para ofrecer acceso; no existe fallback visible a Microsoft. `006-android-maui-client` es un identificador reservado, sin carpeta de spec ni proyecto MAUI; Web primero no cambia la tecnología Android prevista.
 
 ## Requisitos
 
@@ -50,6 +50,8 @@ tests/
 ## Variables de entorno
 
 Desde `MiKompri.Web`, copiar `.env.example` a `.env.local` y configurar las URLs públicas de Users, ShoppingList y ProductCatalog, el registro SPA Entra, tenant/authority, redirect y logout URIs, y `VITE_API_SCOPE` del recurso backend común. Reiniciar Vite después de editarlo. `VITE_*` es configuración pública incorporada durante el build, nunca secretos de cliente.
+
+Para la entrada visible Google se requieren además `VITE_CIAM_ENABLED=true` y `VITE_CIAM_CLIENT_ID`, `VITE_CIAM_TENANT_ID`, `VITE_CIAM_AUTHORITY`, `VITE_CIAM_API_SCOPE` válidos. No habilitarla con valores ficticios ni crear recursos automáticamente: usar un entorno autorizado. Sin esa configuración el login indica indisponibilidad, sin mostrar Microsoft.
 
 Levantar antes las APIs y PostgreSQL con el Compose de la raíz; ese Compose no incluye un servicio Web. `npm run dev` sirve la SPA en `http://localhost:5173`. Registrar `/auth/callback` para ese origen en Entra. Usuarios autenticados acceden a `/lists`; `/profile`, `/groups`, `/personal-lists`, `/shared-lists` y `/product-catalog` son rutas protegidas. [Guía CORS](../docs/web-client-cors.md) y [contratos/identidad](../docs/client-contract-reuse-guidelines.md).
 
@@ -98,7 +100,19 @@ El workflow de aceptación ya está incorporado a `main`; se puede iniciar desde
 
 ## Acceso y límites actuales de 010-A
 
-«Continuar con Google» abre el acceso alojado de External ID con `prompt=login`; en esa pantalla hay que pulsar «Iniciar sesión con Google». Microsoft conserva `select_account` y su configuración legacy. No se usa el hint Google rechazado en QA y `prompt=login` no acredita G3 ni reautenticación Google reciente.
+«Continuar con Google» es la única opción visible y abre el acceso alojado de External ID con `prompt=login`; en esa pantalla hay que pulsar «Iniciar sesión con Google», en lugar de introducir el correo en el acceso email OTP. Microsoft queda oculto temporalmente; conserva `select_account`, trust y sesiones legacy internamente, sin migrar datos. Un usuario Microsoft sin sesión activa no tiene botón de entrada; cambiar a Google no recupera su UserId por coincidencia de email. [Decisión, límites y reversión](../docs/adr/ADR-006-temporary-google-only-web-login.md). No se usa el hint Google rechazado en QA y `prompt=login` no acredita G3 ni reautenticación Google reciente.
+
+Si la cuenta no se prepara después del acceso, comprobar primero Users y las demás APIs. La pantalla conserva el error y ofrece «Reintentar acceso» con la sesión existente, sin bucle automático ni nuevo código obligatorio. Para el **entorno QA local ya preparado**, recuperar solo sus contenedores existentes:
+
+```powershell
+docker start mikompri-010a-postgres
+docker start mikompri-010a-users mikompri-010a-shopping mikompri-010a-catalog
+# Comprobar /health en localhost:28082, :28080 y :28083: los tres deben responder 200.
+# Desde MiKompri.Web, con .env.010a.local privado ya configurado:
+npm run dev:010a -- --strictPort
+```
+
+No usar este procedimiento para crear o migrar otro entorno. No arrancar simultáneamente servidores distintos para localhost/127.0.0.1 en5173: el callback registrado debe volver al mismo origen y configuración de la Web. Si ya hay un Vite válido en5173, conservarlo; `--strictPort` evita continuar inadvertidamente en otro puerto. [Recuperación verificada](../specs/011-web-iconography/evidence/authentication-recovery-2026-11-01.md).
 
 El selector QA aún ofrece email OTP heredado del spike, pero la Web no lo anuncia: T056 sigue opcional y pendiente. No retirarlo sin evaluar la evidencia y las cuentas QA existentes. El perfil permite personalizar nombre, username, nombres/apellidos, idioma y orden inicial; los datos propios y los borrados explícitos prevalecen en accesos posteriores. Un `unknown` previo no se corrige mediante Graph.
 

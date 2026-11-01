@@ -1,9 +1,13 @@
-﻿import { useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { Link, useLinkClickHandler } from 'react-router-dom'
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, useRestoreFocusTarget } from '@fluentui/react-components'
+import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Button, useRestoreFocusTarget } from '@fluentui/react-components'
 import { exampleList } from './exampleList'
 import s from './HomePage.module.css'
 import { ShoppingListView } from '../../shared/ui/ShoppingListView'
+import { IconAction } from '../../shared/ui/icons/IconAction'
+import { restoreFocusAfterClose } from '../../shared/ui/restoreFocusAfterClose'
+
+const MobileNavigationDrawer = lazy(() => import('../../app/layout/MobileNavigationDrawer'))
 
 function CreateListLink({ children = 'Crear mi primera lista' }: { children?: React.ReactNode }) {
   const onClick = useLinkClickHandler<HTMLAnchorElement>('/personal-lists?create=1')
@@ -13,15 +17,14 @@ function CreateListLink({ children = 'Crear mi primera lista' }: { children?: Re
 function HomeHeader() {
   const [open, setOpen] = useState(false)
   const restoreFocusTarget = useRestoreFocusTarget()
+  const menuTrigger = useRef<HTMLButtonElement>(null)
+  const closeMenu = () => { restoreFocusAfterClose(menuTrigger.current); setOpen(false) }
   const links = <><a href="#como-funciona" onClick={() => setOpen(false)}>Cómo funciona</a><a href="#para-compartir" onClick={() => setOpen(false)}>Para compartir</a><a href="#preguntas" onClick={() => setOpen(false)}>Preguntas</a><Link to="/login">Entrar</Link></>
   return <header className={s.header}><div className={s.headerInner}>
     <Link className={s.brand} to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</Link>
     <nav className={s.desktopNav} aria-label="Navegación de portada">{links}</nav>
-    <div className={s.headerActions}><CreateListLink>Crear una lista</CreateListLink><Button {...restoreFocusTarget} className={s.menuButton} aria-label="Abrir menú" aria-expanded={open} onClick={event => { event.currentTarget.focus(); setOpen(true) }}>☰</Button></div>
-    <Drawer open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="small">
-      <DrawerHeader><DrawerHeaderTitle action={<Button className={s.closeMenu} aria-label="Cerrar menú" onClick={() => setOpen(false)}>✕</Button>}>MiKompri</DrawerHeaderTitle></DrawerHeader>
-      <DrawerBody><nav className={s.mobileNav} aria-label="Navegación móvil">{links}</nav></DrawerBody>
-    </Drawer>
+    <div className={s.headerActions}><CreateListLink>Crear una lista</CreateListLink><IconAction {...restoreFocusTarget} ref={menuTrigger} name="menu" className={s.menuButton} label="Abrir menú" aria-expanded={open} onKeyDown={event => { if (event.key === 'Escape' && open) closeMenu() }} onClick={event => { event.currentTarget.focus(); setOpen(true) }} /></div>
+    {open ? <Suspense fallback={<span className={s.menuLoading} role="status">Preparando menú…</span>}><MobileNavigationDrawer onClose={closeMenu} navClassName={s.mobileNav} navLabel="Navegación móvil" closeClassName={s.closeMenu}>{links}</MobileNavigationDrawer></Suspense> : null}
   </div></header>
 }
 
@@ -47,7 +50,7 @@ function HomeHero() {
     <h1 id="home-title">La compra, mejor<br /><span>en compañía.</span></h1>
     <p className={s.description}>Lo que falta en casa. Lo que pone cada uno. Organiza tus listas, compra en equipo y reparte los gastos con MiKompri.</p>
     <div className={s.actions}><CreateListLink /><Button as="a" href="#ejemplo" size="large">Explorar el ejemplo</Button></div>
-    <p className={s.hint}>Para guardar tus listas, entra con tu cuenta de Microsoft.</p>
+    <p className={s.hint}>Para guardar tus listas, entra con tu cuenta de MiKompri.</p>
     <p className={s.heroNote}>Para tu casa, tu piso compartido<br /> y los planes que hacéis juntos.</p>
   </div><ShoppingListPreview /></section>
 }
@@ -70,7 +73,7 @@ function HomeFaq() {
   return <section className={`${s.container} ${s.section} ${s.faq}`} id="preguntas"><div><p className={s.eyebrow}>Antes de empezar</p><h2>Las cosas claras,<br />desde el principio.</h2></div><Accordion collapsible multiple>
     {[
       ['¿Para qué sirve MiKompri?', 'Prepara listas personales o de grupo, organiza la compra y consulta el reparto de gastos.'],
-      ['¿Necesito una cuenta?', 'Sí, para crear y guardar listas debes iniciar sesión con Microsoft. El ejemplo de esta portada se puede explorar sin cuenta.'],
+      ['¿Necesito una cuenta?', 'Sí, para crear y guardar listas debes iniciar sesión en MiKompri. El ejemplo de esta portada se puede explorar sin cuenta.'],
       ['¿Se guardan los cambios del ejemplo?', 'No. Son datos ficticios y temporales, separados de tus listas reales. Puedes restablecerlos en cualquier momento.'],
       ['¿MiKompri realiza pagos?', 'No. El reparto muestra balances y propuestas para saldar cuentas; no realiza transferencias ni cobros.'],
     ].map(([question, answer], i) => <AccordionItem value={String(i)} key={question}><AccordionHeader>{question}</AccordionHeader><AccordionPanel>{answer}</AccordionPanel></AccordionItem>)}
@@ -78,5 +81,5 @@ function HomeFaq() {
 }
 
 export function HomePage() {
-  return <div className={s.home}><a className={s.skip} href="#main-content">Saltar al contenido</a><HomeHeader /><main id="main-content" tabIndex={-1}><HomeHero /><HowItWorks /><SharingScenarios /><HomeFaq /><section className={`${s.container} ${s.finalCta}`}><h2>La próxima compra empieza aquí.</h2><p>Una lista compartida. Una cosa menos en la cabeza.</p><CreateListLink /></section></main><footer className={`${s.container} ${s.footer}`}><Link className={s.brand} to="/">MiKompri.</Link><span>La compra, mejor en compañía.</span></footer></div>
+  return <div className={s.home}><a className={s.skip} href="#main-content" tabIndex={0}>Saltar al contenido</a><HomeHeader /><main id="main-content" tabIndex={-1}><HomeHero /><HowItWorks /><SharingScenarios /><HomeFaq /><section className={`${s.container} ${s.finalCta}`}><h2>La próxima compra empieza aquí.</h2><p>Una lista compartida. Una cosa menos en la cabeza.</p><CreateListLink /></section></main><footer className={`${s.container} ${s.footer}`}><Link className={s.brand} to="/">MiKompri.</Link><span>La compra, mejor en compañía.</span></footer></div>
 }

@@ -31,8 +31,8 @@ export async function modernFixtures(page: Page, itemCount = 1) {
       return route.fulfill({ json: data })
     }
     const list = path.includes(ids.shared) ? shared : personal
-    if (path.endsWith('/purchase-state')) list.items.find(i => path.includes(i.id))!.isPurchased = body.isPurchased
-    else if (path.endsWith('/mark-as-purchased')) list.items.find(i => path.includes(i.id))!.isPurchased = true
+    if (path.endsWith('/purchase-state')) list.items.find(i => path.split('/').includes(i.id))!.isPurchased = body.isPurchased
+    else if (path.endsWith('/mark-as-purchased')) list.items.find(i => path.split('/').includes(i.id))!.isPurchased = true
     else if (path.endsWith('/catalog-products') && method === 'POST') { const product = { id: '88888888-8888-4888-8888-888888888888', ...body, isActive: true }; products.push(product); return route.fulfill({ status: 201, json: product }) }
     else if (path.endsWith('/purchases') && method === 'POST') {
       if (!operations.has(body.operationId)) { purchases.push({ ...body, paidBy: ids.user, participants: [], version: ids.expense, expenseId: ids.expense, itemId: ids.item, productName: 'Tomates', createdAt: new Date().toISOString() }); operations.set(body.operationId, ids.expense) }

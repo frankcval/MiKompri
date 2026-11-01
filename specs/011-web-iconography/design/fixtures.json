@@ -1,0 +1,75 @@
+{
+  "fictional": true,
+  "personalList": {
+    "name": "Compra de la semana",
+    "items": [
+      {
+        "name": "Tomates",
+        "quantity": 2,
+        "unit": "kg",
+        "price": 2.8,
+        "purchased": false
+      },
+      {
+        "name": "Pan de masa madre",
+        "quantity": 1,
+        "unit": "ud",
+        "price": 3.2,
+        "purchased": true
+      },
+      {
+        "name": "Leche de avena",
+        "quantity": 2,
+        "unit": "ud",
+        "price": 1.65,
+        "purchased": false
+      },
+      {
+        "name": "Huevos",
+        "quantity": 1,
+        "unit": "docena",
+        "price": 2.9,
+        "purchased": true
+      },
+      {
+        "name": "Manzanas",
+        "quantity": 1,
+        "unit": "kg",
+        "price": 2.4,
+        "purchased": false
+      },
+      {
+        "name": "Café",
+        "quantity": 1,
+        "unit": "paquete",
+        "price": 4.8,
+        "purchased": false
+      },
+      {
+        "name": "Limones",
+        "quantity": 3,
+        "unit": "ud",
+        "price": null,
+        "purchased": false
+      },
+      {
+        "name": "Arroz",
+        "quantity": 1,
+        "unit": "kg",
+        "price": null,
+        "purchased": true
+      }
+    ],
+    "estimatedKnownTotal": 22.2,
+    "unknownPriceItems": 2,
+    "purchased": 3,
+    "pending": 5
+  },
+  "sharedList": {
+    "name": "Cena con amigos",
+    "group": "Casa",
+    "pending": 3,
+    "totalItems": 5,
+    "estimatedKnownTotal": 12.4
+  }
+}

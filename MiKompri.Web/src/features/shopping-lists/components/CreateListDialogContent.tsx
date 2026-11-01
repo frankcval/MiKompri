@@ -1,3 +1,4 @@
+import { AppIcon } from '../../../shared/ui/icons/AppIcon'
 import { currentAccount, accountSessionKey } from '../../../auth/session/accountIdentity'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
@@ -24,7 +25,7 @@ export function CreateListDialogContent({ title, onCreate, label = 'Crear lista'
   useEffect(() => { if (account) writeDraft(account, scope, draft) }, [account, scope, draft])
   const close = () => { if (!pending) { setOpen(false); reset({ name: '' }); setError(''); requestAnimationFrame(() => trigger.current?.focus()) } }
   return <Dialog open={open} onOpenChange={(_, data) => { if (!pending) { if (data.open) setOpen(true); else close() } }}>
-    <DialogTrigger disableButtonEnhancement><Button ref={trigger} appearance="primary" disabled={disabled} onClick={event => event.currentTarget.focus()}>{label}</Button></DialogTrigger>
+    <DialogTrigger disableButtonEnhancement><Button ref={trigger} icon={<AppIcon name="add" />} appearance="primary" disabled={disabled} onClick={event => event.currentTarget.focus()}>{label}</Button></DialogTrigger>
     <DialogSurface aria-label={title} className={`${ui.page} ${ui.panel}`}>
       <form className={ui.form} onSubmit={event => { void handleSubmit(async value => {
         if (submitting.current) return
