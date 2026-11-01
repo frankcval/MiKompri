@@ -137,14 +137,13 @@ function ProductCatalogContent() {
               </li>)}</ul> : withViewState({ state: 'empty', content: null, emptyTitle: 'Sin productos', emptyDescription: 'No hay productos disponibles.' })}
             </Card>
             {selectedProduct ? <section id="catalog-price-history" className={s.history} role="region" aria-label={`Historial de precios de ${selectedProduct.name}`}>
-              <Card className={ui.panel}>
+              <PriceHistoryPanel filters={<div className={ui.stack}>
                 <Field label="Filtrar por mercado (opcional)"><Select value={selectedMarketId} onChange={(_, data) => setSelectedMarketId(data.value)}>
                   <option value="">Todos los mercados</option>{marketsQuery.data?.map(market => <option key={market.id} value={market.id}>{market.name}</option>)}
                 </Select></Field>
                 <div className={ui.actions}><Field label="Desde"><Input type="date" value={from} onChange={(_, data) => setFrom(data.value)} /></Field><Field label="Hasta"><Input type="date" value={to} onChange={(_, data) => setTo(data.value)} /></Field></div>
                 {from && to && from > to ? <p role="alert">La fecha inicial debe ser anterior o igual a la final.</p> : null}
-              </Card>
-              <PriceHistoryPanel productName={selectedProduct.name} markets={marketsQuery.data ?? []} history={historyQuery.data ?? null} isLoading={historyQuery.isLoading}
+              </div>} productName={selectedProduct.name} markets={marketsQuery.data ?? []} history={historyQuery.data ?? null} isLoading={historyQuery.isLoading}
                 errorStatus={(historyQuery.error as { status?: number } | undefined)?.status} hasError={historyQuery.isError} selected
                 onRetry={() => { void historyQuery.refetch() }} />
               <Card className={ui.panel}><RegisterPriceForm key={selectedProductId} product={selectedProduct} markets={marketsQuery.data ?? []} /></Card>
