@@ -17,4 +17,5 @@
 .sharedEntry h2 { display: flex; align-items: center; gap: 12px; }
 .sharedEntry p { color: var(--mk-muted); }
 .back { gap: 8px; justify-self: start; }
+.nameInput { min-height: 44px; }
 @media(forced-colors:active) { .card.card,.sharedEntry.sharedEntry { border-color: CanvasText; } .symbol { border: 1px solid CanvasText; } .role { color: CanvasText; } }

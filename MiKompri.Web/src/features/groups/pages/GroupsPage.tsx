@@ -5,7 +5,7 @@ import s from '../components/GroupSurfaces.module.css'
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Field, Input, Spinner, Text } from '@fluentui/react-components'
 import { useMsal } from '@azure/msal-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useRef, useState, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { loginRequest } from '../../../auth/msal/msalConfig'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
@@ -23,7 +23,8 @@ export function GroupsPage() {
   const [open, setOpen] = useState(false)
   const trigger = useRef<HTMLButtonElement | null>(null)
   const headerTrigger = useRef<HTMLButtonElement>(null)
-  const close = () => { setOpen(false); requestAnimationFrame(() => (trigger.current?.isConnected ? trigger.current : headerTrigger.current)?.focus()) }
+  const restoreFocus = useRef(false)
+  const close = () => { restoreFocus.current = true; setOpen(false) }
   const groupsQuery = useQuery({
     queryKey: ['groups', accountSessionKey(account)], enabled: Boolean(account),
     queryFn: async () => getMyGroups(env.usersApiBaseUrl, await authSession.getAccessToken(loginRequest.scopes, account)),
@@ -32,6 +33,15 @@ export function GroupsPage() {
     mutationFn: async () => createGroup(env.usersApiBaseUrl, await authSession.getAccessToken(loginRequest.scopes, account), { name }),
     onSuccess: async () => { setName(''); await queryClient.invalidateQueries({ queryKey: ['groups'] }); close() },
   })
+  useEffect(() => {
+    if (open || createGroupMutation.isPending || !restoreFocus.current) return
+    const frame = requestAnimationFrame(() => {
+      const target = trigger.current?.isConnected ? trigger.current : headerTrigger.current
+      target?.focus()
+      restoreFocus.current = false
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [open, createGroupMutation.isPending])
   const showCreate = (event: MouseEvent<HTMLButtonElement>) => { trigger.current = event.currentTarget; event.currentTarget.focus(); createGroupMutation.reset(); setOpen(true) }
   if (!account) return <Text>No hay sesión activa.</Text>
   return <section className={ui.page}>
@@ -53,7 +63,7 @@ export function GroupsPage() {
     <Dialog open={open} onOpenChange={(_, d) => { if (!createGroupMutation.isPending) { if (d.open) setOpen(true); else close() } }}>
       <DialogSurface className={`${ui.panel} ${ui.page}`}><form className={ui.form} onSubmit={event => { event.preventDefault(); if (name.trim() && !createGroupMutation.isPending) createGroupMutation.mutate() }}>
         <DialogBody><DialogTitle>Crear grupo</DialogTitle><DialogContent className={ui.stack}>
-          <Field label="Nombre del grupo" required><Input required value={name} disabled={createGroupMutation.isPending} onChange={(_, d) => setName(d.value)} /></Field>
+          <Field label="Nombre del grupo" required><Input required input={{ className: s.nameInput }} value={name} disabled={createGroupMutation.isPending} onChange={(_, d) => setName(d.value)} /></Field>
           {createGroupMutation.isError ? <p role="alert">No fue posible crear el grupo. Revisa el nombre e inténtalo de nuevo.</p> : null}
         </DialogContent><DialogActions>
           <Button disabled={createGroupMutation.isPending} onClick={close}>Cancelar</Button>

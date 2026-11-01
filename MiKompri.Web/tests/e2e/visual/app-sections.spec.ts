@@ -66,7 +66,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await page.getByRole('button', { name: 'Crear grupo', exact: true }).click()
     const groupInput = page.getByRole('dialog', { name: 'Crear grupo', exact: true }).getByRole('textbox', { name: 'Nombre del grupo' })
     await groupInput.focus()
-    expect(await groupInput.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
+    await expect.poll(() => groupInput.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44)
     await page.getByRole('dialog', { name: 'Crear grupo', exact: true }).getByRole('button', { name: 'Cancelar' }).click()
     await open(page, `/personal-lists/${listId}`)
     await expect(page.getByRole('heading', { name: longName, exact: true })).toBeVisible()
