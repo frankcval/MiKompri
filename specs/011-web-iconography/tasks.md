@@ -87,6 +87,12 @@ Estado vigente: [revisión final](evidence/final-review.md), [CI código final](
 
 ## Evidencia de cierre actual
 
+Corrección solicitada tras revisar el CI del PR60 sobre0e88e9a ([evidencia](evidence/ci-focus-review.md)):
+
+- [x] T042 Corregir devolución diferida que puede robar un foco posterior; unidad roja con callback anterior y27/27unidades/componentes afectados. Esperar interactuabilidad en el E2E de teclado, conservando aserciones, timeouts y0retries;15/15repeticiones en tres motores.
+- [ ] T043 Acreditar suite completa Web y CI de los cinco workflows del nuevo SHA, más checks/mergeabilidad del PR60, sin merge. No heredar el PASS del push0e88e9a cuando su ejecución pull_request falló.
+- [ ] T044 Resolver diagnóstico y gate adicional SonarCloud (0% cobertura nueva, seguridadB). Falta acceso al informe privado para identificar el hallazgo B y revisar análisis/importación de cobertura; no darlo por corregido ni cambiar umbrales/exclusiones a ciegas.
+
 Corrección posterior autorizada,01/11/2026 ([ADR-006](../../docs/adr/ADR-006-temporary-google-only-web-login.md)):
 
 - [x] T039 Diagnosticar acceso sin cambiar trust: cuatro contenedores QA detenidos; recuperados y tres health200. Entorno privado compatible conservado, sin migraciones ni nuevos recursos.

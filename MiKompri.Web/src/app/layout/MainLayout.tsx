@@ -5,6 +5,7 @@ import s from './MainLayout.module.css'
 import { AccountMenu } from '../../shared/ui/AccountMenu'
 import { AppIcon } from '../../shared/ui/icons/AppIcon'
 import { IconAction } from '../../shared/ui/icons/IconAction'
+import { restoreFocusAfterClose } from '../../shared/ui/restoreFocusAfterClose'
 
 const MobileNavigationDrawer = lazy(() => import('./MobileNavigationDrawer'))
 
@@ -17,7 +18,7 @@ export function MainLayout({ children }: PropsWithChildren) {
   const location = useLocation()
   const restoreFocus = useRestoreFocusTarget()
   const menuTrigger = useRef<HTMLButtonElement>(null)
-  const closeMenu = () => { setOpen(false); requestAnimationFrame(() => menuTrigger.current?.focus()) }
+  const closeMenu = () => { restoreFocusAfterClose(menuTrigger.current); setOpen(false) }
   const links = destinations.map(([to, label, icon]) => {
     const selected = location.pathname.startsWith(to) || (to === '/lists' && /\/(personal|shared)-lists/.test(location.pathname))
     return <Link key={to} to={to} aria-current={selected ? 'page' : undefined} onClick={() => setOpen(false)}><AppIcon name={icon} size={24} selected={selected} /><span>{label}</span></Link>

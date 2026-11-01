@@ -92,6 +92,8 @@ Hecho solo con acceptance.md acreditado en implementación final. La formalizaci
 
 ## Resultado de revisión
 
+Corrección del CI del PR60 sobre0e88e9a: [diagnóstico de foco y gates](evidence/ci-focus-review.md). Proteger devolución diferida del foco en los dos menús y esperar interactuabilidad antes de teclado en E2E; mantener diseño, aserciones, retries0 y budgets. Verificar suites y CI del nuevo SHA, sin merge. El gate adicional Sonar exige informe privado para diagnosticar seguridadB y configuración de cobertura; no se sustituye por exclusiones ni umbrales menores.
+
 Corrección de acceso autorizada después de la revisión visual (01/11/2026): [ADR-006](../../docs/adr/ADR-006-temporary-google-only-web-login.md). Auditar contenedores/configuración antes de modificar trust; recuperar solo runtime QA existente. Google es la única entrada visible; Microsoft conserva configuración/sesiones internas con la limitación UI explícita. Tests de ausencia/fallback, error503 estable/reintento y retorno antes de modificar LoginPage; suites Web y recorrido Google real después. No migración, linking, factores/cloud ni nueva identidad. [Evidencia](evidence/authentication-recovery-2026-11-01.md). Los resultados previos siguientes conservan su SHA histórico.
 
 Código0923a0c:160tests/192escenariosCI, Docker y80muestras completos. Grupos/Catálogo y todas las secciones revisados. T019/T025/AC09 diferidos humanos no bloqueantes autorizados; LCP3rutasFAIL/deuda previa declarada, sin modificar budgets ni cerrar otras specs. Ver evidence/final-review.md. CI del commit de publicación se comprueba después del push y antes del PR.

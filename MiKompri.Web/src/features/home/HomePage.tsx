@@ -5,6 +5,7 @@ import { exampleList } from './exampleList'
 import s from './HomePage.module.css'
 import { ShoppingListView } from '../../shared/ui/ShoppingListView'
 import { IconAction } from '../../shared/ui/icons/IconAction'
+import { restoreFocusAfterClose } from '../../shared/ui/restoreFocusAfterClose'
 
 const MobileNavigationDrawer = lazy(() => import('../../app/layout/MobileNavigationDrawer'))
 
@@ -17,7 +18,7 @@ function HomeHeader() {
   const [open, setOpen] = useState(false)
   const restoreFocusTarget = useRestoreFocusTarget()
   const menuTrigger = useRef<HTMLButtonElement>(null)
-  const closeMenu = () => { setOpen(false); requestAnimationFrame(() => menuTrigger.current?.focus()) }
+  const closeMenu = () => { restoreFocusAfterClose(menuTrigger.current); setOpen(false) }
   const links = <><a href="#como-funciona" onClick={() => setOpen(false)}>Cómo funciona</a><a href="#para-compartir" onClick={() => setOpen(false)}>Para compartir</a><a href="#preguntas" onClick={() => setOpen(false)}>Preguntas</a><Link to="/login">Entrar</Link></>
   return <header className={s.header}><div className={s.headerInner}>
     <Link className={s.brand} to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</Link>

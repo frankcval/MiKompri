@@ -698,6 +698,8 @@ La numeración de MVP no coincide con la de specs. 008 y 009 amplían el MVP-4 y
 - **010-A — Cuenta beta:** Google mediante CIAM y Microsoft legacy, perfil propio y UserId interno preservado; integrado por PR #59. Migración Microsoft y linking/G3 conservan sus diferidos. [Spec y límites](specs/010-account-management-social-auth/spec.md).
 - **011 — Iconografía y Nevera compartida:** implementación en su rama, con notas/pizarra, Grupos/detalle y Catálogo/Mercados bajo demanda. Revisión de 17 vistas, 160 tests Web y 192 escenarios en tres motores. [Cierre para PR y límites](specs/011-web-iconography/evidence/final-review.md).
 
+La corrección posterior del PR60 protege el foco al cerrar el menú y sincroniza las acciones de teclado del E2E; la suite de navegadores actual pasa198/198. [Diagnóstico, resultados y gates](specs/011-web-iconography/evidence/ci-focus-review.md). La CI del nuevo SHA y el check adicional SonarCloud deben revisarse antes de integrar; Sonar requiere acceso a su informe privado para resolver cobertura/seguridad. No se ha hecho merge ni desplegado011.
+
 ### Qué sigue pendiente
 
 En **009**, T009 está cerrada con evidencia de tests, CI y Docker. **T010/T011 siguen abiertas**: la última medición documentada de LCP personal/compartida es 2556/2604 ms frente al límite de 2500 ms; faltan aceptación Entra con dos cuentas/roles y validación manual de lector, zoom, teclado/dispositivo. No se acredita cierre global de 007/008/009 ni despliegue productivo por haber integrado sus PRs.

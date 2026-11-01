@@ -65,6 +65,7 @@ test('@smoke 011 menu tooltip, keyboard and destructive confirmation preserve fo
   const fixture = await modernFixtures(page)
   await openHarness(page, `/personal-lists/${ids.personal}`)
   const menu = page.getByRole('button', { name: 'Abrir menú', exact: true })
+  await menu.click({ trial: true })
   await menu.focus()
   await expect(page.getByRole('tooltip')).toContainText('Abrir menú')
   await page.keyboard.press('Escape'); await expect(page.getByRole('tooltip')).toHaveCount(0)
@@ -74,13 +75,16 @@ test('@smoke 011 menu tooltip, keyboard and destructive confirmation preserve fo
   // Escape belongs to the topmost help while a Tooltip is open. Focus a
   // labelled navigation link to test the Drawer's own Escape independently.
   const drawerLink = page.getByRole('navigation', { name: 'Navegación principal', exact: true }).getByRole('link', { name: 'Mis listas', exact: true })
+  await drawerLink.click({ trial: true })
   await drawerLink.focus(); await expect(drawerLink).toBeFocused()
   await expect(page.getByRole('tooltip')).toHaveCount(0)
   await page.keyboard.press('Escape')
   await expect(page.locator('[role="dialog"]')).toHaveCount(0)
   await expect(menu).toBeFocused()
   const options = page.getByLabel('Opciones de Tomates', { exact: true })
-  await options.focus(); await page.keyboard.press('Enter')
+  // Keyboard focus alone does not wait for the Drawer's motion/focus lifecycle.
+  await options.click({ trial: true })
+  await options.focus(); await expect(options).toBeFocused(); await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: 'Eliminar Tomates', exact: true })).toBeVisible()
   await page.keyboard.press('Escape'); await expect(options).toBeFocused()
   await expect(page.getByRole('button', { name: 'Eliminar Tomates', exact: true })).toHaveCount(0)

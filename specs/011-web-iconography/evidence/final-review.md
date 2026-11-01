@@ -1,5 +1,7 @@
 # Revisión final 011 para PR
 
+**Gate de publicación posterior:** la revisión de0e88e9a encontró fallo WebKit en CI del PR (197/198), aunque su workflow push pasó. [Corrección y comprobaciones nuevas](ci-focus-review.md). Los checks del SHA corregido y el gate adicional SonarCloud se verifican separadamente; este informe histórico no los declara aprobados.
+
 **Actualización posterior:** este informe y su CI corresponden al candidato visual indicado abajo. La [corrección de acceso del01/11](authentication-recovery-2026-11-01.md), autorizada después, deja Google como única entrada visible y aporta validación local/Google real. El titular solicita publicar su commit; verificar la nueva CI de ese SHA antes de integrar, sin heredar el PASS remoto del candidato anterior. [Decisión temporal](../../../docs/adr/ADR-006-temporary-google-only-web-login.md).
 
 01/11/2026. Código final `0923a0c37012e26f9a998732250f57c04ab0ae31`; origen auditado cf83bff limpio y main9597af5. [Resultados](validation-results.json), [CI del código final](https://github.com/frankcval/MiKompri/actions/runs/41327776290), [auditoría inicial](head-review.json), [bundle](bundle-final.json), [rendimiento](performance-comparison.md), [revisión de todas las secciones](all-sections-review.md).
