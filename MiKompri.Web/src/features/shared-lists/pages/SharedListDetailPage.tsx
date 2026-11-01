@@ -61,7 +61,7 @@ export function SharedListDetailPage() {
         }} /> : null}
       </div>
       {manager && active ? <div className={ui.actions}><RenameListAction name={detail.data.name} accountKey={accountSessionKey(account)} scope={listId} onRename={async name => { await write(t => updateSharedList(env.shoppingListApiBaseUrl, t, listId, name)); await refresh() }} />
-        <ConfirmAction label="Cerrar lista" description="La lista quedará disponible para consulta. Sus gastos se conservarán." onConfirm={async () => { await write(t => closeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh() }} />
+        <ConfirmAction icon="close" label="Cerrar lista" description="La lista quedará disponible para consulta. Sus gastos se conservarán." onConfirm={async () => { await write(t => closeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh() }} />
         <ConfirmAction label="Eliminar lista" description={`Se eliminará «${detail.data.name}» si no tiene gastos asociados. Si tiene gastos, ciérrala para conservar las cuentas.`} onConfirm={async () => { await write(t => removeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh(); navigate(back) }} />
       </div> : null}
       <TabList selectedValue={tab} aria-label="Vistas de la lista" onTabSelect={(_, data) => { const next = new URLSearchParams(params); next.set('tab', String(data.value)); setParams(next) }}>

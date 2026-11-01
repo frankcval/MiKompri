@@ -50,7 +50,7 @@ export function MarketManagement({ markets }: { markets: Market[] }) {
       <div className={s.identity}><strong>{market.name}{market.isActive === false ? ' · Inactivo' : ''}</strong>{market.locationHint ? <span>{market.locationHint}</span> : null}</div>
       {market.isActive !== false ? <div className={s.actions}>
         <CatalogDialog title={`Editar mercado ${market.name}`} trigger={<IconAction name="edit" label={`Editar mercado ${market.name}`} />}>{(close, onPendingChange) => <CatalogEditor market={market} onDone={close} onPendingChange={onPendingChange} />}</CatalogDialog>
-        <ConfirmAction label={`Desactivar ${market.name}`} description="Se conservará su historial. No estará disponible para nuevos precios o compras." onConfirm={async () => { await write(t => deactivateMarket(env.productCatalogApiBaseUrl, t, market.id)); await client.invalidateQueries({ queryKey: ['catalog-markets'] }) }} />
+        <ConfirmAction icon="close" label={`Desactivar ${market.name}`} description="Se conservará su historial. No estará disponible para nuevos precios o compras." onConfirm={async () => { await write(t => deactivateMarket(env.productCatalogApiBaseUrl, t, market.id)); await client.invalidateQueries({ queryKey: ['catalog-markets'] }) }} />
       </div> : null}
     </li>)}</ul>
   </section>

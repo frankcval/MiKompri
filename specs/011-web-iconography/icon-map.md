@@ -26,7 +26,7 @@ Fill solo si representa selección/estado activo definido; label/peso/indicador/
 | delete | PiTrash | Borrar lista {nombre} |
 | more | PiDotsThree | Más opciones de {nombre} |
 | back | PiArrowLeft | Volver a mis listas |
-| close | PiX | Cerrar {diálogo o menú} |
+| close | PiX | Cerrar {diálogo, menú o lista} / Desactivar {mercado}, siempre con texto en cambios de estado |
 | information | PiInfo | Información de {campo} |
 | error | PiWarningCircle | Texto de error visible |
 | menu | PiList | Abrir menú |

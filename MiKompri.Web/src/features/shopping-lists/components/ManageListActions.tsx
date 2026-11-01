@@ -17,17 +17,17 @@ export function ProductOptions({ name, children }: { name: string; children: Rea
   </details>
 }
 
-export function ConfirmAction({ label, text = label, description, onConfirm, disabled = false }: { label: string; text?: string; description: string; onConfirm: () => Promise<void>; disabled?: boolean }) {
+export function ConfirmAction({ label, text = label, description, onConfirm, disabled = false, icon = 'delete' }: { label: string; text?: string; description: string; onConfirm: () => Promise<void>; disabled?: boolean; icon?: 'delete' | 'close' }) {
   const restore = useRestoreFocusTarget()
   const trigger = useRef<HTMLButtonElement>(null)
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const close = () => { setOpen(false); requestAnimationFrame(() => trigger.current?.focus()) }
-  return <><Button {...restore} ref={trigger} icon={<AppIcon name="delete" />} className={ui.danger} aria-label={label} disabled={disabled} onClick={event => { event.currentTarget.focus(); setError(''); setOpen(true) }}>{text}</Button>
+  return <><Button {...restore} ref={trigger} icon={<AppIcon name={icon} />} className={ui.danger} aria-label={label} disabled={disabled} onClick={event => { event.currentTarget.focus(); setError(''); setOpen(true) }}>{text}</Button>
     <Dialog open={open} onOpenChange={(_, d) => { if (!pending) { if (d.open) setOpen(true); else close() } }}><DialogSurface><DialogBody>
       <DialogTitle>{label}</DialogTitle><DialogContent><p>{description}</p>{error ? <p role="alert">{error}</p> : null}</DialogContent>
-      <DialogActions><Button disabled={pending} onClick={close}>Cancelar</Button><Button icon={<AppIcon name="delete" />} className={ui.danger} disabled={pending} onClick={async () => {
+      <DialogActions><Button disabled={pending} onClick={close}>Cancelar</Button><Button icon={<AppIcon name={icon} />} className={ui.danger} disabled={pending} onClick={async () => {
         if (pending) return; setPending(true)
         try { await onConfirm(); close() } catch (cause) { setError(describeError(cause)) } finally { setPending(false) }
       }}>{pending ? 'Guardando…' : 'Confirmar'}</Button></DialogActions>

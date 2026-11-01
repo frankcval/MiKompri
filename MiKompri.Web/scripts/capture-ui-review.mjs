@@ -8,6 +8,7 @@ const screens = [
  ['home', '/', 'La compra, mejor', true], ['login', '/login', 'Inicio de sesión', true],
  ['lists', '/lists', 'Mis listas'], ['history', '/lists?view=history', 'Mis listas'],
  ['personal-lists', '/personal-lists', 'Listas personales'], ['personal', '/personal-lists/' + ids.personal, 'Compra de la semana'],
+ ['personal-expenses', '/personal-lists/' + ids.personal + '?tab=expenses', 'Compra de la semana'],
  ['shared-lists', '/shared-lists?groupId=' + ids.group, 'Listas compartidas'], ['shared', '/shared-lists/' + ids.shared, 'Compra de casa'],
  ['expenses', '/shared-lists/' + ids.shared + '?tab=expenses', 'Compra de casa'], ['people', '/shared-lists/' + ids.shared + '?tab=people', 'Compra de casa'],
  ['groups', '/groups', 'Grupos'], ['group-detail', '/groups/' + ids.group, 'Casa'],
@@ -29,6 +30,7 @@ for (const [engine, launcher] of Object.entries({ chromium, firefox, webkit })) 
   if (screen === 'markets') await page.getByRole('tab', { name: 'Mercados', exact: true }).click()
   if (screen === 'price-history') { await page.getByRole('button', { name: 'Ver historial' }).click(); await page.getByText('2,80 €', { exact: true }).waitFor() }
   if (screen === 'expenses') await page.getByRole('heading', { name: 'Balance por persona' }).waitFor()
+  if (screen === 'personal-expenses') await page.getByRole('region', { name: 'Gastos personales' }).waitFor()
   if (screen === 'people') await page.getByRole('region', { name: 'Personas del grupo' }).waitFor()
   await page.waitForTimeout(150)
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)

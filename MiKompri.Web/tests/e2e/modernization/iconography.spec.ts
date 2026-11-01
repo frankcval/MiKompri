@@ -73,8 +73,12 @@ test('@smoke 011 menu tooltip, keyboard and destructive confirmation preserve fo
   await expect(page.getByRole('button', { name: 'Cerrar menú', exact: true })).toBeVisible()
   // Escape belongs to the topmost help while a Tooltip is open. Focus a
   // labelled navigation link to test the Drawer's own Escape independently.
-  await page.getByRole('navigation', { name: 'Navegación principal', exact: true }).getByRole('link', { name: 'Mis listas', exact: true }).focus()
-  await page.keyboard.press('Escape'); await expect(menu).toBeFocused()
+  const drawerLink = page.getByRole('navigation', { name: 'Navegación principal', exact: true }).getByRole('link', { name: 'Mis listas', exact: true })
+  await drawerLink.focus(); await expect(drawerLink).toBeFocused()
+  await expect(page.getByRole('tooltip')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(page.locator('[role="dialog"]')).toHaveCount(0)
+  await expect(menu).toBeFocused()
   const options = page.getByLabel('Opciones de Tomates', { exact: true })
   await options.focus(); await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: 'Eliminar Tomates', exact: true })).toBeVisible()
