@@ -56,8 +56,7 @@ jobs:
             /o:"frankcval" \
             /d:sonar.token="${SONAR_TOKEN}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.javascript.lcov.reportPaths="MiKompri.Web/coverage/lcov.info,MiKompri.Web/coverage-tools/lcov.info"
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 
       # --- BUILD + TEST CON COBERTURA ---
       - name: Restore
@@ -87,10 +86,6 @@ jobs:
          
 
       # --- SONARCLOUD: finalizar análisis (sube resultados) ---
-      - name: Generate Web coverage for SonarCloud
-        if: ${{ env.SONAR_TOKEN != '' }}
-        uses: ./.github/actions/web-sonar-coverage
-
       - name: SonarCloud - End analysis
         if: ${{ env.SONAR_TOKEN != '' }}
         run: |
