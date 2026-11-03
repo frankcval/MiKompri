@@ -117,3 +117,4 @@ Ver [ADR-001 — Azure Deployment](../../docs/adr/ADR-001-azure-deployment.md).
 | [ADR-001](../../docs/adr/ADR-001-azure-deployment.md) | Azure Container Apps como plataforma de despliegue | Aceptado | 2026-06-30 |
 | [ADR-002](../../docs/adr/ADR-002-migrations-strategy.md) | Estrategia de migraciones EF Core | Aceptado | 2026-06-30 |
 | [ADR-003](../../docs/adr/ADR-003-adr-format.md) | Formato MADR para ADRs | Aceptado | 2026-06-30 |
+| [ADR-006](../../docs/adr/ADR-006-temporary-google-only-web-login.md) | Google como única opción visible Web; excepción temporal legacy | Aceptado temporalmente | 2026-11-01 |

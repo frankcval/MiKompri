@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-01",
+  "status": "DEFERRED NON-BLOCKING MANUAL QA",
+  "authorization": "Current user request permits explicit deferral without pretending execution",
+  "nvda": {
+    "executed": false,
+    "locatedOnPath": false,
+    "usualProgramFilesLocationsFound": false,
+    "installedByAgent": false
+  },
+  "browserZoom200And400": {
+    "executed": false,
+    "viewportReflowIsNotBrowserZoom": true
+  },
+  "physicalTouchVirtualKeyboardSafeArea": {
+    "executed": false
+  },
+  "emulatedTouch": {
+    "executed": true,
+    "engines": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "scope": "create/cancel/enter group without hover"
+  }
+}

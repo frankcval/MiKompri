@@ -5,7 +5,7 @@ import { FluentProvider } from '@fluentui/react-components'
 import { appTheme } from '../../../../src/shared/ui/theme'
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ProductCatalogPage } from '../../../../src/features/product-catalog/pages/ProductCatalogPage'
@@ -52,7 +52,9 @@ function mount(path = '/product-catalog') {
     <Route path="/personal-lists/:listId" element={<PersonalListsPage />} />
   </Routes></MemoryRouter></QueryClientProvider></FluentProvider>)
 }
+async function openCreate() { await user.click(await screen.findByRole('button', { name: 'Crear producto', exact: true })) }
 async function fill() {
+  await openCreate()
   fireEvent.change(await screen.findByRole('textbox', { name: 'Nombre del producto' }), { target: { value: ' Arroz ' } })
   fireEvent.change(screen.getByRole('textbox', { name: 'Unidad de compra' }), { target: { value: ' kg ' } })
 }
@@ -63,12 +65,13 @@ describe('crear productos desde el catálogo', () => {
     await user.click(await screen.findByRole('button', { name: 'Añadir productos' }))
     await user.click(await screen.findByRole('link', { name: 'Crear producto en el catálogo' }))
     await fill()
-    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(within(screen.getByRole('dialog', { name: 'Crear producto', exact: true })).getByRole('button', { name: 'Crear producto', exact: true }))
     await screen.findByText('Arroz se creó y ya está disponible para tus listas.')
     const writes = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
     expect(writes).toHaveLength(1)
     expect(JSON.parse(writes[0][1].body)).toEqual({ name: 'Arroz', purchaseUnit: 'kg' })
     expect(writes[0][1].headers.Authorization).toBe('Bearer token')
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
     expect(screen.getByText('Arroz (kg)')).toBeInTheDocument()
     await user.click(screen.getByRole('link', { name: 'Volver a la lista' }))
     await screen.findByRole('heading', { name: 'Compra semanal', exact: true })
@@ -79,13 +82,14 @@ describe('crear productos desde el catálogo', () => {
 
   it('no envía campos vacíos o solo espacios y aplica los límites del contrato', async () => {
     mount()
+    await openCreate()
     const name = await screen.findByRole('textbox', { name: 'Nombre del producto' })
     const unit = screen.getByRole('textbox', { name: 'Unidad de compra' })
     expect(name).toHaveAttribute('maxlength', '120')
     expect(unit).toHaveAttribute('maxlength', '30')
     fireEvent.change(name, { target: { value: '   ' } })
     fireEvent.change(unit, { target: { value: 'kg' } })
-    expect(screen.getByRole('button', { name: 'Crear producto', exact: true })).toBeDisabled()
+    expect(within(screen.getByRole('dialog', { name: 'Crear producto', exact: true })).getByRole('button', { name: 'Crear producto', exact: true })).toBeDisabled()
     expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(0)
   })
 
@@ -93,7 +97,7 @@ describe('crear productos desde el catálogo', () => {
     status = 409
     mount()
     await fill()
-    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(within(screen.getByRole('dialog', { name: 'Crear producto', exact: true })).getByRole('button', { name: 'Crear producto', exact: true }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/Ya existe un producto/)
     expect(screen.getByRole('textbox', { name: 'Nombre del producto' })).toHaveValue(' Arroz ')
     expect(screen.getByRole('textbox', { name: 'Unidad de compra' })).toHaveValue(' kg ')
@@ -107,16 +111,16 @@ describe('crear productos desde el catálogo', () => {
     errorBody = body
     mount()
     await fill()
-    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(within(screen.getByRole('dialog', { name: 'Crear producto', exact: true })).getByRole('button', { name: 'Crear producto', exact: true }))
     expect(await screen.findByRole('alert')).toHaveTextContent('El nombre no es válido.')
     status = 201
-    await user.click(screen.getByRole('button', { name: 'Crear producto', exact: true }))
+    await user.click(within(screen.getByRole('dialog', { name: 'Crear producto', exact: true })).getByRole('button', { name: 'Crear producto', exact: true }))
     await screen.findByText('Arroz se creó y ya está disponible para tus listas.')
   })
 
   it('ignora destinos de regreso externos', async () => {
     mount('/product-catalog?returnTo=https://example.com')
-    await screen.findByRole('textbox', { name: 'Nombre del producto' })
+    await screen.findByRole('button', { name: 'Crear producto', exact: true })
     expect(screen.queryByRole('link', { name: 'Volver a la lista' })).not.toBeInTheDocument()
   })
 
@@ -135,7 +139,7 @@ describe('crear productos desde el catálogo', () => {
       if (init?.method === 'POST') await new Promise<void>((resolve) => { release = resolve })
       return original(url, init)
     })
-    const button = screen.getByRole('button', { name: 'Crear producto', exact: true })
+    const button = within(screen.getByRole('dialog', { name: 'Crear producto', exact: true })).getByRole('button', { name: 'Crear producto', exact: true })
     await user.click(button)
     await screen.findByRole('button', { name: 'Creando producto…' })
     fireEvent.submit(button.closest('form')!)

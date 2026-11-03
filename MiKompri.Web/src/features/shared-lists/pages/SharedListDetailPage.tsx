@@ -55,13 +55,13 @@ export function SharedListDetailPage() {
   if (!account) return <p>No hay sesión activa.</p>
   return <section className={ui.page}><Link to={back}>Volver a listas compartidas</Link>
     {detail.isPending ? <><h1>Lista compartida</h1><Spinner label="Cargando lista…" /></> : detail.isError ? <><h1>Lista no disponible</h1><p role="alert">{describeError(detail.error)}</p><Button onClick={() => void detail.refetch()}>Reintentar</Button></> : <section className={ui.shoppingDetail}>
-      <div className={ui.detailHeader}><div className={ui.detailTitle}><h1>{detail.data.name}</h1><p>Lista compartida{group ? ` · ${group.name}` : ''}{!active ? ' · Cerrada' : ''}</p></div>
+      <div className={`${ui.detailHeader} ${ui.board}`}><div className={ui.detailTitle}><h1>{detail.data.name}</h1><p>Lista compartida{group ? ` · ${group.name}` : ''}{!active ? ' · Cerrada' : ''}</p></div>
         {active ? <AddProductsDialog disabled={Boolean(capture) || pendingIds.length > 0} key={`${accountSessionKey(account)}:${listId}`} returnTo={`/shared-lists/${listId}?tab=${tab}`} onAdd={async item => {
           await write(t => addSharedListItem(env.shoppingListApiBaseUrl, t, listId, { productId: item.productId, name: item.productName, quantity: item.quantity, estimatedPrice: item.price })); await refresh()
         }} /> : null}
       </div>
       {manager && active ? <div className={ui.actions}><RenameListAction name={detail.data.name} accountKey={accountSessionKey(account)} scope={listId} onRename={async name => { await write(t => updateSharedList(env.shoppingListApiBaseUrl, t, listId, name)); await refresh() }} />
-        <ConfirmAction label="Cerrar lista" description="La lista quedará disponible para consulta. Sus gastos se conservarán." onConfirm={async () => { await write(t => closeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh() }} />
+        <ConfirmAction icon="close" label="Cerrar lista" description="La lista quedará disponible para consulta. Sus gastos se conservarán." onConfirm={async () => { await write(t => closeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh() }} />
         <ConfirmAction label="Eliminar lista" description={`Se eliminará «${detail.data.name}» si no tiene gastos asociados. Si tiene gastos, ciérrala para conservar las cuentas.`} onConfirm={async () => { await write(t => removeSharedList(env.shoppingListApiBaseUrl, t, listId)); await refresh(); navigate(back) }} />
       </div> : null}
       <TabList selectedValue={tab} aria-label="Vistas de la lista" onTabSelect={(_, data) => { const next = new URLSearchParams(params); next.set('tab', String(data.value)); setParams(next) }}>

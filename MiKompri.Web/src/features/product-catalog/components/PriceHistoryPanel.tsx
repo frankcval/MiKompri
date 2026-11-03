@@ -1,9 +1,12 @@
+import type { ReactNode } from 'react'
 import ui from '../../../shared/ui/AppSurface.module.css'
 import { Button, Card, CardHeader, Text } from '@fluentui/react-components'
 import type { Market, ProductPriceHistory } from '../api/productCatalogApi'
 
 type PriceHistoryPanelProps = {
   history: ProductPriceHistory | null
+  productName?: string
+  filters?: ReactNode
   isLoading?: boolean
   errorStatus?: number
   markets?: Market[]
@@ -12,11 +15,14 @@ type PriceHistoryPanelProps = {
   onRetry?: () => void
 }
 
-export function PriceHistoryPanel({ history, isLoading = false, errorStatus, markets = [], hasError = false, selected = true, onRetry }: PriceHistoryPanelProps) {
+export function PriceHistoryPanel({ filters, productName, history, isLoading = false, errorStatus, markets = [], hasError = false, selected = true, onRetry }: PriceHistoryPanelProps) {
+  const name = productName || history?.catalogProductName
+  const title = `Historial de precios${name ? ` de ${name}` : ''}`
   if (isLoading) {
     return (
       <Card className={ui.panel}>
-        <CardHeader header={<h2>Historial de precios</h2>} />
+        <CardHeader header={<h2>{title}</h2>} />
+        {filters}
         <Text>Cargando historial...</Text>
       </Card>
     )
@@ -25,7 +31,8 @@ export function PriceHistoryPanel({ history, isLoading = false, errorStatus, mar
   if (hasError || errorStatus) {
     return (
       <Card className={ui.panel}>
-        <CardHeader header={<h2>Historial de precios</h2>} />
+        <CardHeader header={<h2>{title}</h2>} />
+        {filters}
         <Text>
           {errorStatus === 503
             ? 'ProductCatalog no disponible temporalmente.'
@@ -40,7 +47,8 @@ export function PriceHistoryPanel({ history, isLoading = false, errorStatus, mar
 
   return (
     <Card className={ui.panel}>
-      <CardHeader header={<h2>Historial de precios{history?.catalogProductName ? ` de ${history.catalogProductName}` : ''}</h2>} />
+      <CardHeader header={<h2>{title}</h2>} />
+        {filters}
       {!selected ? <Text>Selecciona un producto para consultar su historial de precios.</Text> : records.length === 0 ? (
         <Text>Sin historial de precios para el filtro seleccionado.</Text>
       ) : (

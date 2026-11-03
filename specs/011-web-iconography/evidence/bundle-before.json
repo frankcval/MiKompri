@@ -1,0 +1,270 @@
+{
+  "commit": "3bee0ec",
+  "kind": "production-build-before",
+  "files": [
+    {
+      "path": "assets/AddProductsDialogContent-BP8IyMR5.js",
+      "bytes": 8058,
+      "gzip": 3088,
+      "sha256": "c83a439d67ec4d0ffd7a036e5868b91013185e71afc6522618d7be8739c56753"
+    },
+    {
+      "path": "assets/AppSurface-CFpzmKZS.css",
+      "bytes": 9457,
+      "gzip": 2286,
+      "sha256": "89e0a3afd582cbc207078befd83ec84c8855c6f0db4375a2da82c6543cce26df"
+    },
+    {
+      "path": "assets/AppSurface.module-BfKhM_kj.js",
+      "bytes": 97082,
+      "gzip": 25344,
+      "sha256": "62ec4c655275037e3b3ccffce22414ed43d5cba52699816998eec0f389d56edf"
+    },
+    {
+      "path": "assets/authSessionService-BS75Aeiv.js",
+      "bytes": 278401,
+      "gzip": 69157,
+      "sha256": "7fead3a99876bacd0b5312ef58586108236eca315d8e87b7e66c2ef1ec565016"
+    },
+    {
+      "path": "assets/Card-D0fO2N-G.js",
+      "bytes": 37174,
+      "gzip": 10763,
+      "sha256": "c9d130317a80cff75ff2973d5fa67b4710ee0f0d10ea0e0a11359021444e00f9"
+    },
+    {
+      "path": "assets/CardHeader-CC9XWdC8.js",
+      "bytes": 3772,
+      "gzip": 1500,
+      "sha256": "c37e6575af4da9d600777e629621abbeebd0609b6050b80bf4e0eadeaad09f82"
+    },
+    {
+      "path": "assets/chunk-6KYCQHYJ-BiZu01qE.js",
+      "bytes": 92086,
+      "gzip": 30290,
+      "sha256": "2f8ed7f496602ed7e14883615641bc0f1b84472538f9b743418c1e9d908b4fde"
+    },
+    {
+      "path": "assets/constants-BfjN2Ynv.js",
+      "bytes": 42814,
+      "gzip": 13245,
+      "sha256": "d3898ee02fc92becccf1b7e8848635b54166c8e13e847b6ba3140ce25d151904"
+    },
+    {
+      "path": "assets/CreateListDialog-BPHbnhex.js",
+      "bytes": 1166,
+      "gzip": 669,
+      "sha256": "cf5f76cd6ac1b5ef77c80012b902f34c4a761395322b84afd6ee79f64a72edd5"
+    },
+    {
+      "path": "assets/CreateListDialogContent-Cu1rZ_EN.js",
+      "bytes": 2517,
+      "gzip": 1336,
+      "sha256": "496c2c1bb8d4ec9707438c3b5b65f87cdecdb4a76ab1c3a85dd92c4c8f403a1f"
+    },
+    {
+      "path": "assets/DialogContent-jHsZP8fr.js",
+      "bytes": 9146,
+      "gzip": 2929,
+      "sha256": "73db9511c2d363bcacd89a760dc157603e27521f0f471324876941a8b3fe269a"
+    },
+    {
+      "path": "assets/ExpenseHistoryPanel-D07iOzYl.js",
+      "bytes": 9626,
+      "gzip": 3769,
+      "sha256": "f5377191605ccfa32003f63f5b4ac4c0a25a5b0f639fdeec8a98a24bd401c50e"
+    },
+    {
+      "path": "assets/Field-0ZIBgZ6R.js",
+      "bytes": 9882,
+      "gzip": 3933,
+      "sha256": "098dded48c46a127a75c30ed370a7189d4ef9c6d24a228029e5be2cb3cccf0cb"
+    },
+    {
+      "path": "assets/GroupDetailPage-BX8IQE1l.js",
+      "bytes": 1385,
+      "gzip": 813,
+      "sha256": "96638fa7d4a775fa91f754b060ccf83256c22dc03a53d06a920281bc43472e49"
+    },
+    {
+      "path": "assets/GroupPeople-DYWLlp7b.js",
+      "bytes": 1263,
+      "gzip": 712,
+      "sha256": "ab0ac17b74a31ed321e465c81ea14c1e60885d324a56eab79810ec731b5ae7e4"
+    },
+    {
+      "path": "assets/groupsApi-B8KplIWw.js",
+      "bytes": 746,
+      "gzip": 321,
+      "sha256": "f9f694b6db0898c660827e3c618a0736313ad9a2b194d0ee0ec419eec2248a55"
+    },
+    {
+      "path": "assets/GroupsPage-D09lDGHn.js",
+      "bytes": 4416,
+      "gzip": 1892,
+      "sha256": "2b2b8432070093509afeaf3814b9b58f4292507fa613e703e226e962c8ca3c9a"
+    },
+    {
+      "path": "assets/index-BNu33GD0.js",
+      "bytes": 124202,
+      "gzip": 37699,
+      "sha256": "c0614f67e77cade2391d9dd2fb596385ce0880c6491c6b061fc61c2c6031afa8"
+    },
+    {
+      "path": "assets/index-LfzaVyM7.css",
+      "bytes": 10548,
+      "gzip": 2671,
+      "sha256": "dd92b4c5775c74e33604f1b1588bc8f9431b3ea8e8e2b24efdd877255ebca522"
+    },
+    {
+      "path": "assets/index.esm-DbHiSNYX.js",
+      "bytes": 121712,
+      "gzip": 36460,
+      "sha256": "ee581283fa1d916dd527165b7eadaf0b79ddcba070aae722557a521232eec3b0"
+    },
+    {
+      "path": "assets/Input-aVvY6CU8.js",
+      "bytes": 13776,
+      "gzip": 3821,
+      "sha256": "aca87928c0c5b3b92b7a5346ee6fa24b964c5fca9d09f90779bf17da817eae23"
+    },
+    {
+      "path": "assets/ListsPage-BeWF19Q-.js",
+      "bytes": 4073,
+      "gzip": 1776,
+      "sha256": "cee3a4b4d44b119def4014f1876c2f7a11892cb17609902ecb08c8640412c1c2"
+    },
+    {
+      "path": "assets/ManageListActions-Dq79oBGB.js",
+      "bytes": 4226,
+      "gzip": 1522,
+      "sha256": "bac19bf1528d180b99aa6046853e82a529db2b01ca86648ac0ff0433ad6851ba"
+    },
+    {
+      "path": "assets/memberName-CRsDjM9c.js",
+      "bytes": 261,
+      "gzip": 212,
+      "sha256": "e097ce4d961b4e08122c1843a4329a15ac801fe339a3235b4f46bb735cd6ec5d"
+    },
+    {
+      "path": "assets/PersonalListsPage-BcLq5f12.js",
+      "bytes": 7033,
+      "gzip": 2887,
+      "sha256": "85af2bdd6f4db76bdffd22b90ad592d72b1f2676e2f6036832e51eeb3ec0b354"
+    },
+    {
+      "path": "assets/productCatalogApi-DoUuI1mq.js",
+      "bytes": 1948,
+      "gzip": 849,
+      "sha256": "823071deb8afee9c2c5246cd368a8a746c925619ed5a36a814e6ff4f267f2ed4"
+    },
+    {
+      "path": "assets/ProductCatalogPage-DbEFnUJT.js",
+      "bytes": 13422,
+      "gzip": 4245,
+      "sha256": "46bd9d61a26ccc2c1adf47de3ba886a47a827c819d6af9592b372b3fde83479c"
+    },
+    {
+      "path": "assets/ProfilePage-Cy8YGxEr.js",
+      "bytes": 39025,
+      "gzip": 11941,
+      "sha256": "7b2bbd7257b24ed1360f18dd8a3cc3b97c335fdc11c478215c1763ee1ff81db9"
+    },
+    {
+      "path": "assets/PurchaseCapture-Dnzl_AjJ.js",
+      "bytes": 3652,
+      "gzip": 1706,
+      "sha256": "ce48ab152fa5d5c37e20c25a5b33275ad5ec1ada08716d42fd3a1fb27cad9251"
+    },
+    {
+      "path": "assets/PurchaseItems-DLttQ5pT.js",
+      "bytes": 33918,
+      "gzip": 9707,
+      "sha256": "af092cedbb127a3e740d728b2933b736dc8878f083e9280526da7c484e995b79"
+    },
+    {
+      "path": "assets/rolldown-runtime-WkwZ5CU-.js",
+      "bytes": 599,
+      "gzip": 368,
+      "sha256": "2629f2ad3cb75a57d98de697127f5af7d777ef572bbcdfa6e3ce8f438cd4527e"
+    },
+    {
+      "path": "assets/Select-C0A2mKO-.js",
+      "bytes": 13415,
+      "gzip": 4329,
+      "sha256": "d2b2fb20c6765a4d01211a960c8d4001a79ae693f20864dabc90f2663bfe06bf"
+    },
+    {
+      "path": "assets/SettlementPage-AewTwlkP.js",
+      "bytes": 6045,
+      "gzip": 2308,
+      "sha256": "0eb10cd114c2047ba73474e56f78261e770f67f92dc1b282ff1cdc234722c57b"
+    },
+    {
+      "path": "assets/SharedListDetailPage-BuuTUdq1.js",
+      "bytes": 7862,
+      "gzip": 3052,
+      "sha256": "4de7ec5e3e3623d7317ac956ea80188dc966bb4f4ccb4e9181016acdfd376eb7"
+    },
+    {
+      "path": "assets/sharedListsApi-819wyvKp.js",
+      "bytes": 1076,
+      "gzip": 394,
+      "sha256": "b3f31385f43ed690ba3dfb06dba575a7611f2b9a9332f136de7c4591239d08fc"
+    },
+    {
+      "path": "assets/SharedListsPage-D21LgjiP.js",
+      "bytes": 3992,
+      "gzip": 1744,
+      "sha256": "7807ab1a44d5b72de4c48a993c361ce8fbfe7515f82a16b84a0a0db10e26afdd"
+    },
+    {
+      "path": "assets/shoppingListsApi-guCeNhCv.js",
+      "bytes": 1272,
+      "gzip": 475,
+      "sha256": "f828a6d1398bfaa6a77a7cf66d54530ef948d228297ff3106eeb4df18383213e"
+    },
+    {
+      "path": "assets/useControllableState-qDtotvm-.js",
+      "bytes": 562,
+      "gzip": 328,
+      "sha256": "efe348d7794099608ba1a84d61c6f83db7c0e1ba154181304f5e14fe833a1b98"
+    },
+    {
+      "path": "assets/useDialogSurfaceContextValues-CI-Au2CO.js",
+      "bytes": 163700,
+      "gzip": 53078,
+      "sha256": "0872805a2dc1dc1b40a9f0ad10ff97c169502f17effe88868df3491e283402a8"
+    },
+    {
+      "path": "assets/useFocusWithin-Dn-OvUt2.js",
+      "bytes": 905,
+      "gzip": 513,
+      "sha256": "a61cf4a692e8162d793358068b9f84df667ba294f1cfb7dcfc5e48983e3873fb"
+    },
+    {
+      "path": "assets/useListSession-BgEFWKdW.js",
+      "bytes": 327,
+      "gzip": 233,
+      "sha256": "fd3b269de0a50e1b7303cda598e453e5da065758b8b95526f81b8fb6e5b00a29"
+    },
+    {
+      "path": "assets/useLocalToday-DzXvDuuI.js",
+      "bytes": 632,
+      "gzip": 364,
+      "sha256": "16bb87c0448b2d32b546945606f8947ca9594135257173da643669f435d98ddd"
+    },
+    {
+      "path": "assets/useProfileListSort-BEUq-ACV.js",
+      "bytes": 379,
+      "gzip": 300,
+      "sha256": "7526ea2a024395e03f8a8ed8049d85718109a2a4f63590a2283cd36f03f7021c"
+    },
+    {
+      "path": "assets/useQuery-DYBPSv52.js",
+      "bytes": 8035,
+      "gzip": 2959,
+      "sha256": "acde4ff5c38d82b19c2746e681f76308ead65dc89d3bba94f458cada2ddde72c"
+    }
+  ]
+}

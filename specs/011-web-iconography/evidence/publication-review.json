@@ -1,0 +1,26 @@
+{
+  "sha": "fc3e2ca1e0ae0551d6865ba8ca120161ea1279bb",
+  "runId": 41330104483,
+  "jobId": 124918196626,
+  "url": "https://github.com/frankcval/MiKompri/actions/runs/41330104483",
+  "conclusion": "failure",
+  "vitestPassed": 160,
+  "playwrightPassed": 191,
+  "playwrightFailed": 1,
+  "test": "009 purchase cancellation keeps its focus while the purchase form loads",
+  "engine": "webkit",
+  "artifactId": 13093885014,
+  "traceObservation": {
+    "formPresent": true,
+    "amountInputPresent": true,
+    "modalAriaHidden": "true",
+    "modalizerState": "inactive,not-focused"
+  },
+  "correction": "Wait for dismiss control actionability using trial click before establishing focus and releasing deferred import; assertions unchanged",
+  "productionSourceChanged": false,
+  "timeoutsChanged": false,
+  "retriesChanged": false,
+  "localDirectedPassed": 3,
+  "localStabilityPassed": 15,
+  "localStabilityMethod": "five independent executions per engine; all included, no failed-case retry; diagnostic, not replacement of final192 suite"
+}

@@ -15,7 +15,7 @@ for (const width of [320, 390, 430, 768, 1280]) {
     await expect(page.getByRole('checkbox', { name: 'Desmarcar comprado: Tomates' })).toBeFocused()
     await page.keyboard.press('Space')
     await expect(item).not.toBeChecked()
-    await page.getByText('Más opciones', { exact: true }).first().click()
+    await page.getByLabel('Opciones de Tomates', { exact: true }).click()
     await page.getByRole('button', { name: 'Editar Tomates', exact: true }).click()
     const edit = page.getByRole('dialog')
     await edit.getByRole('spinbutton', { name: 'Cantidad' }).fill('3')

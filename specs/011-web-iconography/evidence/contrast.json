@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-31",
+  "method": "WCAG relative luminance/sRGB",
+  "scope": "planned color pairs only; not runtime accessibility acceptance",
+  "pairs": [
+    {
+      "role": "text-paper",
+      "foreground": "#20312C",
+      "background": "#FFFDF6",
+      "ratio": 13.423,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "text-fridge",
+      "foreground": "#20312C",
+      "background": "#F2F4EE",
+      "ratio": 12.329,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "text-board",
+      "foreground": "#FFFDF6",
+      "background": "#23483D",
+      "ratio": 9.988,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "button-primary",
+      "foreground": "#FFFFFF",
+      "background": "#006B68",
+      "ratio": 6.358,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "secondary-paper",
+      "foreground": "#56645E",
+      "background": "#FFFDF6",
+      "ratio": 6.104,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "text-lemon",
+      "foreground": "#20312C",
+      "background": "#F3E6A3",
+      "ratio": 10.838,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "danger-white",
+      "foreground": "#A52C2C",
+      "background": "#FFFFFF",
+      "ratio": 7.008,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "role": "control-border",
+      "foreground": "#6B7B70",
+      "background": "#FFFDF6",
+      "ratio": 4.397,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "role": "focus-light",
+      "foreground": "#006B68",
+      "background": "#F2F4EE",
+      "ratio": 5.737,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "role": "focus-dark",
+      "foreground": "#FFFDF6",
+      "background": "#23483D",
+      "ratio": 9.988,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "role": "selected-label",
+      "foreground": "#006B68",
+      "background": "#DDEBE1",
+      "ratio": 5.161,
+      "minimum": 4.5,
+      "pass": true
+    }
+  ]
+}

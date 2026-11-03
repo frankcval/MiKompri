@@ -1,0 +1,948 @@
+{
+  "label": "009-011-final",
+  "browser": "Chromium",
+  "cpu": "4x",
+  "network": "1.6Mbps, 150ms",
+  "viewport": "390x844",
+  "samples": [
+    {
+      "route": "home",
+      "path": "/",
+      "index": 0,
+      "lcp": 2648,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 1,
+      "lcp": 2532,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 2,
+      "lcp": 2604,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 3,
+      "lcp": 2536,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 4,
+      "lcp": 2556,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 5,
+      "lcp": 2588,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 6,
+      "lcp": 2620,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 7,
+      "lcp": 2528,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 8,
+      "lcp": 2528,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 9,
+      "lcp": 2540,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 10,
+      "lcp": 2544,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 11,
+      "lcp": 2552,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 12,
+      "lcp": 2484,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 13,
+      "lcp": 2768,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 14,
+      "lcp": 2764,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 15,
+      "lcp": 2512,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 16,
+      "lcp": 2512,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 17,
+      "lcp": 2660,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 18,
+      "lcp": 2772,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "home",
+      "path": "/",
+      "index": 19,
+      "lcp": 2588,
+      "cls": 0,
+      "events": [],
+      "bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 0,
+      "lcp": 2892,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 1,
+      "lcp": 2872,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 2,
+      "lcp": 2952,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 3,
+      "lcp": 3024,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 4,
+      "lcp": 2944,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 5,
+      "lcp": 3100,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 6,
+      "lcp": 3084,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 7,
+      "lcp": 3304,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 8,
+      "lcp": 3284,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 9,
+      "lcp": 2900,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 10,
+      "lcp": 3272,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 11,
+      "lcp": 3112,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 12,
+      "lcp": 3228,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 13,
+      "lcp": 2964,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 14,
+      "lcp": 3112,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 15,
+      "lcp": 2908,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 16,
+      "lcp": 2832,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 17,
+      "lcp": 3128,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 18,
+      "lcp": 2784,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "path": "/lists",
+      "index": 19,
+      "lcp": 3040,
+      "cls": 0.018039427086842915,
+      "events": [],
+      "bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 0,
+      "lcp": 4224,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 0,
+        "add": 216
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 1,
+      "lcp": 4192,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 0,
+        "add": 200
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 2,
+      "lcp": 4060,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 272,
+        "add": 184
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 3,
+      "lcp": 3884,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 200,
+        "add": 200
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 4,
+      "lcp": 3880,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 248,
+        "add": 240
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 5,
+      "lcp": 3660,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 144,
+        "add": 184
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 6,
+      "lcp": 3052,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 232,
+        "add": 144
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 7,
+      "lcp": 3168,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 136,
+        "add": 80
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 8,
+      "lcp": 3156,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 96,
+        "add": 120
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 9,
+      "lcp": 3044,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 136,
+        "add": 88
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 10,
+      "lcp": 3168,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 128,
+        "add": 112
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 11,
+      "lcp": 3048,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 96,
+        "add": 104
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 12,
+      "lcp": 3040,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 104,
+        "add": 120
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 13,
+      "lcp": 3008,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 96,
+        "add": 72
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 14,
+      "lcp": 3076,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 104,
+        "add": 104
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 15,
+      "lcp": 3016,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 96,
+        "add": 104
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 16,
+      "lcp": 3100,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 96,
+        "add": 168
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 17,
+      "lcp": 3124,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 88,
+        "add": 104
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 18,
+      "lcp": 3292,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 136,
+        "add": 96
+      }
+    },
+    {
+      "route": "personal",
+      "path": "/personal-lists/33333333-3333-4333-8333-333333333333",
+      "index": 19,
+      "lcp": 2956,
+      "cls": 0,
+      "events": [],
+      "bytes": 340662,
+      "interactions": {
+        "mark": 136,
+        "add": 88
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 0,
+      "lcp": 2884,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 1,
+      "lcp": 2908,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 2,
+      "lcp": 2960,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 3,
+      "lcp": 2924,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 4,
+      "lcp": 3096,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 5,
+      "lcp": 2716,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 32
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 6,
+      "lcp": 3136,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 7,
+      "lcp": 2764,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 24
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 8,
+      "lcp": 3144,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 9,
+      "lcp": 2980,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 24
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 10,
+      "lcp": 2896,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 32
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 11,
+      "lcp": 2992,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 24
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 12,
+      "lcp": 3332,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 24
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 13,
+      "lcp": 2944,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 32
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 14,
+      "lcp": 3008,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 32
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 15,
+      "lcp": 2956,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 32
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 16,
+      "lcp": 2992,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 32
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 17,
+      "lcp": 2916,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 48
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 18,
+      "lcp": 2756,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    },
+    {
+      "route": "shared",
+      "path": "/shared-lists/66666666-6666-4666-8666-666666666666",
+      "index": 19,
+      "lcp": 2748,
+      "cls": 0,
+      "events": [],
+      "bytes": 342175,
+      "interactions": {
+        "expenses": 24
+      }
+    }
+  ],
+  "summaries": [
+    {
+      "route": "home",
+      "n": 20,
+      "p75LcpMs": 2620,
+      "p75Cls": 0,
+      "p75Bytes": 313176,
+      "interactions": {}
+    },
+    {
+      "route": "lists",
+      "n": 20,
+      "p75LcpMs": 3112,
+      "p75Cls": 0.018039427086842915,
+      "p75Bytes": 322404,
+      "interactions": {}
+    },
+    {
+      "route": "personal",
+      "n": 20,
+      "p75LcpMs": 3660,
+      "p75Cls": 0,
+      "p75Bytes": 340662,
+      "interactions": {
+        "mark": 136,
+        "add": 184
+      }
+    },
+    {
+      "route": "shared",
+      "n": 20,
+      "p75LcpMs": 2992,
+      "p75Cls": 0,
+      "p75Bytes": 342175,
+      "interactions": {
+        "expenses": 40
+      }
+    }
+  ]
+}

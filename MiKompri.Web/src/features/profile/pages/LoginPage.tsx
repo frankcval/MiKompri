@@ -10,8 +10,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../../../shared/ui/PageHeader'
 import { createAuthSessionService } from '../../../auth/session/authSessionService'
 import { loginRequest } from '../../../auth/msal/msalConfig'
-import { googleAvailable, type AuthProvider } from '../../../auth/msal/providerSettings'
+import { googleAvailable } from '../../../auth/msal/providerSettings'
 import { env } from '../../../shared/config/env'
+import { errorMessages } from '../../../shared/api/request'
 import { consumeReturnTo } from '../../../auth/session/returnIntent'
 
 export function LoginPage() {
@@ -22,9 +23,12 @@ export function LoginPage() {
   const redirected = useRef(false)
   const loginError = useSyncExternalStore(onLoginErrorChanged, getLoginError, getLoginError)
   const [message, setMessage] = useState('Accede con tu cuenta de MiKompri para continuar.')
+  const [bootstrapFailed, setBootstrapFailed] = useState(false)
+  const [preparing, setPreparing] = useState(false)
+  const [retryAttempt, setRetryAttempt] = useState(0)
 
   const authSessionService = useMemo(() => createAuthSessionService(instance), [instance])
-  const isPlaceholderClientId = env.entraClientId === '00000000-0000-0000-0000-000000000000'
+  const hasGoogle = googleAvailable()
 
   useEffect(() => {
     const hasMsalSession = Boolean(currentAccount(instance, accounts))
@@ -33,28 +37,31 @@ export function LoginPage() {
 
     if (isReady && hasMsalSession && isAuthPage && !redirected.current) {
       redirected.current = true
+      setPreparing(true)
+      setBootstrapFailed(false)
       setMessage('Preparando tu cuenta…')
       void authSessionService.getAccessToken(loginRequest.scopes, currentAccount(instance, accounts))
         .then(token => syncMyProfile(env.usersApiBaseUrl, token))
         .then(() => navigate(consumeReturnTo(), { replace: true }))
-        .catch(() => { redirected.current = false; setMessage('No se pudo preparar tu cuenta. Vuelve a iniciar sesión o inténtalo más tarde.') })
+        .catch(error => {
+          // Do not automatically retry on re-render: a failed API is not a failed login.
+          const status = typeof error === 'object' && error !== null && 'status' in error ? Number(error.status) : undefined
+          setMessage((status && errorMessages[status]) || 'No se pudo preparar tu cuenta. Comprueba la conexión con el servicio y reintenta el acceso.')
+          setBootstrapFailed(true)
+          setPreparing(false)
+        })
     }
-  }, [accounts.length, inProgress, isAuthenticated, location.pathname, navigate, instance, accounts, authSessionService])
+  }, [accounts.length, inProgress, isAuthenticated, location.pathname, navigate, instance, accounts, authSessionService, retryAttempt])
 
   const account = currentAccount(instance, accounts)
 
-  const handleLogin = async (provider: AuthProvider = 'microsoft') => {
-    if (provider === 'microsoft' && isPlaceholderClientId) {
-      setMessage('Configura VITE_ENTRA_CLIENT_ID con el Application (client) ID real de Entra ID.')
-      return
-    }
-
-    if (inProgress !== InteractionStatus.None) {
+  const handleLogin = async () => {
+    if (!hasGoogle || preparing || inProgress !== InteractionStatus.None) {
       return
     }
 
     try {
-      await authSessionService.login(loginRequest.scopes, provider)
+      await authSessionService.login(loginRequest.scopes, 'google')
     } catch {
       setMessage('No se pudo iniciar sesión. Revisa el acceso del proveedor y vuelve a intentarlo.')
     }
@@ -75,14 +82,14 @@ export function LoginPage() {
         <Link className={ui.brand} to="/" aria-label="MiKompri, inicio"><span aria-hidden="true">✓</span>MiKompri.</Link>
         <section className={`${ui.page} ${ui.panel}`}>
           <PageHeader title="Inicio de sesión" description="Tu próxima compra empieza aquí. Entra para guardar tus listas y organizarte con los tuyos." />
-          <Text role="status">{loginError || message}</Text>
-          <p>Si ya utilizas MiKompri con Microsoft, continúa con Microsoft para acceder a tu cuenta. La recuperación del acceso se realiza con tu proveedor original.</p>
-          {googleAvailable() ? <p>En la siguiente pantalla, pulsa «Iniciar sesión con Google» para continuar con Google.</p> : null}
+          <Text role="status">{loginError || (!hasGoogle && !account ? 'El acceso con Google no está disponible en este entorno.' : message)}</Text>
+          {hasGoogle ? <p>En la siguiente pantalla, pulsa «Iniciar sesión con Google» para continuar con Google.</p> : null}
           <div className={ui.actions}>
-            {googleAvailable() ? <Button appearance="primary" onClick={() => void handleLogin('google')} disabled={inProgress !== InteractionStatus.None}>Continuar con Google</Button> : null}
-            <Button appearance={googleAvailable() ? "secondary" : "primary"} onClick={() => void handleLogin('microsoft')} disabled={isPlaceholderClientId || inProgress !== InteractionStatus.None}>
-              Continuar con Microsoft
-            </Button>
+            {hasGoogle ? <Button appearance="primary" onClick={() => void handleLogin()} disabled={preparing || inProgress !== InteractionStatus.None}>Continuar con Google</Button> : null}
+            {account && bootstrapFailed ? <Button appearance="secondary" disabled={inProgress !== InteractionStatus.None} onClick={() => {
+              redirected.current = false
+              setRetryAttempt(attempt => attempt + 1)
+            }}>Reintentar acceso</Button> : null}
             {account ? <Button appearance="secondary" onClick={handleLogout}>
               Cerrar sesión
             </Button> : null}

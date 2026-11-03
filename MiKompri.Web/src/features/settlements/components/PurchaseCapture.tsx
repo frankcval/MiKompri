@@ -14,6 +14,7 @@ import type { SharedListItem } from '../../shared-lists/api/sharedListsApi'
 import { Link } from 'react-router-dom'
 import { discardDraft } from '../../../auth/session/draftStore'
 import { PurchaseCaptureDialog as PurchaseCapture } from './PurchaseCaptureDialog'
+import ui from '../../../shared/ui/AppSurface.module.css'
 
 export type PurchaseRecord = RegisterExpenseInput & { expenseId: string; itemId: string; productName: string; createdAt: string; version: string }
 
@@ -53,7 +54,7 @@ export function PersonalExpenses({ listId, items }: { listId: string; items: Sha
   const [selected, setSelected] = useState('')
   const profile = useQuery({ queryKey: ['profile', accountSessionKey(account)], queryFn: async () => fetchMyProfile(env.usersApiBaseUrl, await token()), enabled: Boolean(account) })
   const member = profile.data ? [{ userId: profile.data.id, displayName: profile.data.displayName, role: 'Owner', joinedAt: '' }] : []
-  return <section aria-label="Gastos personales"><h2>Gastos</h2><p>Consulta y registra compras de esta lista sin repartirlas entre otras personas.</p>
+  return <section className={ui.stack} aria-label="Gastos personales"><h2>Gastos</h2><p>Consulta y registra compras de esta lista sin repartirlas entre otras personas.</p>
     {items.map(item => <Button key={item.id} onClick={() => setSelected(item.id)}>Registrar compra de {item.productName}</Button>)}
     <ExpenseHistoryPanel listId={listId} items={items} members={member} canManage={Boolean(profile.data)} personal />
     {items.find(item => item.id === selected) ? <PurchaseCapture listId={listId} item={items.find(item => item.id === selected)!} onClose={() => setSelected('')} /> : null}

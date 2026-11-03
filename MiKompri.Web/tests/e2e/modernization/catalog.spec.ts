@@ -1,0 +1,45 @@
+import { test, expect } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
+import { modernFixtures, openHarness } from '../fixtures/modernization'
+
+for (const width of [320, 390, 430, 768, 1280]) {
+  test(`@smoke 011 catalog prioritizes content and reveals administration ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await modernFixtures(page)
+    await openHarness(page, '/product-catalog')
+    await expect(page.getByRole('list', { name: 'Productos del catálogo' })).toContainText('Tomates (kg)')
+    await expect(page.getByLabel('Nombre del producto')).toHaveCount(0)
+    await expect(page.getByLabel('Desde')).toHaveCount(0)
+    await expect(page.getByRole('form', { name: 'Crear mercado' })).toHaveCount(0)
+    const create = page.getByRole('button', { name: 'Crear producto', exact: true })
+    await create.click()
+    const dialog = page.getByRole('dialog', { name: 'Crear producto', exact: true })
+    await expect(dialog.getByRole('textbox', { name: 'Nombre del producto' })).toBeFocused()
+    await dialog.getByRole('textbox', { name: 'Nombre del producto' }).fill('Arroz QA')
+    await dialog.getByRole('textbox', { name: 'Unidad de compra' }).fill('kg')
+    await dialog.getByRole('button', { name: 'Crear producto', exact: true }).click()
+    await expect(dialog.getByRole('status')).toContainText('Arroz QA se creó')
+    await dialog.getByRole('button', { name: 'Cancelar' }).click()
+    await expect(create).toBeFocused()
+    await expect(page.getByText('Arroz QA (kg)', { exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Editar producto Tomates' }).click()
+    const edit = page.getByRole('dialog', { name: 'Editar producto Tomates' })
+    await expect(edit.getByRole('textbox', { name: 'Nombre del producto' })).toHaveValue('Tomates')
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('button', { name: 'Editar producto Tomates' })).toBeFocused()
+    await page.getByRole('tab', { name: 'Mercados', exact: true }).click()
+    await expect(page.getByRole('heading', { name: 'Tus mercados' })).toBeVisible()
+    await expect(page.getByLabel('Buscar en el catálogo')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Añadir mercado' }).click()
+    const market = page.getByRole('dialog', { name: 'Añadir mercado' })
+    await expect(market.getByRole('textbox', { name: 'Nombre del mercado' })).toBeFocused()
+    await market.getByRole('button', { name: 'Cancelar' }).click()
+    // Wait for the exit animation to remove the modal, including aria-hidden nodes.
+    await expect(page.locator('[role="dialog"]')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Añadir mercado' })).toBeFocused()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()
+    const violations = result.violations.map(v => v.id === 'aria-hidden-focus' ? { ...v, nodes: v.nodes.filter(n => !/^<i\s[^>]*data-tabster-dummy=/.test(n.html)) } : v).filter(v => v.nodes.length)
+    expect(violations).toEqual([])
+  })
+}

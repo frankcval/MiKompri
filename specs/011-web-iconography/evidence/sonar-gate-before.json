@@ -1,0 +1,192 @@
+{
+  "workflowHead": "7291d22f37f5c67ea8b2186f88c555cf2d2ac718",
+  "workflowRun": 41356094997,
+  "job": 124996327524,
+  "kind": "read-only-pr-server-snapshot-not-analysis-revision-proof",
+  "pullRequest": 60,
+  "gate": {
+    "status": "ERROR",
+    "conditions": [
+      {
+        "status": "OK",
+        "metricKey": "new_reliability_rating",
+        "comparator": "GT",
+        "errorThreshold": "1",
+        "actualValue": "1"
+      },
+      {
+        "status": "ERROR",
+        "metricKey": "new_security_rating",
+        "comparator": "GT",
+        "errorThreshold": "1",
+        "actualValue": "2"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_maintainability_rating",
+        "comparator": "GT",
+        "errorThreshold": "1",
+        "actualValue": "1"
+      },
+      {
+        "status": "ERROR",
+        "metricKey": "new_coverage",
+        "comparator": "LT",
+        "errorThreshold": "80",
+        "actualValue": "0.0"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_duplicated_lines_density",
+        "comparator": "GT",
+        "errorThreshold": "3",
+        "actualValue": "0.0"
+      },
+      {
+        "status": "OK",
+        "metricKey": "new_security_hotspots_reviewed",
+        "comparator": "LT",
+        "errorThreshold": "100",
+        "actualValue": "100.0"
+      }
+    ]
+  },
+  "securityIssues": [
+    {
+      "key": "AaGYOI8ONBQiGCnbPIN6",
+      "rule": "javascript:S4036",
+      "component": "frankcval_MiKompri:MiKompri.Web/scripts/audit-iconography.mjs",
+      "line": 36,
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "impacts": [
+        {
+          "softwareQuality": "SECURITY",
+          "severity": "LOW"
+        }
+      ]
+    }
+  ],
+  "coverageFiles": [
+    {
+      "path": "MiKompri.Web/src/shared/ui/AccountMenu.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/shared/ui/icons/AppIcon.tsx",
+      "newLines": 5
+    },
+    {
+      "path": "MiKompri.Web/scripts/audit-iconography.mjs",
+      "newLines": 25
+    },
+    {
+      "path": "MiKompri.Web/scripts/capture-ui-review.mjs",
+      "newLines": 29
+    },
+    {
+      "path": "MiKompri.Web/src/features/product-catalog/components/CatalogDialog.tsx",
+      "newLines": 10
+    },
+    {
+      "path": "MiKompri.Web/src/features/product-catalog/components/CatalogManagement.tsx",
+      "newLines": 4
+    },
+    {
+      "path": "MiKompri.Web/src/features/product-catalog/components/CreateCatalogProductForm.tsx",
+      "newLines": 2
+    },
+    {
+      "path": "MiKompri.Web/src/features/shopping-lists/components/CreateListDialog.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/scripts/diagnose-lcp.mjs",
+      "newLines": 18
+    },
+    {
+      "path": "MiKompri.Web/src/features/groups/pages/GroupDetailPage.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/features/groups/components/GroupMetadata.tsx",
+      "newLines": 4
+    },
+    {
+      "path": "MiKompri.Web/src/features/groups/pages/GroupsPage.tsx",
+      "newLines": 18
+    },
+    {
+      "path": "MiKompri.Web/src/features/home/HomePage.tsx",
+      "newLines": 5
+    },
+    {
+      "path": "MiKompri.Web/src/shared/ui/icons/IconAction.tsx",
+      "newLines": 8
+    },
+    {
+      "path": "MiKompri.Web/src/shared/ui/icons/iconRegistry.ts",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/features/shopping-lists/components/ListOverview.tsx",
+      "newLines": 3
+    },
+    {
+      "path": "MiKompri.Web/src/features/shopping-lists/pages/ListsPage.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/features/profile/pages/LoginPage.tsx",
+      "newLines": 15
+    },
+    {
+      "path": "MiKompri.Web/src/app/layout/MainLayout.tsx",
+      "newLines": 7
+    },
+    {
+      "path": "MiKompri.Web/src/features/shopping-lists/components/ManageListActions.tsx",
+      "newLines": 10
+    },
+    {
+      "path": "MiKompri.Web/src/app/layout/MobileNavigationDrawer.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/tests/e2e/fixtures/modernization.ts",
+      "newLines": 2
+    },
+    {
+      "path": "MiKompri.Web/src/shared/ui/PageHeader.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/features/product-catalog/components/PriceHistoryPanel.tsx",
+      "newLines": 2
+    },
+    {
+      "path": "MiKompri.Web/src/features/product-catalog/pages/ProductCatalogPage.tsx",
+      "newLines": 4
+    },
+    {
+      "path": "MiKompri.Web/src/features/profile/pages/ProfilePage.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/features/settlements/components/PurchaseCapture.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/src/shared/ui/restoreFocusAfterClose.ts",
+      "newLines": 4
+    },
+    {
+      "path": "MiKompri.Web/src/features/shared-lists/pages/SharedListDetailPage.tsx",
+      "newLines": 1
+    },
+    {
+      "path": "MiKompri.Web/vite.chunks.ts",
+      "newLines": 1
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": 41327776290,
+  "sha": "0923a0c37012e26f9a998732250f57c04ab0ae31",
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/frankcval/MiKompri/actions/runs/41327776290",
+  "jobId": 124911246578,
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-node@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm ci",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run test:ci-config",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run lint",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run typecheck",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm test -- --maxWorkers=2",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npx playwright install --with-deps chromium firefox webkit",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Mandatory controlled browser scenarios",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm run build",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Docker build (TP4)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/upload-artifact@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-node@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/checkout@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "counts": [
+    " Test Files  48 passed (48)",
+    "      Tests  160 passed (160)",
+    "  192 passed (9.3m)"
+  ]
+}

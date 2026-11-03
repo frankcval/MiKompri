@@ -1,5 +1,13 @@
-# 011 — Web Iconography (solo alcance)
+# 011 — Iconografía y lenguaje visual de nevera
 
-Sin implementación ni instalación. Preferir @fluentui/react-icons, comprobar exports reales de versión fijada antes de nombres. Fuente: https://github.com/microsoft/fluentui-system-icons/tree/main/packages/react-icons . Variantes Regular/Filled y bundleIcon disponibles según documentación oficial; no inventar componentes.
+Formalización31/10/2026 en `011-web-iconography`, desde main9597af5 con PR59 integrado. [Spec](spec.md), [plan](plan.md), [diseño](design.md), [mapa](icon-map.md), [tasks](tasks.md).
 
-Mapa semántico futuro: navegación listas/historial/grupos/catálogo/mercados/cuenta; acciones añadir/buscar/editar/borrar/marcar/volver. Regular base, Filled seleccionado cuando exista par. Icon-only exige nombre accesible y tooltip, objetivo >=44x44; destructivas con texto/confirmación diferenciados. Nunca solo color/icono para estado. Preservar teclado/foco/contraste/alto contraste. Reutilizar semántica en MAUI con adaptación de assets, no dependencias React. Catálogo/mapa y pruebas se formalizan en 011, sin ampliar 009.
+Petición actual: React Icons, fluido/intuitivo/actual, inspirado en papel/notas y pizarra de la nevera. Propuesta Nevera compartida: papel claro, pizarra verde localizada, teal de marca y acento limón; MiKompri Sans existente, targets44 y acciones claras. React Icons5.7.0/Phosphor tiene31exports verificados; dependencia fijada e instalada en la fase autorizada. Fluent UI sigue como base de componentes.
+
+El alcance preliminar prefería @fluentui/react-icons. Se sustituye esa elección por la solicitud actual interpretada como react-icons y familia única pi; [comparación](research.md), [ADR005 aceptado](../../docs/adr/ADR-005-web-visual-language.md). No mezclar ambos paquetes app ni cambiar el framework. El significado/labels/estado se podrá adaptar a MAUI después, sin entregar MAUI.
+
+Se preservan rutas, filtros/orden/historial, compra/Gastos, permisos, precios, identidad y configuración010-A. La metáfora no añade notas libres, arrastrar/pinear listas, dibujo o nuevo modelo de tablero.012/invitaciones,010-B, fotos/OCR, chat, themes persistidos y rediseño completo de landing fuera. No cambiar tareas/gates anteriores.
+
+La formalización entregó documentación, auditoría y tres referencias visuales estáticas. La fase siguiente autorizada aplica React/CSS y la dependencia al Web; [validación](evidence/validation.md). No introduce endpoints/BD/cloud ni declara cierre de gates pendientes.
+
+Revisión de cierre01/11: registro reducido a22exports realmente usados, con la auditoría inicial31 conservada. Grupos se refina con metadatos efectivos y creación bajo demanda. Catálogo prioriza contenido y separa Productos/Mercados con formularios en diálogo e historial contextual. Revisión transversal por secciones y límites humanos documentados en evidence/all-sections-review.md. Sin cambios de negocio ni de las specs anteriores.

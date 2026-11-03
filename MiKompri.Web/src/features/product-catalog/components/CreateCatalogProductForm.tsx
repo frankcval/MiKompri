@@ -3,7 +3,7 @@ import { Button, Field, Input } from '@fluentui/react-components'
 import { useRef, useState } from 'react'
 import type { CatalogProduct, CreateCatalogProductInput } from '../api/productCatalogApi'
 
-export function CreateCatalogProductForm({ onCreate }: { onCreate: (input: CreateCatalogProductInput) => Promise<CatalogProduct> }) {
+export function CreateCatalogProductForm({ onCreate, onPendingChange }: { onCreate: (input: CreateCatalogProductInput) => Promise<CatalogProduct>; onPendingChange?: (pending: boolean) => void }) {
   const [name, setName] = useState('')
   const [unit, setUnit] = useState('')
   const [pending, setPending] = useState(false)
@@ -17,6 +17,7 @@ export function CreateCatalogProductForm({ onCreate }: { onCreate: (input: Creat
     if (!valid || submitting.current) return
     submitting.current = true
     setPending(true)
+    onPendingChange?.(true)
     setError('')
     setCreated('')
     try {
@@ -29,6 +30,7 @@ export function CreateCatalogProductForm({ onCreate }: { onCreate: (input: Creat
     } finally {
       submitting.current = false
       setPending(false)
+      onPendingChange?.(false)
     }
   }}>
     <Field label="Nombre del producto" required>

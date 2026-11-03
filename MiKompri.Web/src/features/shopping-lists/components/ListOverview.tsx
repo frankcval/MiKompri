@@ -1,5 +1,6 @@
 import { Field, Select } from '@fluentui/react-components'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { AppIcon } from '../../../shared/ui/icons/AppIcon'
 import { estimatedTotal, listHistoryReason, type ListPresentation } from '../listPresentation'
 import ui from '../../../shared/ui/AppSurface.module.css'
 
@@ -7,9 +8,11 @@ export function ListOverviewControls({ defaultSort = 'newest' }: { defaultSort?:
   const [params, setParams] = useSearchParams()
   const change = (key: string, value: string) => { const next = new URLSearchParams(params); next.set(key, value); setParams(next) }
   return <div className={ui.actions}>
-    <Field label="Mostrar listas"><Select value={params.get('view') === 'history' ? 'history' : 'active'} onChange={(_, data) => change('view', data.value)}>
-      <option value="active">Activas</option><option value="history">Historial</option>
-    </Select></Field>
+    <nav className={ui.views} aria-label="Mostrar listas">{(['active', 'history'] as const).map(view => {
+      const next = new URLSearchParams(params); next.set('view', view)
+      const selected = (params.get('view') === 'history' ? 'history' : 'active') === view
+      return <Link key={view} to={`?${next}`} aria-current={selected ? 'page' : undefined}><AppIcon name={view === 'history' ? 'history' : 'lists'} selected={selected} />{view === 'history' ? 'Historial' : 'Activas'}</Link>
+    })}</nav>
     <Field label="Ordenar listas"><Select value={params.get('sort') ?? defaultSort} onChange={(_, data) => change('sort', data.value)}>
       <option value="newest">Más recientes</option><option value="oldest">Más antiguas</option><option value="updated">Última modificación</option><option value="name">Nombre</option>
     </Select></Field>
