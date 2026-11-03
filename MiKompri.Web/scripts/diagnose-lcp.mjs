@@ -20,4 +20,4 @@ try {for (const [name,path,anonymous] of [['home','/',true],['lists','/lists',fa
  const result=await p.evaluate(()=>({...window.__diagnostic,resources:performance.getEntriesByType('resource').map(r=>({name:new URL(r.name).pathname,startTime:r.startTime,responseEnd:r.responseEnd,duration:r.duration,bytes:r.transferSize,kind:r.initiatorType})),font: getComputedStyle(document.querySelector('h1')).font}))
  results.push({route:name,...result});console.log(name,JSON.stringify(result.lcp.at(-1)));await context.close()
 }}finally{await b.close()}
-writeFileSync('../specs/011-web-iconography/evidence/lcp-'+label+'-diagnostic.json',JSON.stringify({kind:'diagnostic-not-acceptance-samples',source:label,cpu:'4x',network:'1.6Mbps,150ms',viewport:'390x844',routes:results},null,2)+'\n')
+writeFileSync(process.argv[4] || '../specs/011-web-iconography/evidence/lcp-'+label+'-diagnostic.json',JSON.stringify({kind:'diagnostic-not-acceptance-samples',source:label,cpu:'4x',network:'1.6Mbps,150ms',viewport:'390x844',routes:results},null,2)+'\n')

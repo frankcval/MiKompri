@@ -31,6 +31,14 @@ it('does not activate disabled or busy actions and exposes busy semantics', asyn
   const button=screen.getByRole('button',{name:'Añadir producto'})
   expect(button).toBeDisabled();expect(button).toHaveAttribute('aria-busy','true');await user.click(button);expect(click).not.toHaveBeenCalled()
 })
+it('keeps the screen reader name independent from a longer tooltip', async () => {
+  const user = userEvent.setup()
+  render(<FluentProvider theme={appTheme}><IconAction name="history" label="Ver historial" tooltip="Abrir el historial completo de precios" /></FluentProvider>)
+  const button = screen.getByRole('button', { name: 'Ver historial' })
+  await user.hover(button)
+  await waitFor(() => expect(screen.getByRole('tooltip')).toHaveTextContent('Abrir el historial completo de precios'))
+  expect(button).toHaveAccessibleName('Ver historial')
+})
 it('keeps link semantics and an independent name for a navigation action', () => {
   render(<FluentProvider theme={appTheme}><MemoryRouter><IconActionLink to="/lists" name="back" label="Volver a mis listas" /></MemoryRouter></FluentProvider>)
   expect(screen.getByRole('link',{name:'Volver a mis listas'})).toHaveAttribute('href','/lists')

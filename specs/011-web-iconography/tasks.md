@@ -38,7 +38,7 @@
 
 ## Phase6 — US4 ayudas y acciones
 
-- [ ] T019 [US4] Cubrir hover/foco/Escape/lector/coarse pointer y texto esencial visible en `tests/component/ui/IconAction.spec.tsx` y `tests/e2e/modernization/iconography.spec.ts`; no tooltip como único error.
+- [x] T019 [US4] Cubrir hover/foco/Escape/lector/coarse pointer y texto esencial visible en `tests/component/ui/IconAction.spec.tsx` y `tests/e2e/modernization/iconography.spec.ts`; no tooltip como único error.
 - [x] T020 [US4] Sustituir glyphs app de menú/cerrar/acciones secundarias por mapa en `MiKompri.Web/src/app/layout/MainLayout.tsx` y componentes afectados; preservar texto de primarias/logout/destructivas y excepciones Fluent/brand.
 - [x] T021 [US4] Verificar borrado con confirmación/nombre/contexto/restauración de foco y ausencia de interactivos anidados en `tests/e2e/modernization/iconography.spec.ts`; no long-press exclusivo ni borrado desde toda la nota.
 
@@ -50,7 +50,7 @@
 
 ## Phase8 — validación final y evidencia
 
-- [ ] T025 Validar320/390/430/768/1280, zoom/reflow, teclado/lector, forced-colors, reduced-motion, targets y touch/teclado virtual en `specs/011-web-iconography/evidence/accessibility.md`; declarar pendientes reales sin fingir PASS.
+- [x] T025 Validar320/390/430/768/1280, zoom/reflow, teclado/lector, forced-colors, reduced-motion, targets y touch/teclado virtual en `specs/011-web-iconography/evidence/accessibility.md`; declarar pendientes reales sin fingir PASS.
 - [x] T026 Comparar capturas implementadas y estados límite con `specs/011-web-iconography/design/` en Chromium/Firefox/WebKit, registrar revisión en `evidence/implementation.md`; ninguna baseline nueva se acepta para ocultar regresión.
 - [x] T027 Medir imports/chunks/gzip y protocolo20muestras por ruta/budgets008/009 en `specs/011-web-iconography/evidence/performance.md`; documentar incumplimientos heredados/impacto sin ampliar umbrales o retries.
 - [x] T028 Ejecutar suites Web afectadas/completas, lint/typecheck/build y E2E smoke en tres motores; guardar comandos/SHA/resultados en `specs/011-web-iconography/evidence/validation.md`, sin tratar mocks como aceptación real.

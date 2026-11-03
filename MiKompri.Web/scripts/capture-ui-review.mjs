@@ -1,9 +1,12 @@
 // Synthetic harness only: no account sessions, cloud access or storage exports.
 import { chromium, firefox, webkit } from '@playwright/test'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { resolve, sep } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { modernFixtures, ids } from '../tests/e2e/fixtures/modernization.ts'
 const base = process.argv[2] || 'http://127.0.0.1:5180'
-const out = new URL('../../specs/011-web-iconography/evidence/', import.meta.url)
+const out = process.argv[3] ? pathToFileURL(resolve(process.argv[3]) + sep) : new URL('../../specs/011-web-iconography/evidence/', import.meta.url)
+mkdirSync(out, { recursive: true })
 const screens = [
  ['home', '/', 'La compra, mejor', true], ['login', '/login', 'Inicio de sesión', true],
  ['lists', '/lists', 'Mis listas'], ['history', '/lists?view=history', 'Mis listas'],
@@ -35,7 +38,7 @@ for (const [engine, launcher] of Object.entries({ chromium, firefox, webkit })) 
   await page.waitForTimeout(150)
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)
   const file = `review-${engine}-${screen}-${width}.png`
-  await page.screenshot({ path: new URL(file,out).pathname.replace(/^\/([A-Z]:)/,'$1'), fullPage: true, animations: 'disabled' })
+  await page.screenshot({ path: fileURLToPath(new URL(file,out)), fullPage: true, animations: 'disabled' })
   results.push({ browser: engine, screen, width, file, overflow }); await page.close()
  } } finally { await browser.close() }
 }

@@ -67,6 +67,16 @@ Deuda LCP previa de3rutas no empeorada materialmente; payload/mitigación declar
 
 **Group lifecycle and invitations intentionally out of scope for 011.** Sin invitación/búsqueda de usuarios/eliminar/abandonar/transferir/cambiar rol ni012/010-B.
 
+## Actualización de cierre — 03/11/2026
+
+Se reabrió el bloque final para completar T019/T025 sin alterar producto ni alcance funcional. Evidencias nuevas:
+
+- `tests/component/ui/IconAction.spec.tsx`: 5/5 PASS (nombre accesible independiente del tooltip, foco/Escape, busy/disabled y semántica link/button).
+- `tests/e2e/modernization/iconography.spec.ts --grep "@smoke 011"`: 11/11 PASS en Chromium (320/390/430/768/1280, teclado/foco/Escape, forced-colors, reduced-motion, touch/coarse pointer y axe).
+- `npm run build`: PASS con aviso histórico de chunk grande, sin cambios en presupuestos ni relajación de umbrales.
+
+Se mantiene la misma declaración de límites humanos diferidos (lector real, zoom real200/400, teclado virtual y safe-area en dispositivo físico), sin declarar QA manual ejecutada.
+
 ## Verificación de publicación
 
 El primer commit documental fc3e2ca detectó una carrera de interactuabilidad del test de compra WebKit:191/192, no PASS. [Investigación y corrección](publication-review.md). Se añade espera de actionability sin tocar producción ni rebajar aserciones;3/3 dirigido y15/15 de estabilidad. Se exige CI completo del siguiente SHA antes del PR. El servidor QA temporal del agente se retiró al terminar; la sesión Vite del titular queda intacta.

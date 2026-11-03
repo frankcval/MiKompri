@@ -5,6 +5,9 @@ import { createHash } from 'node:crypto'
 import { gzipSync } from 'node:zlib'
 import { execFileSync } from 'node:child_process'
 
+// Invoke a trusted installation directly rather than searching a mutable PATH.
+const gitExecutable = process.platform === 'win32' ? 'C:\\Program Files\\Git\\cmd\\git.exe' : '/usr/bin/git'
+
 function files(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? files(join(dir, e.name)) : [join(dir, e.name)])
 }
@@ -33,7 +36,7 @@ const payload = files('dist').filter(p => /\.(js|css)$/.test(p)).sort().map(path
   return { path: relative('dist', path).replaceAll('\\', '/'), bytes: bytes.length, gzip: gzipSync(bytes).length, sha256: sha256(bytes) }
 })
 const report = {
-  baseCommit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+  baseCommit: execFileSync(gitExecutable, ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   kind: 'production-build-working-tree-candidate', sourceSha256: sourceHash.digest('hex'),
   lockSha256: sha256(readFileSync('package-lock.json')),
   buildConfigSha256: sha256(['vite.config.ts', 'vite.chunks.ts'].map(p => p + '\0' + readFileSync(p, 'utf8')).join('\0')),

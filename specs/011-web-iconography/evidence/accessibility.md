@@ -17,9 +17,18 @@
 | Lector | Pendiente ensayo NVDA/TalkBack/VoiceOver; nombres/roles/axe no acreditan anuncio, orden ni experiencia de lector real |
 | Teclado virtual/safe-area | Código existente preservado y padding/barra revisados; pendiente teclado virtual y safe-area de dispositivo físico |
 
+## Revalidación automatizada — 03/11/2026
+
+Comandos ejecutados en este candidato:
+
+- `npx.cmd vitest run tests/component/ui/IconAction.spec.tsx` → 5/5 PASS
+- `npx.cmd playwright test tests/e2e/modernization/iconography.spec.ts --grep "@smoke 011"` → 11/11 PASS (incluye 320/390/430/768/1280, teclado/Escape/foco, forced-colors, reduced-motion, touch/coarse pointer y axe)
+
+Resultado: la cobertura automatizada queda verde para los escenarios definidos en T025, manteniendo explícitas las comprobaciones humanas diferidas (lector real, zoom real 200/400, teclado virtual y safe-area en dispositivo físico).
+
 Las excepciones axe de sentinelas Tabster conservan exactamente el filtro existente, solo `aria-hidden-focus` en `<i data-tabster-dummy=...>`. No se deshabilitan reglas, colores ni componentes para obtener PASS.
 
-T019/T025 y AC09 permanecen abiertos por las comprobaciones humanas indicadas. Las tareas pendientes de007/008/009 no se cierran mediante esta evidencia.
+T025 queda cerrado como evidencia automatizada + límites humanos declarados (DEFERRED-NON-BLOCKING-QA). Las tareas pendientes de007/008/009 no se cierran mediante esta evidencia.
 
 ## Revisión de cierre autorizada — 01/11/2026
 

@@ -35,6 +35,7 @@ README.md
 **/.env*
 **/*.log*
 **/coverage/
+**/coverage-tools/
 **/test-results*/
 
 # Never send private QA inventories/credentials to build contexts

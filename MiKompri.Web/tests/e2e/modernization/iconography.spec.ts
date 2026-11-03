@@ -108,8 +108,13 @@ test('@smoke 011 partial failure, forced colors, reduced motion and a hundred it
   await page.getByRole('link', { name: /Personal Compra de la semana/ }).click()
   await expect(page.getByRole('checkbox')).toHaveCount(100)
   const last = page.getByRole('checkbox', { name: 'Marcar comprado: Producto de la despensa 99' })
-  await last.focus(); await page.keyboard.press('Space')
+  await last.scrollIntoViewIfNeeded()
+  await last.focus(); await expect(last).toBeFocused(); await page.keyboard.press('Space')
+  // This case checks return focus after the form is ready; cancellation while
+  // the lazy content loads is covered separately in completion.spec.ts.
+  await expect(page.getByRole('spinbutton', { name: 'Importe pagado (EUR)' })).toBeVisible()
   await page.getByRole('button', { name: 'Ahora no', exact: true }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
   await expect(page.getByRole('checkbox', { name: 'Desmarcar comprado: Producto de la despensa 99' })).toBeFocused()
   expect(fixture.calls.filter(c => c.path.endsWith('/purchase-state'))).toHaveLength(1)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
@@ -126,4 +131,23 @@ test('@smoke 011 implemented list notes pass automated accessibility', async ({ 
   await page.screenshot({ path: 'test-results/011-lists-mobile.png', fullPage: true, animations: 'disabled' })
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.screenshot({ path: 'test-results/011-lists-desktop.png', fullPage: true, animations: 'disabled' })
+})
+
+test.describe('touch input', () => {
+  test.use({ hasTouch: true })
+  test('@smoke 011 icon actions keep visible text and work without hover help on coarse pointer', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await modernFixtures(page)
+    await openHarness(page, `/personal-lists/${ids.personal}`)
+    const menu = page.getByRole('button', { name: 'Abrir menú', exact: true })
+    await expect(menu).toHaveAccessibleName('Abrir menú')
+    await menu.tap()
+    await expect(page.getByRole('button', { name: 'Cerrar menú', exact: true })).toBeVisible()
+    await expect(page.getByRole('tooltip')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Cerrar menú', exact: true }).tap()
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    const remove = page.getByRole('button', { name: 'Eliminar lista', exact: true })
+    await expect(remove).toBeVisible()
+    await expect(remove).toContainText('Eliminar lista')
+  })
 })

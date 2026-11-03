@@ -1,0 +1,23 @@
+name: Web coverage for the existing Sonar analysis
+description: Measure application tests and real synthetic audit tools without changing coverage counts or baselines.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      env:
+        SONAR_TOKEN: ''
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: MiKompri.Web/package-lock.json
+    - name: Measure Web and tooling coverage
+      shell: bash
+      working-directory: MiKompri.Web
+      env:
+        SONAR_TOKEN: ''
+      run: |
+        npm ci
+        npm run test:coverage -- --maxWorkers=2
+        npm run build
+        npx playwright install --with-deps chromium firefox webkit
+        npm run test:coverage:tools
